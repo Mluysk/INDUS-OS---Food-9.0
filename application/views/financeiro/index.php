@@ -1457,10 +1457,10 @@ if (!function_exists('financeiro_format_date')) {
                 resultTarget.classList.toggle('is-negative', difference < 0);
             }
             if (leftTitle) {
-                leftTitle.textContent = `${typeLabel} - periodo A`;
+                leftTitle.textContent = `${typeLabel} - ${periodLabels[leftState.period] || 'Periodo'} A`;
             }
             if (rightTitle) {
-                rightTitle.textContent = `${typeLabel} - periodo B`;
+                rightTitle.textContent = `${typeLabel} - ${periodLabels[rightState.period] || 'Periodo'} B`;
             }
             if (leftDetail) {
                 leftDetail.textContent = `${leftRows.length} ${leftRows.length === 1 ? 'lancamento' : 'lancamentos'} - ${leftLabel}`;
