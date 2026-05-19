@@ -176,9 +176,22 @@ if (!function_exists('financeiro_format_date')) {
     .finance-summary-charts { display: grid; grid-template-columns: minmax(280px, 1.55fr) minmax(230px, 0.85fr); gap: 16px; min-width: 0; }
     .finance-summary-panel { display: none; }
     .finance-summary-panel.active { display: block; }
-    .finance-performance-toolbar { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin: 4px 0 16px; }
-    .finance-performance-toolbar label { display: flex; flex-direction: column; gap: 5px; margin: 0; color: var(--muted, #64748b); font-size: 0.82rem; font-weight: 800; }
-    .finance-performance-toolbar input { min-height: 36px; width: 112px; border: 1px solid var(--border, #e5e7eb); border-radius: 999px; padding: 6px 12px; background: var(--surface, #fff); color: var(--text, #111827); font-weight: 850; }
+    .finance-performance-compare-card { position: relative; overflow: hidden; border: 1px solid rgba(234, 179, 8, 0.28); border-radius: 24px; padding: 18px 22px; background: linear-gradient(135deg, rgba(251, 191, 36, 0.10), var(--surface, #fff) 46%, rgba(148, 163, 184, 0.06)); box-shadow: 0 18px 40px rgba(15, 23, 42, 0.10); }
+    .finance-performance-compare-card::before { content: ''; position: absolute; inset: 0 auto 0 0; width: 7px; background: #f59e0b; }
+    .finance-performance-top { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 18px; }
+    .finance-performance-type { display: inline-flex; align-items: center; gap: 8px; color: #64748b; font-size: 1rem; font-weight: 900; letter-spacing: 0.08em; text-transform: uppercase; }
+    .finance-performance-type .icon { width: 20px; height: 20px; }
+    .finance-performance-type select { border: 0; padding: 0 18px 0 0; background: transparent; color: inherit; font: inherit; letter-spacing: inherit; text-transform: uppercase; cursor: pointer; }
+    .finance-performance-controls { display: grid; grid-template-columns: minmax(240px, 1fr) auto minmax(240px, 1fr); gap: 18px; align-items: end; }
+    .finance-performance-side { display: grid; grid-template-columns: minmax(120px, 0.82fr) minmax(170px, 1fr); gap: 12px; }
+    .finance-performance-field { display: grid; gap: 5px; }
+    .finance-performance-field span { color: var(--muted, #64748b); font-size: 0.72rem; font-weight: 900; letter-spacing: 0.05em; text-transform: uppercase; }
+    .finance-performance-field select,
+    .finance-performance-field input { min-height: 46px; width: 100%; border: 1px solid rgba(226, 232, 240, 0.95); border-radius: 999px; padding: 8px 16px; background: var(--surface, #fff); color: var(--text, #111827); font-size: 0.94rem; font-weight: 900; box-shadow: 0 8px 20px rgba(15, 23, 42, 0.06); }
+    .finance-performance-x { color: #f59e0b; font-size: 2.5rem; font-weight: 950; line-height: 1; align-self: center; }
+    .finance-performance-footer { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; margin-top: 18px; }
+    .finance-performance-focus { color: #f59e0b; font-size: 1.55rem; font-weight: 950; letter-spacing: 0.04em; text-transform: uppercase; }
+    .finance-performance-caption { color: #64748b; font-size: 0.95rem; font-weight: 850; text-align: right; }
     .finance-performance-kpis { display: grid; grid-template-columns: repeat(3, minmax(180px, 1fr)); gap: 12px; margin-bottom: 16px; }
     .finance-performance-charts { display: grid; grid-template-columns: repeat(2, minmax(280px, 1fr)); gap: 16px; }
     .finance-chart-panel { min-width: 0; }
@@ -195,7 +208,12 @@ if (!function_exists('financeiro_format_date')) {
         .finance-summary-grid,
         .finance-summary-charts,
         .finance-performance-kpis,
-        .finance-performance-charts { grid-template-columns: 1fr; }
+        .finance-performance-charts,
+        .finance-performance-controls,
+        .finance-performance-side { grid-template-columns: 1fr; }
+        .finance-performance-x { text-align: center; }
+        .finance-performance-footer { align-items: flex-start; flex-direction: column; }
+        .finance-performance-caption { text-align: left; }
     }
     .finance-live-message { display: none; margin-bottom: 14px; border-radius: 14px; padding: 12px 14px; font-weight: 700; }
     .finance-live-message.active { display: block; }
@@ -601,32 +619,81 @@ if (!function_exists('financeiro_format_date')) {
         </div>
 
         <div class="finance-summary-panel" data-finance-summary-panel="desempenho" aria-labelledby="tab-resumo-desempenho">
-            <div class="finance-performance-toolbar">
-                <div>
-                    <h3>Comparativo de desempenho</h3>
-                    <p class="panel-description finance-form-note">Analise o desempenho mes a mes de entradas e saidas separadamente.</p>
+            <div class="finance-performance-compare-card">
+                <div class="finance-performance-top">
+                    <label class="finance-performance-type">
+                        <span class="icon" data-lucide="scale"></span>
+                        <select data-finance-performance-type aria-label="Tipo do comparativo">
+                            <option value="entrada">Entrada</option>
+                            <option value="saida">Saida</option>
+                        </select>
+                    </label>
+                    <strong class="finance-performance-caption" data-finance-performance-mode-caption>Compare periodos do mesmo tipo financeiro.</strong>
                 </div>
-                <label>
-                    <span>Ano comparado</span>
-                    <input type="number" data-finance-performance-year min="2000" max="2100" value="<?= htmlspecialchars(date('Y'), ENT_QUOTES, 'UTF-8'); ?>">
-                </label>
+
+                <div class="finance-performance-controls">
+                    <div class="finance-performance-side" data-finance-compare-side="left">
+                        <label class="finance-performance-field">
+                            <span>Periodo A</span>
+                            <select data-finance-compare-period="left" aria-label="Periodo A do comparativo">
+                                <option value="diario">Diario</option>
+                                <option value="semanal">Semanal</option>
+                                <option value="mensal" selected>Mensal</option>
+                                <option value="anual">Anual</option>
+                            </select>
+                        </label>
+                        <label class="finance-performance-field">
+                            <span>Data A</span>
+                            <input type="date" data-finance-compare-input="left" data-period-input="diario" value="<?= htmlspecialchars($hoje, ENT_QUOTES, 'UTF-8'); ?>" hidden>
+                            <input type="week" data-finance-compare-input="left" data-period-input="semanal" hidden>
+                            <input type="month" data-finance-compare-input="left" data-period-input="mensal" value="<?= htmlspecialchars(date('Y-m'), ENT_QUOTES, 'UTF-8'); ?>">
+                            <input type="number" data-finance-compare-input="left" data-period-input="anual" min="2000" max="2100" value="<?= htmlspecialchars(date('Y'), ENT_QUOTES, 'UTF-8'); ?>" hidden>
+                        </label>
+                    </div>
+
+                    <span class="finance-performance-x" aria-hidden="true">X</span>
+
+                    <div class="finance-performance-side" data-finance-compare-side="right">
+                        <label class="finance-performance-field">
+                            <span>Periodo B</span>
+                            <select data-finance-compare-period="right" aria-label="Periodo B do comparativo">
+                                <option value="diario">Diario</option>
+                                <option value="semanal">Semanal</option>
+                                <option value="mensal" selected>Mensal</option>
+                                <option value="anual">Anual</option>
+                            </select>
+                        </label>
+                        <label class="finance-performance-field">
+                            <span>Data B</span>
+                            <input type="date" data-finance-compare-input="right" data-period-input="diario" value="<?= htmlspecialchars($hoje, ENT_QUOTES, 'UTF-8'); ?>" hidden>
+                            <input type="week" data-finance-compare-input="right" data-period-input="semanal" hidden>
+                            <input type="month" data-finance-compare-input="right" data-period-input="mensal" value="<?= htmlspecialchars(date('Y-m'), ENT_QUOTES, 'UTF-8'); ?>">
+                            <input type="number" data-finance-compare-input="right" data-period-input="anual" min="2000" max="2100" value="<?= htmlspecialchars(date('Y'), ENT_QUOTES, 'UTF-8'); ?>" hidden>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="finance-performance-footer">
+                    <strong class="finance-performance-focus" data-finance-performance-focus>MAIO/26 X MAIO/26</strong>
+                    <span class="finance-performance-caption" data-finance-performance-caption>Desempenho mensal - 2026</span>
+                </div>
             </div>
 
             <div class="finance-performance-kpis" aria-label="Indicadores de desempenho financeiro">
                 <div class="finance-summary-card is-entrada">
-                    <span>Total de entradas</span>
-                    <strong data-finance-performance-total="entrada">R$ 0,00</strong>
-                    <small data-finance-performance-highlight="entrada">Melhor mes: -</small>
+                    <span data-finance-performance-label="left">Periodo A</span>
+                    <strong data-finance-performance-total="left">R$ 0,00</strong>
+                    <small data-finance-performance-detail="left">0 lancamentos</small>
                 </div>
                 <div class="finance-summary-card is-saida">
-                    <span>Total de saidas</span>
-                    <strong data-finance-performance-total="saida">R$ 0,00</strong>
-                    <small data-finance-performance-highlight="saida">Maior saida: -</small>
+                    <span data-finance-performance-label="right">Periodo B</span>
+                    <strong data-finance-performance-total="right">R$ 0,00</strong>
+                    <small data-finance-performance-detail="right">0 lancamentos</small>
                 </div>
                 <div class="finance-summary-card is-saldo">
-                    <span>Resultado anual</span>
+                    <span>Diferenca</span>
                     <strong data-finance-performance-result>R$ 0,00</strong>
-                    <small data-finance-performance-status>Sem movimento no ano.</small>
+                    <small data-finance-performance-status>Sem variacao entre os periodos.</small>
                 </div>
             </div>
 
@@ -634,26 +701,25 @@ if (!function_exists('financeiro_format_date')) {
                 <div class="finance-chart-panel">
                     <div class="finance-chart-header">
                         <div>
-                            <h3>Entradas mes a mes</h3>
-                            <p data-finance-performance-caption="entrada">Desempenho mensal de entradas.</p>
+                            <h3>Comparacao dos periodos</h3>
+                            <p data-finance-performance-chart-caption>Valor total de cada recorte.</p>
                         </div>
-                        <div class="finance-chart-legend" aria-label="Legenda de entradas">
-                            <span style="--legend-color:#10b981;">Entrada</span>
+                        <div class="finance-chart-legend" aria-label="Legenda do comparativo">
+                            <span style="--legend-color:#f59e0b;">Periodo A</span>
+                            <span style="--legend-color:#64748b;">Periodo B</span>
                         </div>
                     </div>
-                    <canvas class="finance-chart-canvas" data-finance-performance-chart="entrada" width="520" height="260" aria-label="Grafico de desempenho mensal de entradas"></canvas>
+                    <canvas class="finance-chart-canvas" data-finance-performance-chart="comparativo" width="520" height="260" aria-label="Grafico comparando dois periodos"></canvas>
                 </div>
                 <div class="finance-chart-panel">
                     <div class="finance-chart-header">
                         <div>
-                            <h3>Saidas mes a mes</h3>
-                            <p data-finance-performance-caption="saida">Desempenho mensal de saidas.</p>
-                        </div>
-                        <div class="finance-chart-legend" aria-label="Legenda de saidas">
-                            <span style="--legend-color:#ef4444;">Saida</span>
+                            <h3>Participacao</h3>
+                            <p data-finance-performance-pie-caption>Percentual de cada periodo no total comparado.</p>
                         </div>
                     </div>
-                    <canvas class="finance-chart-canvas" data-finance-performance-chart="saida" width="520" height="260" aria-label="Grafico de desempenho mensal de saidas"></canvas>
+                    <canvas class="finance-chart-canvas is-pie" data-finance-performance-chart="participacao" width="320" height="250" aria-label="Grafico percentual da comparacao"></canvas>
+                    <div class="finance-summary-note" data-finance-performance-pie-note>0% periodo A / 0% periodo B</div>
                 </div>
             </div>
         </div>
@@ -1250,33 +1316,21 @@ if (!function_exists('financeiro_format_date')) {
             drawPieChart(entradaTotal, saidaTotal);
         };
 
-        const monthlyPerformanceSeries = (year) => {
-            const months = Array.from({ length: 12 }, (_, index) => {
-                const date = new Date(year, index, 1);
-                return {
-                    key: `${year}-${String(index + 1).padStart(2, '0')}`,
-                    label: date.toLocaleDateString('pt-BR', { month: 'short' }).replace('.', ''),
-                    entrada: 0,
-                    saida: 0
-                };
+        const getCompareState = (side) => {
+            const period = document.querySelector(`[data-finance-compare-period="${side}"]`)?.value || 'mensal';
+            const inputs = Array.from(document.querySelectorAll(`[data-finance-compare-input="${side}"]`));
+            inputs.forEach((input) => {
+                input.hidden = input.dataset.periodInput !== period;
             });
-
-            ['entrada', 'saida'].forEach((tipo) => {
-                (financeRows[tipo] || []).forEach((item) => {
-                    const date = itemDate(item, tipo);
-                    const monthKey = String(date || '').slice(0, 7);
-                    const bucket = months.find((month) => month.key === monthKey);
-                    if (bucket) {
-                        bucket[tipo] += numberFromValue(item.valor);
-                    }
-                });
-            });
-
-            return months;
+            const input = inputs.find((item) => item.dataset.periodInput === period);
+            return { period, value: input?.value || '' };
         };
 
-        const drawPerformanceChart = (tipo, series) => {
-            const canvas = document.querySelector(`[data-finance-performance-chart="${tipo}"]`);
+        const compareRows = (tipo, state) => (financeRows[tipo] || [])
+            .filter((item) => matchesPeriod(item, tipo, state.period, state.value));
+
+        const drawPerformanceBarChart = (left, right) => {
+            const canvas = document.querySelector('[data-finance-performance-chart="comparativo"]');
             if (!canvas) {
                 return;
             }
@@ -1285,9 +1339,11 @@ if (!function_exists('financeiro_format_date')) {
             const padding = { top: 18, right: 18, bottom: 34, left: 54 };
             const chartWidth = width - padding.left - padding.right;
             const chartHeight = height - padding.top - padding.bottom;
-            const maxValue = Math.max(1, ...series.map((item) => item[tipo]));
-            const color = tipo === 'entrada' ? '#10b981' : '#ef4444';
-            const fillColor = tipo === 'entrada' ? 'rgba(16,185,129,0.14)' : 'rgba(239,68,68,0.14)';
+            const maxValue = Math.max(1, left.total, right.total);
+            const bars = [
+                { ...left, color: '#f59e0b' },
+                { ...right, color: '#64748b' }
+            ];
 
             ctx.strokeStyle = 'rgba(100,116,139,0.18)';
             ctx.lineWidth = 1;
@@ -1299,119 +1355,175 @@ if (!function_exists('financeiro_format_date')) {
                 ctx.stroke();
             }
 
-            const points = series.map((item, index) => ({
-                x: padding.left + (chartWidth / Math.max(1, series.length - 1)) * index,
-                y: padding.top + chartHeight - (item[tipo] / maxValue) * chartHeight,
-                label: item.label
-            }));
+            const barWidth = Math.min(130, chartWidth / 4);
+            bars.forEach((bar, index) => {
+                const x = padding.left + chartWidth * (index === 0 ? 0.28 : 0.72) - barWidth / 2;
+                const barHeight = (bar.total / maxValue) * chartHeight;
+                const y = padding.top + chartHeight - barHeight;
+                ctx.fillStyle = bar.color;
+                ctx.fillRect(x, y, barWidth, Math.max(4, barHeight));
 
-            ctx.beginPath();
-            points.forEach((point, index) => {
-                if (index === 0) {
-                    ctx.moveTo(point.x, point.y);
-                    return;
-                }
-                const previous = points[index - 1];
-                const midX = (previous.x + point.x) / 2;
-                ctx.bezierCurveTo(midX, previous.y, midX, point.y, point.x, point.y);
-            });
-            ctx.lineTo(points[points.length - 1].x, padding.top + chartHeight);
-            ctx.lineTo(points[0].x, padding.top + chartHeight);
-            ctx.closePath();
-            ctx.fillStyle = fillColor;
-            ctx.fill();
-
-            ctx.beginPath();
-            points.forEach((point, index) => {
-                if (index === 0) {
-                    ctx.moveTo(point.x, point.y);
-                    return;
-                }
-                const previous = points[index - 1];
-                const midX = (previous.x + point.x) / 2;
-                ctx.bezierCurveTo(midX, previous.y, midX, point.y, point.x, point.y);
-            });
-            ctx.strokeStyle = color;
-            ctx.lineWidth = 3;
-            ctx.stroke();
-
-            points.forEach((point) => {
-                ctx.beginPath();
-                ctx.arc(point.x, point.y, 3.5, 0, Math.PI * 2);
-                ctx.fillStyle = color;
-                ctx.fill();
+                ctx.fillStyle = '#111827';
+                ctx.font = '900 13px Arial, sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText(formatCurrency(bar.total), x + barWidth / 2, Math.max(15, y - 8));
+                ctx.fillStyle = '#64748b';
+                ctx.font = '800 12px Arial, sans-serif';
+                ctx.fillText(bar.shortLabel, x + barWidth / 2, height - 12);
             });
 
             ctx.fillStyle = '#64748b';
             ctx.font = '700 11px Arial, sans-serif';
-            ctx.textAlign = 'center';
-            points.forEach((point) => {
-                ctx.fillText(point.label, point.x, height - 12);
-            });
             ctx.textAlign = 'left';
             ctx.fillText(formatCurrency(maxValue), 8, padding.top + 4);
             ctx.fillText('R$ 0,00', 8, padding.top + chartHeight);
         };
 
-        const renderPerformanceDashboard = () => {
-            const yearInput = document.querySelector('[data-finance-performance-year]');
-            const year = Number(yearInput?.value || new Date().getFullYear());
-            const series = monthlyPerformanceSeries(year);
-            const entradaTotal = series.reduce((acc, item) => acc + item.entrada, 0);
-            const saidaTotal = series.reduce((acc, item) => acc + item.saida, 0);
-            const saldo = entradaTotal - saidaTotal;
-            const bestEntrada = series.reduce((best, item) => item.entrada > best.entrada ? item : best, series[0]);
-            const bestSaida = series.reduce((best, item) => item.saida > best.saida ? item : best, series[0]);
+        const drawPerformancePieChart = (leftTotal, rightTotal) => {
+            const canvas = document.querySelector('[data-finance-performance-chart="participacao"]');
+            if (!canvas) {
+                return;
+            }
+            const { ctx, width, height } = setCanvasSize(canvas);
+            ctx.clearRect(0, 0, width, height);
+            const total = leftTotal + rightTotal;
+            const radius = Math.max(54, Math.min(width, height) / 2 - 22);
+            const centerX = width / 2;
+            const centerY = height / 2;
 
-            const entradaTarget = document.querySelector('[data-finance-performance-total="entrada"]');
-            const saidaTarget = document.querySelector('[data-finance-performance-total="saida"]');
+            if (total <= 0) {
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+                ctx.strokeStyle = 'rgba(100,116,139,0.25)';
+                ctx.lineWidth = 24;
+                ctx.stroke();
+                ctx.fillStyle = '#64748b';
+                ctx.font = '800 14px Arial, sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText('Sem dados', centerX, centerY + 5);
+                return;
+            }
+
+            const leftAngle = (leftTotal / total) * Math.PI * 2;
+            const drawSlice = (start, end, color) => {
+                ctx.beginPath();
+                ctx.moveTo(centerX, centerY);
+                ctx.arc(centerX, centerY, radius, start, end);
+                ctx.closePath();
+                ctx.fillStyle = color;
+                ctx.fill();
+            };
+            drawSlice(-Math.PI / 2, -Math.PI / 2 + leftAngle, '#f59e0b');
+            drawSlice(-Math.PI / 2 + leftAngle, Math.PI * 1.5, '#64748b');
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, radius * 0.58, 0, Math.PI * 2);
+            ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--surface') || '#fff';
+            ctx.fill();
+
+            const percent = Math.round((leftTotal / total) * 100);
+            ctx.fillStyle = '#111827';
+            ctx.font = '900 24px Arial, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText(`${percent}%`, centerX, centerY - 2);
+            ctx.fillStyle = '#64748b';
+            ctx.font = '800 11px Arial, sans-serif';
+            ctx.fillText('periodo A', centerX, centerY + 18);
+        };
+
+        const renderPerformanceDashboard = () => {
+            const tipo = document.querySelector('[data-finance-performance-type]')?.value === 'saida' ? 'saida' : 'entrada';
+            const leftState = getCompareState('left');
+            const rightState = getCompareState('right');
+            const leftRows = compareRows(tipo, leftState);
+            const rightRows = compareRows(tipo, rightState);
+            const leftTotal = sumRows(leftRows);
+            const rightTotal = sumRows(rightRows);
+            const difference = leftTotal - rightTotal;
+            const variation = rightTotal > 0 ? (difference / rightTotal) * 100 : (leftTotal > 0 ? 100 : 0);
+            const typeLabel = tipo === 'saida' ? 'Saida' : 'Entrada';
+            const leftLabel = periodDisplayLabel(leftState.period, leftState.value);
+            const rightLabel = periodDisplayLabel(rightState.period, rightState.value);
+            const leftShort = periodFocusLabel(leftState.period, leftState.value);
+            const rightShort = periodFocusLabel(rightState.period, rightState.value);
+            const leftPercent = leftTotal + rightTotal > 0 ? Math.round((leftTotal / (leftTotal + rightTotal)) * 100) : 0;
+            const rightPercent = leftTotal + rightTotal > 0 ? 100 - leftPercent : 0;
+
+            const leftTarget = document.querySelector('[data-finance-performance-total="left"]');
+            const rightTarget = document.querySelector('[data-finance-performance-total="right"]');
             const resultTarget = document.querySelector('[data-finance-performance-result]');
-            const entradaHighlight = document.querySelector('[data-finance-performance-highlight="entrada"]');
-            const saidaHighlight = document.querySelector('[data-finance-performance-highlight="saida"]');
+            const leftDetail = document.querySelector('[data-finance-performance-detail="left"]');
+            const rightDetail = document.querySelector('[data-finance-performance-detail="right"]');
             const status = document.querySelector('[data-finance-performance-status]');
-            const entradaCaption = document.querySelector('[data-finance-performance-caption="entrada"]');
-            const saidaCaption = document.querySelector('[data-finance-performance-caption="saida"]');
+            const leftTitle = document.querySelector('[data-finance-performance-label="left"]');
+            const rightTitle = document.querySelector('[data-finance-performance-label="right"]');
             const focus = document.querySelector('[data-finance-period-focus="resumo"]');
             const caption = document.querySelector('[data-finance-period-caption="resumo"]');
+            const performanceFocus = document.querySelector('[data-finance-performance-focus]');
+            const performanceCaption = document.querySelector('[data-finance-performance-caption]');
+            const modeCaption = document.querySelector('[data-finance-performance-mode-caption]');
+            const chartCaption = document.querySelector('[data-finance-performance-chart-caption]');
+            const pieCaption = document.querySelector('[data-finance-performance-pie-caption]');
+            const pieNote = document.querySelector('[data-finance-performance-pie-note]');
 
-            if (entradaTarget) {
-                entradaTarget.textContent = formatCurrency(entradaTotal);
+            if (leftTarget) {
+                leftTarget.textContent = formatCurrency(leftTotal);
             }
-            if (saidaTarget) {
-                saidaTarget.textContent = formatCurrency(saidaTotal);
+            if (rightTarget) {
+                rightTarget.textContent = formatCurrency(rightTotal);
             }
-            document.querySelectorAll('[data-finance-summary-total="saldo"]').forEach((target) => { target.textContent = formatCurrency(saldo); });
+            document.querySelectorAll('[data-finance-summary-total="saldo"]').forEach((target) => { target.textContent = formatCurrency(difference); });
             if (resultTarget) {
-                resultTarget.textContent = formatCurrency(saldo);
-                resultTarget.classList.toggle('is-positive', saldo >= 0);
-                resultTarget.classList.toggle('is-negative', saldo < 0);
+                resultTarget.textContent = formatCurrency(difference);
+                resultTarget.classList.toggle('is-positive', difference >= 0);
+                resultTarget.classList.toggle('is-negative', difference < 0);
             }
-            if (entradaHighlight) {
-                entradaHighlight.textContent = `Melhor mes: ${bestEntrada.label} (${formatCurrency(bestEntrada.entrada)})`;
+            if (leftTitle) {
+                leftTitle.textContent = `${typeLabel} - periodo A`;
             }
-            if (saidaHighlight) {
-                saidaHighlight.textContent = `Maior saida: ${bestSaida.label} (${formatCurrency(bestSaida.saida)})`;
+            if (rightTitle) {
+                rightTitle.textContent = `${typeLabel} - periodo B`;
+            }
+            if (leftDetail) {
+                leftDetail.textContent = `${leftRows.length} ${leftRows.length === 1 ? 'lancamento' : 'lancamentos'} - ${leftLabel}`;
+            }
+            if (rightDetail) {
+                rightDetail.textContent = `${rightRows.length} ${rightRows.length === 1 ? 'lancamento' : 'lancamentos'} - ${rightLabel}`;
             }
             if (status) {
-                status.textContent = saldo > 0
-                    ? 'Entradas superaram as saidas no ano.'
-                    : (saldo < 0 ? 'Saidas superaram as entradas no ano.' : 'Entradas e saidas ficaram equilibradas no ano.');
-            }
-            if (entradaCaption) {
-                entradaCaption.textContent = `Entrada mensal em ${year}.`;
-            }
-            if (saidaCaption) {
-                saidaCaption.textContent = `Saida mensal em ${year}.`;
+                status.textContent = difference > 0
+                    ? `Periodo A ficou ${Math.abs(variation).toLocaleString('pt-BR', { maximumFractionDigits: 1 })}% acima do periodo B.`
+                    : (difference < 0 ? `Periodo A ficou ${Math.abs(variation).toLocaleString('pt-BR', { maximumFractionDigits: 1 })}% abaixo do periodo B.` : 'Sem variacao entre os periodos.');
             }
             if (focus) {
-                focus.textContent = `ANO ${year}`;
+                focus.textContent = `${leftShort} X ${rightShort}`;
             }
             if (caption) {
-                caption.textContent = `Desempenho mensal - ${year}`;
+                caption.textContent = `${typeLabel} - ${periodLabels[leftState.period] || 'Periodo'} x ${periodLabels[rightState.period] || 'Periodo'}`;
+            }
+            if (performanceFocus) {
+                performanceFocus.textContent = `${leftShort} X ${rightShort}`;
+            }
+            if (performanceCaption) {
+                performanceCaption.textContent = `${typeLabel} - ${periodLabels[leftState.period] || 'Periodo'} x ${periodLabels[rightState.period] || 'Periodo'}`;
+            }
+            if (modeCaption) {
+                modeCaption.textContent = `Comparando ${String(typeLabel).toLocaleLowerCase('pt-BR')} entre dois periodos.`;
+            }
+            if (chartCaption) {
+                chartCaption.textContent = `${leftLabel} contra ${rightLabel}.`;
+            }
+            if (pieCaption) {
+                pieCaption.textContent = `${formatCurrency(leftTotal)} no A e ${formatCurrency(rightTotal)} no B.`;
+            }
+            if (pieNote) {
+                pieNote.textContent = `${leftPercent}% periodo A / ${rightPercent}% periodo B`;
             }
 
-            drawPerformanceChart('entrada', series);
-            drawPerformanceChart('saida', series);
+            drawPerformanceBarChart(
+                { total: leftTotal, shortLabel: 'Periodo A' },
+                { total: rightTotal, shortLabel: 'Periodo B' }
+            );
+            drawPerformancePieChart(leftTotal, rightTotal);
         };
 
         const applyFinanceFilters = (tipo) => {
@@ -1874,7 +1986,16 @@ if (!function_exists('financeiro_format_date')) {
             button.addEventListener('click', () => activateSummaryPanel(button.dataset.financeSummaryTab, true));
         });
 
-        document.querySelector('[data-finance-performance-year]')?.addEventListener('change', renderPerformanceDashboard);
+        document.querySelector('[data-finance-performance-type]')?.addEventListener('change', renderPerformanceDashboard);
+        document.querySelectorAll('[data-finance-compare-period]').forEach((select) => {
+            select.addEventListener('change', renderPerformanceDashboard);
+        });
+        document.querySelectorAll('[data-finance-compare-input]').forEach((input) => {
+            if (input.dataset.periodInput === 'semanal') {
+                input.value = isoWeekValue(todayValue);
+            }
+            input.addEventListener('change', renderPerformanceDashboard);
+        });
 
         const closeExportMenus = (except = null) => {
             document.querySelectorAll('[data-finance-export-group]').forEach((group) => {
