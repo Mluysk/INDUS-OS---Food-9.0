@@ -84,7 +84,7 @@ if (!function_exists('financeiro_format_date')) {
     .finance-period-card { position: relative; overflow: hidden; order: 1; min-width: 430px; border: 1px solid color-mix(in srgb, var(--primary, #4f46e5) 24%, var(--border, #e5e7eb)); border-radius: 20px; padding: 12px 14px; background: linear-gradient(135deg, color-mix(in srgb, var(--primary, #4f46e5) 10%, var(--surface, #fff)), var(--surface, #fff) 58%, color-mix(in srgb, var(--primary, #4f46e5) 6%, var(--surface-alt, #f8fafc))); box-shadow: 0 18px 38px rgba(15, 23, 42, 0.10); }
     .finance-period-card::before { content: ''; position: absolute; inset: 0 auto 0 0; width: 5px; background: var(--primary, #4f46e5); }
     .finance-period-card.is-hidden { display: none; }
-    .finance-period-card[data-finance-period-card="resumo"] { transform: translateY(-9px); }
+    .finance-period-card[data-finance-period-card="resumo"] { transform: translateY(-12px); }
     .finance-card-header .finance-period-card { flex: 0 1 440px; margin-left: auto; }
     .finance-period-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 8px; }
     .finance-period-label { display: inline-flex; align-items: center; gap: 6px; color: var(--muted, #64748b); font-size: 0.72rem; font-weight: 900; letter-spacing: 0.05em; text-transform: uppercase; }
