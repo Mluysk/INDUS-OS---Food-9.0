@@ -177,21 +177,23 @@ if (!function_exists('financeiro_format_date')) {
     .finance-summary-charts { display: grid; grid-template-columns: minmax(280px, 1.55fr) minmax(230px, 0.85fr); gap: 16px; min-width: 0; }
     .finance-summary-panel { display: none; }
     .finance-summary-panel.active { display: block; }
-    .finance-performance-compare-card { position: relative; overflow: hidden; margin-bottom: 16px; border: 1px solid rgba(234, 179, 8, 0.28); border-radius: 18px; padding: 14px; background: linear-gradient(135deg, rgba(251, 191, 36, 0.10), var(--surface, #fff) 46%, rgba(148, 163, 184, 0.06)); box-shadow: 0 14px 34px rgba(15, 23, 42, 0.08); }
-    .finance-performance-compare-card::before { content: ''; position: absolute; inset: 0 auto 0 0; width: 7px; background: #f59e0b; }
-    .finance-performance-top { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 18px; }
-    .finance-performance-type { display: inline-flex; align-items: center; gap: 8px; color: #64748b; font-size: 1rem; font-weight: 900; letter-spacing: 0.08em; text-transform: uppercase; }
+    .finance-performance-compare-card { position: relative; overflow: hidden; margin-bottom: 16px; border: 1px solid rgba(var(--primary-rgb, 79, 70, 229), 0.24); border-radius: 18px; padding: 18px 20px; background: linear-gradient(135deg, rgba(var(--primary-rgb, 79, 70, 229), 0.09), var(--surface, #fff) 48%, rgba(148, 163, 184, 0.06)); box-shadow: var(--primary-shadow, 0 14px 34px rgba(15, 23, 42, 0.08)); }
+    .finance-performance-compare-card::before { content: ''; position: absolute; inset: 0 auto 0 0; width: 7px; background: linear-gradient(180deg, var(--primary, #4f46e5), var(--primary-dark, #3730a3)); }
+    .finance-performance-top { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 18px; padding-left: 8px; }
+    .finance-performance-type { display: inline-flex; align-items: center; gap: 8px; color: var(--primary-dark, #475569); font-size: 1rem; font-weight: 900; letter-spacing: 0.08em; text-transform: uppercase; }
     .finance-performance-type .icon { width: 20px; height: 20px; }
     .finance-performance-type select { border: 0; padding: 0 18px 0 0; background: transparent; color: inherit; font: inherit; letter-spacing: inherit; text-transform: uppercase; cursor: pointer; }
-    .finance-performance-controls { display: grid; grid-template-columns: minmax(240px, 1fr) auto minmax(240px, 1fr); gap: 18px; align-items: end; }
+    .finance-performance-controls { display: grid; grid-template-columns: minmax(240px, 1fr) auto minmax(240px, 1fr); gap: 20px; align-items: end; }
     .finance-performance-side { display: grid; grid-template-columns: minmax(120px, 0.82fr) minmax(170px, 1fr); gap: 12px; }
     .finance-performance-field { display: grid; gap: 5px; }
     .finance-performance-field span { color: var(--muted, #64748b); font-size: 0.72rem; font-weight: 900; letter-spacing: 0.05em; text-transform: uppercase; }
     .finance-performance-field select,
-    .finance-performance-field input { min-height: 46px; width: 100%; border: 1px solid rgba(226, 232, 240, 0.95); border-radius: 999px; padding: 8px 16px; background: var(--surface, #fff); color: var(--text, #111827); font-size: 0.94rem; font-weight: 900; box-shadow: 0 8px 20px rgba(15, 23, 42, 0.06); }
-    .finance-performance-x { color: #f59e0b; font-size: 2.5rem; font-weight: 950; line-height: 1; align-self: center; }
-    .finance-performance-footer { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; margin-top: 18px; }
-    .finance-performance-focus { color: #f59e0b; font-size: 1.55rem; font-weight: 950; letter-spacing: 0.04em; text-transform: uppercase; }
+    .finance-performance-field input { min-height: 46px; width: 100%; border: 1px solid rgba(var(--primary-rgb, 79, 70, 229), 0.18); border-radius: 999px; padding: 8px 16px; background: rgba(255,255,255,0.92); color: var(--text, #111827); font-size: 0.94rem; font-weight: 900; box-shadow: 0 8px 20px rgba(15, 23, 42, 0.06); }
+    .finance-performance-field select:focus,
+    .finance-performance-field input:focus { outline: 0; border-color: var(--primary, #4f46e5); box-shadow: var(--primary-glow, 0 0 0 3px rgba(79, 70, 229, 0.20)); }
+    .finance-performance-x { color: var(--primary, #4f46e5); font-size: 2.6rem; font-weight: 950; line-height: 1; align-self: center; text-shadow: 0 10px 22px rgba(var(--primary-rgb, 79, 70, 229), 0.18); }
+    .finance-performance-footer { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; margin-top: 18px; padding-left: 8px; }
+    .finance-performance-focus { color: var(--primary, #4f46e5); font-size: 1.55rem; font-weight: 950; letter-spacing: 0.04em; text-transform: uppercase; }
     .finance-performance-caption { color: #64748b; font-size: 0.95rem; font-weight: 850; text-align: right; }
     .finance-performance-kpis { display: grid; grid-template-columns: repeat(3, minmax(180px, 1fr)); gap: 12px; margin-bottom: 16px; }
     .finance-performance-charts { display: grid; grid-template-columns: repeat(2, minmax(280px, 1fr)); gap: 16px; }
@@ -576,8 +578,8 @@ if (!function_exists('financeiro_format_date')) {
                             <p data-finance-wave-caption>Entradas e saidas no periodo.</p>
                         </div>
                         <div class="finance-chart-legend" aria-label="Legenda do grafico de ondas">
-                            <span style="--legend-color:#10b981;">Entrada</span>
-                            <span style="--legend-color:#ef4444;">Saida</span>
+                            <span style="--legend-color:var(--primary);">Entrada</span>
+                            <span style="--legend-color:var(--primary-dark);">Saida</span>
                         </div>
                     </div>
                     <canvas class="finance-chart-canvas" data-finance-wave-chart width="720" height="260" aria-label="Grafico de ondas comparando entrada e saida"></canvas>
@@ -683,8 +685,8 @@ if (!function_exists('financeiro_format_date')) {
                             <p data-finance-performance-chart-caption>Valor total de cada recorte.</p>
                         </div>
                         <div class="finance-chart-legend" aria-label="Legenda do comparativo">
-                            <span style="--legend-color:#f59e0b;">Periodo A</span>
-                            <span style="--legend-color:#64748b;">Periodo B</span>
+                            <span style="--legend-color:var(--primary);">Periodo A</span>
+                            <span style="--legend-color:var(--primary-dark);">Periodo B</span>
                         </div>
                     </div>
                     <canvas class="finance-chart-canvas" data-finance-performance-chart="comparativo" width="520" height="260" aria-label="Grafico comparando dois periodos"></canvas>
@@ -1090,11 +1092,25 @@ if (!function_exists('financeiro_format_date')) {
             return { ctx, width: rect.width, height: rect.height };
         };
 
+        const themeColor = (name, fallback) => getComputedStyle(document.documentElement).getPropertyValue(name).trim() || fallback;
+        const themeRgba = (alpha) => {
+            const rgb = themeColor('--primary-rgb', '79, 70, 229');
+            return `rgba(${rgb}, ${alpha})`;
+        };
+        const financeChartColors = () => ({
+            primary: themeColor('--primary', '#4f46e5'),
+            dark: themeColor('--primary-dark', '#3730a3'),
+            soft: themeColor('--primary-soft', '#eef2ff'),
+            grid: themeRgba(0.14),
+            muted: '#64748b'
+        });
+
         const drawWaveChart = (series) => {
             const canvas = document.querySelector('[data-finance-wave-chart]');
             if (!canvas) {
                 return;
             }
+            const colors = financeChartColors();
             const { ctx, width, height } = setCanvasSize(canvas);
             ctx.clearRect(0, 0, width, height);
             const padding = { top: 18, right: 18, bottom: 34, left: 54 };
@@ -1102,7 +1118,7 @@ if (!function_exists('financeiro_format_date')) {
             const chartHeight = height - padding.top - padding.bottom;
             const maxValue = Math.max(1, ...series.map((item) => Math.max(item.entrada, item.saida)));
 
-            ctx.strokeStyle = 'rgba(100,116,139,0.18)';
+            ctx.strokeStyle = colors.grid;
             ctx.lineWidth = 1;
             for (let index = 0; index <= 4; index += 1) {
                 const y = padding.top + (chartHeight / 4) * index;
@@ -1143,8 +1159,8 @@ if (!function_exists('financeiro_format_date')) {
                 });
             };
 
-            drawLine('entrada', '#10b981');
-            drawLine('saida', '#ef4444');
+            drawLine('entrada', colors.primary);
+            drawLine('saida', colors.dark);
 
             ctx.fillStyle = '#64748b';
             ctx.font = '700 11px Arial, sans-serif';
@@ -1167,6 +1183,7 @@ if (!function_exists('financeiro_format_date')) {
             if (!canvas) {
                 return;
             }
+            const colors = financeChartColors();
             const { ctx, width, height } = setCanvasSize(canvas);
             ctx.clearRect(0, 0, width, height);
             const total = entradaTotal + saidaTotal;
@@ -1177,7 +1194,7 @@ if (!function_exists('financeiro_format_date')) {
             if (total <= 0) {
                 ctx.beginPath();
                 ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
-                ctx.strokeStyle = 'rgba(100,116,139,0.25)';
+                ctx.strokeStyle = colors.grid;
                 ctx.lineWidth = 24;
                 ctx.stroke();
                 ctx.fillStyle = '#64748b';
@@ -1197,8 +1214,8 @@ if (!function_exists('financeiro_format_date')) {
                 ctx.fill();
             };
 
-            drawSlice(-Math.PI / 2, -Math.PI / 2 + entradaAngle, '#10b981');
-            drawSlice(-Math.PI / 2 + entradaAngle, Math.PI * 1.5, '#ef4444');
+            drawSlice(-Math.PI / 2, -Math.PI / 2 + entradaAngle, colors.primary);
+            drawSlice(-Math.PI / 2 + entradaAngle, Math.PI * 1.5, colors.dark);
             ctx.beginPath();
             ctx.arc(centerX, centerY, radius * 0.58, 0, Math.PI * 2);
             ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--surface') || '#fff';
@@ -1313,6 +1330,7 @@ if (!function_exists('financeiro_format_date')) {
             if (!canvas) {
                 return;
             }
+            const colors = financeChartColors();
             const { ctx, width, height } = setCanvasSize(canvas);
             ctx.clearRect(0, 0, width, height);
             const padding = { top: 18, right: 18, bottom: 34, left: 54 };
@@ -1320,11 +1338,11 @@ if (!function_exists('financeiro_format_date')) {
             const chartHeight = height - padding.top - padding.bottom;
             const maxValue = Math.max(1, left.total, right.total);
             const bars = [
-                { ...left, color: '#f59e0b' },
-                { ...right, color: '#64748b' }
+                { ...left, color: colors.primary },
+                { ...right, color: colors.dark }
             ];
 
-            ctx.strokeStyle = 'rgba(100,116,139,0.18)';
+            ctx.strokeStyle = colors.grid;
             ctx.lineWidth = 1;
             for (let index = 0; index <= 4; index += 1) {
                 const y = padding.top + (chartHeight / 4) * index;
@@ -1363,6 +1381,7 @@ if (!function_exists('financeiro_format_date')) {
             if (!canvas) {
                 return;
             }
+            const colors = financeChartColors();
             const { ctx, width, height } = setCanvasSize(canvas);
             ctx.clearRect(0, 0, width, height);
             const total = leftTotal + rightTotal;
@@ -1373,7 +1392,7 @@ if (!function_exists('financeiro_format_date')) {
             if (total <= 0) {
                 ctx.beginPath();
                 ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
-                ctx.strokeStyle = 'rgba(100,116,139,0.25)';
+                ctx.strokeStyle = colors.grid;
                 ctx.lineWidth = 24;
                 ctx.stroke();
                 ctx.fillStyle = '#64748b';
@@ -1392,8 +1411,8 @@ if (!function_exists('financeiro_format_date')) {
                 ctx.fillStyle = color;
                 ctx.fill();
             };
-            drawSlice(-Math.PI / 2, -Math.PI / 2 + leftAngle, '#f59e0b');
-            drawSlice(-Math.PI / 2 + leftAngle, Math.PI * 1.5, '#64748b');
+            drawSlice(-Math.PI / 2, -Math.PI / 2 + leftAngle, colors.primary);
+            drawSlice(-Math.PI / 2 + leftAngle, Math.PI * 1.5, colors.dark);
             ctx.beginPath();
             ctx.arc(centerX, centerY, radius * 0.58, 0, Math.PI * 2);
             ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--surface') || '#fff';
