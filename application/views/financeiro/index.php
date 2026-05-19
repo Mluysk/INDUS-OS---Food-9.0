@@ -198,7 +198,7 @@ if (!function_exists('financeiro_format_date')) {
     .finance-performance-caption { color: #64748b; font-size: 0.95rem; font-weight: 850; text-align: right; }
     .finance-performance-kpis { display: grid; grid-template-columns: repeat(3, minmax(180px, 1fr)); gap: 12px; margin-bottom: 16px; }
     .finance-performance-charts { display: grid; grid-template-columns: repeat(2, minmax(280px, 1fr)); gap: 16px; }
-    .finance-chart-panel { min-width: 0; }
+    .finance-chart-panel { position: relative; min-width: 0; }
     .finance-chart-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
     .finance-chart-header h3 { margin: 0 0 4px; }
     .finance-chart-header p { margin: 0; color: var(--muted, #64748b); font-size: 0.84rem; font-weight: 650; }
@@ -207,6 +207,10 @@ if (!function_exists('financeiro_format_date')) {
     .finance-chart-legend span::before { content: ''; width: 10px; height: 10px; border-radius: 999px; background: var(--legend-color); }
     .finance-chart-canvas { display: block; width: 100%; height: 260px; }
     .finance-chart-canvas.is-pie { height: 250px; }
+    .finance-chart-tooltip { position: absolute; z-index: 20; display: none; min-width: 168px; border: 1px solid rgba(15, 23, 42, 0.10); border-radius: 12px; padding: 9px 10px; background: rgba(255,255,255,0.96); color: var(--text, #111827); box-shadow: 0 18px 38px rgba(15, 23, 42, 0.16); pointer-events: none; }
+    .finance-chart-tooltip.active { display: grid; gap: 3px; }
+    .finance-chart-tooltip strong { color: var(--text, #111827); font-size: 0.82rem; }
+    .finance-chart-tooltip span { color: var(--muted, #64748b); font-size: 0.75rem; font-weight: 800; }
     .finance-summary-note { margin-top: 12px; color: var(--muted, #64748b); font-size: 0.8rem; font-weight: 700; text-align: right; }
     @media (max-width: 1180px) {
         .finance-summary-grid,
@@ -606,6 +610,7 @@ if (!function_exists('financeiro_format_date')) {
                         </div>
                     </div>
                     <canvas class="finance-chart-canvas" data-finance-wave-chart width="720" height="260" aria-label="Grafico de ondas comparando entrada e saida"></canvas>
+                    <div class="finance-chart-tooltip" data-finance-wave-tooltip role="status" aria-live="polite"></div>
                 </div>
                 <div class="finance-chart-panel">
                     <div class="finance-chart-header">
@@ -1068,7 +1073,11 @@ if (!function_exists('financeiro_format_date')) {
                 const selected = new Date(`${value || todayValue}T00:00:00`);
                 for (let index = 6; index >= 0; index -= 1) {
                     const date = addDays(selected, -index);
-                    buckets.push({ key: isoDate(date), label: date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }) });
+                    buckets.push({
+                        key: isoDate(date),
+                        label: date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }),
+                        tooltipLabel: date.toLocaleDateString('pt-BR')
+                    });
                 }
                 return buckets;
             }
@@ -1076,7 +1085,11 @@ if (!function_exists('financeiro_format_date')) {
                 const start = startOfIsoWeek(value);
                 for (let index = 0; index < 7; index += 1) {
                     const date = addDays(start, index);
-                    buckets.push({ key: isoDate(date), label: date.toLocaleDateString('pt-BR', { weekday: 'short' }).replace('.', '') });
+                    buckets.push({
+                        key: isoDate(date),
+                        label: date.toLocaleDateString('pt-BR', { weekday: 'short' }).replace('.', ''),
+                        tooltipLabel: date.toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: '2-digit', year: 'numeric' })
+                    });
                 }
                 return buckets;
             }
@@ -1085,14 +1098,22 @@ if (!function_exists('financeiro_format_date')) {
                 const days = new Date(base.getFullYear(), base.getMonth() + 1, 0).getDate();
                 for (let day = 1; day <= days; day += 1) {
                     const date = new Date(base.getFullYear(), base.getMonth(), day);
-                    buckets.push({ key: isoDate(date), label: String(day).padStart(2, '0') });
+                    buckets.push({
+                        key: isoDate(date),
+                        label: String(day).padStart(2, '0'),
+                        tooltipLabel: date.toLocaleDateString('pt-BR')
+                    });
                 }
                 return buckets;
             }
             const year = Number(value || new Date().getFullYear());
             for (let month = 0; month < 12; month += 1) {
                 const date = new Date(year, month, 1);
-                buckets.push({ key: `${year}-${String(month + 1).padStart(2, '0')}`, label: date.toLocaleDateString('pt-BR', { month: 'short' }).replace('.', '') });
+                buckets.push({
+                    key: `${year}-${String(month + 1).padStart(2, '0')}`,
+                    label: date.toLocaleDateString('pt-BR', { month: 'short' }).replace('.', ''),
+                    tooltipLabel: date.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })
+                });
             }
             return buckets;
         };
@@ -1116,6 +1137,53 @@ if (!function_exists('financeiro_format_date')) {
             return { ctx, width: rect.width, height: rect.height };
         };
 
+        const bindWaveTooltip = (canvas, points) => {
+            const tooltip = document.querySelector('[data-finance-wave-tooltip]');
+            const panel = canvas.closest('.finance-chart-panel');
+            if (!tooltip || !panel) {
+                return;
+            }
+            canvas.dataset.tooltipBound = canvas.dataset.tooltipBound || '0';
+            canvas._financeWavePoints = points;
+
+            if (canvas.dataset.tooltipBound === '1') {
+                return;
+            }
+
+            canvas.dataset.tooltipBound = '1';
+            canvas.addEventListener('mousemove', (event) => {
+                const rect = canvas.getBoundingClientRect();
+                const x = event.clientX - rect.left;
+                const y = event.clientY - rect.top;
+                const activePoints = canvas._financeWavePoints || [];
+                const nearest = activePoints.reduce((best, point) => {
+                    const distance = Math.hypot(point.x - x, point.y - y);
+                    return distance < best.distance ? { point, distance } : best;
+                }, { point: null, distance: Number.POSITIVE_INFINITY });
+
+                if (!nearest.point || nearest.distance > 12) {
+                    tooltip.classList.remove('active');
+                    return;
+                }
+
+                const point = nearest.point;
+                tooltip.innerHTML = `<strong>${point.typeLabel} - ${point.tooltipLabel}</strong>
+                    <span>Valor: ${formatCurrency(point.value)}</span>
+                    <span>Media do periodo: ${formatCurrency(point.average)}</span>`;
+                tooltip.classList.add('active');
+                const panelRect = panel.getBoundingClientRect();
+                const maxLeft = Math.max(8, panelRect.width - tooltip.offsetWidth - 8);
+                const tooltipLeft = Math.min(Math.max(8, event.clientX - panelRect.left + 12), maxLeft);
+                const tooltipTop = Math.max(8, event.clientY - panelRect.top - tooltip.offsetHeight - 12);
+                tooltip.style.left = `${tooltipLeft}px`;
+                tooltip.style.top = `${tooltipTop}px`;
+            });
+
+            canvas.addEventListener('mouseleave', () => {
+                tooltip.classList.remove('active');
+            });
+        };
+
         const drawWaveChart = (series) => {
             const canvas = document.querySelector('[data-finance-wave-chart]');
             if (!canvas) {
@@ -1127,6 +1195,11 @@ if (!function_exists('financeiro_format_date')) {
             const chartWidth = width - padding.left - padding.right;
             const chartHeight = height - padding.top - padding.bottom;
             const maxValue = Math.max(1, ...series.map((item) => Math.max(item.entrada, item.saida)));
+            const averages = {
+                entrada: series.reduce((acc, item) => acc + item.entrada, 0) / Math.max(1, series.length),
+                saida: series.reduce((acc, item) => acc + item.saida, 0) / Math.max(1, series.length)
+            };
+            const hoverPoints = [];
 
             ctx.strokeStyle = 'rgba(100,116,139,0.18)';
             ctx.lineWidth = 1;
@@ -1162,6 +1235,15 @@ if (!function_exists('financeiro_format_date')) {
 
                 series.forEach((item, index) => {
                     const current = point(item, index, field);
+                    hoverPoints.push({
+                        x: current.x,
+                        y: current.y,
+                        label: item.label,
+                        tooltipLabel: item.tooltipLabel || item.label,
+                        typeLabel: field === 'entrada' ? 'Entrada' : 'Saida',
+                        value: item[field],
+                        average: averages[field]
+                    });
                     ctx.beginPath();
                     ctx.arc(current.x, current.y, 3.5, 0, Math.PI * 2);
                     ctx.fillStyle = color;
@@ -1186,6 +1268,7 @@ if (!function_exists('financeiro_format_date')) {
             ctx.textAlign = 'left';
             ctx.fillText(formatCurrency(maxValue), 8, padding.top + 4);
             ctx.fillText('R$ 0,00', 8, padding.top + chartHeight);
+            bindWaveTooltip(canvas, hoverPoints);
         };
 
         const drawPieChart = (entradaTotal, saidaTotal) => {
