@@ -480,9 +480,6 @@ if (!function_exists('financeiro_format_date')) {
     </section>
 </section>
 
-
-</section>
-
 <script>
     (function() {
         const buttons = document.querySelectorAll('[data-finance-tab]');
@@ -560,21 +557,27 @@ if (!function_exists('financeiro_format_date')) {
         };
 
         const removeLeakedCodeText = () => {
-            const suspiciousFragments = ['downloadFile(', 'printFinanceList', 'const handleFinanceListAction', 'window.setTimeout(() =>'];
-            document.querySelectorAll('[data-finance-panel], [data-finance-card-panel]').forEach((panel) => {
-                Array.from(panel.childNodes).forEach((node) => {
-                    if (node.nodeType !== Node.TEXT_NODE) {
-                        return;
+            const suspiciousFragments = ['downloadFile(', 'printFinanceList', 'const handleFinanceListAction', 'window.setTimeout(() =>', 'const htmlParts'];
+            const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, {
+                acceptNode(node) {
+                    const parent = node.parentElement;
+                    if (!parent || ['SCRIPT', 'STYLE'].includes(parent.tagName)) {
+                        return NodeFilter.FILTER_REJECT;
                     }
                     const text = String(node.textContent || '').trim();
-                    if (!text) {
-                        return;
+                    if (!text || text.length < 80) {
+                        return NodeFilter.FILTER_REJECT;
                     }
-                    if (suspiciousFragments.some((fragment) => text.includes(fragment))) {
-                        node.remove();
-                    }
-                });
+                    return suspiciousFragments.some((fragment) => text.includes(fragment))
+                        ? NodeFilter.FILTER_ACCEPT
+                        : NodeFilter.FILTER_REJECT;
+                }
             });
+            const leakedNodes = [];
+            while (walker.nextNode()) {
+                leakedNodes.push(walker.currentNode);
+            }
+            leakedNodes.forEach((node) => node.remove());
         };
 
         function activateSubtab(type, panel, updateHash) {
@@ -880,15 +883,16 @@ if (!function_exists('financeiro_format_date')) {
             }
             table.appendChild(tbody);
 
-            const htmlParts = [
-                '<!doctype html>',
-                '<html><head><meta charset="UTF-8">',
-                '<style>table{border-collapse:collapse;}th{background:#eef2ff;font-weight:bold;}td,th{border:1px solid #d1d5db;padding:6px;}</style>',
-                '</head><body>',
-                table.outerHTML,
-                '</body></html>'
-            ];
-            downloadFile('\ufeff' + htmlParts.join(''), exportFilename(tipo, 'xls'), 'application/vnd.ms-excel;charset=utf-8');
+            const exportDoc = document.implementation.createHTMLDocument('');
+            const meta = exportDoc.createElement('meta');
+            meta.setAttribute('charset', 'UTF-8');
+            exportDoc.head.appendChild(meta);
+            const style = exportDoc.createElement('style');
+            style.textContent = 'table{border-collapse:collapse;}th{background:#eef2ff;font-weight:bold;}td,th{border:1px solid #d1d5db;padding:6px;}';
+            exportDoc.head.appendChild(style);
+            exportDoc.body.appendChild(exportDoc.importNode(table, true));
+
+            downloadFile('\ufeff<!doctype html>' + exportDoc.documentElement.outerHTML, exportFilename(tipo, 'xls'), 'application/vnd.ms-excel;charset=utf-8');
         };
 
         const printPeriodDetails = (tipo) => {
