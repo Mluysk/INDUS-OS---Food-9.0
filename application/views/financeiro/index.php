@@ -202,9 +202,16 @@ if (!function_exists('financeiro_format_date')) {
     .finance-chart-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
     .finance-chart-header h3 { margin: 0 0 4px; }
     .finance-chart-header p { margin: 0; color: var(--muted, #64748b); font-size: 0.84rem; font-weight: 650; }
+    .finance-chart-tools { display: flex; align-items: center; justify-content: flex-end; gap: 10px; flex-wrap: wrap; }
     .finance-chart-legend { display: inline-flex; align-items: center; gap: 10px; flex-wrap: wrap; color: var(--muted, #64748b); font-size: 0.76rem; font-weight: 850; }
     .finance-chart-legend span { display: inline-flex; align-items: center; gap: 5px; }
     .finance-chart-legend span::before { content: ''; width: 10px; height: 10px; border-radius: 999px; background: var(--legend-color); }
+    .finance-chart-actions { display: inline-flex; align-items: center; gap: 5px; border: 1px solid rgba(100, 116, 139, 0.18); border-radius: 999px; padding: 3px; background: rgba(248,250,252,0.86); }
+    .finance-chart-action { display: inline-grid; place-items: center; width: 26px; height: 26px; border: 0; border-radius: 999px; background: transparent; color: #64748b; cursor: pointer; transition: background .15s ease, color .15s ease, transform .15s ease; }
+    .finance-chart-action:hover,
+    .finance-chart-action:focus-visible { outline: 0; background: rgba(var(--primary-rgb, 79, 70, 229), 0.11); color: var(--primary, #4f46e5); }
+    .finance-chart-action:active { transform: scale(0.94); }
+    .finance-chart-action .icon { width: 14px; height: 14px; stroke-width: 2.7; }
     .finance-chart-canvas { display: block; width: 100%; height: 260px; }
     .finance-chart-canvas.is-pie { height: 250px; }
     .finance-chart-tooltip { position: absolute; z-index: 20; display: none; min-width: 168px; border: 1px solid rgba(15, 23, 42, 0.10); border-radius: 12px; padding: 9px 10px; background: rgba(255,255,255,0.96); color: var(--text, #111827); box-shadow: 0 18px 38px rgba(15, 23, 42, 0.16); pointer-events: none; }
@@ -604,9 +611,16 @@ if (!function_exists('financeiro_format_date')) {
                             <h3>Comparativo</h3>
                             <p data-finance-wave-caption>Entradas e saidas no periodo.</p>
                         </div>
-                        <div class="finance-chart-legend" aria-label="Legenda do grafico de ondas">
-                            <span style="--legend-color:#10b981;">Entrada</span>
-                            <span style="--legend-color:#ef4444;">Saida</span>
+                        <div class="finance-chart-tools">
+                            <div class="finance-chart-legend" aria-label="Legenda do grafico de ondas">
+                                <span style="--legend-color:#10b981;">Entrada</span>
+                                <span style="--legend-color:#ef4444;">Saida</span>
+                            </div>
+                            <div class="finance-chart-actions" aria-label="Zoom do grafico comparativo">
+                                <button type="button" class="finance-chart-action" data-finance-chart-zoom="wave" data-finance-chart-action="out" title="Reduzir grafico" aria-label="Reduzir grafico"><span class="icon" data-lucide="minus"></span></button>
+                                <button type="button" class="finance-chart-action" data-finance-chart-zoom="wave" data-finance-chart-action="reset" title="Restaurar zoom" aria-label="Restaurar zoom"><span class="icon" data-lucide="search"></span></button>
+                                <button type="button" class="finance-chart-action" data-finance-chart-zoom="wave" data-finance-chart-action="in" title="Expandir grafico" aria-label="Expandir grafico"><span class="icon" data-lucide="plus"></span></button>
+                            </div>
                         </div>
                     </div>
                     <canvas class="finance-chart-canvas" data-finance-wave-chart width="720" height="260" aria-label="Grafico de ondas comparando entrada e saida"></canvas>
@@ -712,9 +726,16 @@ if (!function_exists('financeiro_format_date')) {
                             <h3>Comparacao dos periodos</h3>
                             <p data-finance-performance-chart-caption>Valor total de cada recorte.</p>
                         </div>
-                        <div class="finance-chart-legend" aria-label="Legenda do comparativo">
-                            <span style="--legend-color:#10b981;" data-finance-performance-legend="left">Periodo A</span>
-                            <span style="--legend-color:#ef4444;" data-finance-performance-legend="right">Periodo B</span>
+                        <div class="finance-chart-tools">
+                            <div class="finance-chart-legend" aria-label="Legenda do comparativo">
+                                <span style="--legend-color:#10b981;" data-finance-performance-legend="left">Periodo A</span>
+                                <span style="--legend-color:#ef4444;" data-finance-performance-legend="right">Periodo B</span>
+                            </div>
+                            <div class="finance-chart-actions" aria-label="Zoom do grafico de periodos">
+                                <button type="button" class="finance-chart-action" data-finance-chart-zoom="performance" data-finance-chart-action="out" title="Reduzir grafico" aria-label="Reduzir grafico"><span class="icon" data-lucide="minus"></span></button>
+                                <button type="button" class="finance-chart-action" data-finance-chart-zoom="performance" data-finance-chart-action="reset" title="Restaurar zoom" aria-label="Restaurar zoom"><span class="icon" data-lucide="search"></span></button>
+                                <button type="button" class="finance-chart-action" data-finance-chart-zoom="performance" data-finance-chart-action="in" title="Expandir grafico" aria-label="Expandir grafico"><span class="icon" data-lucide="plus"></span></button>
+                            </div>
                         </div>
                     </div>
                     <canvas class="finance-chart-canvas" data-finance-performance-chart="comparativo" width="520" height="260" aria-label="Grafico comparando dois periodos"></canvas>
@@ -1137,6 +1158,33 @@ if (!function_exists('financeiro_format_date')) {
             return { ctx, width: rect.width, height: rect.height };
         };
 
+        const chartZoomLevels = [0.75, 1, 1.25, 1.5, 2];
+        const chartZoomState = { wave: 1, performance: 1 };
+        const getChartZoom = (key) => chartZoomState[key] || 1;
+        const getChartAxisMax = (maxValue, zoomKey) => Math.max(1, maxValue / getChartZoom(zoomKey));
+        const valueToY = (value, axisMax, padding, chartHeight) => {
+            const ratio = Math.min(1, Math.max(0, value / axisMax));
+            return padding.top + chartHeight - ratio * chartHeight;
+        };
+        const drawValueGrid = (ctx, width, padding, chartHeight, axisMax) => {
+            ctx.strokeStyle = 'rgba(100,116,139,0.18)';
+            ctx.lineWidth = 1;
+            ctx.fillStyle = '#64748b';
+            ctx.font = '700 11px Arial, sans-serif';
+            ctx.textAlign = 'left';
+            ctx.textBaseline = 'middle';
+            for (let index = 0; index <= 4; index += 1) {
+                const value = axisMax - (axisMax / 4) * index;
+                const y = padding.top + (chartHeight / 4) * index;
+                ctx.beginPath();
+                ctx.moveTo(padding.left, y);
+                ctx.lineTo(width - padding.right, y);
+                ctx.stroke();
+                ctx.fillText(formatCurrency(value), 8, y);
+            }
+            ctx.textBaseline = 'alphabetic';
+        };
+
         const bindWaveTooltip = (canvas, points) => {
             const tooltip = document.querySelector('[data-finance-wave-tooltip]');
             const panel = canvas.closest('.finance-chart-panel');
@@ -1195,25 +1243,18 @@ if (!function_exists('financeiro_format_date')) {
             const chartWidth = width - padding.left - padding.right;
             const chartHeight = height - padding.top - padding.bottom;
             const maxValue = Math.max(1, ...series.map((item) => Math.max(item.entrada, item.saida)));
+            const axisMax = getChartAxisMax(maxValue, 'wave');
             const averages = {
                 entrada: series.reduce((acc, item) => acc + item.entrada, 0) / Math.max(1, series.length),
                 saida: series.reduce((acc, item) => acc + item.saida, 0) / Math.max(1, series.length)
             };
             const hoverPoints = [];
 
-            ctx.strokeStyle = 'rgba(100,116,139,0.18)';
-            ctx.lineWidth = 1;
-            for (let index = 0; index <= 4; index += 1) {
-                const y = padding.top + (chartHeight / 4) * index;
-                ctx.beginPath();
-                ctx.moveTo(padding.left, y);
-                ctx.lineTo(width - padding.right, y);
-                ctx.stroke();
-            }
+            drawValueGrid(ctx, width, padding, chartHeight, axisMax);
 
             const point = (item, index, field) => {
                 const x = padding.left + (series.length <= 1 ? chartWidth / 2 : (chartWidth / (series.length - 1)) * index);
-                const y = padding.top + chartHeight - (item[field] / maxValue) * chartHeight;
+                const y = valueToY(item[field], axisMax, padding, chartHeight);
                 return { x, y };
             };
 
@@ -1265,9 +1306,6 @@ if (!function_exists('financeiro_format_date')) {
                 const x = padding.left + (series.length <= 1 ? chartWidth / 2 : (chartWidth / (series.length - 1)) * index);
                 ctx.fillText(item.label, x, height - 12);
             });
-            ctx.textAlign = 'left';
-            ctx.fillText(formatCurrency(maxValue), 8, padding.top + 4);
-            ctx.fillText('R$ 0,00', 8, padding.top + chartHeight);
             bindWaveTooltip(canvas, hoverPoints);
         };
 
@@ -1428,25 +1466,18 @@ if (!function_exists('financeiro_format_date')) {
             const chartWidth = width - padding.left - padding.right;
             const chartHeight = height - padding.top - padding.bottom;
             const maxValue = Math.max(1, left.total, right.total);
+            const axisMax = getChartAxisMax(maxValue, 'performance');
             const bars = [
                 { ...left, color: '#10b981' },
                 { ...right, color: '#ef4444' }
             ];
 
-            ctx.strokeStyle = 'rgba(100,116,139,0.18)';
-            ctx.lineWidth = 1;
-            for (let index = 0; index <= 4; index += 1) {
-                const y = padding.top + (chartHeight / 4) * index;
-                ctx.beginPath();
-                ctx.moveTo(padding.left, y);
-                ctx.lineTo(width - padding.right, y);
-                ctx.stroke();
-            }
+            drawValueGrid(ctx, width, padding, chartHeight, axisMax);
 
             const barWidth = Math.min(130, chartWidth / 4);
             bars.forEach((bar, index) => {
                 const x = padding.left + chartWidth * (index === 0 ? 0.28 : 0.72) - barWidth / 2;
-                const barHeight = (bar.total / maxValue) * chartHeight;
+                const barHeight = Math.min(chartHeight, (bar.total / axisMax) * chartHeight);
                 const y = padding.top + chartHeight - barHeight;
                 ctx.fillStyle = bar.color;
                 ctx.fillRect(x, y, barWidth, Math.max(4, barHeight));
@@ -1459,12 +1490,6 @@ if (!function_exists('financeiro_format_date')) {
                 ctx.font = '800 12px Arial, sans-serif';
                 ctx.fillText(bar.shortLabel, x + barWidth / 2, height - 12);
             });
-
-            ctx.fillStyle = '#64748b';
-            ctx.font = '700 11px Arial, sans-serif';
-            ctx.textAlign = 'left';
-            ctx.fillText(formatCurrency(maxValue), 8, padding.top + 4);
-            ctx.fillText('R$ 0,00', 8, padding.top + chartHeight);
         };
 
         const drawPerformancePieChart = (leftTotal, rightTotal) => {
@@ -1620,6 +1645,29 @@ if (!function_exists('financeiro_format_date')) {
                 { total: rightTotal, shortLabel: rightShort }
             );
             drawPerformancePieChart(leftTotal, rightTotal);
+        };
+
+        const renderChartZoomTarget = (key) => {
+            if (key === 'performance') {
+                renderPerformanceDashboard();
+                return;
+            }
+            renderSummaryDashboard();
+        };
+
+        const updateChartZoom = (key, action) => {
+            const currentIndex = chartZoomLevels.indexOf(getChartZoom(key));
+            const safeIndex = currentIndex >= 0 ? currentIndex : 1;
+            let nextIndex = safeIndex;
+            if (action === 'in') {
+                nextIndex = Math.min(chartZoomLevels.length - 1, safeIndex + 1);
+            } else if (action === 'out') {
+                nextIndex = Math.max(0, safeIndex - 1);
+            } else {
+                nextIndex = 1;
+            }
+            chartZoomState[key] = chartZoomLevels[nextIndex];
+            renderChartZoomTarget(key);
         };
 
         const applyFinanceFilters = (tipo) => {
@@ -2091,6 +2139,11 @@ if (!function_exists('financeiro_format_date')) {
                 input.value = isoWeekValue(todayValue);
             }
             input.addEventListener('change', renderPerformanceDashboard);
+        });
+        document.querySelectorAll('[data-finance-chart-zoom]').forEach((button) => {
+            button.addEventListener('click', () => {
+                updateChartZoom(button.dataset.financeChartZoom, button.dataset.financeChartAction);
+            });
         });
 
         const closeExportMenus = (except = null) => {
