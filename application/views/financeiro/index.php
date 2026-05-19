@@ -1,0 +1,1371 @@
+<?php
+$entradas = $entradas ?? [];
+$saidas = $saidas ?? [];
+$hoje = date('Y-m-d');
+
+if (!function_exists('financeiro_format_date')) {
+    function financeiro_format_date(?string $date): string
+    {
+        if (!$date) {
+            return '-';
+        }
+
+        $timestamp = strtotime($date);
+        return $timestamp ? date('d/m/Y', $timestamp) : $date;
+    }
+}
+?>
+
+<style>
+    .finance-tabs,
+    .finance-card-tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+    .finance-tab-button,
+    .finance-card-tab-button { display: inline-flex; align-items: center; gap: 8px; border: 1px solid var(--border, #e5e7eb); border-radius: 999px; padding: 8px 14px; font-weight: 700; background: var(--surface-alt, #f8fafc); color: var(--text, #111827); cursor: pointer; }
+    .finance-tab-button .icon,
+    .finance-card-tab-button .icon { width: 16px; height: 16px; }
+    .finance-tab-button.active,
+    .finance-card-tab-button.active { background: var(--primary, #4b5563); color: #fff; border-color: transparent; }
+    .finance-tab-panel,
+    .finance-card-panel { display: none; }
+    .finance-tab-panel.active,
+    .finance-card-panel.active { display: block; }
+    .finance-card-header { display: flex; justify-content: space-between; gap: 18px; align-items: flex-start; flex-wrap: wrap; margin-bottom: 12px; }
+    .finance-card-header h2 { margin-bottom: 4px; }
+    .finance-lancamento-heading { margin-bottom: 26px; }
+    .finance-lancamento-heading h3 { display: inline-flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+    .finance-lancamento-heading .icon { width: 20px; height: 20px; color: var(--primary, #4b5563); }
+    .finance-lancamento-heading .finance-form-note { margin: 0; }
+    .finance-table-wrap { overflow-x: auto; }
+    .finance-form-note { margin-top: 0; }
+    .finance-list-toolbar { display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap; margin: 12px 0 16px; }
+    .finance-list-toolbar label { display: flex; flex-direction: column; gap: 4px; margin: 0; min-width: 150px; font-size: 0.82rem; font-weight: 700; color: var(--muted, #64748b); }
+    .finance-list-toolbar select { min-height: 38px; border: 1px solid var(--border, #e5e7eb); border-radius: 10px; padding: 7px 10px; background: var(--surface, #fff); color: var(--text, #111827); font-weight: 700; }
+    .finance-status-filter-group { position: relative; min-width: 210px; }
+    .finance-status-filter-title { display: block; margin-bottom: 4px; font-size: 0.82rem; font-weight: 700; color: var(--muted, #64748b); }
+    .finance-status-filter-button { display: inline-flex; min-height: 38px; width: 100%; align-items: center; justify-content: space-between; gap: 8px; border: 1px solid var(--border, #e5e7eb); border-radius: 10px; padding: 7px 10px; background: var(--surface, #fff); color: var(--text, #111827); font-weight: 800; cursor: pointer; }
+    .finance-status-filter-button .icon { width: 16px; height: 16px; flex: 0 0 16px; }
+    .finance-status-filter-current { margin-left: auto; }
+    .finance-status-filter-chevron { font-size: 0.8rem; opacity: 0.72; }
+    .finance-status-filter-menu { position: absolute; z-index: 9999; top: calc(100% + 6px); left: 0; min-width: 230px; border: 1px solid var(--border, #e5e7eb); border-radius: 14px; padding: 8px; background: var(--surface, #fff); box-shadow: 0 18px 40px rgba(15, 23, 42, 0.16); }
+    .finance-status-filter-option { display: flex; width: 100%; align-items: center; justify-content: space-between; gap: 10px; border: 0; border-radius: 10px; padding: 8px 10px; background: transparent; color: inherit; font-weight: 800; text-align: left; cursor: pointer; }
+    .finance-status-filter-option:hover,
+    .finance-status-filter-option.active { background: rgba(86, 97, 255, 0.08); }
+    .finance-status-neutral { background: rgba(100, 116, 139, 0.14); color: #475569; border: 1px solid rgba(100, 116, 139, 0.25); }
+    .finance-list-heading { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; margin-bottom: 5px; }
+    .finance-list-heading h3 { margin-bottom: 4px; }
+    .finance-list-side { display: flex; flex-direction: column; align-items: flex-end; gap: 9px; }
+    .finance-list-actions { display: flex; align-items: center; justify-content: flex-end; gap: 7px; flex-wrap: wrap; }
+    .finance-list-action-button { display: inline-flex; align-items: center; gap: 6px; border: 1px solid color-mix(in srgb, var(--primary, #4f46e5) 20%, var(--border, #e5e7eb)); border-radius: 999px; padding: 6px 10px; background: var(--surface, #fff); color: var(--text, #111827); font-size: 0.74rem; font-weight: 850; cursor: pointer; box-shadow: 0 8px 18px rgba(15, 23, 42, 0.06); }
+    .finance-list-action-button:hover { border-color: var(--primary, #4f46e5); color: var(--primary, #4f46e5); background: color-mix(in srgb, var(--primary, #4f46e5) 6%, var(--surface, #fff)); }
+    .finance-list-action-button .icon { width: 14px; height: 14px; }
+    .finance-export-group { position: relative; display: inline-flex; }
+    .finance-export-menu { position: absolute; z-index: 50; top: calc(100% + 8px); right: 0; display: grid; gap: 6px; min-width: 132px; border: 1px solid var(--border, #e5e7eb); border-radius: 14px; padding: 8px; background: var(--surface, #fff); box-shadow: 0 18px 40px rgba(15, 23, 42, 0.16); }
+    .finance-export-menu[hidden] { display: none; }
+    .finance-print-area { display: none; }
+    @media print {
+        body.finance-print-mode > *:not(.finance-print-area) { display: none !important; }
+        body.finance-print-mode .finance-print-area { display: block !important; padding: 24px; color: #111827; font-family: Arial, sans-serif; }
+        .finance-print-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 18px; margin-bottom: 18px; border-bottom: 3px solid #4f46e5; padding-bottom: 14px; }
+        .finance-print-kicker { margin: 0 0 5px; color: #4f46e5; font-size: 11px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+        .finance-print-area h1 { margin: 0; font-size: 24px; }
+        .finance-print-period { color: #111827; font-size: 15px; font-weight: 800; text-align: right; }
+        .finance-print-muted { margin-top: 4px; color: #64748b; font-size: 12px; font-weight: 700; }
+        .finance-print-area table { width: 100%; border-collapse: collapse; }
+        .finance-print-area th,
+        .finance-print-area td { border: 1px solid #d1d5db; padding: 8px; text-align: left; font-size: 13px; }
+        .finance-print-area th { background: #eef2ff; color: #312e81; }
+        .finance-print-footer { display: flex; justify-content: flex-end; margin-top: 16px; }
+        .finance-print-total { min-width: 240px; border: 2px solid #4f46e5; border-radius: 14px; padding: 12px 14px; text-align: right; background: #eef2ff; }
+        .finance-print-total span { display: block; color: #64748b; font-size: 11px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; }
+        .finance-print-total strong { display: block; margin-top: 4px; color: #312e81; font-size: 22px; }
+    }
+    .finance-status-summary { display: flex; align-items: center; justify-content: flex-end; gap: 8px; flex-wrap: wrap; min-height: 34px; align-self: flex-end; order: 2; }
+    .finance-period-card { position: relative; overflow: hidden; order: 1; min-width: 430px; border: 1px solid color-mix(in srgb, var(--primary, #4f46e5) 24%, var(--border, #e5e7eb)); border-radius: 20px; padding: 12px 14px; background: linear-gradient(135deg, color-mix(in srgb, var(--primary, #4f46e5) 10%, var(--surface, #fff)), var(--surface, #fff) 58%, color-mix(in srgb, var(--primary, #4f46e5) 6%, var(--surface-alt, #f8fafc))); box-shadow: 0 18px 38px rgba(15, 23, 42, 0.10); }
+    .finance-period-card::before { content: ''; position: absolute; inset: 0 auto 0 0; width: 5px; background: var(--primary, #4f46e5); }
+    .finance-period-card.is-hidden { display: none; }
+    .finance-card-header .finance-period-card { flex: 0 1 440px; margin-left: auto; }
+    .finance-period-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 8px; }
+    .finance-period-label { display: inline-flex; align-items: center; gap: 6px; color: var(--muted, #64748b); font-size: 0.72rem; font-weight: 900; letter-spacing: 0.05em; text-transform: uppercase; }
+    .finance-period-label .icon { width: 15px; height: 15px; }
+    .finance-period-total { color: var(--primary, #4f46e5); font-size: 1.65rem; font-weight: 900; white-space: nowrap; }
+    .finance-period-controls { display: flex; justify-content: flex-end; gap: 8px; flex-wrap: wrap; }
+    .finance-period-controls select,
+    .finance-period-controls input { min-height: 32px; border: 1px solid color-mix(in srgb, var(--primary, #4f46e5) 18%, var(--border, #e5e7eb)); border-radius: 999px; padding: 5px 10px; background: var(--surface, #fff); color: var(--text, #111827); font-size: 0.78rem; font-weight: 800; box-shadow: 0 6px 16px rgba(15, 23, 42, 0.05); }
+    .finance-period-controls input[type=number] { width: 92px; }
+    .finance-period-footer { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; margin-top: 9px; }
+    .finance-period-focus { color: var(--primary, #4f46e5); font-size: 1.32rem; font-weight: 900; letter-spacing: 0.04em; line-height: 1; text-transform: uppercase; white-space: nowrap; }
+    .finance-period-caption { display: block; color: var(--muted, #64748b); font-size: 0.74rem; font-weight: 700; text-align: right; }
+    @media (max-width: 900px) {
+        .finance-list-heading { align-items: stretch; flex-direction: column; }
+        .finance-list-side { align-items: stretch; }
+        .finance-period-card { min-width: 0; width: 100%; }
+        .finance-status-summary { justify-content: flex-start; }
+    }
+    .finance-status-pill { display: inline-flex; align-items: center; gap: 7px; border-radius: 999px; padding: 5px 8px 5px 10px; font-size: 0.7rem; font-weight: 900; letter-spacing: 0.03em; text-transform: uppercase; white-space: nowrap; }
+    .finance-status-pill-count { display: inline-flex; align-items: center; justify-content: center; min-width: 22px; height: 22px; border-radius: 999px; padding: 0 6px; font-size: 0.72rem; font-weight: 900; background: rgba(255,255,255,0.7); }
+    .finance-status-filter-group.is-heading { display: inline-flex; min-width: 0; }
+    .finance-status-filter-heading { min-height: auto; width: auto; border: 0; border-radius: 0; padding: 0; background: transparent; color: inherit; font: inherit; font-weight: 700; }
+    .finance-status-filter-heading .icon { width: 18px; height: 18px; padding: 2px; border-radius: 8px; background: rgba(0,0,0,0.06); opacity: 0.72; }
+    .finance-status-filter-heading.is-active .icon,
+    .finance-status-filter-heading:hover .icon { background: rgba(86, 97, 255, 0.12); opacity: 1; }
+    .finance-status-filter-heading .finance-status-filter-count { margin-left: 0; padding: 2px 6px; font-size: 0.68rem; letter-spacing: 0; text-transform: none; }
+    .finance-status-filter-group.is-heading .finance-status-filter-menu { position: fixed; left: auto; top: auto; text-transform: none; }
+    .finance-status-filter-option.active::after { content: '✓'; font-weight: 900; color: #4f46e5; }
+    .finance-sort-link { display: inline-flex; align-items: center; gap: 6px; border: 0; padding: 0; background: transparent; color: inherit; font: inherit; font-weight: 700; cursor: pointer; }
+    .finance-sort-link:hover .finance-sort-indicator { opacity: 1; }
+    .finance-sort-indicator { font-size: 0.85rem; opacity: 0.65; padding: 2px 5px; border-radius: 8px; background: rgba(0,0,0,0.06); color: inherit; transition: all 0.2s ease; }
+    .finance-sort-indicator.active { background: rgba(86, 97, 255, 0.12); color: inherit; opacity: 1; }
+    .finance-status-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 999px;
+        padding: 4px 10px;
+        font-size: 0.72rem;
+        font-weight: 800;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        white-space: nowrap;
+    }
+    .finance-status-danger { background: rgba(220, 38, 38, 0.16); color: #b91c1c; border: 1px solid rgba(220, 38, 38, 0.28); }
+    .finance-status-warning { background: rgba(250, 204, 21, 0.22); color: #92400e; border: 1px solid rgba(250, 204, 21, 0.45); }
+    .finance-status-success { background: rgba(16, 185, 129, 0.16); color: #047857; border: 1px solid rgba(16, 185, 129, 0.28); }
+    .finance-status-paid { background: rgba(37, 99, 235, 0.16); color: #1d4ed8; border: 1px solid rgba(37, 99, 235, 0.28); }
+    .finance-paid-form { margin: 0; }
+    .finance-paid-button { border: 1px solid rgba(16, 185, 129, 0.35); background: rgba(16, 185, 129, 0.12); color: #047857; border-radius: 999px; padding: 6px 12px; font-weight: 800; cursor: pointer; }
+    .finance-paid-button:hover { background: rgba(16, 185, 129, 0.2); }
+    .finance-paid-button:disabled,
+    .finance-paid-button.is-paid { border-color: rgba(148, 163, 184, 0.35); background: rgba(148, 163, 184, 0.18); color: #64748b; cursor: default; opacity: 1; }
+    .finance-lancamento-form { display: flex; align-items: flex-end; gap: 16px; flex-wrap: nowrap; }
+    .finance-lancamento-form label { margin: 0; }
+    .finance-lancamento-form .finance-field-label { display: inline-flex; align-items: center; gap: 6px; margin-bottom: 6px; font-weight: 800; line-height: 1.2; }
+    .finance-lancamento-form .finance-field-label .icon { width: 15px; height: 15px; color: var(--primary, #4b5563); stroke-width: 2.4; }
+    .finance-lancamento-form .finance-field-date,
+    .finance-lancamento-form .finance-field-validity { flex: 0 0 150px; }
+    .finance-lancamento-form .finance-field-title { flex: 0 0 110px; }
+    .finance-lancamento-form .finance-field-company { flex: 1 1 320px; min-width: 280px; }
+    .finance-lancamento-form .finance-field-value { flex: 0 0 170px; }
+    .finance-lancamento-form .finance-field-date input,
+    .finance-lancamento-form .finance-field-validity input,
+    .finance-lancamento-form .finance-field-title input,
+    .finance-lancamento-form .finance-field-company input,
+    .finance-lancamento-form .finance-field-value input { width: 100%; max-width: 100%; }
+    .finance-lancamento-form .form-actions { flex: 0 0 auto; margin: 0; }
+    @media (max-width: 1180px) {
+        .finance-lancamento-form { flex-wrap: wrap; }
+    }
+    .finance-table-wrap .data-table { font-size: 0.82rem; }
+    .finance-table-wrap .data-table th,
+    .finance-table-wrap .data-table td { padding: 0.45rem 0.55rem; line-height: 1.2; white-space: nowrap; }
+    .finance-table-wrap .data-table th:nth-child(3),
+    .finance-table-wrap .data-table td:nth-child(3) { white-space: normal; min-width: 180px; max-width: 280px; }
+    .finance-table-wrap .finance-status-badge { padding: 3px 8px; font-size: 0.68rem; }
+    .finance-table-wrap .finance-paid-button { padding: 4px 10px; font-size: 0.76rem; }
+    .finance-live-message { display: none; margin-bottom: 14px; border-radius: 14px; padding: 12px 14px; font-weight: 700; }
+    .finance-live-message.active { display: block; }
+    .finance-live-message.success { background: rgba(16, 185, 129, 0.14); color: #047857; border: 1px solid rgba(16, 185, 129, 0.25); }
+    .finance-live-message.error { background: rgba(220, 38, 38, 0.14); color: #b91c1c; border: 1px solid rgba(220, 38, 38, 0.25); }
+
+</style>
+
+<div id="finance-live-message" class="finance-live-message" role="status" aria-live="polite"></div>
+
+<div class="finance-tabs" role="tablist" aria-label="Lançamentos financeiros">
+    <button type="button" class="finance-tab-button active" id="tab-entrada" data-finance-tab="entrada" aria-selected="true"><span class="icon" data-lucide="arrow-down-circle"></span><span>Entrada</span></button>
+    <button type="button" class="finance-tab-button" id="tab-saida" data-finance-tab="saida" aria-selected="false"><span class="icon" data-lucide="arrow-up-circle"></span><span>Saída</span></button>
+</div>
+
+<section class="finance-tab-panel active" data-finance-panel="entrada" aria-labelledby="tab-entrada">
+    <section class="panel">
+        <div class="finance-card-header">
+            <div>
+                <h2>Entrada</h2>
+                <p class="panel-description finance-form-note">Cadastre títulos de entrada e acompanhe a lista dentro do mesmo card.</p>
+            </div>
+            <div class="finance-period-card is-hidden" data-finance-period-card="entrada">
+                <div class="finance-period-top">
+                    <span class="finance-period-label"><span class="icon" data-lucide="calendar-clock"></span><span>Valor lançado</span></span>
+                    <strong class="finance-period-total" data-finance-period-total="entrada">R$ 0,00</strong>
+                </div>
+                <div class="finance-period-controls" aria-label="Filtro de valor lançado de entrada">
+                    <select data-finance-period-select="entrada" aria-label="Período do valor de entrada">
+                        <option value="diario">Diário</option>
+                        <option value="semanal">Semanal</option>
+                        <option value="mensal" selected>Mensal</option>
+                        <option value="anual">Anual</option>
+                    </select>
+                    <input type="date" data-finance-period-input="entrada" data-period-input="diario" value="<?= htmlspecialchars($hoje, ENT_QUOTES, 'UTF-8'); ?>" hidden>
+                    <input type="week" data-finance-period-input="entrada" data-period-input="semanal" hidden>
+                    <input type="month" data-finance-period-input="entrada" data-period-input="mensal" value="<?= htmlspecialchars(date('Y-m'), ENT_QUOTES, 'UTF-8'); ?>">
+                    <input type="number" data-finance-period-input="entrada" data-period-input="anual" min="2000" max="2100" value="<?= htmlspecialchars(date('Y'), ENT_QUOTES, 'UTF-8'); ?>" hidden>
+                </div>
+                <div class="finance-period-footer">
+                    <strong class="finance-period-focus" data-finance-period-focus="entrada"><?= htmlspecialchars(strtoupper(strftime('%B/%y')), ENT_QUOTES, 'UTF-8'); ?></strong>
+                    <small class="finance-period-caption" data-finance-period-caption="entrada"></small>
+                </div>
+            </div>
+        </div>
+
+        <div class="finance-card-tabs" role="tablist" aria-label="Entrada">
+            <button type="button" class="finance-card-tab-button active" id="tab-entrada-lancamento" data-finance-subtab="entrada" data-finance-subpanel="lancamento" aria-selected="true"><span class="icon" data-lucide="plus-circle"></span><span>Lançamento</span></button>
+            <button type="button" class="finance-card-tab-button" id="tab-entrada-lista" data-finance-subtab="entrada" data-finance-subpanel="lista" aria-selected="false"><span class="icon" data-lucide="list-checks"></span><span>Lista de entrada</span></button>
+        </div>
+
+        <div class="finance-card-panel active" data-finance-card-panel="entrada-lancamento" aria-labelledby="tab-entrada-lancamento">
+            <div class="finance-lancamento-heading">
+                <h3><span class="icon" data-lucide="file-plus-2"></span><span>Novo lançamento de entrada</span></h3>
+                <p class="panel-description finance-form-note">Informe data, Nº do título, empresa, valor e validade do lançamento.</p>
+            </div>
+            <form method="post" action="<?= htmlspecialchars($url('financeiro/lancamentos'), ENT_QUOTES, 'UTF-8'); ?>" class="form-grid finance-lancamento-form" data-finance-live-form>
+                <input type="hidden" name="tipo" value="entrada">
+                <label class="finance-field-date">
+                    <span class="finance-field-label"><span class="icon" data-lucide="calendar-days"></span><span>Data</span></span>
+                    <input type="date" name="data_lancamento" value="<?= htmlspecialchars($hoje, ENT_QUOTES, 'UTF-8'); ?>" required>
+                </label>
+                <label class="finance-field-title">
+                    <span class="finance-field-label"><span class="icon" data-lucide="hash"></span><span>Nº do título</span></span>
+                    <input type="text" name="numero_titulo" required maxlength="8" inputmode="numeric" pattern="[0-9]{1,8}" placeholder="00000001">
+                </label>
+                <label class="finance-field-company">
+                    <span class="finance-field-label"><span class="icon" data-lucide="building-2"></span><span>Nome da empresa</span></span>
+                    <input type="text" name="nome_empresa" required placeholder="Empresa responsável">
+                </label>
+                <label class="finance-field-value">
+                    <span class="finance-field-label"><span class="icon" data-lucide="circle-dollar-sign"></span><span>Valor</span></span>
+                    <input type="number" step="0.01" min="0.01" max="9999999999.99" name="valor" required placeholder="0,00">
+                </label>
+                <label class="finance-field-validity">
+                    <span class="finance-field-label"><span class="icon" data-lucide="calendar-check"></span><span>Validade</span></span>
+                    <input type="date" name="validade" required>
+                </label>
+                <div class="form-actions">
+                    <button class="button button-primary" type="submit">Salvar entrada</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="finance-card-panel" data-finance-card-panel="entrada-lista" aria-labelledby="tab-entrada-lista">
+            <div class="finance-list-heading">
+                <div>
+                    <h3>Lista de entrada</h3>
+                    <p class="panel-description">Entradas cadastradas no módulo financeiro.</p>
+                </div>
+                <div class="finance-list-side">
+                    <div class="finance-list-actions" aria-label="Ações da lista de entradas">
+                        <button type="button" class="finance-list-action-button" data-finance-list-action="print" data-finance-list-type="entrada"><span class="icon" data-lucide="printer"></span><span>Imprimir</span></button>
+                        <div class="finance-export-group" data-finance-export-group>
+                            <button type="button" class="finance-list-action-button" data-finance-export-trigger aria-haspopup="true" aria-expanded="false"><span class="icon" data-lucide="download"></span><span>Exportar</span></button>
+                            <div class="finance-export-menu" data-finance-export-menu hidden>
+                                <button type="button" class="finance-list-action-button" data-finance-list-action="csv" data-finance-list-type="entrada"><span class="icon" data-lucide="file-text"></span><span>CSV</span></button>
+                                <button type="button" class="finance-list-action-button" data-finance-list-action="txt" data-finance-list-type="entrada"><span class="icon" data-lucide="file-text"></span><span>TXT</span></button>
+                                <button type="button" class="finance-list-action-button" data-finance-list-action="xls" data-finance-list-type="entrada"><span class="icon" data-lucide="file-text"></span><span>XLS</span></button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="finance-status-summary" data-finance-status-summary="entrada" aria-label="Resumo de status das entradas"></div>
+                </div>
+            </div>
+            <div class="finance-table-wrap">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th><button type="button" class="finance-sort-link" data-finance-sort-button="entrada" data-finance-sort-field="data" aria-label="Ordenar entradas por data" title="Clique para ordenar a data"><span class="finance-sort-label">Data</span><span class="finance-sort-indicator" aria-hidden="true">⇅</span></button></th>
+                            <th><button type="button" class="finance-sort-link" data-finance-sort-button="entrada" data-finance-sort-field="numero_titulo" aria-label="Ordenar entradas por número do título" title="Clique para ordenar o Nº do título"><span class="finance-sort-label">Nº do título</span><span class="finance-sort-indicator" aria-hidden="true">⇅</span></button></th>
+                            <th><button type="button" class="finance-sort-link" data-finance-sort-button="entrada" data-finance-sort-field="nome_empresa" aria-label="Ordenar entradas por empresa" title="Clique para ordenar a empresa"><span class="finance-sort-label">Empresa</span><span class="finance-sort-indicator" aria-hidden="true">⇅</span></button></th>
+                            <th><button type="button" class="finance-sort-link" data-finance-sort-button="entrada" data-finance-sort-field="valor" aria-label="Ordenar entradas por valor" title="Clique para ordenar o valor"><span class="finance-sort-label">Valor</span><span class="finance-sort-indicator" aria-hidden="true">⇅</span></button></th>
+                            <th><button type="button" class="finance-sort-link" data-finance-sort-button="entrada" data-finance-sort-field="validade" aria-label="Ordenar entradas por validade" title="Clique para ordenar a validade"><span class="finance-sort-label">Validade</span><span class="finance-sort-indicator" aria-hidden="true">⇅</span></button></th>
+                            <th>
+                                <div class="finance-status-filter-group is-heading" data-finance-status-filter="entrada" data-value="">
+                                    <button type="button" class="finance-status-filter-button finance-status-filter-heading" data-finance-status-trigger aria-haspopup="listbox" aria-expanded="false" aria-label="Selecionar um ou mais status de entrada">
+                                        <span>Status</span>
+                                        <span class="icon" data-lucide="filter"></span>
+                                        <span data-finance-status-current class="finance-status-filter-current finance-status-filter-count finance-status-badge finance-status-neutral" hidden>Todos</span>
+                                    </button>
+                                    <div class="finance-status-filter-menu" data-finance-status-menu role="listbox" aria-multiselectable="true" hidden>
+                                        <button type="button" class="finance-status-filter-option active" data-finance-status-option value="" data-label="Todos" data-status-class="finance-status-neutral"><span class="finance-status-badge finance-status-neutral">Todos</span></button>
+                                        <button type="button" class="finance-status-filter-option" data-finance-status-option value="em_dia" data-label="Em dia" data-status-class="finance-status-success"><span class="finance-status-badge finance-status-success">Em dia</span></button>
+                                        <button type="button" class="finance-status-filter-option" data-finance-status-option value="a_vencer" data-label="A vencer" data-status-class="finance-status-warning"><span class="finance-status-badge finance-status-warning">A vencer</span></button>
+                                        <button type="button" class="finance-status-filter-option" data-finance-status-option value="vencido" data-label="Vencido" data-status-class="finance-status-danger"><span class="finance-status-badge finance-status-danger">Vencido</span></button>
+                                        <button type="button" class="finance-status-filter-option" data-finance-status-option value="pago" data-label="Pago" data-status-class="finance-status-paid"><span class="finance-status-badge finance-status-paid">Pago</span></button>
+                                    </div>
+                                </div>
+                            </th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody data-finance-tbody="entrada">
+                        <?php if ($entradas): ?>
+                            <?php foreach ($entradas as $entrada): ?>
+                                <tr>
+                                    <td><?= htmlspecialchars(financeiro_format_date($entrada['data_lancamento'] ?? null), ENT_QUOTES, 'UTF-8'); ?></td>
+                                    <td><?= htmlspecialchars($entrada['numero_titulo'] ?? '-', ENT_QUOTES, 'UTF-8'); ?></td>
+                                    <td><?= htmlspecialchars($entrada['nome_empresa'] ?? '-', ENT_QUOTES, 'UTF-8'); ?></td>
+                                    <td>R$ <?= number_format((float)($entrada['valor'] ?? 0), 2, ',', '.'); ?></td>
+                                    <td><?= htmlspecialchars(financeiro_format_date($entrada['validade'] ?? null), ENT_QUOTES, 'UTF-8'); ?></td>
+                                    <td><span class="finance-status-badge <?= htmlspecialchars($entrada['status_vencimento_class'] ?? 'finance-status-success', ENT_QUOTES, 'UTF-8'); ?>"><?= htmlspecialchars($entrada['status_vencimento_label'] ?? 'Em dia', ENT_QUOTES, 'UTF-8'); ?></span></td>
+                                    <td>
+                                        <?php if (($entrada['status_vencimento'] ?? '') === 'pago'): ?>
+                                            <button type="button" class="finance-paid-button is-paid" disabled>Pago</button>
+                                        <?php else: ?>
+                                            <form method="post" action="<?= htmlspecialchars($url('financeiro/lancamentos/'.((int)$entrada['id']).'/pago'), ENT_QUOTES, 'UTF-8'); ?>" class="finance-paid-form" data-finance-paid-form>
+                                                <input type="hidden" name="tipo" value="entrada">
+                                                <button type="submit" class="finance-paid-button">Pago</button>
+                                            </form>
+                                        <?php endif; ?>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        <?php else: ?>
+                            <tr>
+                                <td colspan="7">Nenhuma entrada cadastrada.</td>
+                            </tr>
+                        <?php endif; ?>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+</section>
+
+<section class="finance-tab-panel" data-finance-panel="saida" aria-labelledby="tab-saida">
+    <section class="panel">
+        <div class="finance-card-header">
+            <div>
+                <h2>Saída</h2>
+                <p class="panel-description finance-form-note">Cadastre saídas e consulte a lista dentro do mesmo card.</p>
+            </div>
+            <div class="finance-period-card is-hidden" data-finance-period-card="saida">
+                <div class="finance-period-top">
+                    <span class="finance-period-label"><span class="icon" data-lucide="calendar-clock"></span><span>Valor lançado</span></span>
+                    <strong class="finance-period-total" data-finance-period-total="saida">R$ 0,00</strong>
+                </div>
+                <div class="finance-period-controls" aria-label="Filtro de valor lançado de saída">
+                    <select data-finance-period-select="saida" aria-label="Período do valor de saída">
+                        <option value="diario">Diário</option>
+                        <option value="semanal">Semanal</option>
+                        <option value="mensal" selected>Mensal</option>
+                        <option value="anual">Anual</option>
+                    </select>
+                    <input type="date" data-finance-period-input="saida" data-period-input="diario" value="<?= htmlspecialchars($hoje, ENT_QUOTES, 'UTF-8'); ?>" hidden>
+                    <input type="week" data-finance-period-input="saida" data-period-input="semanal" hidden>
+                    <input type="month" data-finance-period-input="saida" data-period-input="mensal" value="<?= htmlspecialchars(date('Y-m'), ENT_QUOTES, 'UTF-8'); ?>">
+                    <input type="number" data-finance-period-input="saida" data-period-input="anual" min="2000" max="2100" value="<?= htmlspecialchars(date('Y'), ENT_QUOTES, 'UTF-8'); ?>" hidden>
+                </div>
+                <div class="finance-period-footer">
+                    <strong class="finance-period-focus" data-finance-period-focus="saida"><?= htmlspecialchars(strtoupper(strftime('%B/%y')), ENT_QUOTES, 'UTF-8'); ?></strong>
+                    <small class="finance-period-caption" data-finance-period-caption="saida"></small>
+                </div>
+            </div>
+        </div>
+
+        <div class="finance-card-tabs" role="tablist" aria-label="Saída">
+            <button type="button" class="finance-card-tab-button active" id="tab-saida-lancamento" data-finance-subtab="saida" data-finance-subpanel="lancamento" aria-selected="true"><span class="icon" data-lucide="plus-circle"></span><span>Lançamento</span></button>
+            <button type="button" class="finance-card-tab-button" id="tab-saida-lista" data-finance-subtab="saida" data-finance-subpanel="lista" aria-selected="false"><span class="icon" data-lucide="list-checks"></span><span>Lista de saída</span></button>
+        </div>
+
+        <div class="finance-card-panel active" data-finance-card-panel="saida-lancamento" aria-labelledby="tab-saida-lancamento">
+            <div class="finance-lancamento-heading">
+                <h3><span class="icon" data-lucide="file-plus-2"></span><span>Novo lançamento de saída</span></h3>
+                <p class="panel-description finance-form-note">Informe data, Nº do título, empresa e valor do lançamento.</p>
+            </div>
+            <form method="post" action="<?= htmlspecialchars($url('financeiro/lancamentos'), ENT_QUOTES, 'UTF-8'); ?>" class="form-grid finance-lancamento-form" data-finance-live-form>
+                <input type="hidden" name="tipo" value="saida">
+                <label class="finance-field-date">
+                    <span class="finance-field-label"><span class="icon" data-lucide="calendar-days"></span><span>Data</span></span>
+                    <input type="date" name="data_entrada" value="<?= htmlspecialchars($hoje, ENT_QUOTES, 'UTF-8'); ?>" required>
+                </label>
+                <label class="finance-field-title">
+                    <span class="finance-field-label"><span class="icon" data-lucide="hash"></span><span>Nº do título</span></span>
+                    <input type="text" name="numero_titulo" required maxlength="8" inputmode="numeric" pattern="[0-9]{1,8}" placeholder="00000001">
+                </label>
+                <label class="finance-field-company">
+                    <span class="finance-field-label"><span class="icon" data-lucide="building-2"></span><span>Nome da empresa</span></span>
+                    <input type="text" name="nome_empresa" required placeholder="Empresa responsável">
+                </label>
+                <label class="finance-field-value">
+                    <span class="finance-field-label"><span class="icon" data-lucide="circle-dollar-sign"></span><span>Valor</span></span>
+                    <input type="number" step="0.01" min="0.01" max="9999999999.99" name="valor" required placeholder="0,00">
+                </label>
+                <label class="finance-field-validity">
+                    <span class="finance-field-label"><span class="icon" data-lucide="calendar-check"></span><span>Validade</span></span>
+                    <input type="date" name="validade" required>
+                </label>
+                <input type="hidden" name="data_lancamento" value="<?= htmlspecialchars($hoje, ENT_QUOTES, 'UTF-8'); ?>">
+                <div class="form-actions">
+                    <button class="button button-primary" type="submit">Salvar saída</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="finance-card-panel" data-finance-card-panel="saida-lista" aria-labelledby="tab-saida-lista">
+            <div class="finance-list-heading">
+                <div>
+                    <h3>Lista de saída</h3>
+                    <p class="panel-description">Saídas cadastradas no módulo financeiro.</p>
+                </div>
+                <div class="finance-list-side">
+                    <div class="finance-list-actions" aria-label="Ações da lista de saídas">
+                        <button type="button" class="finance-list-action-button" data-finance-list-action="print" data-finance-list-type="saida"><span class="icon" data-lucide="printer"></span><span>Imprimir</span></button>
+                        <div class="finance-export-group" data-finance-export-group>
+                            <button type="button" class="finance-list-action-button" data-finance-export-trigger aria-haspopup="true" aria-expanded="false"><span class="icon" data-lucide="download"></span><span>Exportar</span></button>
+                            <div class="finance-export-menu" data-finance-export-menu hidden>
+                                <button type="button" class="finance-list-action-button" data-finance-list-action="csv" data-finance-list-type="saida"><span class="icon" data-lucide="file-text"></span><span>CSV</span></button>
+                                <button type="button" class="finance-list-action-button" data-finance-list-action="txt" data-finance-list-type="saida"><span class="icon" data-lucide="file-text"></span><span>TXT</span></button>
+                                <button type="button" class="finance-list-action-button" data-finance-list-action="xls" data-finance-list-type="saida"><span class="icon" data-lucide="file-text"></span><span>XLS</span></button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="finance-status-summary" data-finance-status-summary="saida" aria-label="Resumo de status das saídas"></div>
+                </div>
+            </div>
+            <div class="finance-table-wrap">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th><button type="button" class="finance-sort-link" data-finance-sort-button="saida" data-finance-sort-field="data" aria-label="Ordenar saídas por data" title="Clique para ordenar a data"><span class="finance-sort-label">Data</span><span class="finance-sort-indicator" aria-hidden="true">⇅</span></button></th>
+                            <th><button type="button" class="finance-sort-link" data-finance-sort-button="saida" data-finance-sort-field="numero_titulo" aria-label="Ordenar saídas por número do título" title="Clique para ordenar o Nº do título"><span class="finance-sort-label">Nº do título</span><span class="finance-sort-indicator" aria-hidden="true">⇅</span></button></th>
+                            <th><button type="button" class="finance-sort-link" data-finance-sort-button="saida" data-finance-sort-field="nome_empresa" aria-label="Ordenar saídas por empresa" title="Clique para ordenar a empresa"><span class="finance-sort-label">Empresa</span><span class="finance-sort-indicator" aria-hidden="true">⇅</span></button></th>
+                            <th><button type="button" class="finance-sort-link" data-finance-sort-button="saida" data-finance-sort-field="valor" aria-label="Ordenar saídas por valor" title="Clique para ordenar o valor"><span class="finance-sort-label">Valor</span><span class="finance-sort-indicator" aria-hidden="true">⇅</span></button></th>
+                            <th><button type="button" class="finance-sort-link" data-finance-sort-button="saida" data-finance-sort-field="validade" aria-label="Ordenar saídas por validade" title="Clique para ordenar a validade"><span class="finance-sort-label">Validade</span><span class="finance-sort-indicator" aria-hidden="true">⇅</span></button></th>
+                            <th>
+                                <div class="finance-status-filter-group is-heading" data-finance-status-filter="saida" data-value="">
+                                    <button type="button" class="finance-status-filter-button finance-status-filter-heading" data-finance-status-trigger aria-haspopup="listbox" aria-expanded="false" aria-label="Selecionar um ou mais status de saída">
+                                        <span>Status</span>
+                                        <span class="icon" data-lucide="filter"></span>
+                                        <span data-finance-status-current class="finance-status-filter-current finance-status-filter-count finance-status-badge finance-status-neutral" hidden>Todos</span>
+                                    </button>
+                                    <div class="finance-status-filter-menu" data-finance-status-menu role="listbox" aria-multiselectable="true" hidden>
+                                        <button type="button" class="finance-status-filter-option active" data-finance-status-option value="" data-label="Todos" data-status-class="finance-status-neutral"><span class="finance-status-badge finance-status-neutral">Todos</span></button>
+                                        <button type="button" class="finance-status-filter-option" data-finance-status-option value="em_dia" data-label="Em dia" data-status-class="finance-status-success"><span class="finance-status-badge finance-status-success">Em dia</span></button>
+                                        <button type="button" class="finance-status-filter-option" data-finance-status-option value="a_vencer" data-label="A vencer" data-status-class="finance-status-warning"><span class="finance-status-badge finance-status-warning">A vencer</span></button>
+                                        <button type="button" class="finance-status-filter-option" data-finance-status-option value="vencido" data-label="Vencido" data-status-class="finance-status-danger"><span class="finance-status-badge finance-status-danger">Vencido</span></button>
+                                        <button type="button" class="finance-status-filter-option" data-finance-status-option value="pago" data-label="Pago" data-status-class="finance-status-paid"><span class="finance-status-badge finance-status-paid">Pago</span></button>
+                                    </div>
+                                </div>
+                            </th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody data-finance-tbody="saida">
+                        <?php if ($saidas): ?>
+                            <?php foreach ($saidas as $saida): ?>
+                                <tr>
+                                    <td><?= htmlspecialchars(financeiro_format_date($saida['data_entrada'] ?? null), ENT_QUOTES, 'UTF-8'); ?></td>
+                                    <td><?= htmlspecialchars($saida['numero_titulo'] ?? '-', ENT_QUOTES, 'UTF-8'); ?></td>
+                                    <td><?= htmlspecialchars($saida['nome_empresa'] ?? '-', ENT_QUOTES, 'UTF-8'); ?></td>
+                                    <td>R$ <?= number_format((float)($saida['valor'] ?? 0), 2, ',', '.'); ?></td>
+                                    <td><?= htmlspecialchars(financeiro_format_date($saida['validade'] ?? null), ENT_QUOTES, 'UTF-8'); ?></td>
+                                    <td><span class="finance-status-badge <?= htmlspecialchars($saida['status_vencimento_class'] ?? 'finance-status-success', ENT_QUOTES, 'UTF-8'); ?>"><?= htmlspecialchars($saida['status_vencimento_label'] ?? 'Em dia', ENT_QUOTES, 'UTF-8'); ?></span></td>
+                                    <td>
+                                        <?php if (($saida['status_vencimento'] ?? '') === 'pago'): ?>
+                                            <button type="button" class="finance-paid-button is-paid" disabled>Pago</button>
+                                        <?php else: ?>
+                                            <form method="post" action="<?= htmlspecialchars($url('financeiro/lancamentos/'.((int)$saida['id']).'/pago'), ENT_QUOTES, 'UTF-8'); ?>" class="finance-paid-form" data-finance-paid-form>
+                                                <input type="hidden" name="tipo" value="saida">
+                                                <button type="submit" class="finance-paid-button">Pago</button>
+                                            </form>
+                                        <?php endif; ?>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        <?php else: ?>
+                            <tr>
+                                <td colspan="7">Nenhuma saída cadastrada.</td>
+                            </tr>
+                        <?php endif; ?>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+</section>
+
+
+</section>
+
+<script>
+    (function() {
+        const buttons = document.querySelectorAll('[data-finance-tab]');
+        const panels = document.querySelectorAll('[data-finance-panel]');
+        const subButtons = document.querySelectorAll('[data-finance-subtab]');
+        const subPanels = document.querySelectorAll('[data-finance-card-panel]');
+        const messageBox = document.getElementById('finance-live-message');
+        const listUrl = <?= json_encode($url('financeiro/titulos')); ?>;
+        const lancamentosBaseUrl = <?= json_encode($url('financeiro/lancamentos')); ?>;
+        const todayValue = <?= json_encode($hoje); ?>;
+        const financeRows = {
+            entrada: <?= json_encode(array_values($entradas), JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT); ?>,
+            saida: <?= json_encode(array_values($saidas), JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT); ?>
+        };
+        const financeSortState = {
+            entrada: { field: '', direction: '' },
+            saida: { field: '', direction: '' }
+        };
+        const emptyMessages = {
+            entrada: 'Nenhuma entrada cadastrada.',
+            saida: 'Nenhuma saída cadastrada.'
+        };
+        const filteredEmptyMessages = {
+            entrada: 'Nenhuma entrada encontrada com os filtros selecionados.',
+            saida: 'Nenhuma saída encontrada com os filtros selecionados.'
+        };
+        const statusSummaryItems = [
+            { key: 'vencido', label: 'Vencido', className: 'finance-status-danger' },
+            { key: 'a_vencer', label: 'A vencer', className: 'finance-status-warning' },
+            { key: 'em_dia', label: 'Em dia', className: 'finance-status-success' },
+            { key: 'pago', label: 'Pago', className: 'finance-status-paid' }
+        ];
+        const periodLabels = {
+            diario: 'Diário',
+            semanal: 'Semanal',
+            mensal: 'Mensal',
+            anual: 'Anual'
+        };
+
+        const escapeHtml = (value) => String(value ?? '').replace(/[&<>'"]/g, (char) => ({
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            "'": '&#039;',
+            '"': '&quot;'
+        }[char]));
+
+        const formatDate = (date) => {
+            if (!date) {
+                return '-';
+            }
+            const parts = String(date).split('-');
+            if (parts.length !== 3) {
+                return escapeHtml(date);
+            }
+            return `${parts[2]}/${parts[1]}/${parts[0]}`;
+        };
+
+        const formatCurrency = (value) => 'R$ ' + Number(value || 0).toLocaleString('pt-BR', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        });
+
+        const showMessage = (message, type = 'success') => {
+            if (!messageBox) {
+                return;
+            }
+            messageBox.textContent = message;
+            messageBox.className = `finance-live-message active ${type}`;
+            window.clearTimeout(showMessage.timeout);
+            showMessage.timeout = window.setTimeout(() => {
+                messageBox.className = 'finance-live-message';
+                messageBox.textContent = '';
+            }, 4500);
+        };
+
+        const removeLeakedCodeText = () => {
+            const suspiciousFragments = ['downloadFile(', 'printFinanceList', 'const handleFinanceListAction', 'window.setTimeout(() =>'];
+            document.querySelectorAll('[data-finance-panel], [data-finance-card-panel]').forEach((panel) => {
+                Array.from(panel.childNodes).forEach((node) => {
+                    if (node.nodeType !== Node.TEXT_NODE) {
+                        return;
+                    }
+                    const text = String(node.textContent || '').trim();
+                    if (!text) {
+                        return;
+                    }
+                    if (suspiciousFragments.some((fragment) => text.includes(fragment))) {
+                        node.remove();
+                    }
+                });
+            });
+        };
+
+        function activateSubtab(type, panel, updateHash) {
+            const target = type + '-' + panel;
+
+            subButtons.forEach((button) => {
+                if (button.dataset.financeSubtab !== type) {
+                    return;
+                }
+
+                const active = button.dataset.financeSubpanel === panel;
+                button.classList.toggle('active', active);
+                button.setAttribute('aria-selected', active ? 'true' : 'false');
+            });
+
+            subPanels.forEach((subPanel) => {
+                if (!subPanel.dataset.financeCardPanel.startsWith(type + '-')) {
+                    return;
+                }
+
+                subPanel.classList.toggle('active', subPanel.dataset.financeCardPanel === target);
+            });
+
+            document.querySelector(`[data-finance-period-card="${type}"]`)?.classList.toggle('is-hidden', panel !== 'lista');
+
+            if (updateHash && window.location.hash !== '#' + target) {
+                history.replaceState(null, '', '#' + target);
+            }
+        }
+
+        function activate(tab, subpanel, updateHash) {
+            removeLeakedCodeText();
+            buttons.forEach((button) => {
+                const active = button.dataset.financeTab === tab;
+                button.classList.toggle('active', active);
+                button.setAttribute('aria-selected', active ? 'true' : 'false');
+            });
+
+            panels.forEach((panel) => {
+                panel.classList.toggle('active', panel.dataset.financePanel === tab);
+            });
+
+            activateSubtab(tab, subpanel || 'lancamento', false);
+
+            if (updateHash) {
+                const hash = subpanel && subpanel !== 'lancamento' ? tab + '-' + subpanel : tab;
+                if (window.location.hash !== '#' + hash) {
+                    history.replaceState(null, '', '#' + hash);
+                }
+            }
+        }
+
+        const paidAction = (item) => `${lancamentosBaseUrl}/${encodeURIComponent(item.id)}/pago`;
+
+        const statusBadge = (item) => `<span class="finance-status-badge ${escapeHtml(item.status_vencimento_class || 'finance-status-success')}">${escapeHtml(item.status_vencimento_label || 'Em dia')}</span>`;
+
+        const paidButton = (item, tipo) => {
+            if ((item.status_vencimento || '') === 'pago') {
+                return '<button type="button" class="finance-paid-button is-paid" disabled>Pago</button>';
+            }
+            return `<form method="post" action="${paidAction(item)}" class="finance-paid-form" data-finance-paid-form>
+                <input type="hidden" name="tipo" value="${tipo}">
+                <button type="submit" class="finance-paid-button">Pago</button>
+            </form>`;
+        };
+
+        const getFilterState = (tipo) => {
+            const statusValues = (document.querySelector(`[data-finance-status-filter="${tipo}"]`)?.dataset.value || '')
+                .split(',')
+                .map((value) => value.trim())
+                .filter(Boolean);
+            const sort = financeSortState[tipo] || { field: '', direction: '' };
+
+            return {
+                statusValues,
+                sortField: sort.field || '',
+                sortDirection: sort.direction || ''
+            };
+        };
+
+        const refreshSortIndicators = (tipo) => {
+            const sort = financeSortState[tipo] || { field: '', direction: '' };
+            document.querySelectorAll(`[data-finance-sort-button="${tipo}"]`).forEach((button) => {
+                const isActive = sort.field === button.dataset.financeSortField && Boolean(sort.direction);
+                const indicator = button.querySelector('.finance-sort-indicator');
+                button.dataset.direction = isActive ? sort.direction : '';
+                button.setAttribute('aria-sort', isActive ? (sort.direction === 'asc' ? 'ascending' : 'descending') : 'none');
+
+                if (indicator) {
+                    indicator.textContent = isActive ? (sort.direction === 'asc' ? '▲' : '▼') : '⇅';
+                    indicator.classList.toggle('active', isActive);
+                }
+            });
+        };
+
+        const numberFromTitle = (value) => {
+            const digits = String(value || '').replace(/\D/g, '');
+            return digits ? Number(digits) : 0;
+        };
+
+        const numberFromValue = (value) => {
+            const raw = String(value ?? '').replace(/R\$|\s/g, '');
+            const normalized = raw.includes(',')
+                ? raw.replace(/\./g, '').replace(',', '.')
+                : raw;
+            const parsed = Number(normalized);
+            return Number.isFinite(parsed) ? parsed : 0;
+        };
+
+        const dateValue = (value) => {
+            if (!value) {
+                return 0;
+            }
+            const timestamp = Date.parse(`${value}T00:00:00`);
+            return Number.isFinite(timestamp) ? timestamp : 0;
+        };
+
+        const isoWeekValue = (dateString) => {
+            if (!dateString) {
+                return '';
+            }
+            const date = new Date(`${dateString}T00:00:00`);
+            if (Number.isNaN(date.getTime())) {
+                return '';
+            }
+            const utcDate = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+            const day = utcDate.getUTCDay() || 7;
+            utcDate.setUTCDate(utcDate.getUTCDate() + 4 - day);
+            const yearStart = new Date(Date.UTC(utcDate.getUTCFullYear(), 0, 1));
+            const week = Math.ceil((((utcDate - yearStart) / 86400000) + 1) / 7);
+            return `${utcDate.getUTCFullYear()}-W${String(week).padStart(2, '0')}`;
+        };
+
+        const itemDate = (item, tipo) => tipo === 'saida' ? item.data_entrada : item.data_lancamento;
+
+        const sortValue = (item, field, tipo) => {
+            if (field === 'valor') {
+                return numberFromValue(item.valor);
+            }
+            if (field === 'numero_titulo') {
+                return numberFromTitle(item.numero_titulo);
+            }
+            if (field === 'data') {
+                return dateValue(tipo === 'saida' ? item.data_entrada : item.data_lancamento);
+            }
+            if (field === 'validade') {
+                return dateValue(item.validade);
+            }
+            if (field === 'nome_empresa') {
+                return String(item.nome_empresa || '').toLocaleLowerCase('pt-BR');
+            }
+            return String(item[field] || '').toLocaleLowerCase('pt-BR');
+        };
+
+        const getPeriodState = (tipo) => {
+            const select = document.querySelector(`[data-finance-period-select="${tipo}"]`);
+            const period = select?.value || 'mensal';
+            const input = document.querySelector(`[data-finance-period-input="${tipo}"][data-period-input="${period}"]`);
+            return {
+                period,
+                value: input?.value || ''
+            };
+        };
+
+        const periodRows = (tipo) => {
+            const periodState = getPeriodState(tipo);
+            return (financeRows[tipo] || []).filter((item) => matchesPeriod(item, tipo, periodState.period, periodState.value));
+        };
+
+        const applyFinanceFilters = (tipo) => {
+            const state = getFilterState(tipo);
+            const rows = periodRows(tipo);
+            const filteredRows = state.statusValues.length
+                ? rows.filter((item) => state.statusValues.includes(item.status_vencimento || ''))
+                : rows;
+
+            if (!state.sortField || !state.sortDirection) {
+                return filteredRows;
+            }
+
+            return [...filteredRows].sort((left, right) => {
+                const leftValue = sortValue(left, state.sortField, tipo);
+                const rightValue = sortValue(right, state.sortField, tipo);
+                const result = typeof leftValue === 'string' || typeof rightValue === 'string'
+                    ? String(leftValue).localeCompare(String(rightValue), 'pt-BR', { numeric: true, sensitivity: 'base' })
+                    : (leftValue === rightValue ? Number(left.id || 0) - Number(right.id || 0) : leftValue - rightValue);
+                return state.sortDirection === 'desc' ? -result : result;
+            });
+        };
+
+        const emptyRow = (tipo) => {
+            const hasRows = (financeRows[tipo] || []).length > 0;
+            return `<tr><td colspan="7">${hasRows ? filteredEmptyMessages[tipo] : emptyMessages[tipo]}</td></tr>`;
+        };
+
+        const renderEntradas = (rows) => {
+            const tbody = document.querySelector('[data-finance-tbody="entrada"]');
+            if (!tbody) {
+                return;
+            }
+            if (!rows.length) {
+                tbody.innerHTML = emptyRow('entrada');
+                return;
+            }
+            tbody.innerHTML = rows.map((entrada) => `<tr>
+                <td>${formatDate(entrada.data_lancamento)}</td>
+                <td>${escapeHtml(entrada.numero_titulo || '-')}</td>
+                <td>${escapeHtml(entrada.nome_empresa || '-')}</td>
+                <td>${formatCurrency(entrada.valor)}</td>
+                <td>${formatDate(entrada.validade)}</td>
+                <td>${statusBadge(entrada)}</td>
+                <td>${paidButton(entrada, 'entrada')}</td>
+            </tr>`).join('');
+        };
+
+        const renderSaidas = (rows) => {
+            const tbody = document.querySelector('[data-finance-tbody="saida"]');
+            if (!tbody) {
+                return;
+            }
+            if (!rows.length) {
+                tbody.innerHTML = emptyRow('saida');
+                return;
+            }
+            tbody.innerHTML = rows.map((saida) => `<tr>
+                <td>${formatDate(saida.data_entrada)}</td>
+                <td>${escapeHtml(saida.numero_titulo || '-')}</td>
+                <td>${escapeHtml(saida.nome_empresa || '-')}</td>
+                <td>${formatCurrency(saida.valor)}</td>
+                <td>${formatDate(saida.validade)}</td>
+                <td>${statusBadge(saida)}</td>
+                <td>${paidButton(saida, 'saida')}</td>
+            </tr>`).join('');
+        };
+
+        const exportHeaders = ['Data', 'Nº do título', 'Empresa', 'Valor', 'Validade', 'Status'];
+
+        const exportRow = (item, tipo) => [
+            formatDate(tipo === 'saida' ? item.data_entrada : item.data_lancamento),
+            item.numero_titulo || '-',
+            item.nome_empresa || '-',
+            formatCurrency(item.valor),
+            formatDate(item.validade),
+            item.status_vencimento_label || 'Em dia'
+        ];
+
+        const exportFilename = (tipo, extension) => `financeiro-${tipo}-${new Date().toISOString().slice(0, 10)}.${extension}`;
+
+        const downloadFile = (content, filename, mimeType) => {
+            const blob = new Blob([content], { type: mimeType });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            URL.revokeObjectURL(link.href);
+            link.remove();
+        };
+
+        const delimitedValue = (value, delimiter) => {
+            const text = String(value ?? '');
+            return `"${text.replace(/"/g, '""')}"`;
+        };
+
+        const exportDelimited = (tipo, delimiter, extension, mimeType) => {
+            const rows = applyFinanceFilters(tipo);
+            const content = [exportHeaders, ...rows.map((item) => exportRow(item, tipo))]
+                .map((row) => row.map((value) => delimitedValue(value, delimiter)).join(delimiter))
+                .join('\n');
+            downloadFile('\ufeff' + content, exportFilename(tipo, extension), mimeType);
+        };
+
+        const appendCell = (row, tagName, value) => {
+            const cell = document.createElement(tagName);
+            cell.textContent = String(value ?? '');
+            row.appendChild(cell);
+        };
+
+        const exportXls = (tipo) => {
+            const rows = applyFinanceFilters(tipo);
+            const table = document.createElement('table');
+            table.setAttribute('border', '1');
+            const thead = document.createElement('thead');
+            const headerRow = document.createElement('tr');
+            exportHeaders.forEach((header) => appendCell(headerRow, 'th', header));
+            thead.appendChild(headerRow);
+            table.appendChild(thead);
+
+            const tbody = document.createElement('tbody');
+            if (rows.length) {
+                rows.forEach((item) => {
+                    const row = document.createElement('tr');
+                    exportRow(item, tipo).forEach((value) => appendCell(row, 'td', value));
+                    tbody.appendChild(row);
+                });
+            } else {
+                const row = document.createElement('tr');
+                const cell = document.createElement('td');
+                cell.colSpan = exportHeaders.length;
+                cell.textContent = 'Nenhum lançamento encontrado.';
+                row.appendChild(cell);
+                tbody.appendChild(row);
+            }
+            table.appendChild(tbody);
+
+            const htmlParts = [
+                '<!doctype html>',
+                '<html><head><meta charset="UTF-8">',
+                '<style>table{border-collapse:collapse;}th{background:#eef2ff;font-weight:bold;}td,th{border:1px solid #d1d5db;padding:6px;}</style>',
+                '</head><body>',
+                table.outerHTML,
+                '</body></html>'
+            ];
+            downloadFile('\ufeff' + htmlParts.join(''), exportFilename(tipo, 'xls'), 'application/vnd.ms-excel;charset=utf-8');
+        };
+
+        const printPeriodDetails = (tipo) => {
+            const { period, value } = getPeriodState(tipo);
+            const label = periodLabels[period] || 'Período';
+            return `${label} • ${periodDisplayLabel(period, value)}`;
+        };
+
+        const printFinanceList = (tipo) => {
+            const rows = applyFinanceFilters(tipo);
+            const title = tipo === 'saida' ? 'Lista de saída' : 'Lista de entrada';
+            const printedTotal = rows.reduce((acc, item) => acc + numberFromValue(item.valor), 0);
+            document.querySelector('.finance-print-area')?.remove();
+
+            const printArea = document.createElement('section');
+            printArea.className = 'finance-print-area';
+
+            const header = document.createElement('header');
+            header.className = 'finance-print-header';
+            const headerText = document.createElement('div');
+            const kicker = document.createElement('p');
+            kicker.className = 'finance-print-kicker';
+            kicker.textContent = 'Relatório financeiro';
+            const heading = document.createElement('h1');
+            heading.textContent = title;
+            headerText.appendChild(kicker);
+            headerText.appendChild(heading);
+
+            const headerMeta = document.createElement('div');
+            headerMeta.className = 'finance-print-period';
+            headerMeta.textContent = printPeriodDetails(tipo);
+            const generatedAt = document.createElement('div');
+            generatedAt.className = 'finance-print-muted';
+            generatedAt.textContent = `Impresso em ${new Date().toLocaleDateString('pt-BR')} • ${rows.length} ${rows.length === 1 ? 'lançamento' : 'lançamentos'}`;
+            headerMeta.appendChild(generatedAt);
+            header.appendChild(headerText);
+            header.appendChild(headerMeta);
+            printArea.appendChild(header);
+
+            const table = document.createElement('table');
+            const thead = document.createElement('thead');
+            const headerRow = document.createElement('tr');
+            exportHeaders.forEach((header) => appendCell(headerRow, 'th', header));
+            thead.appendChild(headerRow);
+            table.appendChild(thead);
+
+            const tbody = document.createElement('tbody');
+            if (rows.length) {
+                rows.forEach((item) => {
+                    const row = document.createElement('tr');
+                    exportRow(item, tipo).forEach((value) => appendCell(row, 'td', value));
+                    tbody.appendChild(row);
+                });
+            } else {
+                const row = document.createElement('tr');
+                const cell = document.createElement('td');
+                cell.colSpan = exportHeaders.length;
+                cell.textContent = 'Nenhum lançamento encontrado.';
+                row.appendChild(cell);
+                tbody.appendChild(row);
+            }
+            table.appendChild(tbody);
+            printArea.appendChild(table);
+
+            const footer = document.createElement('footer');
+            footer.className = 'finance-print-footer';
+            const totalBox = document.createElement('div');
+            totalBox.className = 'finance-print-total';
+            const totalLabel = document.createElement('span');
+            totalLabel.textContent = 'Total impresso';
+            const totalValue = document.createElement('strong');
+            totalValue.textContent = formatCurrency(printedTotal);
+            totalBox.appendChild(totalLabel);
+            totalBox.appendChild(totalValue);
+            footer.appendChild(totalBox);
+            printArea.appendChild(footer);
+            document.body.appendChild(printArea);
+
+            document.body.classList.add('finance-print-mode');
+            window.print();
+            window.setTimeout(() => {
+                document.body.classList.remove('finance-print-mode');
+                printArea.remove();
+            }, 300);
+        };
+
+        const handleFinanceListAction = (tipo, action) => {
+            if (action === 'print') {
+                printFinanceList(tipo);
+                return;
+            }
+            if (action === 'csv') {
+                exportDelimited(tipo, ';', 'csv', 'text/csv;charset=utf-8');
+                return;
+            }
+            if (action === 'txt') {
+                exportDelimited(tipo, '\t', 'txt', 'text/plain;charset=utf-8');
+                return;
+            }
+            if (action === 'xls') {
+                exportXls(tipo);
+            }
+        };
+
+        const monthYearDate = (value) => {
+            const [year, month] = String(value || '').split('-');
+            const date = new Date(Number(year), Number(month || 1) - 1, 1);
+            return Number.isNaN(date.getTime()) ? null : date;
+        };
+
+        const periodDisplayLabel = (period, value) => {
+            if (!value) {
+                return 'período não informado';
+            }
+            if (period === 'diario') {
+                return formatDate(value);
+            }
+            if (period === 'semanal') {
+                return value.replace('-W', ' • semana ');
+            }
+            if (period === 'mensal') {
+                const date = monthYearDate(value);
+                return date ? date.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' }) : value;
+            }
+            return String(value);
+        };
+
+        const periodFocusLabel = (period, value) => {
+            if (!value) {
+                return 'PERÍODO';
+            }
+            if (period === 'mensal') {
+                const date = monthYearDate(value);
+                return date ? date.toLocaleDateString('pt-BR', { month: 'long', year: '2-digit' }).replace(' de ', '/').toLocaleUpperCase('pt-BR') : String(value).toLocaleUpperCase('pt-BR');
+            }
+            if (period === 'diario') {
+                const parts = String(value).split('-');
+                return parts.length === 3 ? `${parts[2]}/${parts[1]}/${parts[0].slice(-2)}` : String(value).toLocaleUpperCase('pt-BR');
+            }
+            if (period === 'semanal') {
+                const match = String(value).match(/^(\d{4})-W(\d{2})$/);
+                return match ? `SEMANA ${match[2]}` : String(value).toLocaleUpperCase('pt-BR');
+            }
+            return `ANO ${String(value)}`;
+        };
+
+        const matchesPeriod = (item, tipo, period, value) => {
+            const date = itemDate(item, tipo);
+            if (!date || !value) {
+                return false;
+            }
+            if (period === 'diario') {
+                return date === value;
+            }
+            if (period === 'semanal') {
+                return isoWeekValue(date) === value;
+            }
+            if (period === 'mensal') {
+                return String(date).startsWith(value);
+            }
+            if (period === 'anual') {
+                return String(date).startsWith(`${value}-`);
+            }
+            return false;
+        };
+
+        const renderPeriodSummary = (tipo) => {
+            const select = document.querySelector(`[data-finance-period-select="${tipo}"]`);
+            const total = document.querySelector(`[data-finance-period-total="${tipo}"]`);
+            const caption = document.querySelector(`[data-finance-period-caption="${tipo}"]`);
+            const focus = document.querySelector(`[data-finance-period-focus="${tipo}"]`);
+            if (!select || !total) {
+                return;
+            }
+            const period = select.value || 'mensal';
+            const inputs = Array.from(document.querySelectorAll(`[data-finance-period-input="${tipo}"]`));
+            inputs.forEach((input) => {
+                input.hidden = input.dataset.periodInput !== period;
+            });
+            const input = inputs.find((item) => item.dataset.periodInput === period);
+            const value = input?.value || '';
+            const rows = periodRows(tipo);
+            const sum = rows.reduce((acc, item) => acc + numberFromValue(item.valor), 0);
+            const plural = rows.length === 1 ? 'lançamento' : 'lançamentos';
+            total.textContent = formatCurrency(sum);
+            if (focus) {
+                focus.textContent = periodFocusLabel(period, value);
+            }
+            if (caption) {
+                caption.textContent = `${periodLabels[period] || 'Período'} • ${periodDisplayLabel(period, value)} • ${rows.length} ${plural}`;
+            }
+        };
+
+        const renderStatusSummary = (tipo) => {
+            const target = document.querySelector(`[data-finance-status-summary="${tipo}"]`);
+            if (!target) {
+                return;
+            }
+            const counts = periodRows(tipo).reduce((acc, item) => {
+                const key = item.status_vencimento || 'em_dia';
+                acc[key] = (acc[key] || 0) + 1;
+                return acc;
+            }, {});
+
+            target.innerHTML = statusSummaryItems.map((status) => `<span class="finance-status-pill ${status.className}">
+                <span>${status.label}</span>
+                <span class="finance-status-pill-count">${Number(counts[status.key] || 0)}</span>
+            </span>`).join('');
+        };
+
+        const renderFinanceList = (tipo) => {
+            const rows = applyFinanceFilters(tipo);
+            refreshSortIndicators(tipo);
+            renderPeriodSummary(tipo);
+            renderStatusSummary(tipo);
+            if (tipo === 'saida') {
+                renderSaidas(rows);
+                return;
+            }
+            renderEntradas(rows);
+        };
+
+        const refreshLancamentos = async () => {
+            const response = await fetch(listUrl, {
+                headers: {
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            });
+            if (!response.ok) {
+                throw new Error('Não foi possível atualizar a lista ao vivo.');
+            }
+            const data = await response.json();
+            financeRows.entrada = data.entradas || [];
+            financeRows.saida = data.saidas || [];
+            renderFinanceList('entrada');
+            renderFinanceList('saida');
+        };
+
+        const submitLive = async (form) => {
+            const submitButton = form.querySelector('button[type="submit"]');
+            const formData = new FormData(form);
+            const tipo = formData.get('tipo') === 'saida' ? 'saida' : 'entrada';
+            const isPayment = form.matches('[data-finance-paid-form]');
+
+            if (submitButton) {
+                submitButton.disabled = true;
+            }
+
+            try {
+                const response = await fetch(form.action, {
+                    method: form.method || 'POST',
+                    body: formData,
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
+                const payload = await response.json().catch(() => ({}));
+                if (!response.ok) {
+                    throw new Error(payload.message || 'Não foi possível salvar a alteração.');
+                }
+
+                await refreshLancamentos();
+                if (!isPayment) {
+                    form.reset();
+                    form.querySelectorAll('input[name="data_lancamento"], input[name="data_entrada"]').forEach((input) => {
+                        input.value = <?= json_encode($hoje); ?>;
+                    });
+                    showMessage(payload.message || 'Lançamento salvo ao vivo, sem recarregar a página.');
+                    return;
+                }
+
+                activate(tipo, 'lista', true);
+                showMessage(payload.message || 'Pagamento atualizado ao vivo.');
+            } catch (error) {
+                showMessage(error.message || 'Não foi possível salvar a alteração.', 'error');
+            } finally {
+                if (submitButton) {
+                    submitButton.disabled = false;
+                }
+            }
+        };
+
+        document.addEventListener('submit', (event) => {
+            const form = event.target;
+            if (!(form instanceof HTMLFormElement)) {
+                return;
+            }
+            if (!form.matches('[data-finance-live-form], [data-finance-paid-form]')) {
+                return;
+            }
+            event.preventDefault();
+            submitLive(form);
+        });
+
+        buttons.forEach((button) => {
+            button.addEventListener('click', () => activate(button.dataset.financeTab, 'lancamento', true));
+        });
+
+        subButtons.forEach((button) => {
+            button.addEventListener('click', () => activate(button.dataset.financeSubtab, button.dataset.financeSubpanel, true));
+        });
+
+        const closeExportMenus = (except = null) => {
+            document.querySelectorAll('[data-finance-export-group]').forEach((group) => {
+                if (group === except) {
+                    return;
+                }
+                group.querySelector('[data-finance-export-menu]')?.setAttribute('hidden', 'hidden');
+                group.querySelector('[data-finance-export-trigger]')?.setAttribute('aria-expanded', 'false');
+            });
+        };
+
+        document.querySelectorAll('[data-finance-export-trigger]').forEach((button) => {
+            button.addEventListener('click', (event) => {
+                event.stopPropagation();
+                const group = button.closest('[data-finance-export-group]');
+                const menu = group?.querySelector('[data-finance-export-menu]');
+                const isOpen = menu && !menu.hasAttribute('hidden');
+                closeExportMenus(group);
+                if (menu) {
+                    menu.toggleAttribute('hidden', Boolean(isOpen));
+                    button.setAttribute('aria-expanded', isOpen ? 'false' : 'true');
+                }
+            });
+        });
+
+        document.querySelectorAll('[data-finance-list-action]').forEach((button) => {
+            button.addEventListener('click', () => {
+                closeExportMenus();
+                handleFinanceListAction(button.dataset.financeListType, button.dataset.financeListAction);
+            });
+        });
+
+        document.addEventListener('click', (event) => {
+            if (!(event.target instanceof Element) || !event.target.closest('[data-finance-export-group]')) {
+                closeExportMenus();
+            }
+        });
+
+        document.querySelectorAll('[data-finance-period-select]').forEach((select) => {
+            const tipo = select.dataset.financePeriodSelect;
+            document.querySelector(`[data-finance-period-input="${tipo}"][data-period-input="semanal"]`)?.setAttribute('value', isoWeekValue(todayValue));
+            select.addEventListener('change', () => renderFinanceList(tipo));
+        });
+
+        document.querySelectorAll('[data-finance-period-input]').forEach((input) => {
+            input.addEventListener('change', () => renderFinanceList(input.dataset.financePeriodInput));
+        });
+
+        const positionStatusMenu = (filter) => {
+            const trigger = filter.querySelector('[data-finance-status-trigger]');
+            const menu = filter.querySelector('[data-finance-status-menu]');
+            if (!trigger || !menu) {
+                return;
+            }
+
+            const rect = trigger.getBoundingClientRect();
+            const gap = 8;
+            const menuWidth = Math.max(230, rect.width);
+            const maxLeft = Math.max(8, window.innerWidth - menuWidth - 8);
+            menu.style.minWidth = `${menuWidth}px`;
+            menu.style.left = `${Math.min(Math.max(8, rect.left), maxLeft)}px`;
+            menu.style.top = `${rect.bottom + gap}px`;
+        };
+
+        const closeStatusMenus = (except = null) => {
+            document.querySelectorAll('[data-finance-status-filter]').forEach((filter) => {
+                if (filter === except) {
+                    return;
+                }
+                const menu = filter.querySelector('[data-finance-status-menu]');
+                menu?.setAttribute('hidden', 'hidden');
+                if (menu) {
+                    menu.style.left = '';
+                    menu.style.top = '';
+                    menu.style.minWidth = '';
+                }
+                filter.querySelector('[data-finance-status-trigger]')?.setAttribute('aria-expanded', 'false');
+            });
+        };
+
+        document.querySelectorAll('[data-finance-status-filter]').forEach((filter) => {
+            const trigger = filter.querySelector('[data-finance-status-trigger]');
+            const menu = filter.querySelector('[data-finance-status-menu]');
+            const currentLabel = filter.querySelector('[data-finance-status-current]');
+
+            const updateStatusSummary = () => {
+                const selected = Array.from(filter.querySelectorAll('[data-finance-status-option].active'))
+                    .filter((option) => option.getAttribute('value'));
+                const values = selected.map((option) => option.getAttribute('value') || '');
+                filter.dataset.value = values.join(',');
+
+                if (currentLabel) {
+                    currentLabel.hidden = values.length === 0;
+                    if (values.length === 0) {
+                        currentLabel.textContent = 'Todos';
+                        currentLabel.className = 'finance-status-filter-current finance-status-filter-count finance-status-badge finance-status-neutral';
+                    } else if (values.length === 1) {
+                        currentLabel.textContent = selected[0].dataset.label || '1 status';
+                        currentLabel.className = `finance-status-filter-current finance-status-filter-count finance-status-badge ${selected[0].dataset.statusClass || 'finance-status-neutral'}`;
+                    } else {
+                        currentLabel.textContent = `${values.length} status`;
+                        currentLabel.className = 'finance-status-filter-current finance-status-filter-count finance-status-badge finance-status-neutral';
+                    }
+                }
+
+                trigger?.classList.toggle('is-active', values.length > 0);
+                filter.querySelector('[data-finance-status-option][value=""]')?.classList.toggle('active', values.length === 0);
+            };
+
+            trigger?.addEventListener('click', () => {
+                const isOpen = !menu?.hasAttribute('hidden');
+                closeStatusMenus(filter);
+                if (!menu) {
+                    return;
+                }
+                menu.toggleAttribute('hidden', isOpen);
+                if (!isOpen) {
+                    positionStatusMenu(filter);
+                }
+                trigger.setAttribute('aria-expanded', isOpen ? 'false' : 'true');
+            });
+
+            filter.querySelectorAll('[data-finance-status-option]').forEach((option) => {
+                option.addEventListener('click', () => {
+                    const value = option.getAttribute('value') || '';
+                    if (!value) {
+                        filter.querySelectorAll('[data-finance-status-option]').forEach((item) => item.classList.toggle('active', item === option));
+                    } else {
+                        option.classList.toggle('active');
+                        filter.querySelector('[data-finance-status-option][value=""]')?.classList.remove('active');
+                    }
+
+                    updateStatusSummary();
+                    renderFinanceList(filter.dataset.financeStatusFilter);
+                });
+            });
+
+            updateStatusSummary();
+        });
+
+        document.addEventListener('click', (event) => {
+            if (!(event.target instanceof Element) || !event.target.closest('[data-finance-status-filter]')) {
+                closeStatusMenus();
+            }
+        });
+
+        window.addEventListener('resize', () => closeStatusMenus());
+        window.addEventListener('scroll', () => closeStatusMenus(), true);
+
+        document.querySelectorAll('[data-finance-sort-button]').forEach((button) => {
+            button.addEventListener('click', () => {
+                const tipo = button.dataset.financeSortButton;
+                const field = button.dataset.financeSortField;
+                const current = financeSortState[tipo] || { field: '', direction: '' };
+                const nextDirection = current.field === field && current.direction === 'asc' ? 'desc' : 'asc';
+                financeSortState[tipo] = { field, direction: nextDirection };
+                renderFinanceList(tipo);
+            });
+        });
+
+
+        renderFinanceList('entrada');
+        renderFinanceList('saida');
+        removeLeakedCodeText();
+
+        const initial = window.location.hash.replace('#', '');
+        if (initial === 'saida' || initial === 'saida-lancamento') {
+            activate('saida', 'lancamento', false);
+        } else if (initial === 'saida-lista') {
+            activate('saida', 'lista', false);
+        } else if (initial === 'entrada-lista') {
+            activate('entrada', 'lista', false);
+        } else {
+            activate('entrada', 'lancamento', false);
+        }
+    })();
+</script>

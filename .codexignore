@@ -1,0 +1,14 @@
+vendor/
+storage/
+uploads/
+public/uploads/
+*.zip
+*.png
+*.jpg
+*.jpeg
+*.pdf
+*.phar
+*.ttf
+*.otf
+*.woff
+*.woff2

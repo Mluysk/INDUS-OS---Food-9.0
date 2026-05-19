@@ -1,0 +1,147 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "IndusOS Food API",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/api/auth/token": {
+      "post": {
+        "summary": "Obter token JWT",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "login": {"type": "string"},
+                  "senha": {"type": "string"}
+                },
+                "required": ["login", "senha"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Token gerado"
+          }
+        }
+      }
+    },
+    "/api/produtos": {
+      "get": {
+        "summary": "Listar produtos",
+        "security": [{"bearerAuth": []}],
+        "responses": {
+          "200": {"description": "Lista de produtos"}
+        }
+      }
+    },
+    "/api/pedidos": {
+      "get": {
+        "summary": "Listar pedidos do cliente",
+        "security": [{"bearerAuth": []}],
+        "responses": {
+          "200": {"description": "Lista de pedidos"}
+        }
+      },
+      "post": {
+        "summary": "Criar pedido",
+        "security": [{"bearerAuth": []}],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "codigo": {"type": "string"},
+                  "total": {"type": "number"},
+                  "observacoes": {"type": "string"},
+                  "itens": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "produto_id": {"type": "integer"},
+                        "quantidade": {"type": "number"},
+                        "preco_unit": {"type": "number"}
+                      },
+                      "required": ["produto_id", "quantidade", "preco_unit"]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {"description": "Pedido criado"}
+        }
+      }
+    },
+    "/api/pedidos/{id}": {
+      "get": {
+        "summary": "Detalhar pedido",
+        "security": [{"bearerAuth": []}],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "integer"}
+          }
+        ],
+        "responses": {
+          "200": {"description": "Detalhes do pedido"}
+        }
+      }
+    },
+    "/api/pedidos/{id}/status": {
+      "patch": {
+        "summary": "Atualizar status do pedido",
+        "security": [{"bearerAuth": []}],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "integer"}
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "status": {
+                    "type": "string",
+                    "enum": ["novo", "aprovacao", "producao", "separacao", "expedicao", "faturado", "cancelado"]
+                  }
+                },
+                "required": ["status"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {"description": "Status atualizado"},
+          "422": {"description": "Status inválido"}
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  }
+}

@@ -1,0 +1,544 @@
+<?php
+$portalLogoLight = htmlspecialchars($asset($theme['logo_light'] ?? 'img/logo.png'), ENT_QUOTES, 'UTF-8');
+$portalLogoDark = htmlspecialchars($asset($theme['logo_dark'] ?? 'img/logodark.png'), ENT_QUOTES, 'UTF-8');
+$appDisplayName = htmlspecialchars($appName ?? 'IndusOS Food', ENT_QUOTES, 'UTF-8');
+$appTaglineText = htmlspecialchars($appTagline ?? 'Sistema de Controle Industrial (SCI)', ENT_QUOTES, 'UTF-8');
+$actionUrl = htmlspecialchars($url('portal/cadastro'), ENT_QUOTES, 'UTF-8');
+$loginUrl = htmlspecialchars($url('portal'), ENT_QUOTES, 'UTF-8');
+?>
+<section class="portal-hero portal-hero--register" data-portal-hero>
+    <div class="portal-hero__content">
+        <div class="portal-brand-card">
+            <div class="portal-brand-card__logo" aria-hidden="true">
+                <img class="portal-logo portal-logo-light" src="<?= $portalLogoLight; ?>" alt="Logotipo modo claro">
+                <img class="portal-logo portal-logo-dark" src="<?= $portalLogoDark; ?>" alt="Logotipo modo escuro">
+            </div>
+            <span class="portal-brand-card__tag">Portal do cliente</span>
+            <h1>Crie sua conta no <?= $appDisplayName; ?></h1>
+            <p><?= $appTaglineText; ?>. Cadastre-se em poucos passos e acompanhe a produção em tempo real.</p>
+        </div>
+
+        <?php if (!empty($flash['success']) || !empty($flash['error'])): ?>
+            <div class="portal-flash <?= !empty($flash['success']) ? 'portal-flash--success' : 'portal-flash--error'; ?>">
+                <?= htmlspecialchars($flash['success'] ?? $flash['error'], ENT_QUOTES, 'UTF-8'); ?>
+            </div>
+        <?php endif; ?>
+
+        <div class="portal-auth-card" data-auth-card>
+            <form id="portal-register-form" class="auth-panel auth-panel--register" method="post" action="<?= $actionUrl; ?>" novalidate>
+                <div class="auth-panel__header">
+                    <h2>Dados do responsável</h2>
+                    <p class="auth-panel__subtitle">Informe seus dados de contato para ativarmos o portal.</p>
+                </div>
+
+                <label for="registro-nome">Nome completo</label>
+                <input type="text" id="registro-nome" name="nome" required>
+
+                <label for="registro-email">E-mail</label>
+                <input type="email" id="registro-email" name="email" required>
+
+                <label for="registro-telefone">Telefone</label>
+                <input type="tel" id="registro-telefone" name="telefone" placeholder="(11) 99999-0000">
+
+                <div class="document-toggle" role="radiogroup" aria-label="Tipo de documento">
+                    <span>Documento</span>
+                    <div class="document-toggle__buttons">
+                        <button type="button" class="document-toggle__btn active" data-doc-option="cnpj" aria-pressed="true">CNPJ</button>
+                        <button type="button" class="document-toggle__btn" data-doc-option="cpf" aria-pressed="false">CPF</button>
+                    </div>
+                </div>
+
+                <div class="document-fields">
+                    <div class="field-group" data-doc-field="cnpj">
+                        <label for="registro-cnpj">CNPJ</label>
+                        <input type="text" id="registro-cnpj" name="cnpj" placeholder="00.000.000/0000-00">
+                    </div>
+                    <div class="field-group field-group--hidden" data-doc-field="cpf">
+                        <label for="registro-cpf">CPF</label>
+                        <input type="text" id="registro-cpf" name="cpf" placeholder="000.000.000-00" disabled>
+                    </div>
+                </div>
+
+                <label for="registro-razao">Razão social / Nome fiscal</label>
+                <input type="text" id="registro-razao" name="razao_social" placeholder="Use para emissão fiscal">
+
+                <label for="registro-fantasia">Nome fantasia</label>
+                <input type="text" id="registro-fantasia" name="nome_fantasia" placeholder="Como prefere ser chamado">
+
+                <div class="address-grid">
+                    <div class="field-group">
+                        <label for="registro-cep">CEP</label>
+                        <input type="text" id="registro-cep" name="cep" placeholder="00000-000" maxlength="9" inputmode="numeric" required>
+                    </div>
+                    <div class="field-group">
+                        <label for="registro-endereco">Endereço</label>
+                        <input type="text" id="registro-endereco" name="endereco" placeholder="Rua, avenida" required>
+                    </div>
+                    <div class="field-group">
+                        <label for="registro-numero">Número</label>
+                        <input type="text" id="registro-numero" name="numero" placeholder="123" required>
+                    </div>
+                    <div class="field-group">
+                        <label for="registro-bairro">Bairro</label>
+                        <input type="text" id="registro-bairro" name="bairro" placeholder="Centro" required>
+                    </div>
+                    <div class="field-group">
+                        <label for="registro-cidade">Cidade</label>
+                        <input type="text" id="registro-cidade" name="cidade" placeholder="São Paulo" required>
+                    </div>
+                    <div class="field-group">
+                        <label for="registro-estado">Estado (UF)</label>
+                        <input type="text" id="registro-estado" name="estado" placeholder="SP" maxlength="2" required>
+                    </div>
+                </div>
+                <p class="cep-feedback" data-cep-feedback></p>
+
+                <div class="field-grid">
+                    <div class="field-group">
+                        <label for="registro-senha">Senha</label>
+                        <input type="password" id="registro-senha" name="senha" required minlength="8" placeholder="Mínimo 8 caracteres">
+                    </div>
+                    <div class="field-group">
+                        <label for="registro-confirma">Confirme a senha</label>
+                        <input type="password" id="registro-confirma" name="confirmacao" required minlength="8">
+                    </div>
+                </div>
+
+                <button type="submit" class="portal-btn portal-btn--primary">Cadastrar</button>
+
+                <div class="portal-auth-cta">
+                    <span>Já possui acesso?</span>
+                    <a class="portal-btn portal-btn--ghost" href="<?= $loginUrl; ?>">Fazer login</a>
+                </div>
+
+                <div id="portal-register-feedback" class="portal-feedback" role="status" aria-live="polite"></div>
+            </form>
+        </div>
+    </div>
+</section>
+
+<style>
+    :root {
+        --portal-hero-gradient: radial-gradient(120% 120% at 10% 0%, rgba(59, 130, 246, 0.12), rgba(15, 23, 42, 0));
+        --portal-card-bg: rgba(255, 255, 255, 0.95);
+        --portal-card-border: rgba(15, 23, 42, 0.08);
+        --portal-muted: rgba(71, 85, 105, 0.82);
+    }
+
+    [data-theme="dark"] {
+        --portal-hero-gradient: radial-gradient(120% 120% at 10% 0%, rgba(37, 99, 235, 0.22), rgba(15, 23, 42, 0));
+        --portal-card-bg: rgba(15, 23, 42, 0.78);
+        --portal-card-border: rgba(148, 163, 184, 0.16);
+        --portal-muted: rgba(148, 163, 184, 0.78);
+    }
+
+    .portal-hero--register {
+        padding: 4.5rem 1.5rem 3rem;
+        background: var(--portal-hero-gradient);
+    }
+
+    .portal-hero__content {
+        display: grid;
+        gap: 1.75rem;
+        max-width: 1080px;
+        margin: 0 auto;
+    }
+
+    .portal-brand-card {
+        background: rgba(255, 255, 255, 0.92);
+        border-radius: 32px;
+        padding: 2.4rem 2.6rem;
+        box-shadow: 0 28px 60px -42px rgba(15, 23, 42, 0.5);
+        border: 1px solid rgba(148, 163, 184, 0.18);
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    [data-theme="dark"] .portal-brand-card {
+        background: rgba(15, 23, 42, 0.82);
+        border-color: rgba(148, 163, 184, 0.35);
+    }
+
+    .portal-brand-card__logo {
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+    }
+
+    .portal-logo {
+        height: 56px;
+        width: auto;
+        display: block;
+    }
+
+    .portal-logo-dark {
+        display: none;
+    }
+
+    [data-theme="dark"] .portal-logo-light {
+        display: none;
+    }
+
+    [data-theme="dark"] .portal-logo-dark {
+        display: block;
+    }
+
+    .portal-brand-card__tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        padding: 0.35rem 0.8rem;
+        font-size: 0.85rem;
+        border-radius: 999px;
+        background: rgba(37, 99, 235, 0.12);
+        color: rgba(37, 99, 235, 0.8);
+        font-weight: 600;
+    }
+
+    [data-theme="dark"] .portal-brand-card__tag {
+        background: rgba(96, 165, 250, 0.22);
+        color: rgba(191, 219, 254, 0.92);
+    }
+
+    .portal-brand-card h1 {
+        margin: 1rem 0 0.65rem;
+        font-size: clamp(2.1rem, 4vw, 3.1rem);
+    }
+
+    .portal-brand-card p {
+        color: var(--portal-muted);
+        font-size: 1.05rem;
+        max-width: 560px;
+    }
+
+    .portal-auth-card {
+        background: var(--portal-card-bg);
+        border: 1px solid var(--portal-card-border);
+        border-radius: 26px;
+        box-shadow: 0 28px 60px -42px rgba(15, 23, 42, 0.55);
+        backdrop-filter: blur(12px);
+        padding: 2rem 2.25rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1.75rem;
+    }
+
+    .portal-flash {
+        border-radius: 18px;
+        padding: 0.9rem 1.2rem;
+        font-weight: 600;
+        margin: 1rem 0 1.4rem;
+        border: 1px solid transparent;
+    }
+
+    .portal-flash--success {
+        background: rgba(34, 197, 94, 0.16);
+        color: #166534;
+        border-color: rgba(22, 197, 94, 0.4);
+    }
+
+    .portal-flash--error {
+        background: rgba(248, 113, 113, 0.18);
+        color: #b91c1c;
+        border-color: rgba(248, 113, 113, 0.4);
+    }
+
+    .auth-panel label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 0.3rem;
+    }
+
+    .auth-panel input {
+        border-radius: 14px;
+        border: 1px solid rgba(148, 163, 184, 0.35);
+        padding: 0.75rem 0.95rem;
+        font-size: 1rem;
+        background: rgba(255, 255, 255, 0.92);
+        color: inherit;
+    }
+
+    [data-theme="dark"] .auth-panel input {
+        background: rgba(15, 23, 42, 0.82);
+        border-color: rgba(71, 85, 105, 0.45);
+    }
+
+    .auth-panel__header h2 {
+        margin: 0;
+        font-size: 1.45rem;
+    }
+
+    .auth-panel__subtitle {
+        margin: 0.35rem 0 0.9rem;
+        color: var(--portal-muted);
+        font-size: 0.95rem;
+    }
+
+    .portal-auth-cta {
+        margin-top: 1.2rem;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 0.95rem;
+        color: var(--portal-muted);
+    }
+
+    .document-toggle {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.85rem;
+    }
+
+    .document-toggle__buttons {
+        display: inline-flex;
+        gap: 0.5rem;
+        background: rgba(148, 163, 184, 0.1);
+        padding: 0.3rem;
+        border-radius: 12px;
+    }
+
+    .document-toggle__btn {
+        border: none;
+        background: transparent;
+        padding: 0.45rem 0.9rem;
+        border-radius: 10px;
+        font-weight: 600;
+        color: var(--portal-muted);
+        cursor: pointer;
+        transition: background 0.2s ease, color 0.2s ease;
+    }
+
+    .document-toggle__btn.active {
+        background: linear-gradient(135deg, rgba(37, 99, 235, 0.16), rgba(37, 99, 235, 0.3));
+        color: rgba(30, 64, 175, 0.92);
+    }
+
+    [data-theme="dark"] .document-toggle__btn.active {
+        color: rgba(191, 219, 254, 0.92);
+        background: linear-gradient(135deg, rgba(96, 165, 250, 0.22), rgba(59, 130, 246, 0.32));
+    }
+
+    .document-fields {
+        display: grid;
+        gap: 1rem;
+    }
+
+    .field-group--hidden {
+        display: none;
+    }
+
+    .address-grid {
+        display: grid;
+        gap: 1rem;
+    }
+
+    @media (min-width: 640px) {
+        .address-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+    }
+
+    @media (min-width: 960px) {
+        .address-grid {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+    }
+
+    .field-grid {
+        display: grid;
+        gap: 1rem;
+    }
+
+    @media (min-width: 720px) {
+        .field-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+    }
+
+    .portal-btn {
+        border: none;
+        border-radius: 12px;
+        padding: 0.85rem 1.3rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .portal-btn--primary {
+        background: linear-gradient(135deg, rgba(37, 99, 235, 0.95), rgba(59, 130, 246, 0.95));
+        color: #fff;
+        box-shadow: 0 16px 32px -20px rgba(37, 99, 235, 0.7);
+    }
+
+    .portal-btn--ghost {
+        background: transparent;
+        color: rgba(37, 99, 235, 0.88);
+        border: 1px solid rgba(37, 99, 235, 0.3);
+    }
+
+    [data-theme="dark"] .portal-btn--ghost {
+        color: rgba(191, 219, 254, 0.9);
+        border-color: rgba(148, 163, 184, 0.35);
+        background: rgba(15, 23, 42, 0.6);
+    }
+
+    .portal-btn:hover {
+        transform: translateY(-1px);
+    }
+
+    .portal-feedback {
+        margin-top: 1rem;
+        border-radius: 12px;
+        padding: 0.75rem 0.9rem;
+        font-size: 0.95rem;
+        background: rgba(148, 163, 184, 0.12);
+        color: var(--portal-muted);
+        display: none;
+    }
+
+    .portal-feedback[data-state] {
+        display: block;
+    }
+
+    .portal-feedback[data-state="success"] {
+        background: rgba(34, 197, 94, 0.16);
+        color: #166534;
+    }
+
+    .portal-feedback[data-state="error"] {
+        background: rgba(248, 113, 113, 0.18);
+        color: #b91c1c;
+    }
+
+    .cep-feedback {
+        font-size: 0.85rem;
+        color: var(--portal-muted);
+        margin: 0.25rem 0 0;
+    }
+
+    .cep-feedback[data-state="error"] {
+        color: #b91c1c;
+    }
+
+    .cep-feedback[data-state="success"] {
+        color: #15803d;
+    }
+</style>
+
+<script>
+    (() => {
+        const docButtons = document.querySelectorAll('[data-doc-option]');
+        const docFields = document.querySelectorAll('[data-doc-field]');
+        const cepInput = document.getElementById('registro-cep');
+        const estadoInput = document.getElementById('registro-estado');
+        const cepStatus = document.querySelector('[data-cep-feedback]');
+        const form = document.getElementById('portal-register-form');
+        const feedback = document.getElementById('portal-register-feedback');
+        const actionUrl = <?= json_encode($url('portal/cadastro')); ?>;
+        const loginUrl = <?= json_encode($url('portal')); ?>;
+
+        const setFeedback = (element, message, state = '') => {
+            if (!element) return;
+            element.textContent = message;
+            if (state) {
+                element.dataset.state = state;
+            } else {
+                delete element.dataset.state;
+            }
+        };
+
+        const setDocumentType = (type) => {
+            const selected = type === 'cpf' ? 'cpf' : 'cnpj';
+            docButtons.forEach((button) => {
+                const isActive = button.dataset.docOption === selected;
+                button.classList.toggle('active', isActive);
+                button.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+            });
+            docFields.forEach((wrapper) => {
+                const matches = wrapper.dataset.docField === selected;
+                wrapper.classList.toggle('field-group--hidden', !matches);
+                const input = wrapper.querySelector('input');
+                if (input) {
+                    if (matches) {
+                        input.removeAttribute('disabled');
+                    } else {
+                        input.value = '';
+                        input.setAttribute('disabled', 'disabled');
+                    }
+                }
+            });
+        };
+
+        const aplicarCep = async (cep) => {
+            if (!cepStatus) return;
+            setFeedback(cepStatus, 'Consultando CEP…');
+            try {
+                const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+                if (!response.ok) throw new Error('CEP não encontrado');
+                const data = await response.json();
+                if (data.erro) throw new Error('CEP inválido');
+                document.getElementById('registro-endereco').value = data.logradouro || '';
+                document.getElementById('registro-bairro').value = data.bairro || '';
+                document.getElementById('registro-cidade').value = data.localidade || '';
+                document.getElementById('registro-estado').value = (data.uf || '').toUpperCase();
+                setFeedback(cepStatus, 'Endereço preenchido automaticamente.', 'success');
+            } catch (error) {
+                setFeedback(cepStatus, error.message || 'Não foi possível localizar o CEP.', 'error');
+            }
+        };
+
+        docButtons.forEach((button) => {
+            button.addEventListener('click', () => setDocumentType(button.dataset.docOption));
+        });
+
+        if (cepInput) {
+            cepInput.addEventListener('blur', () => {
+                const somente = cepInput.value.replace(/\D+/g, '');
+                if (somente.length === 8) {
+                    aplicarCep(somente);
+                }
+            });
+        }
+
+        if (estadoInput) {
+            estadoInput.addEventListener('input', (event) => {
+                const value = event.target.value.replace(/[^A-Za-z]/g, '').toUpperCase().slice(0, 2);
+                event.target.value = value;
+            });
+        }
+
+        if (form) {
+            form.addEventListener('submit', async (event) => {
+                event.preventDefault();
+                setFeedback(feedback, 'Enviando dados…');
+                const formData = new FormData(form);
+                const payload = Object.fromEntries(formData.entries());
+                try {
+                    const response = await fetch(actionUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload),
+                    });
+                    const json = await response.json();
+                    if (!response.ok) {
+                        throw new Error(json.message || 'Não foi possível concluir o cadastro.');
+                    }
+                    setFeedback(feedback, json.message || 'Cadastro realizado com sucesso! Redirecionando…', 'success');
+                    form.reset();
+                    setDocumentType('cnpj');
+                    setTimeout(() => {
+                        window.location.href = loginUrl;
+                    }, 1800);
+                } catch (error) {
+                    setFeedback(feedback, error.message || 'Não foi possível concluir o cadastro.', 'error');
+                }
+            });
+        }
+
+        setDocumentType('cnpj');
+    })();
+</script>

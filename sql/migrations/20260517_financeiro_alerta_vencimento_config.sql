@@ -1,0 +1,3 @@
+INSERT INTO configuracoes (chave, valor) VALUES
+ ('FINANCEIRO_ALERTA_VENCIMENTO_DIAS','7')
+ON DUPLICATE KEY UPDATE valor = VALUES(valor);

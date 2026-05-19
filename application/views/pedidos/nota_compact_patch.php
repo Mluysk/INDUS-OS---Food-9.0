@@ -1,0 +1,128 @@
+<style>
+    .nota-shell {
+        font-size: 10.8px !important;
+    }
+
+    .nota-head {
+        padding: 7px !important;
+        gap: 7px !important;
+    }
+
+    .nota-logo img {
+        height: 42px !important;
+    }
+
+    .nota-empresa h1 {
+        font-size: 14px !important;
+    }
+
+    .nota-empresa p,
+    .nota-block p,
+    .nota-observacoes p {
+        margin-top: 1px !important;
+        margin-bottom: 1px !important;
+    }
+
+    .nota-head__box {
+        padding: 6px 8px !important;
+    }
+
+    .nota-head__box .row {
+        font-size: 10.8px !important;
+        line-height: 1.18 !important;
+    }
+
+    .nota-block {
+        padding: 7px !important;
+        gap: 7px !important;
+    }
+
+    .nota-block h3 {
+        margin-bottom: 2px !important;
+        font-size: 11.5px !important;
+    }
+
+    .nota-table th,
+    .nota-table td {
+        padding: 3px 5px !important;
+        font-size: 9.4px !important;
+        line-height: 1.08 !important;
+    }
+
+    .nota-table th {
+        font-size: 8.8px !important;
+        letter-spacing: 0.05em !important;
+    }
+
+    .nota-table .product-col strong {
+        font-size: 9.4px !important;
+        line-height: 1.08 !important;
+    }
+
+    .nota-table .muted {
+        font-size: 8.6px !important;
+        line-height: 1.05 !important;
+    }
+
+    .nota-observacoes {
+        padding: 7px !important;
+        gap: 7px !important;
+    }
+
+    .nota-observacoes h4 {
+        margin-bottom: 2px !important;
+        font-size: 10.6px !important;
+    }
+
+    .total-box {
+        padding: 6px !important;
+        gap: 4px !important;
+    }
+
+    .total-row__grand {
+        font-size: 12.4px !important;
+        padding-top: 4px !important;
+    }
+
+    .pix-box {
+        padding: 8px 7px !important;
+        gap: 8px !important;
+        grid-template-columns: minmax(0, 1fr) 124px !important;
+    }
+
+    .pix-left h3 {
+        font-size: 12px !important;
+        margin: 1px 0 2px !important;
+    }
+
+    .pix-left .pix-eyebrow,
+    .pix-qr-placeholder {
+        font-size: 9.4px !important;
+    }
+
+    .pix-right {
+        min-height: 112px !important;
+        padding: 4px !important;
+    }
+
+    @media print {
+        .nota-shell {
+            font-size: 10px !important;
+        }
+
+        .nota-table th,
+        .nota-table td {
+            padding: 2px 4px !important;
+            font-size: 8.8px !important;
+            line-height: 1.04 !important;
+        }
+
+        .nota-table .product-col strong {
+            font-size: 8.8px !important;
+        }
+
+        .nota-table th {
+            font-size: 8.2px !important;
+        }
+    }
+</style>

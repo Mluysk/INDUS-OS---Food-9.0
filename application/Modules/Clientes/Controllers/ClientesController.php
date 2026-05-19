@@ -1,0 +1,152 @@
+<?php
+namespace App\Modules\Clientes\Controllers;
+
+use App\Core\Controller;
+use App\Services\ClientesService;
+
+class ClientesController extends Controller
+{
+    private ClientesService $clientes;
+
+    public function __construct(
+        \App\Core\Container $container,
+        \App\Services\AuthService $auth,
+        \App\Services\AuditService $audit,
+        ClientesService $clientes
+    ) {
+        parent::__construct($container, $auth, $audit);
+        $this->clientes = $clientes;
+    }
+
+    public function index(): void
+    {
+        $this->auth->ensureRole(['admin','gestor','financeiro']);
+        $clientes = $this->clientes->all();
+
+        if ($this->wantsJson()) {
+            $this->json($clientes);
+            return;
+        }
+
+        $this->render('clientes/index_with_patch', [
+            'clientes' => $clientes,
+        ], [
+            'title' => 'Clientes',
+            'activeMenu' => 'clientes',
+            'breadcrumbs' => ['Cadastros', 'Clientes'],
+        ]);
+    }
+
+    public function store(): void
+    {
+        $this->auth->ensureRole(['admin','gestor']);
+        $data = json_decode(file_get_contents('php://input'), true) ?: $_POST;
+        try {
+            $id = $this->clientes->create($data, $this->auth->user()['id']);
+            if ($this->wantsJson()) {
+                $this->json(['id' => $id], 201);
+            } else {
+                $this->setFlash('success', 'Cliente cadastrado com sucesso.');
+                $this->redirect('/clientes');
+            }
+        } catch (\InvalidArgumentException $e) {
+            if ($this->wantsJson()) {
+                $this->json(['message' => $e->getMessage()], 422);
+            } else {
+                $this->setFlash('error', $e->getMessage());
+                $this->redirect('/clientes');
+            }
+        }
+    }
+
+    public function update($id): void
+    {
+        $this->auth->ensureRole(['admin','gestor']);
+        $data = json_decode(file_get_contents('php://input'), true) ?: $_POST;
+        try {
+            $this->clientes->update((int)$id, $data, $this->auth->user()['id']);
+            if ($this->wantsJson()) {
+                $this->json(['message' => 'Atualizado']);
+            } else {
+                $this->setFlash('success', 'Cliente atualizado com sucesso.');
+                $this->redirect('/clientes');
+            }
+        } catch (\InvalidArgumentException $e) {
+            if ($this->wantsJson()) {
+                $this->json(['message' => $e->getMessage()], 422);
+            } else {
+                $this->setFlash('error', $e->getMessage());
+                $this->redirect('/clientes');
+            }
+        }
+    }
+
+    public function show($id): void
+    {
+        $this->auth->ensureRole(['admin','gestor','financeiro']);
+        $cliente = $this->clientes->find((int) $id);
+
+        if (!$cliente) {
+            if ($this->wantsJson()) {
+                $this->json(['message' => 'Cliente não encontrado'], 404);
+            } else {
+                $this->setFlash('error', 'Cliente não encontrado.');
+                $this->redirect('/clientes');
+            }
+            return;
+        }
+
+        if ($this->wantsJson()) {
+            $this->json($cliente);
+            return;
+        }
+
+        $this->render('clientes/detail', [
+            'cliente' => $cliente,
+        ], [
+            'title' => 'Detalhes do cliente',
+            'activeMenu' => 'clientes',
+            'breadcrumbs' => ['Cadastros', 'Clientes', 'Detalhes'],
+        ]);
+    }
+
+    public function delete($id): void
+    {
+        $this->auth->ensureRole(['admin','gestor']);
+        $clienteId = (int) $id;
+
+        try {
+            $this->clientes->delete($clienteId, $this->auth->user()['id']);
+            if ($this->wantsJson()) {
+                $this->json(['message' => 'Cliente removido']);
+            } else {
+                $this->setFlash('success', 'Cliente removido com sucesso.');
+                $this->redirect('/clientes');
+            }
+        } catch (\InvalidArgumentException $e) {
+            if ($this->wantsJson()) {
+                $this->json(['message' => $e->getMessage()], 422);
+            } else {
+                $this->setFlash('error', $e->getMessage());
+                $this->redirect('/clientes');
+            }
+        }
+    }
+
+    public function printList(): void
+    {
+        $this->auth->ensureRole(['admin','gestor','financeiro']);
+        $clientes = $this->clientes->all();
+        $this->audit->log((int)($this->auth->user()['id'] ?? 0), 'documento', 'clientes', null, [
+            'documento' => 'lista_clientes',
+            'quantidade' => count($clientes),
+        ]);
+
+        $this->render('clientes/print', [
+            'clientes' => $clientes,
+        ], [
+            'title' => 'Clientes cadastrados',
+            'layout' => 'layouts/print',
+        ]);
+    }
+}

@@ -1,0 +1,19 @@
+<?php
+include __DIR__.'/orders_portal_code_fix_patch.php';
+include __DIR__.'/index.php';
+include __DIR__.'/client_search_patch.php';
+include __DIR__.'/tabs_location_patch.php';
+include __DIR__.'/tab_icons_patch.php';
+include __DIR__.'/edit_modal_patch.php';
+include __DIR__.'/items_search_patch.php';
+include __DIR__.'/freight_patch.php';
+include __DIR__.'/freight_switch_pill_patch.php';
+include __DIR__.'/freight_number_ui_fix_patch.php';
+include __DIR__.'/discount_new_order_patch.php';
+include __DIR__.'/discount_edit_popup_patch.php';
+include __DIR__.'/discount_edit_force_patch.php';
+include __DIR__.'/payment_patch.php';
+include __DIR__.'/orders_delete_fix_patch.php';
+include __DIR__.'/orders_list_layout_patch.php';
+include __DIR__.'/orders_list_compact_fix_patch.php';
+include __DIR__.'/pix_list_config_patch.php';

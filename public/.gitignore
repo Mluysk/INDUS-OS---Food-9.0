@@ -1,0 +1,6 @@
+/vendor/
+.env
+/storage/backups/db/*.sql
+/storage/backups/files/*.tar.gz
+/uploads/*
+!.gitignore

@@ -1,0 +1,15 @@
+<IfModule mod_rewrite.c>
+    Options -Indexes
+    RewriteEngine On
+
+    # Permite que arquivos ou pastas reais na raiz sejam servidos normalmente
+    RewriteCond %{REQUEST_FILENAME} -f [OR]
+    RewriteCond %{REQUEST_FILENAME} -d
+    RewriteRule ^ - [L]
+
+    # Atende arquivos públicos (uploads, documentação) diretamente
+    RewriteRule ^(uploads/.*|swagger\.json)$ public/$1 [L]
+
+    # Qualquer outra rota é enviada para o front controller do CodeIgniter
+    RewriteRule ^(.*)$ public/index.php [L,QSA]
+</IfModule>
