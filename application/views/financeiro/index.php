@@ -161,6 +161,33 @@ if (!function_exists('financeiro_format_date')) {
     .finance-table-wrap .data-table td:nth-child(3) { white-space: normal; min-width: 180px; max-width: 280px; }
     .finance-table-wrap .finance-status-badge { padding: 3px 8px; font-size: 0.68rem; }
     .finance-table-wrap .finance-paid-button { padding: 4px 10px; font-size: 0.76rem; }
+    .finance-summary-grid { display: grid; grid-template-columns: minmax(280px, 0.95fr) minmax(420px, 1.45fr); gap: 16px; align-items: stretch; margin-top: 16px; }
+    .finance-summary-metrics { display: grid; gap: 12px; }
+    .finance-summary-card,
+    .finance-chart-panel { border: 1px solid var(--border, #e5e7eb); border-radius: 18px; padding: 14px; background: var(--surface, #fff); box-shadow: 0 14px 34px rgba(15, 23, 42, 0.08); }
+    .finance-summary-card { display: grid; gap: 8px; }
+    .finance-summary-card span { color: var(--muted, #64748b); font-size: 0.72rem; font-weight: 900; letter-spacing: 0.05em; text-transform: uppercase; }
+    .finance-summary-card strong { color: var(--text, #111827); font-size: 1.52rem; line-height: 1; }
+    .finance-summary-card small { color: var(--muted, #64748b); font-size: 0.78rem; font-weight: 700; }
+    .finance-summary-card.is-entrada strong { color: #047857; }
+    .finance-summary-card.is-saida strong { color: #b91c1c; }
+    .finance-summary-card.is-saldo strong.is-negative { color: #b91c1c; }
+    .finance-summary-card.is-saldo strong.is-positive { color: #047857; }
+    .finance-summary-charts { display: grid; grid-template-columns: minmax(280px, 1.55fr) minmax(230px, 0.85fr); gap: 16px; min-width: 0; }
+    .finance-chart-panel { min-width: 0; }
+    .finance-chart-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
+    .finance-chart-header h3 { margin: 0 0 4px; }
+    .finance-chart-header p { margin: 0; color: var(--muted, #64748b); font-size: 0.84rem; font-weight: 650; }
+    .finance-chart-legend { display: inline-flex; align-items: center; gap: 10px; flex-wrap: wrap; color: var(--muted, #64748b); font-size: 0.76rem; font-weight: 850; }
+    .finance-chart-legend span { display: inline-flex; align-items: center; gap: 5px; }
+    .finance-chart-legend span::before { content: ''; width: 10px; height: 10px; border-radius: 999px; background: var(--legend-color); }
+    .finance-chart-canvas { display: block; width: 100%; height: 260px; }
+    .finance-chart-canvas.is-pie { height: 250px; }
+    .finance-summary-note { margin-top: 12px; color: var(--muted, #64748b); font-size: 0.8rem; font-weight: 700; text-align: right; }
+    @media (max-width: 1180px) {
+        .finance-summary-grid,
+        .finance-summary-charts { grid-template-columns: 1fr; }
+    }
     .finance-live-message { display: none; margin-bottom: 14px; border-radius: 14px; padding: 12px 14px; font-weight: 700; }
     .finance-live-message.active { display: block; }
     .finance-live-message.success { background: rgba(16, 185, 129, 0.14); color: #047857; border: 1px solid rgba(16, 185, 129, 0.25); }
@@ -172,6 +199,7 @@ if (!function_exists('financeiro_format_date')) {
 
 <div class="finance-tabs" role="tablist" aria-label="Lançamentos financeiros">
     <button type="button" class="finance-tab-button active" id="tab-entrada" data-finance-tab="entrada" aria-selected="true"><span class="icon" data-lucide="arrow-down-circle"></span><span>Entrada</span></button>
+    <button type="button" class="finance-tab-button" id="tab-resumo" data-finance-tab="resumo" aria-selected="false"><span class="icon" data-lucide="chart-pie"></span><span>Resumo</span></button>
     <button type="button" class="finance-tab-button" id="tab-saida" data-finance-tab="saida" aria-selected="false"><span class="icon" data-lucide="arrow-up-circle"></span><span>Saída</span></button>
 </div>
 
@@ -480,6 +508,84 @@ if (!function_exists('financeiro_format_date')) {
     </section>
 </section>
 
+<section class="finance-tab-panel" data-finance-panel="resumo" aria-labelledby="tab-resumo">
+    <section class="panel">
+        <div class="finance-card-header">
+            <div>
+                <h2>Resumo</h2>
+                <p class="panel-description finance-form-note">Compare entradas, saidas e saldo por dia, semana, mes ou ano.</p>
+            </div>
+            <div class="finance-period-card" data-finance-period-card="resumo">
+                <div class="finance-period-top">
+                    <span class="finance-period-label"><span class="icon" data-lucide="scale"></span><span>Entrada - saida</span></span>
+                    <strong class="finance-period-total" data-finance-summary-total="saldo">R$ 0,00</strong>
+                </div>
+                <div class="finance-period-controls" aria-label="Filtro do resumo financeiro">
+                    <select data-finance-period-select="resumo" aria-label="Periodo do resumo financeiro">
+                        <option value="diario">Diario</option>
+                        <option value="semanal">Semanal</option>
+                        <option value="mensal" selected>Mensal</option>
+                        <option value="anual">Anual</option>
+                    </select>
+                    <input type="date" data-finance-period-input="resumo" data-period-input="diario" value="<?= htmlspecialchars($hoje, ENT_QUOTES, 'UTF-8'); ?>" hidden>
+                    <input type="week" data-finance-period-input="resumo" data-period-input="semanal" hidden>
+                    <input type="month" data-finance-period-input="resumo" data-period-input="mensal" value="<?= htmlspecialchars(date('Y-m'), ENT_QUOTES, 'UTF-8'); ?>">
+                    <input type="number" data-finance-period-input="resumo" data-period-input="anual" min="2000" max="2100" value="<?= htmlspecialchars(date('Y'), ENT_QUOTES, 'UTF-8'); ?>" hidden>
+                </div>
+                <div class="finance-period-footer">
+                    <strong class="finance-period-focus" data-finance-period-focus="resumo"><?= htmlspecialchars(strtoupper(strftime('%B/%y')), ENT_QUOTES, 'UTF-8'); ?></strong>
+                    <small class="finance-period-caption" data-finance-period-caption="resumo"></small>
+                </div>
+            </div>
+        </div>
+
+        <div class="finance-summary-grid">
+            <div class="finance-summary-metrics" aria-label="Indicadores do resumo financeiro">
+                <div class="finance-summary-card is-entrada">
+                    <span>Entrada</span>
+                    <strong data-finance-summary-total="entrada">R$ 0,00</strong>
+                    <small data-finance-summary-count="entrada">0 lancamentos</small>
+                </div>
+                <div class="finance-summary-card is-saida">
+                    <span>Saida</span>
+                    <strong data-finance-summary-total="saida">R$ 0,00</strong>
+                    <small data-finance-summary-count="saida">0 lancamentos</small>
+                </div>
+                <div class="finance-summary-card is-saldo">
+                    <span>Resultado</span>
+                    <strong data-finance-summary-result>R$ 0,00</strong>
+                    <small data-finance-summary-status>Sem movimento no periodo.</small>
+                </div>
+            </div>
+            <div class="finance-summary-charts">
+                <div class="finance-chart-panel">
+                    <div class="finance-chart-header">
+                        <div>
+                            <h3>Comparativo</h3>
+                            <p data-finance-wave-caption>Entradas e saidas no periodo.</p>
+                        </div>
+                        <div class="finance-chart-legend" aria-label="Legenda do grafico de ondas">
+                            <span style="--legend-color:#10b981;">Entrada</span>
+                            <span style="--legend-color:#ef4444;">Saida</span>
+                        </div>
+                    </div>
+                    <canvas class="finance-chart-canvas" data-finance-wave-chart width="720" height="260" aria-label="Grafico de ondas comparando entrada e saida"></canvas>
+                </div>
+                <div class="finance-chart-panel">
+                    <div class="finance-chart-header">
+                        <div>
+                            <h3>Participacao</h3>
+                            <p data-finance-pie-caption>Percentual entre entrada e saida.</p>
+                        </div>
+                    </div>
+                    <canvas class="finance-chart-canvas is-pie" data-finance-pie-chart width="320" height="250" aria-label="Grafico de pizza percentual"></canvas>
+                    <div class="finance-summary-note" data-finance-pie-note>0% entrada / 0% saida</div>
+                </div>
+            </div>
+        </div>
+    </section>
+</section>
+
 <script>
     (function() {
         const buttons = document.querySelectorAll('[data-finance-tab]');
@@ -620,6 +726,14 @@ if (!function_exists('financeiro_format_date')) {
                 panel.classList.toggle('active', panel.dataset.financePanel === tab);
             });
 
+            if (tab === 'resumo') {
+                renderSummaryDashboard();
+                if (updateHash && window.location.hash !== '#resumo') {
+                    history.replaceState(null, '', '#resumo');
+                }
+                return;
+            }
+
             activateSubtab(tab, subpanel || 'lancamento', false);
 
             if (updateHash) {
@@ -745,6 +859,290 @@ if (!function_exists('financeiro_format_date')) {
         const periodRows = (tipo) => {
             const periodState = getPeriodState(tipo);
             return (financeRows[tipo] || []).filter((item) => matchesPeriod(item, tipo, periodState.period, periodState.value));
+        };
+
+        const addDays = (date, days) => {
+            const next = new Date(date);
+            next.setDate(next.getDate() + days);
+            return next;
+        };
+
+        const isoDate = (date) => {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        };
+
+        const startOfIsoWeek = (weekValue) => {
+            const match = String(weekValue || '').match(/^(\d{4})-W(\d{2})$/);
+            if (!match) {
+                return new Date(`${todayValue}T00:00:00`);
+            }
+            const year = Number(match[1]);
+            const week = Number(match[2]);
+            const simple = new Date(year, 0, 1 + (week - 1) * 7);
+            const day = simple.getDay() || 7;
+            return addDays(simple, 1 - day);
+        };
+
+        const summarySeriesBuckets = (period, value) => {
+            const buckets = [];
+            if (period === 'diario') {
+                const selected = new Date(`${value || todayValue}T00:00:00`);
+                for (let index = 6; index >= 0; index -= 1) {
+                    const date = addDays(selected, -index);
+                    buckets.push({ key: isoDate(date), label: date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }) });
+                }
+                return buckets;
+            }
+            if (period === 'semanal') {
+                const start = startOfIsoWeek(value);
+                for (let index = 0; index < 7; index += 1) {
+                    const date = addDays(start, index);
+                    buckets.push({ key: isoDate(date), label: date.toLocaleDateString('pt-BR', { weekday: 'short' }).replace('.', '') });
+                }
+                return buckets;
+            }
+            if (period === 'mensal') {
+                const base = monthYearDate(value) || new Date();
+                const days = new Date(base.getFullYear(), base.getMonth() + 1, 0).getDate();
+                for (let day = 1; day <= days; day += 1) {
+                    const date = new Date(base.getFullYear(), base.getMonth(), day);
+                    buckets.push({ key: isoDate(date), label: String(day).padStart(2, '0') });
+                }
+                return buckets;
+            }
+            const year = Number(value || new Date().getFullYear());
+            for (let month = 0; month < 12; month += 1) {
+                const date = new Date(year, month, 1);
+                buckets.push({ key: `${year}-${String(month + 1).padStart(2, '0')}`, label: date.toLocaleDateString('pt-BR', { month: 'short' }).replace('.', '') });
+            }
+            return buckets;
+        };
+
+        const summaryRows = (tipo, period, value) => (financeRows[tipo] || [])
+            .filter((item) => matchesPeriod(item, tipo, period, value));
+
+        const sumRows = (rows) => rows.reduce((acc, item) => acc + numberFromValue(item.valor), 0);
+
+        const setCanvasSize = (canvas) => {
+            const rect = canvas.getBoundingClientRect();
+            const ratio = window.devicePixelRatio || 1;
+            const width = Math.max(1, Math.round(rect.width * ratio));
+            const height = Math.max(1, Math.round(rect.height * ratio));
+            if (canvas.width !== width || canvas.height !== height) {
+                canvas.width = width;
+                canvas.height = height;
+            }
+            const ctx = canvas.getContext('2d');
+            ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+            return { ctx, width: rect.width, height: rect.height };
+        };
+
+        const drawWaveChart = (series) => {
+            const canvas = document.querySelector('[data-finance-wave-chart]');
+            if (!canvas) {
+                return;
+            }
+            const { ctx, width, height } = setCanvasSize(canvas);
+            ctx.clearRect(0, 0, width, height);
+            const padding = { top: 18, right: 18, bottom: 34, left: 54 };
+            const chartWidth = width - padding.left - padding.right;
+            const chartHeight = height - padding.top - padding.bottom;
+            const maxValue = Math.max(1, ...series.map((item) => Math.max(item.entrada, item.saida)));
+
+            ctx.strokeStyle = 'rgba(100,116,139,0.18)';
+            ctx.lineWidth = 1;
+            for (let index = 0; index <= 4; index += 1) {
+                const y = padding.top + (chartHeight / 4) * index;
+                ctx.beginPath();
+                ctx.moveTo(padding.left, y);
+                ctx.lineTo(width - padding.right, y);
+                ctx.stroke();
+            }
+
+            const point = (item, index, field) => {
+                const x = padding.left + (series.length <= 1 ? chartWidth / 2 : (chartWidth / (series.length - 1)) * index);
+                const y = padding.top + chartHeight - (item[field] / maxValue) * chartHeight;
+                return { x, y };
+            };
+
+            const drawLine = (field, color) => {
+                ctx.beginPath();
+                series.forEach((item, index) => {
+                    const current = point(item, index, field);
+                    if (index === 0) {
+                        ctx.moveTo(current.x, current.y);
+                        return;
+                    }
+                    const previous = point(series[index - 1], index - 1, field);
+                    const midX = (previous.x + current.x) / 2;
+                    ctx.bezierCurveTo(midX, previous.y, midX, current.y, current.x, current.y);
+                });
+                ctx.strokeStyle = color;
+                ctx.lineWidth = 3;
+                ctx.stroke();
+
+                series.forEach((item, index) => {
+                    const current = point(item, index, field);
+                    ctx.beginPath();
+                    ctx.arc(current.x, current.y, 3.5, 0, Math.PI * 2);
+                    ctx.fillStyle = color;
+                    ctx.fill();
+                });
+            };
+
+            drawLine('entrada', '#10b981');
+            drawLine('saida', '#ef4444');
+
+            ctx.fillStyle = '#64748b';
+            ctx.font = '700 11px Arial, sans-serif';
+            ctx.textAlign = 'center';
+            const labelStep = Math.max(1, Math.ceil(series.length / 8));
+            series.forEach((item, index) => {
+                if (index % labelStep !== 0 && index !== series.length - 1) {
+                    return;
+                }
+                const x = padding.left + (series.length <= 1 ? chartWidth / 2 : (chartWidth / (series.length - 1)) * index);
+                ctx.fillText(item.label, x, height - 12);
+            });
+            ctx.textAlign = 'left';
+            ctx.fillText(formatCurrency(maxValue), 8, padding.top + 4);
+            ctx.fillText('R$ 0,00', 8, padding.top + chartHeight);
+        };
+
+        const drawPieChart = (entradaTotal, saidaTotal) => {
+            const canvas = document.querySelector('[data-finance-pie-chart]');
+            if (!canvas) {
+                return;
+            }
+            const { ctx, width, height } = setCanvasSize(canvas);
+            ctx.clearRect(0, 0, width, height);
+            const total = entradaTotal + saidaTotal;
+            const radius = Math.max(54, Math.min(width, height) / 2 - 22);
+            const centerX = width / 2;
+            const centerY = height / 2;
+
+            if (total <= 0) {
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+                ctx.strokeStyle = 'rgba(100,116,139,0.25)';
+                ctx.lineWidth = 24;
+                ctx.stroke();
+                ctx.fillStyle = '#64748b';
+                ctx.font = '800 14px Arial, sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText('Sem dados', centerX, centerY + 5);
+                return;
+            }
+
+            const entradaAngle = (entradaTotal / total) * Math.PI * 2;
+            const drawSlice = (start, end, color) => {
+                ctx.beginPath();
+                ctx.moveTo(centerX, centerY);
+                ctx.arc(centerX, centerY, radius, start, end);
+                ctx.closePath();
+                ctx.fillStyle = color;
+                ctx.fill();
+            };
+
+            drawSlice(-Math.PI / 2, -Math.PI / 2 + entradaAngle, '#10b981');
+            drawSlice(-Math.PI / 2 + entradaAngle, Math.PI * 1.5, '#ef4444');
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, radius * 0.58, 0, Math.PI * 2);
+            ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--surface') || '#fff';
+            ctx.fill();
+
+            const entradaPercent = Math.round((entradaTotal / total) * 100);
+            ctx.fillStyle = '#111827';
+            ctx.font = '900 24px Arial, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText(`${entradaPercent}%`, centerX, centerY - 2);
+            ctx.fillStyle = '#64748b';
+            ctx.font = '800 11px Arial, sans-serif';
+            ctx.fillText('entrada', centerX, centerY + 18);
+        };
+
+        const renderSummaryDashboard = () => {
+            const { period, value } = getPeriodState('resumo');
+            const inputs = Array.from(document.querySelectorAll('[data-finance-period-input="resumo"]'));
+            inputs.forEach((input) => {
+                input.hidden = input.dataset.periodInput !== period;
+            });
+
+            const entradasResumo = summaryRows('entrada', period, value);
+            const saidasResumo = summaryRows('saida', period, value);
+            const entradaTotal = sumRows(entradasResumo);
+            const saidaTotal = sumRows(saidasResumo);
+            const saldo = entradaTotal - saidaTotal;
+            const totalMovimento = entradaTotal + saidaTotal;
+            const entradaPercent = totalMovimento > 0 ? Math.round((entradaTotal / totalMovimento) * 100) : 0;
+            const saidaPercent = totalMovimento > 0 ? 100 - entradaPercent : 0;
+
+            document.querySelectorAll('[data-finance-summary-total="entrada"]').forEach((target) => { target.textContent = formatCurrency(entradaTotal); });
+            document.querySelectorAll('[data-finance-summary-total="saida"]').forEach((target) => { target.textContent = formatCurrency(saidaTotal); });
+            document.querySelectorAll('[data-finance-summary-total="saldo"]').forEach((target) => { target.textContent = formatCurrency(saldo); });
+            document.querySelector('[data-finance-summary-count="entrada"]').textContent = `${entradasResumo.length} ${entradasResumo.length === 1 ? 'lancamento' : 'lancamentos'}`;
+            document.querySelector('[data-finance-summary-count="saida"]').textContent = `${saidasResumo.length} ${saidasResumo.length === 1 ? 'lancamento' : 'lancamentos'}`;
+
+            const result = document.querySelector('[data-finance-summary-result]');
+            if (result) {
+                result.textContent = formatCurrency(saldo);
+                result.classList.toggle('is-positive', saldo >= 0);
+                result.classList.toggle('is-negative', saldo < 0);
+            }
+
+            const status = document.querySelector('[data-finance-summary-status]');
+            if (status) {
+                status.textContent = saldo > 0
+                    ? 'Entradas acima das saidas no periodo.'
+                    : (saldo < 0 ? 'Saidas acima das entradas no periodo.' : 'Entradas e saidas equilibradas no periodo.');
+            }
+
+            const focus = document.querySelector('[data-finance-period-focus="resumo"]');
+            const caption = document.querySelector('[data-finance-period-caption="resumo"]');
+            if (focus) {
+                focus.textContent = periodFocusLabel(period, value);
+            }
+            if (caption) {
+                caption.textContent = `${periodLabels[period] || 'Periodo'} - ${periodDisplayLabel(period, value)}`;
+            }
+
+            const buckets = summarySeriesBuckets(period, value);
+            const series = buckets.map((bucket) => {
+                const entrada = (financeRows.entrada || [])
+                    .filter((item) => {
+                        const date = itemDate(item, 'entrada');
+                        return period === 'anual' ? String(date).startsWith(bucket.key) : date === bucket.key;
+                    })
+                    .reduce((acc, item) => acc + numberFromValue(item.valor), 0);
+                const saida = (financeRows.saida || [])
+                    .filter((item) => {
+                        const date = itemDate(item, 'saida');
+                        return period === 'anual' ? String(date).startsWith(bucket.key) : date === bucket.key;
+                    })
+                    .reduce((acc, item) => acc + numberFromValue(item.valor), 0);
+                return { ...bucket, entrada, saida };
+            });
+
+            const waveCaption = document.querySelector('[data-finance-wave-caption]');
+            if (waveCaption) {
+                waveCaption.textContent = period === 'diario'
+                    ? 'Ultimos 7 dias ate a data selecionada.'
+                    : `Comparacao ${String(periodLabels[period] || 'do periodo').toLocaleLowerCase('pt-BR')}.`;
+            }
+            const pieNote = document.querySelector('[data-finance-pie-note]');
+            if (pieNote) {
+                pieNote.textContent = `${entradaPercent}% entrada / ${saidaPercent}% saida`;
+            }
+            const pieCaption = document.querySelector('[data-finance-pie-caption]');
+            if (pieCaption) {
+                pieCaption.textContent = `${formatCurrency(entradaTotal)} entrada e ${formatCurrency(saidaTotal)} saida.`;
+            }
+
+            drawWaveChart(series);
+            drawPieChart(entradaTotal, saidaTotal);
         };
 
         const applyFinanceFilters = (tipo) => {
@@ -1104,6 +1502,10 @@ if (!function_exists('financeiro_format_date')) {
         };
 
         const renderFinanceList = (tipo) => {
+            if (tipo === 'resumo') {
+                renderSummaryDashboard();
+                return;
+            }
             const rows = applyFinanceFilters(tipo);
             refreshSortIndicators(tipo);
             renderPeriodSummary(tipo);
@@ -1130,6 +1532,7 @@ if (!function_exists('financeiro_format_date')) {
             financeRows.saida = data.saidas || [];
             renderFinanceList('entrada');
             renderFinanceList('saida');
+            renderSummaryDashboard();
         };
 
         const submitLive = async (form) => {
@@ -1342,7 +1745,12 @@ if (!function_exists('financeiro_format_date')) {
             }
         });
 
-        window.addEventListener('resize', () => closeStatusMenus());
+        window.addEventListener('resize', () => {
+            closeStatusMenus();
+            if (document.querySelector('[data-finance-panel="resumo"]')?.classList.contains('active')) {
+                renderSummaryDashboard();
+            }
+        });
         window.addEventListener('scroll', () => closeStatusMenus(), true);
 
         document.querySelectorAll('[data-finance-sort-button]').forEach((button) => {
@@ -1359,10 +1767,13 @@ if (!function_exists('financeiro_format_date')) {
 
         renderFinanceList('entrada');
         renderFinanceList('saida');
+        renderSummaryDashboard();
         removeLeakedCodeText();
 
         const initial = window.location.hash.replace('#', '');
-        if (initial === 'saida' || initial === 'saida-lancamento') {
+        if (initial === 'resumo') {
+            activate('resumo', null, false);
+        } else if (initial === 'saida' || initial === 'saida-lancamento') {
             activate('saida', 'lancamento', false);
         } else if (initial === 'saida-lista') {
             activate('saida', 'lista', false);
