@@ -25,6 +25,7 @@ if (!function_exists('financeiro_format_date')) {
     .finance-card-tab-button .icon { width: 16px; height: 16px; }
     .finance-tab-button.active,
     .finance-card-tab-button.active { background: var(--primary, #4b5563); color: #fff; border-color: transparent; }
+    .finance-card-header .finance-card-tabs { justify-content: flex-end; margin-bottom: 0; margin-left: auto; }
     .finance-tab-panel,
     .finance-card-panel { display: none; }
     .finance-tab-panel.active,
@@ -542,11 +543,10 @@ if (!function_exists('financeiro_format_date')) {
                 <h2>Resumo</h2>
                 <p class="panel-description finance-form-note">Compare entradas, saidas e saldo por dia, semana, mes ou ano.</p>
             </div>
-        </div>
-
-        <div class="finance-card-tabs" role="tablist" aria-label="Resumo financeiro">
-            <button type="button" class="finance-card-tab-button active" id="tab-resumo-geral" data-finance-summary-tab="geral" aria-selected="true"><span class="icon" data-lucide="layout-dashboard"></span><span>Visão geral</span></button>
-            <button type="button" class="finance-card-tab-button" id="tab-resumo-desempenho" data-finance-summary-tab="desempenho" aria-selected="false"><span class="icon" data-lucide="activity"></span><span>Comparativo de desempenho</span></button>
+            <div class="finance-card-tabs" role="tablist" aria-label="Resumo financeiro">
+                <button type="button" class="finance-card-tab-button active" id="tab-resumo-geral" data-finance-summary-tab="geral" aria-selected="true"><span class="icon" data-lucide="layout-dashboard"></span><span>Visão geral</span></button>
+                <button type="button" class="finance-card-tab-button" id="tab-resumo-desempenho" data-finance-summary-tab="desempenho" aria-selected="false"><span class="icon" data-lucide="activity"></span><span>Comparativo de desempenho</span></button>
+            </div>
         </div>
 
         <div class="finance-summary-panel active" data-finance-summary-panel="geral" aria-labelledby="tab-resumo-geral">
