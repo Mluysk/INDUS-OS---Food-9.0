@@ -578,8 +578,8 @@ if (!function_exists('financeiro_format_date')) {
                             <p data-finance-wave-caption>Entradas e saidas no periodo.</p>
                         </div>
                         <div class="finance-chart-legend" aria-label="Legenda do grafico de ondas">
-                            <span style="--legend-color:var(--primary);">Entrada</span>
-                            <span style="--legend-color:var(--primary-dark);">Saida</span>
+                            <span style="--legend-color:#10b981;">Entrada</span>
+                            <span style="--legend-color:#ef4444;">Saida</span>
                         </div>
                     </div>
                     <canvas class="finance-chart-canvas" data-finance-wave-chart width="720" height="260" aria-label="Grafico de ondas comparando entrada e saida"></canvas>
@@ -685,8 +685,8 @@ if (!function_exists('financeiro_format_date')) {
                             <p data-finance-performance-chart-caption>Valor total de cada recorte.</p>
                         </div>
                         <div class="finance-chart-legend" aria-label="Legenda do comparativo">
-                            <span style="--legend-color:var(--primary);">Periodo A</span>
-                            <span style="--legend-color:var(--primary-dark);">Periodo B</span>
+                            <span style="--legend-color:#10b981;" data-finance-performance-legend="left">Periodo A</span>
+                            <span style="--legend-color:#ef4444;" data-finance-performance-legend="right">Periodo B</span>
                         </div>
                     </div>
                     <canvas class="finance-chart-canvas" data-finance-performance-chart="comparativo" width="520" height="260" aria-label="Grafico comparando dois periodos"></canvas>
@@ -1092,25 +1092,11 @@ if (!function_exists('financeiro_format_date')) {
             return { ctx, width: rect.width, height: rect.height };
         };
 
-        const themeColor = (name, fallback) => getComputedStyle(document.documentElement).getPropertyValue(name).trim() || fallback;
-        const themeRgba = (alpha) => {
-            const rgb = themeColor('--primary-rgb', '79, 70, 229');
-            return `rgba(${rgb}, ${alpha})`;
-        };
-        const financeChartColors = () => ({
-            primary: themeColor('--primary', '#4f46e5'),
-            dark: themeColor('--primary-dark', '#3730a3'),
-            soft: themeColor('--primary-soft', '#eef2ff'),
-            grid: themeRgba(0.14),
-            muted: '#64748b'
-        });
-
         const drawWaveChart = (series) => {
             const canvas = document.querySelector('[data-finance-wave-chart]');
             if (!canvas) {
                 return;
             }
-            const colors = financeChartColors();
             const { ctx, width, height } = setCanvasSize(canvas);
             ctx.clearRect(0, 0, width, height);
             const padding = { top: 18, right: 18, bottom: 34, left: 54 };
@@ -1118,7 +1104,7 @@ if (!function_exists('financeiro_format_date')) {
             const chartHeight = height - padding.top - padding.bottom;
             const maxValue = Math.max(1, ...series.map((item) => Math.max(item.entrada, item.saida)));
 
-            ctx.strokeStyle = colors.grid;
+            ctx.strokeStyle = 'rgba(100,116,139,0.18)';
             ctx.lineWidth = 1;
             for (let index = 0; index <= 4; index += 1) {
                 const y = padding.top + (chartHeight / 4) * index;
@@ -1159,8 +1145,8 @@ if (!function_exists('financeiro_format_date')) {
                 });
             };
 
-            drawLine('entrada', colors.primary);
-            drawLine('saida', colors.dark);
+            drawLine('entrada', '#10b981');
+            drawLine('saida', '#ef4444');
 
             ctx.fillStyle = '#64748b';
             ctx.font = '700 11px Arial, sans-serif';
@@ -1183,7 +1169,6 @@ if (!function_exists('financeiro_format_date')) {
             if (!canvas) {
                 return;
             }
-            const colors = financeChartColors();
             const { ctx, width, height } = setCanvasSize(canvas);
             ctx.clearRect(0, 0, width, height);
             const total = entradaTotal + saidaTotal;
@@ -1194,7 +1179,7 @@ if (!function_exists('financeiro_format_date')) {
             if (total <= 0) {
                 ctx.beginPath();
                 ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
-                ctx.strokeStyle = colors.grid;
+                ctx.strokeStyle = 'rgba(100,116,139,0.25)';
                 ctx.lineWidth = 24;
                 ctx.stroke();
                 ctx.fillStyle = '#64748b';
@@ -1214,8 +1199,8 @@ if (!function_exists('financeiro_format_date')) {
                 ctx.fill();
             };
 
-            drawSlice(-Math.PI / 2, -Math.PI / 2 + entradaAngle, colors.primary);
-            drawSlice(-Math.PI / 2 + entradaAngle, Math.PI * 1.5, colors.dark);
+            drawSlice(-Math.PI / 2, -Math.PI / 2 + entradaAngle, '#10b981');
+            drawSlice(-Math.PI / 2 + entradaAngle, Math.PI * 1.5, '#ef4444');
             ctx.beginPath();
             ctx.arc(centerX, centerY, radius * 0.58, 0, Math.PI * 2);
             ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--surface') || '#fff';
@@ -1330,7 +1315,6 @@ if (!function_exists('financeiro_format_date')) {
             if (!canvas) {
                 return;
             }
-            const colors = financeChartColors();
             const { ctx, width, height } = setCanvasSize(canvas);
             ctx.clearRect(0, 0, width, height);
             const padding = { top: 18, right: 18, bottom: 34, left: 54 };
@@ -1338,11 +1322,11 @@ if (!function_exists('financeiro_format_date')) {
             const chartHeight = height - padding.top - padding.bottom;
             const maxValue = Math.max(1, left.total, right.total);
             const bars = [
-                { ...left, color: colors.primary },
-                { ...right, color: colors.dark }
+                { ...left, color: '#10b981' },
+                { ...right, color: '#ef4444' }
             ];
 
-            ctx.strokeStyle = colors.grid;
+            ctx.strokeStyle = 'rgba(100,116,139,0.18)';
             ctx.lineWidth = 1;
             for (let index = 0; index <= 4; index += 1) {
                 const y = padding.top + (chartHeight / 4) * index;
@@ -1381,7 +1365,6 @@ if (!function_exists('financeiro_format_date')) {
             if (!canvas) {
                 return;
             }
-            const colors = financeChartColors();
             const { ctx, width, height } = setCanvasSize(canvas);
             ctx.clearRect(0, 0, width, height);
             const total = leftTotal + rightTotal;
@@ -1392,7 +1375,7 @@ if (!function_exists('financeiro_format_date')) {
             if (total <= 0) {
                 ctx.beginPath();
                 ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
-                ctx.strokeStyle = colors.grid;
+                ctx.strokeStyle = 'rgba(100,116,139,0.25)';
                 ctx.lineWidth = 24;
                 ctx.stroke();
                 ctx.fillStyle = '#64748b';
@@ -1411,8 +1394,8 @@ if (!function_exists('financeiro_format_date')) {
                 ctx.fillStyle = color;
                 ctx.fill();
             };
-            drawSlice(-Math.PI / 2, -Math.PI / 2 + leftAngle, colors.primary);
-            drawSlice(-Math.PI / 2 + leftAngle, Math.PI * 1.5, colors.dark);
+            drawSlice(-Math.PI / 2, -Math.PI / 2 + leftAngle, '#10b981');
+            drawSlice(-Math.PI / 2 + leftAngle, Math.PI * 1.5, '#ef4444');
             ctx.beginPath();
             ctx.arc(centerX, centerY, radius * 0.58, 0, Math.PI * 2);
             ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--surface') || '#fff';
@@ -1462,6 +1445,8 @@ if (!function_exists('financeiro_format_date')) {
             const chartCaption = document.querySelector('[data-finance-performance-chart-caption]');
             const pieCaption = document.querySelector('[data-finance-performance-pie-caption]');
             const pieNote = document.querySelector('[data-finance-performance-pie-note]');
+            const leftLegend = document.querySelector('[data-finance-performance-legend="left"]');
+            const rightLegend = document.querySelector('[data-finance-performance-legend="right"]');
 
             if (leftTarget) {
                 leftTarget.textContent = formatCurrency(leftTotal);
@@ -1489,8 +1474,8 @@ if (!function_exists('financeiro_format_date')) {
             }
             if (status) {
                 status.textContent = difference > 0
-                    ? `Periodo A ficou ${Math.abs(variation).toLocaleString('pt-BR', { maximumFractionDigits: 1 })}% acima do periodo B.`
-                    : (difference < 0 ? `Periodo A ficou ${Math.abs(variation).toLocaleString('pt-BR', { maximumFractionDigits: 1 })}% abaixo do periodo B.` : 'Sem variacao entre os periodos.');
+                    ? `${leftShort} ficou ${Math.abs(variation).toLocaleString('pt-BR', { maximumFractionDigits: 1 })}% acima de ${rightShort}.`
+                    : (difference < 0 ? `${leftShort} ficou ${Math.abs(variation).toLocaleString('pt-BR', { maximumFractionDigits: 1 })}% abaixo de ${rightShort}.` : 'Sem variacao entre os periodos.');
             }
             if (focus) {
                 focus.textContent = `${leftShort} X ${rightShort}`;
@@ -1511,15 +1496,21 @@ if (!function_exists('financeiro_format_date')) {
                 chartCaption.textContent = `${leftLabel} contra ${rightLabel}.`;
             }
             if (pieCaption) {
-                pieCaption.textContent = `${formatCurrency(leftTotal)} no A e ${formatCurrency(rightTotal)} no B.`;
+                pieCaption.textContent = `${formatCurrency(leftTotal)} em ${leftShort} e ${formatCurrency(rightTotal)} em ${rightShort}.`;
             }
             if (pieNote) {
-                pieNote.textContent = `${leftPercent}% periodo A / ${rightPercent}% periodo B`;
+                pieNote.textContent = `${leftPercent}% ${leftShort} / ${rightPercent}% ${rightShort}`;
+            }
+            if (leftLegend) {
+                leftLegend.textContent = leftShort;
+            }
+            if (rightLegend) {
+                rightLegend.textContent = rightShort;
             }
 
             drawPerformanceBarChart(
-                { total: leftTotal, shortLabel: 'Periodo A' },
-                { total: rightTotal, shortLabel: 'Periodo B' }
+                { total: leftTotal, shortLabel: leftShort },
+                { total: rightTotal, shortLabel: rightShort }
             );
             drawPerformancePieChart(leftTotal, rightTotal);
         };
