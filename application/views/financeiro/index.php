@@ -542,28 +542,6 @@ if (!function_exists('financeiro_format_date')) {
                 <h2>Resumo</h2>
                 <p class="panel-description finance-form-note">Compare entradas, saidas e saldo por dia, semana, mes ou ano.</p>
             </div>
-            <div class="finance-period-card" data-finance-period-card="resumo">
-                <div class="finance-period-top">
-                    <span class="finance-period-label"><span class="icon" data-lucide="scale"></span><span>Entrada - saida</span></span>
-                    <strong class="finance-period-total" data-finance-summary-total="saldo">R$ 0,00</strong>
-                </div>
-                <div class="finance-period-controls" aria-label="Filtro do resumo financeiro">
-                    <select data-finance-period-select="resumo" aria-label="Periodo do resumo financeiro">
-                        <option value="diario">Diario</option>
-                        <option value="semanal">Semanal</option>
-                        <option value="mensal" selected>Mensal</option>
-                        <option value="anual">Anual</option>
-                    </select>
-                    <input type="date" data-finance-period-input="resumo" data-period-input="diario" value="<?= htmlspecialchars($hoje, ENT_QUOTES, 'UTF-8'); ?>" hidden>
-                    <input type="week" data-finance-period-input="resumo" data-period-input="semanal" hidden>
-                    <input type="month" data-finance-period-input="resumo" data-period-input="mensal" value="<?= htmlspecialchars(date('Y-m'), ENT_QUOTES, 'UTF-8'); ?>">
-                    <input type="number" data-finance-period-input="resumo" data-period-input="anual" min="2000" max="2100" value="<?= htmlspecialchars(date('Y'), ENT_QUOTES, 'UTF-8'); ?>" hidden>
-                </div>
-                <div class="finance-period-footer">
-                    <strong class="finance-period-focus" data-finance-period-focus="resumo"><?= htmlspecialchars(strtoupper(strftime('%B/%y')), ENT_QUOTES, 'UTF-8'); ?></strong>
-                    <small class="finance-period-caption" data-finance-period-caption="resumo"></small>
-                </div>
-            </div>
         </div>
 
         <div class="finance-card-tabs" role="tablist" aria-label="Resumo financeiro">
@@ -1021,9 +999,10 @@ if (!function_exists('financeiro_format_date')) {
             const select = document.querySelector(`[data-finance-period-select="${tipo}"]`);
             const period = select?.value || 'mensal';
             const input = document.querySelector(`[data-finance-period-input="${tipo}"][data-period-input="${period}"]`);
+            const fallbackValue = period === 'anual' ? todayValue.slice(0, 4) : (period === 'mensal' ? todayValue.slice(0, 7) : todayValue);
             return {
                 period,
-                value: input?.value || ''
+                value: input?.value || fallbackValue
             };
         };
 
