@@ -200,7 +200,7 @@ if (!function_exists('financeiro_format_date')) {
 <div class="finance-tabs" role="tablist" aria-label="Lançamentos financeiros">
     <button type="button" class="finance-tab-button active" id="tab-entrada" data-finance-tab="entrada" aria-selected="true"><span class="icon" data-lucide="arrow-down-circle"></span><span>Entrada</span></button>
     <button type="button" class="finance-tab-button" id="tab-saida" data-finance-tab="saida" aria-selected="false"><span class="icon" data-lucide="arrow-up-circle"></span><span>Saída</span></button>
-    <button type="button" class="finance-tab-button" id="tab-resumo" data-finance-tab="resumo" aria-selected="false"><span class="icon" data-lucide="chart-pie"></span><span>Resumo</span></button>
+    <button type="button" class="finance-tab-button" id="tab-resumo" data-finance-tab="resumo" aria-selected="false"><span class="icon" data-lucide="pie-chart"></span><span>Resumo</span></button>
 </div>
 
 <section class="finance-tab-panel active" data-finance-panel="entrada" aria-labelledby="tab-entrada">
