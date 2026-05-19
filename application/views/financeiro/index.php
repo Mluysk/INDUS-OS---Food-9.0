@@ -174,6 +174,13 @@ if (!function_exists('financeiro_format_date')) {
     .finance-summary-card.is-saldo strong.is-negative { color: #b91c1c; }
     .finance-summary-card.is-saldo strong.is-positive { color: #047857; }
     .finance-summary-charts { display: grid; grid-template-columns: minmax(280px, 1.55fr) minmax(230px, 0.85fr); gap: 16px; min-width: 0; }
+    .finance-summary-panel { display: none; }
+    .finance-summary-panel.active { display: block; }
+    .finance-performance-toolbar { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin: 4px 0 16px; }
+    .finance-performance-toolbar label { display: flex; flex-direction: column; gap: 5px; margin: 0; color: var(--muted, #64748b); font-size: 0.82rem; font-weight: 800; }
+    .finance-performance-toolbar input { min-height: 36px; width: 112px; border: 1px solid var(--border, #e5e7eb); border-radius: 999px; padding: 6px 12px; background: var(--surface, #fff); color: var(--text, #111827); font-weight: 850; }
+    .finance-performance-kpis { display: grid; grid-template-columns: repeat(3, minmax(180px, 1fr)); gap: 12px; margin-bottom: 16px; }
+    .finance-performance-charts { display: grid; grid-template-columns: repeat(2, minmax(280px, 1fr)); gap: 16px; }
     .finance-chart-panel { min-width: 0; }
     .finance-chart-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
     .finance-chart-header h3 { margin: 0 0 4px; }
@@ -186,7 +193,9 @@ if (!function_exists('financeiro_format_date')) {
     .finance-summary-note { margin-top: 12px; color: var(--muted, #64748b); font-size: 0.8rem; font-weight: 700; text-align: right; }
     @media (max-width: 1180px) {
         .finance-summary-grid,
-        .finance-summary-charts { grid-template-columns: 1fr; }
+        .finance-summary-charts,
+        .finance-performance-kpis,
+        .finance-performance-charts { grid-template-columns: 1fr; }
     }
     .finance-live-message { display: none; margin-bottom: 14px; border-radius: 14px; padding: 12px 14px; font-weight: 700; }
     .finance-live-message.active { display: block; }
@@ -539,6 +548,12 @@ if (!function_exists('financeiro_format_date')) {
             </div>
         </div>
 
+        <div class="finance-card-tabs" role="tablist" aria-label="Resumo financeiro">
+            <button type="button" class="finance-card-tab-button active" id="tab-resumo-geral" data-finance-summary-tab="geral" aria-selected="true"><span class="icon" data-lucide="layout-dashboard"></span><span>Visão geral</span></button>
+            <button type="button" class="finance-card-tab-button" id="tab-resumo-desempenho" data-finance-summary-tab="desempenho" aria-selected="false"><span class="icon" data-lucide="activity"></span><span>Comparativo de desempenho</span></button>
+        </div>
+
+        <div class="finance-summary-panel active" data-finance-summary-panel="geral" aria-labelledby="tab-resumo-geral">
         <div class="finance-summary-grid">
             <div class="finance-summary-metrics" aria-label="Indicadores do resumo financeiro">
                 <div class="finance-summary-card is-entrada">
@@ -583,6 +598,65 @@ if (!function_exists('financeiro_format_date')) {
                 </div>
             </div>
         </div>
+        </div>
+
+        <div class="finance-summary-panel" data-finance-summary-panel="desempenho" aria-labelledby="tab-resumo-desempenho">
+            <div class="finance-performance-toolbar">
+                <div>
+                    <h3>Comparativo de desempenho</h3>
+                    <p class="panel-description finance-form-note">Analise o desempenho mes a mes de entradas e saidas separadamente.</p>
+                </div>
+                <label>
+                    <span>Ano comparado</span>
+                    <input type="number" data-finance-performance-year min="2000" max="2100" value="<?= htmlspecialchars(date('Y'), ENT_QUOTES, 'UTF-8'); ?>">
+                </label>
+            </div>
+
+            <div class="finance-performance-kpis" aria-label="Indicadores de desempenho financeiro">
+                <div class="finance-summary-card is-entrada">
+                    <span>Total de entradas</span>
+                    <strong data-finance-performance-total="entrada">R$ 0,00</strong>
+                    <small data-finance-performance-highlight="entrada">Melhor mes: -</small>
+                </div>
+                <div class="finance-summary-card is-saida">
+                    <span>Total de saidas</span>
+                    <strong data-finance-performance-total="saida">R$ 0,00</strong>
+                    <small data-finance-performance-highlight="saida">Maior saida: -</small>
+                </div>
+                <div class="finance-summary-card is-saldo">
+                    <span>Resultado anual</span>
+                    <strong data-finance-performance-result>R$ 0,00</strong>
+                    <small data-finance-performance-status>Sem movimento no ano.</small>
+                </div>
+            </div>
+
+            <div class="finance-performance-charts">
+                <div class="finance-chart-panel">
+                    <div class="finance-chart-header">
+                        <div>
+                            <h3>Entradas mes a mes</h3>
+                            <p data-finance-performance-caption="entrada">Desempenho mensal de entradas.</p>
+                        </div>
+                        <div class="finance-chart-legend" aria-label="Legenda de entradas">
+                            <span style="--legend-color:#10b981;">Entrada</span>
+                        </div>
+                    </div>
+                    <canvas class="finance-chart-canvas" data-finance-performance-chart="entrada" width="520" height="260" aria-label="Grafico de desempenho mensal de entradas"></canvas>
+                </div>
+                <div class="finance-chart-panel">
+                    <div class="finance-chart-header">
+                        <div>
+                            <h3>Saidas mes a mes</h3>
+                            <p data-finance-performance-caption="saida">Desempenho mensal de saidas.</p>
+                        </div>
+                        <div class="finance-chart-legend" aria-label="Legenda de saidas">
+                            <span style="--legend-color:#ef4444;">Saida</span>
+                        </div>
+                    </div>
+                    <canvas class="finance-chart-canvas" data-finance-performance-chart="saida" width="520" height="260" aria-label="Grafico de desempenho mensal de saidas"></canvas>
+                </div>
+            </div>
+        </div>
     </section>
 </section>
 
@@ -592,6 +666,8 @@ if (!function_exists('financeiro_format_date')) {
         const panels = document.querySelectorAll('[data-finance-panel]');
         const subButtons = document.querySelectorAll('[data-finance-subtab]');
         const subPanels = document.querySelectorAll('[data-finance-card-panel]');
+        const summaryButtons = document.querySelectorAll('[data-finance-summary-tab]');
+        const summaryPanels = document.querySelectorAll('[data-finance-summary-panel]');
         const messageBox = document.getElementById('finance-live-message');
         const listUrl = <?= json_encode($url('financeiro/titulos')); ?>;
         const lancamentosBaseUrl = <?= json_encode($url('financeiro/lancamentos')); ?>;
@@ -714,6 +790,38 @@ if (!function_exists('financeiro_format_date')) {
             }
         }
 
+        function activeSummaryPanel() {
+            return document.querySelector('[data-finance-summary-panel].active')?.dataset.financeSummaryPanel || 'geral';
+        }
+
+        function renderActiveSummaryPanel() {
+            if (activeSummaryPanel() === 'desempenho') {
+                renderPerformanceDashboard();
+                return;
+            }
+            renderSummaryDashboard();
+        }
+
+        function activateSummaryPanel(panel, updateHash) {
+            const target = panel === 'desempenho' ? 'desempenho' : 'geral';
+            summaryButtons.forEach((button) => {
+                const active = button.dataset.financeSummaryTab === target;
+                button.classList.toggle('active', active);
+                button.setAttribute('aria-selected', active ? 'true' : 'false');
+            });
+            summaryPanels.forEach((summaryPanel) => {
+                summaryPanel.classList.toggle('active', summaryPanel.dataset.financeSummaryPanel === target);
+            });
+            renderActiveSummaryPanel();
+
+            if (updateHash) {
+                const hash = target === 'desempenho' ? 'resumo-desempenho' : 'resumo';
+                if (window.location.hash !== '#' + hash) {
+                    history.replaceState(null, '', '#' + hash);
+                }
+            }
+        }
+
         function activate(tab, subpanel, updateHash) {
             removeLeakedCodeText();
             buttons.forEach((button) => {
@@ -727,10 +835,7 @@ if (!function_exists('financeiro_format_date')) {
             });
 
             if (tab === 'resumo') {
-                renderSummaryDashboard();
-                if (updateHash && window.location.hash !== '#resumo') {
-                    history.replaceState(null, '', '#resumo');
-                }
+                activateSummaryPanel(subpanel || activeSummaryPanel(), updateHash);
                 return;
             }
 
@@ -1145,6 +1250,170 @@ if (!function_exists('financeiro_format_date')) {
             drawPieChart(entradaTotal, saidaTotal);
         };
 
+        const monthlyPerformanceSeries = (year) => {
+            const months = Array.from({ length: 12 }, (_, index) => {
+                const date = new Date(year, index, 1);
+                return {
+                    key: `${year}-${String(index + 1).padStart(2, '0')}`,
+                    label: date.toLocaleDateString('pt-BR', { month: 'short' }).replace('.', ''),
+                    entrada: 0,
+                    saida: 0
+                };
+            });
+
+            ['entrada', 'saida'].forEach((tipo) => {
+                (financeRows[tipo] || []).forEach((item) => {
+                    const date = itemDate(item, tipo);
+                    const monthKey = String(date || '').slice(0, 7);
+                    const bucket = months.find((month) => month.key === monthKey);
+                    if (bucket) {
+                        bucket[tipo] += numberFromValue(item.valor);
+                    }
+                });
+            });
+
+            return months;
+        };
+
+        const drawPerformanceChart = (tipo, series) => {
+            const canvas = document.querySelector(`[data-finance-performance-chart="${tipo}"]`);
+            if (!canvas) {
+                return;
+            }
+            const { ctx, width, height } = setCanvasSize(canvas);
+            ctx.clearRect(0, 0, width, height);
+            const padding = { top: 18, right: 18, bottom: 34, left: 54 };
+            const chartWidth = width - padding.left - padding.right;
+            const chartHeight = height - padding.top - padding.bottom;
+            const maxValue = Math.max(1, ...series.map((item) => item[tipo]));
+            const color = tipo === 'entrada' ? '#10b981' : '#ef4444';
+            const fillColor = tipo === 'entrada' ? 'rgba(16,185,129,0.14)' : 'rgba(239,68,68,0.14)';
+
+            ctx.strokeStyle = 'rgba(100,116,139,0.18)';
+            ctx.lineWidth = 1;
+            for (let index = 0; index <= 4; index += 1) {
+                const y = padding.top + (chartHeight / 4) * index;
+                ctx.beginPath();
+                ctx.moveTo(padding.left, y);
+                ctx.lineTo(width - padding.right, y);
+                ctx.stroke();
+            }
+
+            const points = series.map((item, index) => ({
+                x: padding.left + (chartWidth / Math.max(1, series.length - 1)) * index,
+                y: padding.top + chartHeight - (item[tipo] / maxValue) * chartHeight,
+                label: item.label
+            }));
+
+            ctx.beginPath();
+            points.forEach((point, index) => {
+                if (index === 0) {
+                    ctx.moveTo(point.x, point.y);
+                    return;
+                }
+                const previous = points[index - 1];
+                const midX = (previous.x + point.x) / 2;
+                ctx.bezierCurveTo(midX, previous.y, midX, point.y, point.x, point.y);
+            });
+            ctx.lineTo(points[points.length - 1].x, padding.top + chartHeight);
+            ctx.lineTo(points[0].x, padding.top + chartHeight);
+            ctx.closePath();
+            ctx.fillStyle = fillColor;
+            ctx.fill();
+
+            ctx.beginPath();
+            points.forEach((point, index) => {
+                if (index === 0) {
+                    ctx.moveTo(point.x, point.y);
+                    return;
+                }
+                const previous = points[index - 1];
+                const midX = (previous.x + point.x) / 2;
+                ctx.bezierCurveTo(midX, previous.y, midX, point.y, point.x, point.y);
+            });
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 3;
+            ctx.stroke();
+
+            points.forEach((point) => {
+                ctx.beginPath();
+                ctx.arc(point.x, point.y, 3.5, 0, Math.PI * 2);
+                ctx.fillStyle = color;
+                ctx.fill();
+            });
+
+            ctx.fillStyle = '#64748b';
+            ctx.font = '700 11px Arial, sans-serif';
+            ctx.textAlign = 'center';
+            points.forEach((point) => {
+                ctx.fillText(point.label, point.x, height - 12);
+            });
+            ctx.textAlign = 'left';
+            ctx.fillText(formatCurrency(maxValue), 8, padding.top + 4);
+            ctx.fillText('R$ 0,00', 8, padding.top + chartHeight);
+        };
+
+        const renderPerformanceDashboard = () => {
+            const yearInput = document.querySelector('[data-finance-performance-year]');
+            const year = Number(yearInput?.value || new Date().getFullYear());
+            const series = monthlyPerformanceSeries(year);
+            const entradaTotal = series.reduce((acc, item) => acc + item.entrada, 0);
+            const saidaTotal = series.reduce((acc, item) => acc + item.saida, 0);
+            const saldo = entradaTotal - saidaTotal;
+            const bestEntrada = series.reduce((best, item) => item.entrada > best.entrada ? item : best, series[0]);
+            const bestSaida = series.reduce((best, item) => item.saida > best.saida ? item : best, series[0]);
+
+            const entradaTarget = document.querySelector('[data-finance-performance-total="entrada"]');
+            const saidaTarget = document.querySelector('[data-finance-performance-total="saida"]');
+            const resultTarget = document.querySelector('[data-finance-performance-result]');
+            const entradaHighlight = document.querySelector('[data-finance-performance-highlight="entrada"]');
+            const saidaHighlight = document.querySelector('[data-finance-performance-highlight="saida"]');
+            const status = document.querySelector('[data-finance-performance-status]');
+            const entradaCaption = document.querySelector('[data-finance-performance-caption="entrada"]');
+            const saidaCaption = document.querySelector('[data-finance-performance-caption="saida"]');
+            const focus = document.querySelector('[data-finance-period-focus="resumo"]');
+            const caption = document.querySelector('[data-finance-period-caption="resumo"]');
+
+            if (entradaTarget) {
+                entradaTarget.textContent = formatCurrency(entradaTotal);
+            }
+            if (saidaTarget) {
+                saidaTarget.textContent = formatCurrency(saidaTotal);
+            }
+            document.querySelectorAll('[data-finance-summary-total="saldo"]').forEach((target) => { target.textContent = formatCurrency(saldo); });
+            if (resultTarget) {
+                resultTarget.textContent = formatCurrency(saldo);
+                resultTarget.classList.toggle('is-positive', saldo >= 0);
+                resultTarget.classList.toggle('is-negative', saldo < 0);
+            }
+            if (entradaHighlight) {
+                entradaHighlight.textContent = `Melhor mes: ${bestEntrada.label} (${formatCurrency(bestEntrada.entrada)})`;
+            }
+            if (saidaHighlight) {
+                saidaHighlight.textContent = `Maior saida: ${bestSaida.label} (${formatCurrency(bestSaida.saida)})`;
+            }
+            if (status) {
+                status.textContent = saldo > 0
+                    ? 'Entradas superaram as saidas no ano.'
+                    : (saldo < 0 ? 'Saidas superaram as entradas no ano.' : 'Entradas e saidas ficaram equilibradas no ano.');
+            }
+            if (entradaCaption) {
+                entradaCaption.textContent = `Entrada mensal em ${year}.`;
+            }
+            if (saidaCaption) {
+                saidaCaption.textContent = `Saida mensal em ${year}.`;
+            }
+            if (focus) {
+                focus.textContent = `ANO ${year}`;
+            }
+            if (caption) {
+                caption.textContent = `Desempenho mensal - ${year}`;
+            }
+
+            drawPerformanceChart('entrada', series);
+            drawPerformanceChart('saida', series);
+        };
+
         const applyFinanceFilters = (tipo) => {
             const state = getFilterState(tipo);
             const rows = periodRows(tipo);
@@ -1533,6 +1802,7 @@ if (!function_exists('financeiro_format_date')) {
             renderFinanceList('entrada');
             renderFinanceList('saida');
             renderSummaryDashboard();
+            renderPerformanceDashboard();
         };
 
         const submitLive = async (form) => {
@@ -1599,6 +1869,12 @@ if (!function_exists('financeiro_format_date')) {
         subButtons.forEach((button) => {
             button.addEventListener('click', () => activate(button.dataset.financeSubtab, button.dataset.financeSubpanel, true));
         });
+
+        summaryButtons.forEach((button) => {
+            button.addEventListener('click', () => activateSummaryPanel(button.dataset.financeSummaryTab, true));
+        });
+
+        document.querySelector('[data-finance-performance-year]')?.addEventListener('change', renderPerformanceDashboard);
 
         const closeExportMenus = (except = null) => {
             document.querySelectorAll('[data-finance-export-group]').forEach((group) => {
@@ -1748,7 +2024,7 @@ if (!function_exists('financeiro_format_date')) {
         window.addEventListener('resize', () => {
             closeStatusMenus();
             if (document.querySelector('[data-finance-panel="resumo"]')?.classList.contains('active')) {
-                renderSummaryDashboard();
+                renderActiveSummaryPanel();
             }
         });
         window.addEventListener('scroll', () => closeStatusMenus(), true);
@@ -1768,11 +2044,14 @@ if (!function_exists('financeiro_format_date')) {
         renderFinanceList('entrada');
         renderFinanceList('saida');
         renderSummaryDashboard();
+        renderPerformanceDashboard();
         removeLeakedCodeText();
 
         const initial = window.location.hash.replace('#', '');
         if (initial === 'resumo') {
-            activate('resumo', null, false);
+            activate('resumo', 'geral', false);
+        } else if (initial === 'resumo-desempenho') {
+            activate('resumo', 'desempenho', false);
         } else if (initial === 'saida' || initial === 'saida-lancamento') {
             activate('saida', 'lancamento', false);
         } else if (initial === 'saida-lista') {
