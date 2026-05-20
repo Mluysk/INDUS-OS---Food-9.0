@@ -199,6 +199,7 @@ if (!function_exists('financeiro_format_date')) {
     .finance-performance-kpis { display: grid; grid-template-columns: repeat(3, minmax(180px, 1fr)); gap: 12px; margin-bottom: 16px; }
     .finance-performance-charts { display: grid; grid-template-columns: repeat(2, minmax(280px, 1fr)); gap: 16px; }
     .finance-chart-panel { position: relative; min-width: 0; }
+    .finance-chart-panel.has-chart-zoom { padding-bottom: 48px; }
     .finance-chart-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
     .finance-chart-header h3 { margin: 0 0 4px; }
     .finance-chart-header p { margin: 0; color: var(--muted, #64748b); font-size: 0.84rem; font-weight: 650; }
@@ -206,7 +207,7 @@ if (!function_exists('financeiro_format_date')) {
     .finance-chart-legend { display: inline-flex; align-items: center; gap: 10px; flex-wrap: wrap; color: var(--muted, #64748b); font-size: 0.76rem; font-weight: 850; }
     .finance-chart-legend span { display: inline-flex; align-items: center; gap: 5px; }
     .finance-chart-legend span::before { content: ''; width: 10px; height: 10px; border-radius: 999px; background: var(--legend-color); }
-    .finance-chart-actions { display: inline-flex; align-items: center; gap: 5px; border: 1px solid rgba(100, 116, 139, 0.18); border-radius: 999px; padding: 3px; background: rgba(248,250,252,0.86); }
+    .finance-chart-actions { position: absolute; right: 14px; bottom: 12px; z-index: 12; display: inline-flex; align-items: center; gap: 5px; border: 1px solid rgba(100, 116, 139, 0.18); border-radius: 999px; padding: 3px; background: rgba(248,250,252,0.94); box-shadow: 0 10px 24px rgba(15, 23, 42, 0.10); }
     .finance-chart-action { display: inline-grid; place-items: center; width: 26px; height: 26px; border: 0; border-radius: 999px; background: transparent; color: #64748b; cursor: pointer; transition: background .15s ease, color .15s ease, transform .15s ease; }
     .finance-chart-action:hover,
     .finance-chart-action:focus-visible { outline: 0; background: rgba(var(--primary-rgb, 79, 70, 229), 0.11); color: var(--primary, #4f46e5); }
@@ -605,7 +606,7 @@ if (!function_exists('financeiro_format_date')) {
                 </div>
             </div>
             <div class="finance-summary-charts">
-                <div class="finance-chart-panel">
+                <div class="finance-chart-panel has-chart-zoom">
                     <div class="finance-chart-header">
                         <div>
                             <h3>Comparativo</h3>
@@ -720,7 +721,7 @@ if (!function_exists('financeiro_format_date')) {
             </div>
 
             <div class="finance-performance-charts">
-                <div class="finance-chart-panel">
+                <div class="finance-chart-panel has-chart-zoom">
                     <div class="finance-chart-header">
                         <div>
                             <h3>Comparacao dos periodos</h3>
