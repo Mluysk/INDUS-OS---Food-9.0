@@ -62,18 +62,21 @@ class ConfigDataController extends Controller
             $count = 0;
             $skipped = 0;
             foreach ($rows as $row) {
+                $documento = $this->clientDocument($this->value($row, ['documento', 'cnpj cpf', 'cnpj/cpf', 'cpf cnpj', 'cpf/cnpj']));
+                $cnpj = $this->digits($this->value($row, ['cnpj'])) ?: $documento['cnpj'];
+                $cpf = $this->digits($this->value($row, ['cpf'])) ?: $documento['cpf'];
                 $payload = [
-                    'razao_social' => $this->value($row, ['razao social', 'razao_social', 'nome', 'cliente', 'nome completo']),
-                    'nome_fantasia' => $this->value($row, ['nome fantasia', 'nome_fantasia', 'fantasia', 'loja']),
-                    'cnpj' => $this->digits($this->value($row, ['cnpj', 'documento', 'cnpj cpf', 'cnpj/cpf'])),
-                    'cpf' => $this->digits($this->value($row, ['cpf'])),
+                    'razao_social' => $this->value($row, ['razao social', 'razao_social', 'razao', 'nome', 'cliente', 'nome cliente', 'nome completo', 'empresa']),
+                    'nome_fantasia' => $this->value($row, ['nome fantasia', 'nome_fantasia', 'fantasia', 'loja', 'apelido']),
+                    'cnpj' => $cnpj,
+                    'cpf' => $cpf,
                     'ie' => $this->value($row, ['ie', 'inscricao estadual', 'inscricao_estadual']),
                     'email' => strtolower((string)$this->value($row, ['email', 'e-mail', 'e mail'])),
-                    'telefone' => $this->value($row, ['telefone', 'contato', 'celular']),
+                    'telefone' => $this->value($row, ['telefone', 'fone', 'contato', 'celular']),
                     'contato_tipo' => $this->contactType($this->value($row, ['tipo do contato', 'contato_tipo', 'tipo contato'])),
                     'whatsapp' => $this->value($row, ['whatsapp', 'whtasapp', 'whats']),
                     'cep' => $this->cep($this->value($row, ['cep'])),
-                    'endereco' => $this->value($row, ['endereco', 'rua', 'logradouro']),
+                    'endereco' => $this->value($row, ['endereco', 'endereço', 'rua', 'logradouro']),
                     'numero' => $this->value($row, ['numero', 'número', 'num']),
                     'bairro' => $this->value($row, ['bairro']),
                     'cidade' => $this->value($row, ['cidade']),
@@ -256,6 +259,8 @@ class ConfigDataController extends Controller
             return $this->rowsFromXlsx($tmpName);
         }
 
+        $content = $this->ensureUtf8($content);
+
         if (stripos($content, '<table') !== false || stripos($content, '<tr') !== false) {
             return $this->rowsFromHtmlTable($content);
         }
@@ -267,20 +272,37 @@ class ConfigDataController extends Controller
     {
         $files = $this->xlsxFiles($path);
         $sharedStrings = $this->xlsxSharedStrings($files['xl/sharedStrings.xml'] ?? '');
-        $sheetXml = $this->xlsxFirstWorksheetXml($files);
-
-        if ($sheetXml === '') {
+        $worksheets = $this->xlsxWorksheetXmls($files);
+        if (!$worksheets) {
             throw new \RuntimeException('nao foi possivel localizar a primeira aba da planilha.');
         }
 
+        $rows = [];
+        foreach ($worksheets as $sheetXml) {
+            $matrix = $this->xlsxMatrixFromWorksheet($sheetXml, $sharedStrings);
+            if (count($matrix) < 2) {
+                continue;
+            }
+            $rows = array_merge($rows, $this->matrixToRows($matrix));
+        }
+
+        if (!$rows) {
+            throw new \RuntimeException('a planilha XLSX precisa ter cabecalho e ao menos uma linha.');
+        }
+
+        return $rows;
+    }
+
+    private function xlsxMatrixFromWorksheet(string $sheetXml, array $sharedStrings): array
+    {
         $xml = @simplexml_load_string($sheetXml);
         if (!$xml) {
-            throw new \RuntimeException('a planilha XLSX nao possui linhas para importar.');
+            return [];
         }
 
         $sheetData = $xml->children('http://schemas.openxmlformats.org/spreadsheetml/2006/main')->sheetData;
         if (!$sheetData || !count($sheetData->children('http://schemas.openxmlformats.org/spreadsheetml/2006/main')->row)) {
-            throw new \RuntimeException('a planilha XLSX nao possui linhas para importar.');
+            return [];
         }
 
         $matrix = [];
@@ -299,7 +321,7 @@ class ConfigDataController extends Controller
             }
         }
 
-        return $this->matrixToRows($matrix);
+        return $matrix;
     }
 
     private function xlsxFiles(string $path): array
@@ -407,18 +429,16 @@ class ConfigDataController extends Controller
         return $strings;
     }
 
-    private function xlsxFirstWorksheetXml(array $files): string
+    private function xlsxWorksheetXmls(array $files): array
     {
-        if (!empty($files['xl/worksheets/sheet1.xml'])) {
-            return (string)$files['xl/worksheets/sheet1.xml'];
-        }
-
+        $worksheets = [];
         foreach ($files as $name => $content) {
             if (preg_match('#^xl/worksheets/sheet\d+\.xml$#', $name)) {
-                return (string)$content;
+                $worksheets[$name] = (string)$content;
             }
         }
-        return '';
+        ksort($worksheets, SORT_NATURAL);
+        return array_values($worksheets);
     }
 
     private function xlsxColumnIndex(string $reference): int
@@ -458,23 +478,39 @@ class ConfigDataController extends Controller
     private function rowsFromDelimited(string $content): array
     {
         $content = preg_replace('/^\xEF\xBB\xBF/', '', $content) ?? $content;
-        $lines = preg_split('/\r\n|\r|\n/', trim($content));
-        if (!$lines || count($lines) < 2) {
+        $firstLine = strtok($content, "\r\n");
+        if ($firstLine === false) {
             throw new \RuntimeException('a planilha precisa ter cabecalho e ao menos uma linha.');
         }
 
-        if (stripos($lines[0], 'sep=') === 0) {
-            array_shift($lines);
+        if (stripos($firstLine, 'sep=') === 0) {
+            $content = preg_replace('/^sep=.+\R/u', '', $content, 1) ?? $content;
+            $firstLine = strtok($content, "\r\n");
+            if ($firstLine === false) {
+                throw new \RuntimeException('a planilha precisa ter cabecalho e ao menos uma linha.');
+            }
         }
 
-        $delimiter = $this->detectDelimiter($lines[0]);
-        $headers = array_map(fn($value) => $this->normalizeKey($value), str_getcsv($lines[0], $delimiter));
+        $delimiter = $this->detectDelimiter($firstLine);
+        $handle = fopen('php://temp', 'r+');
+        if (!$handle) {
+            throw new \RuntimeException('nao foi possivel preparar a leitura do arquivo.');
+        }
+        fwrite($handle, $content);
+        rewind($handle);
+
+        $headerValues = fgetcsv($handle, 0, $delimiter);
+        if (!$headerValues) {
+            fclose($handle);
+            throw new \RuntimeException('a planilha precisa ter cabecalho e ao menos uma linha.');
+        }
+
+        $headers = array_map(fn($value) => $this->normalizeKey($value), $headerValues);
         $rows = [];
-        foreach (array_slice($lines, 1) as $line) {
-            if (trim($line) === '') {
+        while (($values = fgetcsv($handle, 0, $delimiter)) !== false) {
+            if (!array_filter($values, static fn($value) => trim((string)$value) !== '')) {
                 continue;
             }
-            $values = str_getcsv($line, $delimiter);
             $row = [];
             foreach ($headers as $index => $header) {
                 if ($header === '') {
@@ -486,8 +522,28 @@ class ConfigDataController extends Controller
                 $rows[] = $row;
             }
         }
+        fclose($handle);
+
+        if (!$rows) {
+            throw new \RuntimeException('a planilha precisa ter cabecalho e ao menos uma linha.');
+        }
 
         return $rows;
+    }
+
+    private function ensureUtf8(string $content): string
+    {
+        if (preg_match('//u', $content)) {
+            return $content;
+        }
+
+        $converted = @iconv('Windows-1252', 'UTF-8//IGNORE', $content);
+        if (is_string($converted) && $converted !== '') {
+            return $converted;
+        }
+
+        $converted = @iconv('ISO-8859-1', 'UTF-8//IGNORE', $content);
+        return is_string($converted) && $converted !== '' ? $converted : $content;
     }
 
     private function rowsFromHtmlTable(string $content): array
@@ -587,7 +643,9 @@ class ConfigDataController extends Controller
             $normalized = $this->normalizeKey($key);
             if (array_key_exists($normalized, $row)) {
                 $value = trim((string)$row[$normalized]);
-                return $value === '' ? null : $value;
+                if ($value !== '') {
+                    return $value;
+                }
             }
         }
         return null;
@@ -731,6 +789,18 @@ class ConfigDataController extends Controller
     {
         $digits = preg_replace('/\D+/', '', (string)$value);
         return $digits === '' ? null : $digits;
+    }
+
+    private function clientDocument(?string $value): array
+    {
+        $digits = $this->digits($value);
+        if ($digits === null) {
+            return ['cnpj' => null, 'cpf' => null];
+        }
+
+        return strlen($digits) <= 11
+            ? ['cnpj' => null, 'cpf' => $digits]
+            : ['cnpj' => $digits, 'cpf' => null];
     }
 
     private function cep(?string $value): ?string
