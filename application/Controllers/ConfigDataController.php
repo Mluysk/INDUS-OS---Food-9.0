@@ -50,6 +50,7 @@ class ConfigDataController extends Controller
     public function importClientes(): void
     {
         $this->auth->ensureRole(['admin']);
+        $success = false;
 
         try {
             $rows = $this->uploadedRows('arquivo');
@@ -111,6 +112,7 @@ class ConfigDataController extends Controller
                 'resultado' => 'sucesso',
             ]);
             $this->setFlash('success', $message);
+            $success = true;
         } catch (\Throwable $exception) {
             $this->audit->log((int)($this->auth->user()['id'] ?? 0), 'import', 'clientes', null, [
                 'arquivo' => $this->uploadedFilename('arquivo'),
@@ -121,7 +123,7 @@ class ConfigDataController extends Controller
             $this->setFlash('error', 'Nao foi possivel importar clientes: '.$exception->getMessage());
         }
 
-        $this->redirect('/config?tab=backup');
+        $this->redirect($success ? '/clientes' : '/config?tab=backup');
     }
 
     public function importProdutos(): void
@@ -263,32 +265,28 @@ class ConfigDataController extends Controller
 
     private function rowsFromXlsx(string $path): array
     {
-        if (!class_exists(\ZipArchive::class)) {
-            throw new \RuntimeException('este servidor nao possui suporte para ler XLSX. Envie CSV, TXT ou XLS simples.');
-        }
-
-        $zip = new \ZipArchive();
-        if ($zip->open($path) !== true) {
-            throw new \RuntimeException('nao foi possivel abrir a planilha XLSX.');
-        }
-
-        $sharedStrings = $this->xlsxSharedStrings($zip);
-        $sheetXml = $this->xlsxFirstWorksheetXml($zip);
-        $zip->close();
+        $files = $this->xlsxFiles($path);
+        $sharedStrings = $this->xlsxSharedStrings($files['xl/sharedStrings.xml'] ?? '');
+        $sheetXml = $this->xlsxFirstWorksheetXml($files);
 
         if ($sheetXml === '') {
             throw new \RuntimeException('nao foi possivel localizar a primeira aba da planilha.');
         }
 
         $xml = @simplexml_load_string($sheetXml);
-        if (!$xml || empty($xml->sheetData->row)) {
+        if (!$xml) {
+            throw new \RuntimeException('a planilha XLSX nao possui linhas para importar.');
+        }
+
+        $sheetData = $xml->children('http://schemas.openxmlformats.org/spreadsheetml/2006/main')->sheetData;
+        if (!$sheetData || !count($sheetData->children('http://schemas.openxmlformats.org/spreadsheetml/2006/main')->row)) {
             throw new \RuntimeException('a planilha XLSX nao possui linhas para importar.');
         }
 
         $matrix = [];
-        foreach ($xml->sheetData->row as $row) {
+        foreach ($sheetData->children('http://schemas.openxmlformats.org/spreadsheetml/2006/main')->row as $row) {
             $cells = [];
-            foreach ($row->c as $cell) {
+            foreach ($row->children('http://schemas.openxmlformats.org/spreadsheetml/2006/main')->c as $cell) {
                 $reference = (string)($cell['r'] ?? '');
                 $columnIndex = $this->xlsxColumnIndex($reference);
                 while (count($cells) < $columnIndex) {
@@ -304,10 +302,88 @@ class ConfigDataController extends Controller
         return $this->matrixToRows($matrix);
     }
 
-    private function xlsxSharedStrings(\ZipArchive $zip): array
+    private function xlsxFiles(string $path): array
     {
-        $content = $zip->getFromName('xl/sharedStrings.xml');
+        if (class_exists(\ZipArchive::class)) {
+            $zip = new \ZipArchive();
+            if ($zip->open($path) !== true) {
+                throw new \RuntimeException('nao foi possivel abrir a planilha XLSX.');
+            }
+
+            $files = [];
+            for ($index = 0; $index < $zip->numFiles; $index++) {
+                $name = (string)$zip->getNameIndex($index);
+                $content = $zip->getFromName($name);
+                if (is_string($content)) {
+                    $files[$name] = $content;
+                }
+            }
+            $zip->close();
+            return $files;
+        }
+
+        $content = file_get_contents($path);
         if (!is_string($content) || $content === '') {
+            throw new \RuntimeException('nao foi possivel ler a planilha XLSX.');
+        }
+
+        return $this->xlsxFilesFromBinary($content);
+    }
+
+    private function xlsxFilesFromBinary(string $content): array
+    {
+        $eocdOffset = strrpos($content, "PK\x05\x06");
+        if ($eocdOffset === false || strlen($content) < $eocdOffset + 22) {
+            throw new \RuntimeException('arquivo XLSX invalido ou corrompido.');
+        }
+
+        $eocd = unpack('vdisk/vstartDisk/ventriesDisk/ventries/Vsize/Voffset/vcommentLength', substr($content, $eocdOffset + 4, 18));
+        $centralOffset = (int)($eocd['offset'] ?? 0);
+        $entries = (int)($eocd['entries'] ?? 0);
+        $files = [];
+        $cursor = $centralOffset;
+
+        for ($index = 0; $index < $entries; $index++) {
+            if (substr($content, $cursor, 4) !== "PK\x01\x02") {
+                break;
+            }
+            $header = unpack(
+                'vmade/vneeded/vflags/vmethod/vtime/vdate/Vcrc/Vcompressed/Vuncompressed/vnameLength/vextraLength/vcommentLength/vdisk/vinternal/Vexternal/VlocalOffset',
+                substr($content, $cursor + 4, 42)
+            );
+            $nameLength = (int)$header['nameLength'];
+            $extraLength = (int)$header['extraLength'];
+            $commentLength = (int)$header['commentLength'];
+            $name = substr($content, $cursor + 46, $nameLength);
+            $localOffset = (int)$header['localOffset'];
+            $localNameLength = unpack('v', substr($content, $localOffset + 26, 2))[1] ?? 0;
+            $localExtraLength = unpack('v', substr($content, $localOffset + 28, 2))[1] ?? 0;
+            $dataOffset = $localOffset + 30 + (int)$localNameLength + (int)$localExtraLength;
+            $compressed = substr($content, $dataOffset, (int)$header['compressed']);
+            $method = (int)$header['method'];
+
+            if ($method === 0) {
+                $files[$name] = $compressed;
+            } elseif ($method === 8) {
+                $inflated = @gzinflate($compressed);
+                if ($inflated === false) {
+                    throw new \RuntimeException('nao foi possivel descompactar a planilha XLSX.');
+                }
+                $files[$name] = $inflated;
+            }
+
+            $cursor += 46 + $nameLength + $extraLength + $commentLength;
+        }
+
+        if (!$files) {
+            throw new \RuntimeException('nao foi possivel ler os arquivos internos do XLSX.');
+        }
+        return $files;
+    }
+
+    private function xlsxSharedStrings(string $content): array
+    {
+        if ($content === '') {
             return [];
         }
         $xml = @simplexml_load_string($content);
@@ -316,32 +392,30 @@ class ConfigDataController extends Controller
         }
 
         $strings = [];
-        foreach ($xml->si as $item) {
-            if (isset($item->t)) {
-                $strings[] = (string)$item->t;
+        foreach ($xml->children('http://schemas.openxmlformats.org/spreadsheetml/2006/main')->si as $item) {
+            $itemChildren = $item->children('http://schemas.openxmlformats.org/spreadsheetml/2006/main');
+            if (isset($itemChildren->t)) {
+                $strings[] = (string)$itemChildren->t;
                 continue;
             }
             $parts = [];
-            foreach ($item->r as $run) {
-                $parts[] = (string)$run->t;
+            foreach ($itemChildren->r as $run) {
+                $parts[] = (string)$run->children('http://schemas.openxmlformats.org/spreadsheetml/2006/main')->t;
             }
             $strings[] = implode('', $parts);
         }
         return $strings;
     }
 
-    private function xlsxFirstWorksheetXml(\ZipArchive $zip): string
+    private function xlsxFirstWorksheetXml(array $files): string
     {
-        $preferred = $zip->getFromName('xl/worksheets/sheet1.xml');
-        if (is_string($preferred) && $preferred !== '') {
-            return $preferred;
+        if (!empty($files['xl/worksheets/sheet1.xml'])) {
+            return (string)$files['xl/worksheets/sheet1.xml'];
         }
 
-        for ($index = 0; $index < $zip->numFiles; $index++) {
-            $name = (string)$zip->getNameIndex($index);
+        foreach ($files as $name => $content) {
             if (preg_match('#^xl/worksheets/sheet\d+\.xml$#', $name)) {
-                $content = $zip->getFromName($name);
-                return is_string($content) ? $content : '';
+                return (string)$content;
             }
         }
         return '';
@@ -363,14 +437,15 @@ class ConfigDataController extends Controller
     private function xlsxCellValue(\SimpleXMLElement $cell, array $sharedStrings): string
     {
         $type = (string)($cell['t'] ?? '');
+        $children = $cell->children('http://schemas.openxmlformats.org/spreadsheetml/2006/main');
         if ($type === 's') {
-            $index = (int)($cell->v ?? -1);
+            $index = (int)($children->v ?? -1);
             return trim((string)($sharedStrings[$index] ?? ''));
         }
         if ($type === 'inlineStr') {
-            return trim((string)($cell->is->t ?? ''));
+            return trim((string)($children->is->children('http://schemas.openxmlformats.org/spreadsheetml/2006/main')->t ?? ''));
         }
-        return trim((string)($cell->v ?? ''));
+        return trim((string)($children->v ?? ''));
     }
 
     private function uploadedFilename(string $field): string
