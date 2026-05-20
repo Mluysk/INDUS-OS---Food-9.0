@@ -59,6 +59,10 @@ if (!function_exists('financeiro_format_date')) {
     .finance-list-action-button { display: inline-flex; align-items: center; gap: 6px; border: 1px solid color-mix(in srgb, var(--primary, #4f46e5) 20%, var(--border, #e5e7eb)); border-radius: 999px; padding: 6px 10px; background: var(--surface, #fff); color: var(--text, #111827); font-size: 0.74rem; font-weight: 850; cursor: pointer; box-shadow: 0 8px 18px rgba(15, 23, 42, 0.06); }
     .finance-list-action-button:hover { border-color: var(--primary, #4f46e5); color: var(--primary, #4f46e5); background: color-mix(in srgb, var(--primary, #4f46e5) 6%, var(--surface, #fff)); }
     .finance-list-action-button .icon { width: 14px; height: 14px; }
+    .finance-list-search { position: relative; width: min(100%, 390px); }
+    .finance-list-search .icon { position: absolute; left: 12px; top: 50%; width: 16px; height: 16px; color: var(--muted, #64748b); transform: translateY(-50%); pointer-events: none; }
+    .finance-list-search input { width: 100%; min-height: 38px; border: 1px solid var(--border, #e5e7eb); border-radius: 999px; padding: 8px 12px 8px 36px; background: var(--surface, #fff); color: var(--text, #111827); font-size: 0.82rem; font-weight: 800; box-shadow: 0 8px 18px rgba(15, 23, 42, 0.06); }
+    .finance-list-search input:focus { outline: 0; border-color: var(--primary, #4f46e5); box-shadow: var(--primary-glow, 0 0 0 3px rgba(79, 70, 229, 0.20)); }
     .finance-export-group { position: relative; display: inline-flex; }
     .finance-export-menu { position: absolute; z-index: 50; top: calc(100% + 8px); right: 0; display: grid; gap: 6px; min-width: 132px; border: 1px solid var(--border, #e5e7eb); border-radius: 14px; padding: 8px; background: var(--surface, #fff); box-shadow: 0 18px 40px rgba(15, 23, 42, 0.16); }
     .finance-export-menu[hidden] { display: none; }
@@ -333,6 +337,10 @@ if (!function_exists('financeiro_format_date')) {
                             </div>
                         </div>
                     </div>
+                    <label class="finance-list-search">
+                        <span class="icon" data-lucide="search"></span>
+                        <input type="search" data-finance-list-search="entrada" placeholder="Buscar por titulo, data, empresa, valor ou validade" aria-label="Buscar na lista de entrada">
+                    </label>
                     <div class="finance-status-summary" data-finance-status-summary="entrada" aria-label="Resumo de status das entradas"></div>
                 </div>
             </div>
@@ -966,9 +974,11 @@ if (!function_exists('financeiro_format_date')) {
                 .map((value) => value.trim())
                 .filter(Boolean);
             const sort = financeSortState[tipo] || { field: '', direction: '' };
+            const search = (document.querySelector(`[data-finance-list-search="${tipo}"]`)?.value || '').trim();
 
             return {
                 statusValues,
+                search,
                 sortField: sort.field || '',
                 sortDirection: sort.direction || ''
             };
@@ -1047,6 +1057,22 @@ if (!function_exists('financeiro_format_date')) {
             }
             return String(item[field] || '').toLocaleLowerCase('pt-BR');
         };
+
+        const normalizeSearchText = (value) => String(value ?? '')
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '')
+            .toLocaleLowerCase('pt-BR');
+
+        const financeSearchText = (item, tipo) => [
+            item.numero_titulo || '',
+            formatDate(itemDate(item, tipo)),
+            itemDate(item, tipo) || '',
+            item.nome_empresa || '',
+            formatCurrency(item.valor),
+            String(item.valor ?? ''),
+            formatDate(item.validade),
+            item.validade || ''
+        ].map(normalizeSearchText).join(' ');
 
         const getPeriodState = (tipo) => {
             const select = document.querySelector(`[data-finance-period-select="${tipo}"]`);
@@ -1674,9 +1700,13 @@ if (!function_exists('financeiro_format_date')) {
         const applyFinanceFilters = (tipo) => {
             const state = getFilterState(tipo);
             const rows = periodRows(tipo);
-            const filteredRows = state.statusValues.length
+            const statusRows = state.statusValues.length
                 ? rows.filter((item) => state.statusValues.includes(item.status_vencimento || ''))
                 : rows;
+            const searchNeedle = normalizeSearchText(state.search);
+            const filteredRows = searchNeedle
+                ? statusRows.filter((item) => financeSearchText(item, tipo).includes(searchNeedle))
+                : statusRows;
 
             if (!state.sortField || !state.sortDirection) {
                 return filteredRows;
@@ -2140,6 +2170,9 @@ if (!function_exists('financeiro_format_date')) {
                 input.value = isoWeekValue(todayValue);
             }
             input.addEventListener('change', renderPerformanceDashboard);
+        });
+        document.querySelectorAll('[data-finance-list-search]').forEach((input) => {
+            input.addEventListener('input', () => renderFinanceList(input.dataset.financeListSearch));
         });
         document.querySelectorAll('[data-finance-chart-zoom]').forEach((button) => {
             button.addEventListener('click', () => {

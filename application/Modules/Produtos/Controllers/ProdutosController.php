@@ -42,9 +42,13 @@ class ProdutosController extends Controller
             'include_inactive' => true,
         ];
         $produtos = $this->produtos->all($filters);
+        $produtosLancamento = $this->produtos->all([
+            'sort' => 'nome',
+            'dir' => 'asc',
+        ]);
         $lancamentos = $this->lancamentos->listarRecentes(13);
-        $historicoLancamentos = $this->lancamentos->listarPorProdutos(array_column($produtos, 'id'));
-        $lancamentosPorProduto = $this->lancamentos->ultimosPorProduto(array_column($produtos, 'id'));
+        $historicoLancamentos = $this->lancamentos->listarPorProdutos(array_column($produtosLancamento, 'id'));
+        $lancamentosPorProduto = $this->lancamentos->ultimosPorProduto(array_column($produtosLancamento, 'id'));
         $categorias = $this->produtos->categorias();
         $metricUnitsRaw = $this->config->get('METRIC_UNITS', 'kg, un, cx') ?: 'kg, un, cx';
         $unidades = array_values(array_filter(array_map('trim', explode(',', $metricUnitsRaw)), static fn($u) => $u !== ''));
@@ -59,6 +63,7 @@ class ProdutosController extends Controller
 
         $this->render('produtos/index_with_patch', [
             'produtos' => $produtos,
+            'produtosLancamento' => $produtosLancamento,
             'lancamentos' => $lancamentos,
             'historicoLancamentos' => $historicoLancamentos,
             'lancamentosPorProduto' => $lancamentosPorProduto,

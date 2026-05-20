@@ -240,7 +240,7 @@ include __DIR__.'/audit_tab_patch.php';
                         </a>
                     </div>
                     <div class="config-import-line">
-                        <input type="file" data-import-file="clientes" accept=".csv,.txt,.xls,text/csv,application/vnd.ms-excel">
+                        <input type="file" data-import-file="clientes" accept=".csv,.txt,.xls,.xlsx,text/csv,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">
                         <button type="button" class="config-export-button" data-import-action="${buildUrl('/config/import/clientes')}" data-import-source="clientes">
                             <span data-lucide="upload"></span>
                             <span>Importar clientes</span>
@@ -256,7 +256,7 @@ include __DIR__.'/audit_tab_patch.php';
                         </a>
                     </div>
                     <div class="config-import-line">
-                        <input type="file" data-import-file="produtos" accept=".csv,.txt,.xls,text/csv,application/vnd.ms-excel">
+                        <input type="file" data-import-file="produtos" accept=".csv,.txt,.xls,.xlsx,text/csv,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">
                         <button type="button" class="config-export-button" data-import-action="${buildUrl('/config/import/produtos')}" data-import-source="produtos">
                             <span data-lucide="upload"></span>
                             <span>Importar produtos</span>

@@ -1,4 +1,7 @@
-<?php $unidades = $unidades ?? ['kg', 'un', 'cx']; ?>
+<?php
+$unidades = $unidades ?? ['kg', 'un', 'cx'];
+$produtosLancamento = $produtosLancamento ?? $produtos ?? [];
+?>
 
 <style>
     .tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
@@ -349,7 +352,7 @@
             Produto
             <select name="lancamento_produto">
                 <option value="">Selecione</option>
-                <?php foreach (($produtos ?? []) as $produto): ?>
+                <?php foreach (($produtosLancamento ?? []) as $produto): ?>
                     <?php $ultimo = $lancamentosPorProduto[(int)$produto['id']] ?? null; ?>
                     <option
                         value="<?= (int)$produto['id']; ?>"
@@ -456,7 +459,7 @@
             </select>
         </div>
         <div class="history-list" id="history-list">
-            <?php foreach (($produtos ?? []) as $produto): ?>
+            <?php foreach (($produtosLancamento ?? []) as $produto): ?>
                 <?php
                     $pid = (int)($produto['id'] ?? 0);
                     $history = $historicoPorProduto[$pid] ?? [];

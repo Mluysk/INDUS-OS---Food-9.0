@@ -127,6 +127,7 @@ class ConfigDataController extends Controller
     public function importProdutos(): void
     {
         $this->auth->ensureRole(['admin']);
+        $success = false;
 
         try {
             $rows = $this->uploadedRows('arquivo');
@@ -190,6 +191,7 @@ class ConfigDataController extends Controller
                 'resultado' => 'sucesso',
             ]);
             $this->setFlash('success', $message);
+            $success = true;
         } catch (\Throwable $exception) {
             $this->audit->log((int)($this->auth->user()['id'] ?? 0), 'import', 'produtos', null, [
                 'arquivo' => $this->uploadedFilename('arquivo'),
@@ -200,7 +202,7 @@ class ConfigDataController extends Controller
             $this->setFlash('error', 'Nao foi possivel importar produtos: '.$exception->getMessage());
         }
 
-        $this->redirect('/config?tab=backup');
+        $this->redirect($success ? '/produtos?tab=lista' : '/config?tab=backup');
     }
 
     private function db(): \PDO
@@ -241,9 +243,15 @@ class ConfigDataController extends Controller
             throw new \RuntimeException('selecione um arquivo valido.');
         }
 
-        $content = file_get_contents((string)$_FILES[$field]['tmp_name']);
+        $filename = $this->uploadedFilename($field);
+        $tmpName = (string)$_FILES[$field]['tmp_name'];
+        $content = file_get_contents($tmpName);
         if (!is_string($content) || trim($content) === '') {
             throw new \RuntimeException('o arquivo esta vazio.');
+        }
+
+        if (strtolower(pathinfo($filename, PATHINFO_EXTENSION)) === 'xlsx' || strncmp($content, "PK\x03\x04", 4) === 0) {
+            return $this->rowsFromXlsx($tmpName);
         }
 
         if (stripos($content, '<table') !== false || stripos($content, '<tr') !== false) {
@@ -251,6 +259,118 @@ class ConfigDataController extends Controller
         }
 
         return $this->rowsFromDelimited($content);
+    }
+
+    private function rowsFromXlsx(string $path): array
+    {
+        if (!class_exists(\ZipArchive::class)) {
+            throw new \RuntimeException('este servidor nao possui suporte para ler XLSX. Envie CSV, TXT ou XLS simples.');
+        }
+
+        $zip = new \ZipArchive();
+        if ($zip->open($path) !== true) {
+            throw new \RuntimeException('nao foi possivel abrir a planilha XLSX.');
+        }
+
+        $sharedStrings = $this->xlsxSharedStrings($zip);
+        $sheetXml = $this->xlsxFirstWorksheetXml($zip);
+        $zip->close();
+
+        if ($sheetXml === '') {
+            throw new \RuntimeException('nao foi possivel localizar a primeira aba da planilha.');
+        }
+
+        $xml = @simplexml_load_string($sheetXml);
+        if (!$xml || empty($xml->sheetData->row)) {
+            throw new \RuntimeException('a planilha XLSX nao possui linhas para importar.');
+        }
+
+        $matrix = [];
+        foreach ($xml->sheetData->row as $row) {
+            $cells = [];
+            foreach ($row->c as $cell) {
+                $reference = (string)($cell['r'] ?? '');
+                $columnIndex = $this->xlsxColumnIndex($reference);
+                while (count($cells) < $columnIndex) {
+                    $cells[] = '';
+                }
+                $cells[] = $this->xlsxCellValue($cell, $sharedStrings);
+            }
+            if ($cells && array_filter($cells, static fn($value) => trim((string)$value) !== '')) {
+                $matrix[] = $cells;
+            }
+        }
+
+        return $this->matrixToRows($matrix);
+    }
+
+    private function xlsxSharedStrings(\ZipArchive $zip): array
+    {
+        $content = $zip->getFromName('xl/sharedStrings.xml');
+        if (!is_string($content) || $content === '') {
+            return [];
+        }
+        $xml = @simplexml_load_string($content);
+        if (!$xml) {
+            return [];
+        }
+
+        $strings = [];
+        foreach ($xml->si as $item) {
+            if (isset($item->t)) {
+                $strings[] = (string)$item->t;
+                continue;
+            }
+            $parts = [];
+            foreach ($item->r as $run) {
+                $parts[] = (string)$run->t;
+            }
+            $strings[] = implode('', $parts);
+        }
+        return $strings;
+    }
+
+    private function xlsxFirstWorksheetXml(\ZipArchive $zip): string
+    {
+        $preferred = $zip->getFromName('xl/worksheets/sheet1.xml');
+        if (is_string($preferred) && $preferred !== '') {
+            return $preferred;
+        }
+
+        for ($index = 0; $index < $zip->numFiles; $index++) {
+            $name = (string)$zip->getNameIndex($index);
+            if (preg_match('#^xl/worksheets/sheet\d+\.xml$#', $name)) {
+                $content = $zip->getFromName($name);
+                return is_string($content) ? $content : '';
+            }
+        }
+        return '';
+    }
+
+    private function xlsxColumnIndex(string $reference): int
+    {
+        if (!preg_match('/^([A-Z]+)/i', $reference, $matches)) {
+            return 0;
+        }
+        $letters = strtoupper($matches[1]);
+        $index = 0;
+        for ($i = 0, $length = strlen($letters); $i < $length; $i++) {
+            $index = ($index * 26) + (ord($letters[$i]) - 64);
+        }
+        return max(0, $index - 1);
+    }
+
+    private function xlsxCellValue(\SimpleXMLElement $cell, array $sharedStrings): string
+    {
+        $type = (string)($cell['t'] ?? '');
+        if ($type === 's') {
+            $index = (int)($cell->v ?? -1);
+            return trim((string)($sharedStrings[$index] ?? ''));
+        }
+        if ($type === 'inlineStr') {
+            return trim((string)($cell->is->t ?? ''));
+        }
+        return trim((string)($cell->v ?? ''));
     }
 
     private function uploadedFilename(string $field): string
