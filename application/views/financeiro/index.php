@@ -167,8 +167,8 @@ if (!function_exists('financeiro_format_date')) {
     .finance-table-wrap .data-table td:nth-child(3) { white-space: normal; min-width: 180px; max-width: 280px; }
     .finance-table-wrap .finance-status-badge { padding: 3px 8px; font-size: 0.68rem; }
     .finance-table-wrap .finance-paid-button { padding: 4px 10px; font-size: 0.76rem; }
-    .finance-summary-grid { display: grid; grid-template-columns: minmax(280px, 0.95fr) minmax(420px, 1.45fr); gap: 16px; align-items: stretch; margin-top: 16px; }
-    .finance-summary-metrics { display: grid; gap: 12px; }
+    .finance-summary-grid { display: block; margin-top: 16px; }
+    .finance-summary-metrics { display: grid; grid-template-columns: repeat(3, minmax(180px, 1fr)); gap: 12px; margin-bottom: 16px; }
     .finance-summary-card,
     .finance-chart-panel { border: 1px solid var(--border, #e5e7eb); border-radius: 18px; padding: 14px; background: var(--surface, #fff); box-shadow: 0 14px 34px rgba(15, 23, 42, 0.08); }
     .finance-summary-card { display: grid; gap: 8px; }
@@ -179,7 +179,7 @@ if (!function_exists('financeiro_format_date')) {
     .finance-summary-card.is-saida strong { color: #b91c1c; }
     .finance-summary-card.is-saldo strong.is-negative { color: #b91c1c; }
     .finance-summary-card.is-saldo strong.is-positive { color: #047857; }
-    .finance-summary-charts { display: grid; grid-template-columns: minmax(280px, 1.55fr) minmax(230px, 0.85fr); gap: 16px; min-width: 0; }
+    .finance-summary-charts { display: grid; grid-template-columns: repeat(2, minmax(280px, 1fr)); gap: 16px; min-width: 0; }
     .finance-summary-panel { display: none; }
     .finance-summary-panel.active { display: block; }
     .finance-performance-compare-card { position: relative; overflow: hidden; margin-bottom: 16px; border: 1px solid rgba(var(--primary-rgb, 79, 70, 229), 0.24); border-radius: 18px; padding: 18px 20px; background: linear-gradient(135deg, rgba(var(--primary-rgb, 79, 70, 229), 0.09), var(--surface, #fff) 48%, rgba(148, 163, 184, 0.06)); box-shadow: var(--primary-shadow, 0 14px 34px rgba(15, 23, 42, 0.08)); }
