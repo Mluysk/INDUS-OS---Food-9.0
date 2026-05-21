@@ -145,6 +145,7 @@ if (!function_exists('financeiro_format_date')) {
     .finance-paid-button:disabled,
     .finance-paid-button.is-paid { border-color: rgba(148, 163, 184, 0.35); background: rgba(148, 163, 184, 0.18); color: #64748b; cursor: default; opacity: 1; }
     .finance-lancamento-form { display: flex; align-items: flex-end; gap: 16px; flex-wrap: nowrap; }
+    .finance-card-panel[data-finance-card-panel$="-lancamento"] .finance-lancamento-form { transform: translateY(16px); }
     .finance-lancamento-form label { margin: 0; }
     .finance-lancamento-form .finance-field-label { display: inline-flex; align-items: center; gap: 6px; margin-bottom: 6px; font-weight: 800; line-height: 1.2; }
     .finance-lancamento-form .finance-field-label .icon { width: 15px; height: 15px; color: var(--primary, #4b5563); stroke-width: 2.4; }
