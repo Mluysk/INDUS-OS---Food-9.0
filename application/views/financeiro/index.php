@@ -55,7 +55,7 @@ if (!function_exists('financeiro_format_date')) {
     .finance-list-heading { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; margin-bottom: 5px; }
     .finance-list-heading h3 { margin-bottom: 4px; }
     .finance-list-side { display: flex; flex-direction: column; align-items: flex-end; gap: 9px; }
-    .finance-list-actions { display: flex; align-items: center; justify-content: flex-end; gap: 7px; flex-wrap: wrap; }
+    .finance-list-actions { display: flex; align-items: center; justify-content: flex-end; gap: 7px; flex-wrap: wrap; transform: translateY(-6px); }
     .finance-list-action-button { display: inline-flex; align-items: center; gap: 6px; border: 1px solid color-mix(in srgb, var(--primary, #4f46e5) 20%, var(--border, #e5e7eb)); border-radius: 999px; padding: 6px 10px; background: var(--surface, #fff); color: var(--text, #111827); font-size: 0.74rem; font-weight: 850; cursor: pointer; box-shadow: 0 8px 18px rgba(15, 23, 42, 0.06); }
     .finance-list-action-button:hover { border-color: var(--primary, #4f46e5); color: var(--primary, #4f46e5); background: color-mix(in srgb, var(--primary, #4f46e5) 6%, var(--surface, #fff)); }
     .finance-list-action-button .icon { width: 14px; height: 14px; }
