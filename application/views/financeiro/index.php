@@ -59,7 +59,7 @@ if (!function_exists('financeiro_format_date')) {
     .finance-list-action-button { display: inline-flex; align-items: center; gap: 6px; border: 1px solid color-mix(in srgb, var(--primary, #4f46e5) 20%, var(--border, #e5e7eb)); border-radius: 999px; padding: 6px 10px; background: var(--surface, #fff); color: var(--text, #111827); font-size: 0.74rem; font-weight: 850; cursor: pointer; box-shadow: 0 8px 18px rgba(15, 23, 42, 0.06); }
     .finance-list-action-button:hover { border-color: var(--primary, #4f46e5); color: var(--primary, #4f46e5); background: color-mix(in srgb, var(--primary, #4f46e5) 6%, var(--surface, #fff)); }
     .finance-list-action-button .icon { width: 14px; height: 14px; }
-    .finance-list-search { position: relative; width: min(100%, 390px); }
+    .finance-list-search { position: relative; display: block; width: min(100%, 390px); margin-top: 9px; }
     .finance-list-search .icon { position: absolute; left: 12px; top: 50%; width: 16px; height: 16px; color: var(--muted, #64748b); transform: translateY(-50%); pointer-events: none; }
     .finance-list-search input { width: 100%; min-height: 38px; border: 1px solid var(--border, #e5e7eb); border-radius: 999px; padding: 8px 12px 8px 36px; background: var(--surface, #fff); color: var(--text, #111827); font-size: 0.82rem; font-weight: 800; box-shadow: 0 8px 18px rgba(15, 23, 42, 0.06); }
     .finance-list-search input:focus { outline: 0; border-color: var(--primary, #4f46e5); box-shadow: var(--primary-glow, 0 0 0 3px rgba(79, 70, 229, 0.20)); }
@@ -324,6 +324,10 @@ if (!function_exists('financeiro_format_date')) {
                 <div>
                     <h3>Lista de entrada</h3>
                     <p class="panel-description">Entradas cadastradas no módulo financeiro.</p>
+                    <label class="finance-list-search">
+                        <span class="icon" data-lucide="search"></span>
+                        <input type="search" data-finance-list-search="entrada" placeholder="Buscar por titulo, data, empresa, valor ou validade" aria-label="Buscar na lista de entrada">
+                    </label>
                 </div>
                 <div class="finance-list-side">
                     <div class="finance-list-actions" aria-label="Ações da lista de entradas">
@@ -337,10 +341,6 @@ if (!function_exists('financeiro_format_date')) {
                             </div>
                         </div>
                     </div>
-                    <label class="finance-list-search">
-                        <span class="icon" data-lucide="search"></span>
-                        <input type="search" data-finance-list-search="entrada" placeholder="Buscar por titulo, data, empresa, valor ou validade" aria-label="Buscar na lista de entrada">
-                    </label>
                     <div class="finance-status-summary" data-finance-status-summary="entrada" aria-label="Resumo de status das entradas"></div>
                 </div>
             </div>
@@ -481,6 +481,10 @@ if (!function_exists('financeiro_format_date')) {
                 <div>
                     <h3>Lista de saída</h3>
                     <p class="panel-description">Saídas cadastradas no módulo financeiro.</p>
+                    <label class="finance-list-search">
+                        <span class="icon" data-lucide="search"></span>
+                        <input type="search" data-finance-list-search="saida" placeholder="Buscar por titulo, data, empresa, valor ou validade" aria-label="Buscar na lista de saida">
+                    </label>
                 </div>
                 <div class="finance-list-side">
                     <div class="finance-list-actions" aria-label="Ações da lista de saídas">
