@@ -161,7 +161,7 @@ if (!function_exists('financeiro_format_date')) {
     .finance-lancamento-form { display: flex; align-items: flex-end; gap: 16px; flex-wrap: nowrap; }
     .finance-card-panel[data-finance-card-panel$="-lancamento"] .finance-lancamento-form { transform: translateY(16px); }
     .finance-lancamento-form label { margin: 0; }
-    .finance-lancamento-form .finance-field-label { display: inline-flex; align-items: center; gap: 6px; margin-bottom: 6px; font-weight: 800; line-height: 1.2; }
+    .finance-lancamento-form .finance-field-label { display: inline-flex; align-items: center; gap: 6px; margin-bottom: 6px; font-weight: 800; line-height: 1.2; transform: translateY(12px); }
     .finance-lancamento-form .finance-field-label .icon { width: 15px; height: 15px; color: var(--primary, #4b5563); stroke-width: 2.4; }
     .finance-lancamento-form .finance-field-date,
     .finance-lancamento-form .finance-field-validity { flex: 0 0 150px; }
