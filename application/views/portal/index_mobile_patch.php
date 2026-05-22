@@ -120,15 +120,17 @@ include __DIR__.'/index_whatsapp_beside_contact_type_patch.php';
         }
 
         html body .portal-app__profile {
-            display: grid !important;
-            grid-template-columns: minmax(0, auto) auto !important;
+            display: inline-flex !important;
             gap: 0.55rem !important;
             justify-content: end !important;
+            align-items: center !important;
         }
 
         html body .portal-app__client {
-            max-width: min(100%, 280px) !important;
-            justify-content: flex-start !important;
+            width: 40px !important;
+            height: 40px !important;
+            min-width: 40px !important;
+            max-width: 40px !important;
         }
 
         html body .portal-app__nav {
