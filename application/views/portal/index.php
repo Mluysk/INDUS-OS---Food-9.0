@@ -143,7 +143,16 @@ if ($supportWhatsapp !== '') {
                 <div class="portal-catalog-card">
                     <div class="portal-catalog-card__head">
                         <div>
-                            <h3>Catálogo de produtos</h3>
+                            <h3 class="portal-catalog-title">
+                                <span class="portal-catalog-title__icon" aria-hidden="true">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
+                                        <circle cx="8" cy="21" r="1"></circle>
+                                        <circle cx="19" cy="21" r="1"></circle>
+                                        <path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h8.42a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"></path>
+                                    </svg>
+                                </span>
+                                <span>Catálogo de produtos</span>
+                            </h3>
                             <p>Preços negociados e validade garantida para sua operação.</p>
                         </div>
                         <div class="portal-catalog-card__controls">
@@ -908,6 +917,32 @@ if ($supportWhatsapp !== '') {
         align-items: center;
         flex-wrap: wrap;
         margin-bottom: 1.8rem;
+    }
+
+    .portal-catalog-title {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        margin: 0;
+    }
+
+    .portal-catalog-title__icon {
+        width: 38px;
+        height: 38px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex: 0 0 38px;
+        border-radius: 12px;
+        background: var(--primary);
+        color: #fff;
+        padding: 6px;
+        box-sizing: border-box;
+    }
+
+    .portal-catalog-title__icon svg {
+        width: 18px;
+        height: 18px;
     }
 
     .portal-catalog-card__controls {
