@@ -66,8 +66,10 @@ if (!function_exists('financeiro_format_date')) {
     .finance-list-search input { width: 100%; min-height: 38px; border: 1px solid var(--border, #e5e7eb); border-radius: 999px; padding: 8px 12px 8px 36px; background: var(--surface, #fff); color: var(--text, #111827); font-size: 0.82rem; font-weight: 800; box-shadow: 0 8px 18px rgba(15, 23, 42, 0.06); }
     .finance-list-search input:focus { outline: 0; border-color: var(--primary, #4f46e5); box-shadow: var(--primary-glow, 0 0 0 3px rgba(79, 70, 229, 0.20)); }
     .finance-list-title { display: inline-flex; align-items: center; gap: 8px; }
-    .finance-list-title-icons { display: inline-flex; align-items: center; gap: 4px; color: var(--primary, #4f46e5); }
-    .finance-list-title-icons .icon { width: 18px; height: 18px; stroke-width: 2.6; }
+    .finance-list-title-icon { position: relative; display: inline-grid; place-items: center; width: 24px; height: 22px; color: var(--primary, #4f46e5); flex: 0 0 24px; }
+    .finance-list-title-icon .icon { position: absolute; stroke-width: 2.6; }
+    .finance-list-title-icon .icon:first-child { width: 20px; height: 20px; left: 0; top: 1px; }
+    .finance-list-title-icon .icon:last-child { width: 13px; height: 13px; right: 0; bottom: 0; padding: 1px; border-radius: 999px; background: var(--surface, #fff); }
     .finance-export-group { position: relative; display: inline-flex; }
     .finance-export-menu { position: absolute; z-index: 50; top: calc(100% + 8px); right: 0; display: grid; gap: 6px; min-width: 132px; border: 1px solid var(--border, #e5e7eb); border-radius: 14px; padding: 8px; background: var(--surface, #fff); box-shadow: 0 18px 40px rgba(15, 23, 42, 0.16); }
     .finance-export-menu[hidden] { display: none; }
@@ -328,7 +330,7 @@ if (!function_exists('financeiro_format_date')) {
         <div class="finance-card-panel" data-finance-card-panel="entrada-lista" aria-labelledby="tab-entrada-lista">
             <div class="finance-list-heading">
                 <div>
-                    <h3 class="finance-list-title"><span class="finance-list-title-icons" aria-hidden="true"><span class="icon" data-lucide="list-checks"></span><span class="icon" data-lucide="arrow-down-circle"></span></span><span>Lista de entrada</span></h3>
+                    <h3 class="finance-list-title"><span class="finance-list-title-icon" aria-hidden="true"><span class="icon" data-lucide="list-checks"></span><span class="icon" data-lucide="arrow-down-circle"></span></span><span>Lista de entrada</span></h3>
                     <p class="panel-description">Entradas cadastradas no módulo financeiro.</p>
                     <label class="finance-list-search">
                         <span class="icon" data-lucide="search"></span>
@@ -485,7 +487,7 @@ if (!function_exists('financeiro_format_date')) {
         <div class="finance-card-panel" data-finance-card-panel="saida-lista" aria-labelledby="tab-saida-lista">
             <div class="finance-list-heading">
                 <div>
-                    <h3 class="finance-list-title"><span class="finance-list-title-icons" aria-hidden="true"><span class="icon" data-lucide="list-checks"></span><span class="icon" data-lucide="arrow-up-circle"></span></span><span>Lista de saída</span></h3>
+                    <h3 class="finance-list-title"><span class="finance-list-title-icon" aria-hidden="true"><span class="icon" data-lucide="list-checks"></span><span class="icon" data-lucide="arrow-up-circle"></span></span><span>Lista de saída</span></h3>
                     <p class="panel-description">Saídas cadastradas no módulo financeiro.</p>
                     <label class="finance-list-search">
                         <span class="icon" data-lucide="search"></span>
