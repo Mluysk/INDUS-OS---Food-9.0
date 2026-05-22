@@ -204,47 +204,65 @@ include __DIR__.'/index_whatsapp_beside_contact_type_patch.php';
         }
 
         html body .portal-catalog {
-            grid-template-columns: 1fr !important;
-            gap: 0.75rem !important;
+            grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+            gap: 0.62rem !important;
         }
 
         html body .portal-product {
             width: 100% !important;
-            padding: 0.95rem !important;
-            border-radius: 16px !important;
-            gap: 0.62rem !important;
-            font-size: 0.88rem !important;
+            padding: 0.72rem !important;
+            border-radius: 15px !important;
+            gap: 0.48rem !important;
+            font-size: 0.78rem !important;
         }
 
         html body .portal-product h3 {
-            font-size: 1rem !important;
-            line-height: 1.2 !important;
+            font-size: 0.86rem !important;
+            line-height: 1.16 !important;
+            overflow-wrap: anywhere;
         }
 
         html body .portal-product small,
         html body .portal-product__meta,
         html body .portal-product__label {
-            font-size: 0.78rem !important;
+            font-size: 0.68rem !important;
+            line-height: 1.16 !important;
         }
 
         html body .portal-product__input-group {
             display: grid !important;
-            grid-template-columns: minmax(0, 1fr) 48px !important;
-            gap: 0.55rem !important;
+            grid-template-columns: minmax(0, 1fr) 42px !important;
+            gap: 0.38rem !important;
             width: 100% !important;
         }
 
         html body .portal-product input[data-qtd] {
             min-width: 0 !important;
-            min-height: 46px !important;
+            min-height: 42px !important;
             font-size: 16px !important;
+            padding: 0.48rem 0.5rem !important;
         }
 
         html body .portal-product button[data-add] {
-            width: 46px !important;
-            height: 46px !important;
-            min-width: 46px !important;
-            min-height: 46px !important;
+            width: 42px !important;
+            height: 42px !important;
+            min-width: 42px !important;
+            min-height: 42px !important;
+        }
+
+        html body .portal-product__price {
+            font-size: 0.88rem !important;
+        }
+
+        html body .portal-product .badge {
+            padding: 0.16rem 0.42rem !important;
+            font-size: 0.6rem !important;
+        }
+
+        @media (max-width: 360px) {
+            html body .portal-catalog {
+                grid-template-columns: 1fr !important;
+            }
         }
 
         html body .portal-orders-table-wrapper {
