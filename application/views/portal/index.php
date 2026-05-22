@@ -1821,6 +1821,7 @@ $catalogoPayload = json_encode(array_map(static function ($produto) {
         'preco' => (float) ($produto['preco'] ?? 0),
         'unidade' => $produto['unidade'] ?? '',
         'shelf_life_dias' => (int) ($produto['shelf_life_dias'] ?? 0),
+        'categoria' => $produto['categoria'] ?? '',
         'tipo' => $produto['tipo'] ?? 'PA',
     ];
 }, $catalogo ?? []), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
@@ -2711,6 +2712,7 @@ $catalogoPayload = json_encode(array_map(static function ($produto) {
         catalogo.forEach((produto) => {
             const card = document.createElement('article');
             card.className = `portal-product portal-product--${catalogView}`;
+            card.dataset.category = produto.categoria || '';
             card.innerHTML = `
                 <div class="portal-product__header">
                     <div>
