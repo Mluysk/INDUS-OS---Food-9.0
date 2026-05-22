@@ -9,15 +9,15 @@ include __DIR__.'/index_settings_document_width_patch.php';
     html body .topbar [data-cliente-badge],
     html body .portal-app__client,
     html body [data-cliente-badge] {
-        width: 42px !important;
-        min-width: 42px !important;
-        max-width: 42px !important;
-        height: 42px !important;
-        min-height: 42px !important;
-        display: inline-grid !important;
+        width: auto !important;
+        min-width: 0 !important;
+        max-width: min(calc(100vw - 2rem), 250px) !important;
+        height: auto !important;
+        min-height: 58px !important;
+        display: inline-flex !important;
         align-items: center !important;
-        justify-content: center !important;
-        gap: 0 !important;
+        justify-content: flex-start !important;
+        gap: 0.58rem !important;
         white-space: nowrap !important;
         overflow: hidden !important;
         box-sizing: border-box !important;
@@ -127,11 +127,11 @@ include __DIR__.'/index_settings_document_width_patch.php';
         html body .topbar [data-cliente-badge],
         html body .portal-app__client,
         html body [data-cliente-badge] {
-            width: 40px !important;
-            min-width: 40px !important;
-            max-width: 40px !important;
-            height: 40px !important;
-            min-height: 40px !important;
+            width: auto !important;
+            min-width: 0 !important;
+            max-width: min(calc(100vw - 1.25rem), 236px) !important;
+            height: auto !important;
+            min-height: 54px !important;
         }
 
         html body .portal-settings-field:has(#portal-full-cidade) {

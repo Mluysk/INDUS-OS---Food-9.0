@@ -85,38 +85,63 @@ include __DIR__.'/index_with_patch.php';
     }
 
     html body .topbar .portal-app__client {
-        display: inline-grid;
-        place-items: center;
-        width: 42px;
-        height: 42px;
-        min-width: 42px;
-        max-width: 42px;
-        min-height: 42px;
-        padding: 0;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.58rem;
+        width: auto;
+        min-width: 0;
+        max-width: min(100%, 250px);
+        min-height: 64px;
+        padding: 0.42rem 1rem 0.42rem 0.5rem;
         border: 1px solid var(--border, var(--portal-card-border, rgba(15, 23, 42, 0.08)));
         border-radius: 999px;
-        background: linear-gradient(135deg, color-mix(in srgb, var(--primary, #2563eb) 13%, #fff), var(--portal-card-bg, rgba(255, 255, 255, 0.95)));
-        color: var(--primary, #2563eb);
-        box-shadow: 0 14px 26px -22px rgba(15, 23, 42, 0.42);
+        background: var(--portal-card-bg, rgba(255, 255, 255, 0.95));
+        color: var(--text, #1f2933);
+        box-shadow: 0 16px 34px -30px rgba(15, 23, 42, 0.46);
         overflow: hidden;
     }
 
     html body .portal-client-avatar {
-        width: 100%;
-        height: 100%;
-        flex: 0 0 100%;
+        width: 42px;
+        height: 42px;
+        flex: 0 0 42px;
         border-radius: 999px;
         display: grid;
         place-items: center;
-        background: transparent;
-        color: currentColor;
+        background: color-mix(in srgb, var(--primary, #2563eb) 34%, #ffffff);
+        color: color-mix(in srgb, var(--primary, #2563eb) 82%, #0f172a);
         font-weight: 900;
-        font-size: 0.8rem;
+        font-size: 0.86rem;
         letter-spacing: 0;
     }
 
     html body .portal-client-lines {
-        display: none !important;
+        min-width: 0;
+        display: grid !important;
+        gap: 0.1rem;
+        line-height: 1.12;
+        overflow: hidden;
+    }
+
+    html body .portal-client-store,
+    html body .portal-client-branch {
+        display: block;
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    html body .portal-client-store {
+        color: var(--text, #0f172a);
+        font-size: 1rem;
+        font-weight: 900;
+    }
+
+    html body .portal-client-branch {
+        color: var(--text-muted, #64748b);
+        font-size: 0.78rem;
+        font-weight: 700;
     }
 
     html body .topbar #portal-logout {
@@ -163,15 +188,24 @@ include __DIR__.'/index_with_patch.php';
         }
 
         html body .topbar .portal-app__client {
-            width: 40px;
-            height: 40px;
-            min-width: 40px;
-            max-width: 40px;
-            min-height: 40px;
+            max-width: min(100%, 236px);
+            min-height: 58px;
+            padding: 0.36rem 0.78rem 0.36rem 0.42rem;
         }
 
         html body .portal-client-avatar {
-            font-size: 0.76rem;
+            width: 38px;
+            height: 38px;
+            flex-basis: 38px;
+            font-size: 0.78rem;
+        }
+
+        html body .portal-client-store {
+            font-size: 0.88rem;
+        }
+
+        html body .portal-client-branch {
+            font-size: 0.7rem;
         }
 
         html body .topbar #portal-logout {
