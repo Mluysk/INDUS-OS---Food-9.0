@@ -1252,6 +1252,7 @@ if (!function_exists('financeiro_format_date')) {
                 const point = nearest.point;
                 tooltip.innerHTML = `<strong>${point.typeLabel} - ${point.tooltipLabel}</strong>
                     <span>Valor: ${formatCurrency(point.value)}</span>
+                    <span>Valor liquido: ${formatCurrency(point.netValue)}</span>
                     <span>Media do periodo: ${formatCurrency(point.average)}</span>`;
                 tooltip.classList.add('active');
                 const panelRect = panel.getBoundingClientRect();
@@ -1318,6 +1319,7 @@ if (!function_exists('financeiro_format_date')) {
                         tooltipLabel: item.tooltipLabel || item.label,
                         typeLabel: field === 'entrada' ? 'Entrada' : 'Saida',
                         value: item[field],
+                        netValue: item.entrada - item.saida,
                         average: averages[field]
                     });
                     ctx.beginPath();
