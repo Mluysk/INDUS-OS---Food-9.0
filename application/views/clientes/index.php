@@ -135,7 +135,7 @@
                     <th></th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody data-clientes-tbody>
                 <?php if ($clientes): ?>
                     <?php foreach ($clientes as $cliente): ?>
                         <tr>
@@ -189,6 +189,7 @@
             </tbody>
         </table>
     </div>
+    <div class="list-pagination" data-list-pagination="clientes" aria-label="Paginação da lista de clientes"></div>
 </section>
 
 <div class="cliente-modal" data-modal data-base-url="<?= htmlspecialchars($url('clientes'), ENT_QUOTES, 'UTF-8'); ?>" hidden>
@@ -556,6 +557,72 @@
         white-space: nowrap;
     }
 
+    .list-pagination {
+        display: grid;
+        grid-template-columns: minmax(120px, 1fr) auto minmax(220px, 1fr);
+        align-items: center;
+        gap: 12px;
+        margin-top: 14px;
+        color: var(--text-muted, #64748b);
+        font-size: 0.85rem;
+        font-weight: 800;
+    }
+
+    .list-pagination-pages,
+    .list-pagination-size {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+    .list-pagination-pages { justify-content: center; }
+    .list-pagination-size { justify-content: flex-end; }
+
+    .list-page-button,
+    .list-page-input {
+        min-width: 38px;
+        min-height: 38px;
+        border: 1px solid var(--border, #e5e7eb);
+        border-radius: 999px;
+        background: var(--surface, #fff);
+        color: var(--text, #111827);
+        font-weight: 850;
+        text-align: center;
+    }
+
+    .list-page-button {
+        padding: 7px 12px;
+        cursor: pointer;
+    }
+
+    .list-page-button.active {
+        border-color: var(--primary, #4f46e5);
+        background: var(--primary, #4f46e5);
+        color: #fff;
+    }
+
+    .list-page-input {
+        width: 58px;
+        padding: 7px 10px;
+    }
+
+    .list-page-size-select {
+        min-height: 38px;
+        border: 1px solid var(--border, #e5e7eb);
+        border-radius: 999px;
+        padding: 7px 34px 7px 14px;
+        background: var(--surface, #fff);
+        color: var(--text, #111827);
+        font-weight: 850;
+    }
+
+    @media (max-width: 760px) {
+        .list-pagination { grid-template-columns: 1fr; }
+        .list-pagination-pages,
+        .list-pagination-size { justify-content: flex-start; }
+    }
+
     .table-action {
         display: inline-flex;
         align-items: center;
@@ -834,6 +901,95 @@
     if (!form) {
         return;
     }
+    const pageSizeOptions = <?= json_encode(array_values(array_map('intval', $listPageSizeOptions ?? [15, 20, 30, 40, 50, 100]))); ?>;
+    const pageSizeDefault = <?= json_encode((int)($listPageSizeDefault ?? 15)); ?>;
+    const paginationTarget = document.querySelector('[data-list-pagination="clientes"]');
+    const clientesTbody = document.querySelector('[data-clientes-tbody]');
+    const paginationState = {
+        page: 1,
+        perPage: pageSizeOptions.includes(pageSizeDefault) ? pageSizeDefault : (pageSizeOptions[0] || 15)
+    };
+    const pageWindow = (currentPage, totalPages) => {
+        const pages = [];
+        const add = (page) => {
+            if (page >= 1 && page <= totalPages && !pages.includes(page)) {
+                pages.push(page);
+            }
+        };
+        add(1);
+        for (let page = currentPage - 2; page <= currentPage + 2; page += 1) {
+            add(page);
+        }
+        add(totalPages);
+        pages.sort((left, right) => left - right);
+        return pages.reduce((acc, page, index) => {
+            if (index > 0 && page - pages[index - 1] > 1) {
+                acc.push('...');
+            }
+            acc.push(page);
+            return acc;
+        }, []);
+    };
+    const renderClientesPagination = () => {
+        if (!paginationTarget || !clientesTbody) {
+            return;
+        }
+        const rows = Array.from(clientesTbody.querySelectorAll('tr'));
+        const totalRows = rows.length && !rows[0].querySelector('td[colspan]') ? rows.length : 0;
+        const totalPages = Math.max(1, Math.ceil(totalRows / paginationState.perPage));
+        paginationState.page = Math.min(Math.max(1, paginationState.page), totalPages);
+        const startIndex = (paginationState.page - 1) * paginationState.perPage;
+        const endIndex = startIndex + paginationState.perPage;
+        rows.forEach((row, index) => {
+            row.hidden = totalRows > 0 && (index < startIndex || index >= endIndex);
+        });
+        const start = totalRows ? startIndex + 1 : 0;
+        const end = Math.min(totalRows, endIndex);
+        const buttons = pageWindow(paginationState.page, totalPages).map((page) => {
+            if (page === '...') {
+                return '<span class="list-page-ellipsis">...</span>';
+            }
+            const active = page === paginationState.page;
+            return `<button type="button" class="list-page-button ${active ? 'active' : ''}" data-client-page="${page}" aria-current="${active ? 'page' : 'false'}">${page}</button>`;
+        }).join('');
+        const options = pageSizeOptions.map((size) => `<option value="${size}" ${size === paginationState.perPage ? 'selected' : ''}>${size}</option>`).join('');
+        paginationTarget.innerHTML = `<span>${start}-${end} de ${totalRows}</span>
+            <div class="list-pagination-pages">${buttons}<label>Ir para <input class="list-page-input" type="number" min="1" max="${totalPages}" value="${paginationState.page}" data-client-page-input></label></div>
+            <label class="list-pagination-size"><span>Mostrar</span><select class="list-page-size-select" data-client-page-size>${options}</select><span>por página</span></label>`;
+    };
+    paginationTarget?.addEventListener('click', (event) => {
+        const button = event.target instanceof Element ? event.target.closest('[data-client-page]') : null;
+        if (!button) {
+            return;
+        }
+        paginationState.page = Number(button.dataset.clientPage || 1);
+        renderClientesPagination();
+    });
+    paginationTarget?.addEventListener('change', (event) => {
+        const target = event.target;
+        if (!(target instanceof HTMLInputElement || target instanceof HTMLSelectElement)) {
+            return;
+        }
+        if (target.matches('[data-client-page-size]')) {
+            paginationState.perPage = Number(target.value) || paginationState.perPage;
+            paginationState.page = 1;
+            renderClientesPagination();
+        }
+        if (target.matches('[data-client-page-input]')) {
+            paginationState.page = Number(target.value) || 1;
+            renderClientesPagination();
+        }
+    });
+    paginationTarget?.addEventListener('keydown', (event) => {
+        const target = event.target;
+        if (event.key !== 'Enter' || !(target instanceof HTMLInputElement) || !target.matches('[data-client-page-input]')) {
+            return;
+        }
+        event.preventDefault();
+        paginationState.page = Number(target.value) || 1;
+        renderClientesPagination();
+    });
+    renderClientesPagination();
     const hiddenField = form.querySelector('input[name="documento_tipo"]');
     const cnpjButton = form.querySelector('#btn-cnpj');
     const cpfButton = form.querySelector('#btn-cpf');

@@ -55,6 +55,16 @@ class ProdutosController extends Controller
         if (empty($unidades)) {
             $unidades = ['kg', 'un', 'cx'];
         }
+        $pageSizeAvailable = [15, 20, 30, 40, 50, 100];
+        $pageSizeRaw = $this->config->get('LIST_PAGE_SIZE_OPTIONS', '15,20,30,40,50,100') ?: '15,20,30,40,50,100';
+        $pageSizeOptions = array_values(array_intersect($pageSizeAvailable, array_map('intval', explode(',', $pageSizeRaw))));
+        if (!$pageSizeOptions) {
+            $pageSizeOptions = $pageSizeAvailable;
+        }
+        $pageSizeDefault = (int)($this->config->get('LIST_PAGE_SIZE_DEFAULT', '15') ?: '15');
+        if (!in_array($pageSizeDefault, $pageSizeOptions, true)) {
+            $pageSizeDefault = $pageSizeOptions[0];
+        }
 
         if ($this->wantsJson()) {
             $this->json(['data' => $produtos, 'filters' => $filters, 'unidades' => $unidades]);
@@ -73,6 +83,8 @@ class ProdutosController extends Controller
             'skuDigits' => $this->produtos->getSkuDigits(),
             'nextSkuPa' => $this->produtos->nextSkuForTipo('PA'),
             'nextSkuMp' => $this->produtos->nextSkuForTipo('MP'),
+            'listPageSizeOptions' => $pageSizeOptions,
+            'listPageSizeDefault' => $pageSizeDefault,
         ], [
             'title' => 'Produtos',
             'activeMenu' => 'produtos',

@@ -75,6 +75,7 @@ if (!function_exists('financeiro_format_date')) {
     .finance-list-page-size select { min-height: 34px; border: 1px solid var(--border, #e5e7eb); border-radius: 999px; padding: 6px 28px 6px 10px; background: var(--surface, #fff); color: var(--text, #111827); font-weight: 850; }
     .finance-list-page-buttons { display: inline-flex; align-items: center; gap: 6px; flex-wrap: wrap; }
     .finance-list-page-button { min-width: 34px; min-height: 34px; border: 1px solid var(--border, #e5e7eb); border-radius: 999px; padding: 6px 10px; background: var(--surface, #fff); color: var(--text, #111827); font-weight: 850; cursor: pointer; }
+    .finance-list-page-input { width: 58px; min-height: 34px; border: 1px solid var(--border, #e5e7eb); border-radius: 999px; padding: 6px 10px; background: var(--surface, #fff); color: var(--text, #111827); font-weight: 850; text-align: center; }
     .finance-list-page-button:hover { border-color: var(--primary, #4f46e5); color: var(--primary, #4f46e5); }
     .finance-list-page-button.active { border-color: var(--primary, #4f46e5); background: var(--primary, #4f46e5); color: #fff; }
     .finance-list-page-ellipsis { min-width: 22px; text-align: center; color: var(--muted, #64748b); }
@@ -1816,7 +1817,7 @@ if (!function_exists('financeiro_format_date')) {
             }).join('');
             const options = financePageSizeOptions.map((size) => `<option value="${size}" ${size === pagination.perPage ? 'selected' : ''}>${size}</option>`).join('');
             target.innerHTML = `<span>${start}-${end} de ${pagination.totalRows}</span>
-                <div class="finance-list-page-buttons">${pageButtons}</div>
+                <div class="finance-list-page-buttons">${pageButtons}<label>Ir para <input class="finance-list-page-input" type="number" min="1" max="${pagination.totalPages}" value="${pagination.page}" data-finance-page-input="${tipo}"></label></div>
                 <label class="finance-list-page-size"><span>Mostrar</span><select data-finance-page-size="${tipo}" aria-label="Quantidade por página">${options}</select><span>por página</span></label>`;
         };
 
@@ -2471,13 +2472,35 @@ if (!function_exists('financeiro_format_date')) {
 
         document.addEventListener('change', (event) => {
             const select = event.target instanceof Element ? event.target.closest('[data-finance-page-size]') : null;
-            if (!select) {
-                return;
-            }
-            const tipo = select.dataset.financePageSize;
-            if (financePaginationState[tipo]) {
+            const input = event.target instanceof Element ? event.target.closest('[data-finance-page-input]') : null;
+            if (select) {
+                const tipo = select.dataset.financePageSize;
+                if (!financePaginationState[tipo]) {
+                    return;
+                }
                 financePaginationState[tipo].perPage = Number(select.value) || financePageSizeDefault;
                 resetFinancePage(tipo);
+                renderFinanceList(tipo);
+                return;
+            }
+            if (input) {
+                const tipo = input.dataset.financePageInput;
+                if (financePaginationState[tipo]) {
+                    financePaginationState[tipo].page = Number(input.value) || 1;
+                    renderFinanceList(tipo);
+                }
+            }
+        });
+
+        document.addEventListener('keydown', (event) => {
+            const input = event.target instanceof Element ? event.target.closest('[data-finance-page-input]') : null;
+            if (event.key !== 'Enter' || !input) {
+                return;
+            }
+            event.preventDefault();
+            const tipo = input.dataset.financePageInput;
+            if (financePaginationState[tipo]) {
+                financePaginationState[tipo].page = Number(input.value) || 1;
                 renderFinanceList(tipo);
             }
         });

@@ -3,25 +3,39 @@ namespace App\Modules\Clientes\Controllers;
 
 use App\Core\Controller;
 use App\Services\ClientesService;
+use App\Services\ConfigService;
 
 class ClientesController extends Controller
 {
     private ClientesService $clientes;
+    private ConfigService $config;
 
     public function __construct(
         \App\Core\Container $container,
         \App\Services\AuthService $auth,
         \App\Services\AuditService $audit,
-        ClientesService $clientes
+        ClientesService $clientes,
+        ConfigService $config
     ) {
         parent::__construct($container, $auth, $audit);
         $this->clientes = $clientes;
+        $this->config = $config;
     }
 
     public function index(): void
     {
         $this->auth->ensureRole(['admin','gestor','financeiro']);
         $clientes = $this->clientes->all();
+        $pageSizeAvailable = [15, 20, 30, 40, 50, 100];
+        $pageSizeRaw = $this->config->get('LIST_PAGE_SIZE_OPTIONS', '15,20,30,40,50,100') ?: '15,20,30,40,50,100';
+        $pageSizeOptions = array_values(array_intersect($pageSizeAvailable, array_map('intval', explode(',', $pageSizeRaw))));
+        if (!$pageSizeOptions) {
+            $pageSizeOptions = $pageSizeAvailable;
+        }
+        $pageSizeDefault = (int)($this->config->get('LIST_PAGE_SIZE_DEFAULT', '15') ?: '15');
+        if (!in_array($pageSizeDefault, $pageSizeOptions, true)) {
+            $pageSizeDefault = $pageSizeOptions[0];
+        }
 
         if ($this->wantsJson()) {
             $this->json($clientes);
@@ -30,6 +44,8 @@ class ClientesController extends Controller
 
         $this->render('clientes/index_with_patch', [
             'clientes' => $clientes,
+            'listPageSizeOptions' => $pageSizeOptions,
+            'listPageSizeDefault' => $pageSizeDefault,
         ], [
             'title' => 'Clientes',
             'activeMenu' => 'clientes',
