@@ -235,6 +235,13 @@ include __DIR__.'/index_whatsapp_beside_contact_type_patch.php';
             font-size: 0.6rem !important;
         }
 
+        html body .portal-product__weight-pill {
+            padding: 0.22rem 0.48rem !important;
+            font-size: 0.62rem !important;
+            max-width: 100% !important;
+            white-space: nowrap !important;
+        }
+
         @media (max-width: 360px) {
             html body .portal-catalog {
                 grid-template-columns: 1fr !important;

@@ -1057,6 +1057,29 @@ if ($supportWhatsapp !== '') {
         font-size: 0.75rem;
     }
 
+    .portal-product__weight-pill {
+        display: inline-flex;
+        align-items: center;
+        align-self: flex-start;
+        gap: 0.35rem;
+        width: fit-content;
+        padding: 0.28rem 0.7rem;
+        border-radius: 999px;
+        border: 1px solid color-mix(in srgb, var(--primary, #2563eb) 26%, transparent);
+        background: color-mix(in srgb, var(--primary, #2563eb) 13%, #ffffff);
+        color: var(--primary, #2563eb);
+        font-size: 0.76rem;
+        font-weight: 850;
+        line-height: 1;
+        box-shadow: 0 12px 24px -20px color-mix(in srgb, var(--primary, #2563eb) 55%, transparent);
+    }
+
+    [data-theme="dark"] .portal-product__weight-pill {
+        background: color-mix(in srgb, var(--primary, #3b82f6) 18%, rgba(15, 23, 42, 0.88));
+        border-color: color-mix(in srgb, var(--primary, #3b82f6) 38%, transparent);
+        color: color-mix(in srgb, var(--primary, #3b82f6) 74%, #ffffff);
+    }
+
     .portal-product__footer {
         display: flex;
         flex-direction: column;
@@ -1855,6 +1878,7 @@ $catalogoPayload = json_encode(array_map(static function ($produto) {
         'sku' => $produto['sku'] ?? '',
         'preco' => (float) ($produto['preco'] ?? 0),
         'unidade' => $produto['unidade'] ?? '',
+        'peso_liquido' => (float) ($produto['peso_liquido'] ?? 0),
         'shelf_life_dias' => (int) ($produto['shelf_life_dias'] ?? 0),
         'categoria' => $produto['categoria'] ?? '',
         'tipo' => $produto['tipo'] ?? 'PA',
@@ -1921,6 +1945,16 @@ $catalogoPayload = json_encode(array_map(static function ($produto) {
     let pedidosCarregados = false;
 
     const formatCurrency = (value) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
+    const formatWeight = (value) => {
+        const numeric = Number(value || 0);
+        if (!numeric) {
+            return '';
+        }
+        if (numeric < 1) {
+            return `${(numeric * 1000).toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 })} g`;
+        }
+        return `${numeric.toLocaleString('pt-BR', { minimumFractionDigits: 3, maximumFractionDigits: 3 })} kg`;
+    };
     const formatOrderCode = (codigo, id) => {
         if (typeof codigo === 'string' && codigo.trim() !== '') {
             const trimmed = codigo.trim();
@@ -2748,6 +2782,7 @@ $catalogoPayload = json_encode(array_map(static function ($produto) {
             const card = document.createElement('article');
             card.className = `portal-product portal-product--${catalogView}`;
             card.dataset.category = produto.categoria || '';
+            const pesoFormatado = formatWeight(produto.peso_liquido);
             card.innerHTML = `
                 <div class="portal-product__header">
                     <div>
@@ -2756,6 +2791,7 @@ $catalogoPayload = json_encode(array_map(static function ($produto) {
                     </div>
                     <span class="badge">${produto.tipo}</span>
                 </div>
+                ${pesoFormatado ? `<span class="portal-product__weight-pill">Peso ${pesoFormatado}</span>` : ''}
                 <p class="portal-product__meta">Validade ( dias ): ${produto.shelf_life_dias || 0} dias</p>
                 <div class="portal-product__footer">
                     <div class="portal-product__price">${formatCurrency(produto.preco)}</div>
