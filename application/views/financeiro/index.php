@@ -70,6 +70,14 @@ if (!function_exists('financeiro_format_date')) {
     .finance-list-title-icon .icon { position: absolute; stroke-width: 2.6; }
     .finance-list-title-icon .icon:first-child { width: 20px; height: 20px; left: 0; top: 1px; }
     .finance-list-title-icon .icon:last-child { width: 13px; height: 13px; right: 0; bottom: 0; padding: 1px; border-radius: 999px; background: var(--surface, #fff); }
+    .finance-list-pagination { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-top: 14px; color: var(--muted, #64748b); font-size: 0.82rem; font-weight: 800; }
+    .finance-list-page-size { display: inline-flex; align-items: center; gap: 8px; }
+    .finance-list-page-size select { min-height: 34px; border: 1px solid var(--border, #e5e7eb); border-radius: 999px; padding: 6px 28px 6px 10px; background: var(--surface, #fff); color: var(--text, #111827); font-weight: 850; }
+    .finance-list-page-buttons { display: inline-flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+    .finance-list-page-button { min-width: 34px; min-height: 34px; border: 1px solid var(--border, #e5e7eb); border-radius: 999px; padding: 6px 10px; background: var(--surface, #fff); color: var(--text, #111827); font-weight: 850; cursor: pointer; }
+    .finance-list-page-button:hover { border-color: var(--primary, #4f46e5); color: var(--primary, #4f46e5); }
+    .finance-list-page-button.active { border-color: var(--primary, #4f46e5); background: var(--primary, #4f46e5); color: #fff; }
+    .finance-list-page-ellipsis { min-width: 22px; text-align: center; color: var(--muted, #64748b); }
     .finance-export-group { position: relative; display: inline-flex; }
     .finance-export-menu { position: absolute; z-index: 50; top: calc(100% + 8px); right: 0; display: grid; gap: 6px; min-width: 132px; border: 1px solid var(--border, #e5e7eb); border-radius: 14px; padding: 8px; background: var(--surface, #fff); box-shadow: 0 18px 40px rgba(15, 23, 42, 0.16); }
     .finance-export-menu[hidden] { display: none; }
@@ -410,6 +418,7 @@ if (!function_exists('financeiro_format_date')) {
                     </tbody>
                 </table>
             </div>
+            <div class="finance-list-pagination" data-finance-pagination="entrada" aria-label="Paginação da lista de entrada"></div>
         </div>
     </section>
 </section>
@@ -567,6 +576,7 @@ if (!function_exists('financeiro_format_date')) {
                     </tbody>
                 </table>
             </div>
+            <div class="finance-list-pagination" data-finance-pagination="saida" aria-label="Paginação da lista de saída"></div>
         </div>
     </section>
 </section>
@@ -795,6 +805,11 @@ if (!function_exists('financeiro_format_date')) {
         const financeSortState = {
             entrada: { field: '', direction: '' },
             saida: { field: '', direction: '' }
+        };
+        const financePageSizeOptions = [15, 20, 30, 40, 50, 100];
+        const financePaginationState = {
+            entrada: { page: 1, perPage: 15 },
+            saida: { page: 1, perPage: 15 }
         };
         const emptyMessages = {
             entrada: 'Nenhuma entrada cadastrada.',
@@ -1737,6 +1752,71 @@ if (!function_exists('financeiro_format_date')) {
             });
         };
 
+        const resetFinancePage = (tipo) => {
+            if (financePaginationState[tipo]) {
+                financePaginationState[tipo].page = 1;
+            }
+        };
+
+        const pageWindow = (currentPage, totalPages) => {
+            const pages = [];
+            const addPage = (page) => {
+                if (page >= 1 && page <= totalPages && !pages.includes(page)) {
+                    pages.push(page);
+                }
+            };
+            addPage(1);
+            for (let page = currentPage - 2; page <= currentPage + 2; page += 1) {
+                addPage(page);
+            }
+            addPage(totalPages);
+            pages.sort((left, right) => left - right);
+            return pages.reduce((acc, page, index) => {
+                if (index > 0 && page - pages[index - 1] > 1) {
+                    acc.push('...');
+                }
+                acc.push(page);
+                return acc;
+            }, []);
+        };
+
+        const paginateRows = (tipo, rows) => {
+            const state = financePaginationState[tipo] || { page: 1, perPage: 15 };
+            const perPage = financePageSizeOptions.includes(Number(state.perPage)) ? Number(state.perPage) : 15;
+            const totalPages = Math.max(1, Math.ceil(rows.length / perPage));
+            const page = Math.min(Math.max(1, Number(state.page) || 1), totalPages);
+            state.page = page;
+            state.perPage = perPage;
+            const start = (page - 1) * perPage;
+            return {
+                page,
+                perPage,
+                totalPages,
+                totalRows: rows.length,
+                rows: rows.slice(start, start + perPage)
+            };
+        };
+
+        const renderPagination = (tipo, pagination) => {
+            const target = document.querySelector(`[data-finance-pagination="${tipo}"]`);
+            if (!target) {
+                return;
+            }
+            const start = pagination.totalRows ? (pagination.page - 1) * pagination.perPage + 1 : 0;
+            const end = Math.min(pagination.totalRows, pagination.page * pagination.perPage);
+            const pageButtons = pageWindow(pagination.page, pagination.totalPages).map((page) => {
+                if (page === '...') {
+                    return '<span class="finance-list-page-ellipsis">...</span>';
+                }
+                const active = page === pagination.page;
+                return `<button type="button" class="finance-list-page-button ${active ? 'active' : ''}" data-finance-page="${tipo}" data-page="${page}" aria-current="${active ? 'page' : 'false'}">${page}</button>`;
+            }).join('');
+            const options = financePageSizeOptions.map((size) => `<option value="${size}" ${size === pagination.perPage ? 'selected' : ''}>${size}</option>`).join('');
+            target.innerHTML = `<span>${start}-${end} de ${pagination.totalRows}</span>
+                <div class="finance-list-page-buttons">${pageButtons}</div>
+                <label class="finance-list-page-size"><span>Mostrar</span><select data-finance-page-size="${tipo}" aria-label="Quantidade por página">${options}</select><span>por página</span></label>`;
+        };
+
         const emptyRow = (tipo) => {
             const hasRows = (financeRows[tipo] || []).length > 0;
             return `<tr><td colspan="7">${hasRows ? filteredEmptyMessages[tipo] : emptyMessages[tipo]}</td></tr>`;
@@ -2078,14 +2158,17 @@ if (!function_exists('financeiro_format_date')) {
                 return;
             }
             const rows = applyFinanceFilters(tipo);
+            const pagination = paginateRows(tipo, rows);
             refreshSortIndicators(tipo);
             renderPeriodSummary(tipo);
             renderStatusSummary(tipo);
             if (tipo === 'saida') {
-                renderSaidas(rows);
+                renderSaidas(pagination.rows);
+                renderPagination(tipo, pagination);
                 return;
             }
-            renderEntradas(rows);
+            renderEntradas(pagination.rows);
+            renderPagination(tipo, pagination);
         };
 
         const refreshLancamentos = async () => {
@@ -2187,7 +2270,10 @@ if (!function_exists('financeiro_format_date')) {
             input.addEventListener('change', renderPerformanceDashboard);
         });
         document.querySelectorAll('[data-finance-list-search]').forEach((input) => {
-            input.addEventListener('input', () => renderFinanceList(input.dataset.financeListSearch));
+            input.addEventListener('input', () => {
+                resetFinancePage(input.dataset.financeListSearch);
+                renderFinanceList(input.dataset.financeListSearch);
+            });
         });
         document.querySelectorAll('[data-finance-chart-zoom]').forEach((button) => {
             button.addEventListener('click', () => {
@@ -2235,11 +2321,17 @@ if (!function_exists('financeiro_format_date')) {
         document.querySelectorAll('[data-finance-period-select]').forEach((select) => {
             const tipo = select.dataset.financePeriodSelect;
             document.querySelector(`[data-finance-period-input="${tipo}"][data-period-input="semanal"]`)?.setAttribute('value', isoWeekValue(todayValue));
-            select.addEventListener('change', () => renderFinanceList(tipo));
+            select.addEventListener('change', () => {
+                resetFinancePage(tipo);
+                renderFinanceList(tipo);
+            });
         });
 
         document.querySelectorAll('[data-finance-period-input]').forEach((input) => {
-            input.addEventListener('change', () => renderFinanceList(input.dataset.financePeriodInput));
+            input.addEventListener('change', () => {
+                resetFinancePage(input.dataset.financePeriodInput);
+                renderFinanceList(input.dataset.financePeriodInput);
+            });
         });
 
         const positionStatusMenu = (filter) => {
@@ -2327,6 +2419,7 @@ if (!function_exists('financeiro_format_date')) {
                     }
 
                     updateStatusSummary();
+                    resetFinancePage(filter.dataset.financeStatusFilter);
                     renderFinanceList(filter.dataset.financeStatusFilter);
                 });
             });
@@ -2355,8 +2448,35 @@ if (!function_exists('financeiro_format_date')) {
                 const current = financeSortState[tipo] || { field: '', direction: '' };
                 const nextDirection = current.field === field && current.direction === 'asc' ? 'desc' : 'asc';
                 financeSortState[tipo] = { field, direction: nextDirection };
+                resetFinancePage(tipo);
                 renderFinanceList(tipo);
             });
+        });
+
+        document.addEventListener('click', (event) => {
+            const button = event.target instanceof Element ? event.target.closest('[data-finance-page]') : null;
+            if (!button) {
+                return;
+            }
+            const tipo = button.dataset.financePage;
+            const page = Number(button.dataset.page || 1);
+            if (financePaginationState[tipo]) {
+                financePaginationState[tipo].page = page;
+                renderFinanceList(tipo);
+            }
+        });
+
+        document.addEventListener('change', (event) => {
+            const select = event.target instanceof Element ? event.target.closest('[data-finance-page-size]') : null;
+            if (!select) {
+                return;
+            }
+            const tipo = select.dataset.financePageSize;
+            if (financePaginationState[tipo]) {
+                financePaginationState[tipo].perPage = Number(select.value) || 15;
+                resetFinancePage(tipo);
+                renderFinanceList(tipo);
+            }
         });
 
 
