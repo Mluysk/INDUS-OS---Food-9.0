@@ -801,10 +801,11 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
                 const active = page === paginationState.page;
                 return `<button type="button" class="list-page-button ${active ? 'active' : ''}" data-product-page="${page}" aria-current="${active ? 'page' : 'false'}">${page}</button>`;
             }).join('');
-            const options = pageSizeOptions.map((size) => `<option value="${size}" ${size === paginationState.perPage ? 'selected' : ''}>${size}</option>`).join('');
+            const pageSizeChoices = Array.from(new Set([...pageSizeOptions, paginationState.perPage])).sort((left, right) => left - right);
+            const options = pageSizeChoices.map((size) => `<option value="${size}" ${size === paginationState.perPage ? 'selected' : ''}>${size}</option>`).join('');
             paginationTarget.innerHTML = `<span>${start}-${end} de ${totalRows}</span>
                 <div class="list-pagination-pages">${buttons}<label>Ir para <input class="list-page-input" type="number" min="1" max="${totalPages}" value="${paginationState.page}" data-product-page-input></label></div>
-                <label class="list-pagination-size"><span>Mostrar</span><select class="list-page-size-select" data-product-page-size>${options}</select><span>por página</span></label>`;
+                <label class="list-pagination-size"><span>Mostrar</span><select class="list-page-size-select" data-product-page-size>${options}</select><input class="list-page-input" type="number" min="1" max="500" value="${paginationState.perPage}" data-product-page-size-manual aria-label="Quantidade manual por página"><span>por página</span></label>`;
         };
 
         const renderProductPage = () => {
@@ -931,6 +932,11 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
                 paginationState.page = 1;
                 renderProductPage();
             }
+            if (target.matches('[data-product-page-size-manual]')) {
+                paginationState.perPage = Math.min(500, Math.max(1, Number(target.value) || paginationState.perPage));
+                paginationState.page = 1;
+                renderProductPage();
+            }
             if (target.matches('[data-product-page-input]')) {
                 paginationState.page = Number(target.value) || 1;
                 renderProductPage();
@@ -939,10 +945,16 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
 
         paginationTarget?.addEventListener('keydown', (event) => {
             const target = event.target;
-            if (event.key !== 'Enter' || !(target instanceof HTMLInputElement) || !target.matches('[data-product-page-input]')) {
+            if (event.key !== 'Enter' || !(target instanceof HTMLInputElement) || !target.matches('[data-product-page-input], [data-product-page-size-manual]')) {
                 return;
             }
             event.preventDefault();
+            if (target.matches('[data-product-page-size-manual]')) {
+                paginationState.perPage = Math.min(500, Math.max(1, Number(target.value) || paginationState.perPage));
+                paginationState.page = 1;
+                renderProductPage();
+                return;
+            }
             paginationState.page = Number(target.value) || 1;
             renderProductPage();
         });

@@ -800,7 +800,7 @@ if (!function_exists('financeiro_format_date')) {
         const lancamentosBaseUrl = <?= json_encode($url('financeiro/lancamentos')); ?>;
         const todayValue = <?= json_encode($hoje); ?>;
         const configuredPageSizeOptions = <?= json_encode(array_values(array_map('intval', $listPageSizeOptions ?? [15, 20, 30, 40, 50, 100]))); ?>;
-        const configuredPageSizeDefault = <?= json_encode((int)($listPageSizeDefault ?? 15)); ?>;
+        const configuredPageSizeDefaults = <?= json_encode($listPageSizeDefaults ?? ['entrada' => 15, 'saida' => 15]); ?>;
         const financeRows = {
             entrada: <?= json_encode(array_values($entradas), JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT); ?>,
             saida: <?= json_encode(array_values($saidas), JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT); ?>
@@ -810,10 +810,13 @@ if (!function_exists('financeiro_format_date')) {
             saida: { field: '', direction: '' }
         };
         const financePageSizeOptions = configuredPageSizeOptions.length ? configuredPageSizeOptions : [15, 20, 30, 40, 50, 100];
-        const financePageSizeDefault = financePageSizeOptions.includes(configuredPageSizeDefault) ? configuredPageSizeDefault : financePageSizeOptions[0];
+        const financePageSizeDefault = (tipo) => {
+            const configured = Number(configuredPageSizeDefaults[tipo] || financePageSizeOptions[0] || 15);
+            return Math.min(500, Math.max(1, configured));
+        };
         const financePaginationState = {
-            entrada: { page: 1, perPage: financePageSizeDefault },
-            saida: { page: 1, perPage: financePageSizeDefault }
+            entrada: { page: 1, perPage: financePageSizeDefault('entrada') },
+            saida: { page: 1, perPage: financePageSizeDefault('saida') }
         };
         const emptyMessages = {
             entrada: 'Nenhuma entrada cadastrada.',
@@ -1785,8 +1788,8 @@ if (!function_exists('financeiro_format_date')) {
         };
 
         const paginateRows = (tipo, rows) => {
-            const state = financePaginationState[tipo] || { page: 1, perPage: financePageSizeDefault };
-            const perPage = financePageSizeOptions.includes(Number(state.perPage)) ? Number(state.perPage) : financePageSizeDefault;
+            const state = financePaginationState[tipo] || { page: 1, perPage: financePageSizeDefault(tipo) };
+            const perPage = Math.min(500, Math.max(1, Number(state.perPage) || financePageSizeDefault(tipo)));
             const totalPages = Math.max(1, Math.ceil(rows.length / perPage));
             const page = Math.min(Math.max(1, Number(state.page) || 1), totalPages);
             state.page = page;
@@ -1815,10 +1818,11 @@ if (!function_exists('financeiro_format_date')) {
                 const active = page === pagination.page;
                 return `<button type="button" class="finance-list-page-button ${active ? 'active' : ''}" data-finance-page="${tipo}" data-page="${page}" aria-current="${active ? 'page' : 'false'}">${page}</button>`;
             }).join('');
-            const options = financePageSizeOptions.map((size) => `<option value="${size}" ${size === pagination.perPage ? 'selected' : ''}>${size}</option>`).join('');
+            const pageSizeChoices = Array.from(new Set([...financePageSizeOptions, pagination.perPage])).sort((left, right) => left - right);
+            const options = pageSizeChoices.map((size) => `<option value="${size}" ${size === pagination.perPage ? 'selected' : ''}>${size}</option>`).join('');
             target.innerHTML = `<span>${start}-${end} de ${pagination.totalRows}</span>
                 <div class="finance-list-page-buttons">${pageButtons}<label>Ir para <input class="finance-list-page-input" type="number" min="1" max="${pagination.totalPages}" value="${pagination.page}" data-finance-page-input="${tipo}"></label></div>
-                <label class="finance-list-page-size"><span>Mostrar</span><select data-finance-page-size="${tipo}" aria-label="Quantidade por página">${options}</select><span>por página</span></label>`;
+                <label class="finance-list-page-size"><span>Mostrar</span><select data-finance-page-size="${tipo}" aria-label="Quantidade por página">${options}</select><input class="finance-list-page-input" type="number" min="1" max="500" value="${pagination.perPage}" data-finance-page-size-manual="${tipo}" aria-label="Quantidade manual por página"><span>por página</span></label>`;
         };
 
         const emptyRow = (tipo) => {
@@ -2478,9 +2482,19 @@ if (!function_exists('financeiro_format_date')) {
                 if (!financePaginationState[tipo]) {
                     return;
                 }
-                financePaginationState[tipo].perPage = Number(select.value) || financePageSizeDefault;
+                financePaginationState[tipo].perPage = Number(select.value) || financePageSizeDefault(tipo);
                 resetFinancePage(tipo);
                 renderFinanceList(tipo);
+                return;
+            }
+            const sizeInput = event.target instanceof Element ? event.target.closest('[data-finance-page-size-manual]') : null;
+            if (sizeInput) {
+                const tipo = sizeInput.dataset.financePageSizeManual;
+                if (financePaginationState[tipo]) {
+                    financePaginationState[tipo].perPage = Math.min(500, Math.max(1, Number(sizeInput.value) || financePageSizeDefault(tipo)));
+                    resetFinancePage(tipo);
+                    renderFinanceList(tipo);
+                }
                 return;
             }
             if (input) {
@@ -2494,10 +2508,20 @@ if (!function_exists('financeiro_format_date')) {
 
         document.addEventListener('keydown', (event) => {
             const input = event.target instanceof Element ? event.target.closest('[data-finance-page-input]') : null;
-            if (event.key !== 'Enter' || !input) {
+            const sizeInput = event.target instanceof Element ? event.target.closest('[data-finance-page-size-manual]') : null;
+            if (event.key !== 'Enter' || (!input && !sizeInput)) {
                 return;
             }
             event.preventDefault();
+            if (sizeInput) {
+                const tipo = sizeInput.dataset.financePageSizeManual;
+                if (financePaginationState[tipo]) {
+                    financePaginationState[tipo].perPage = Math.min(500, Math.max(1, Number(sizeInput.value) || financePageSizeDefault(tipo)));
+                    resetFinancePage(tipo);
+                    renderFinanceList(tipo);
+                }
+                return;
+            }
             const tipo = input.dataset.financePageInput;
             if (financePaginationState[tipo]) {
                 financePaginationState[tipo].page = Number(input.value) || 1;

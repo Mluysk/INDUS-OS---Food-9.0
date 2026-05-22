@@ -68,9 +68,14 @@ $performanceIncludeSaturday = $performanceIncludeSaturday ?? '1';
 $performanceIncludeSunday = $performanceIncludeSunday ?? '1';
 $allowNegativeStock = $allowNegativeStock ?? '0';
 $financeiroAlertaVencimentoDias = isset($financeiroAlertaVencimentoDias) ? (int)$financeiroAlertaVencimentoDias : 7;
-$listPageSizeAvailable = $listPageSizeAvailable ?? [15, 20, 30, 40, 50, 100];
-$listPageSizeOptions = $listPageSizeOptions ?? $listPageSizeAvailable;
+$listPageSizeOptions = $listPageSizeOptions ?? [15, 20, 30, 40, 50, 100];
 $listPageSizeDefault = isset($listPageSizeDefault) ? (int)$listPageSizeDefault : 15;
+$listPageSizeDefaults = $listPageSizeDefaults ?? [
+    'clientes' => $listPageSizeDefault,
+    'produtos' => $listPageSizeDefault,
+    'financeiro_entrada' => $listPageSizeDefault,
+    'financeiro_saida' => $listPageSizeDefault,
+];
 
 $palette = [
     ['name' => 'Grafite Suave', 'hex' => '#4F535C'],
@@ -542,25 +547,30 @@ $previewMatrixDefault = app_logo_matrix_values($logoTintPreviewHex);
             <div class="appearance-panels">
                 <div class="appearance-panel active" data-appearance-panel="geral">
                     <div class="field">
-                        <label class="field-label">Listas por página</label>
-                        <p class="field-hint">Escolha quais quantidades aparecem no seletor das listas e qual delas será usada como padrão.</p>
-                        <div class="list-page-options">
-                            <?php foreach ($listPageSizeAvailable as $pageSize): ?>
-                                <label class="check-card">
-                                    <input type="checkbox" name="config[LIST_PAGE_SIZE_OPTIONS][]" value="<?= (int)$pageSize; ?>" <?= in_array((int)$pageSize, array_map('intval', $listPageSizeOptions), true) ? 'checked' : ''; ?> data-list-page-option>
-                                    <span><?= (int)$pageSize; ?></span>
+                        <label for="list-page-size-options">Números disponíveis por página</label>
+                        <input id="list-page-size-options" name="config[LIST_PAGE_SIZE_OPTIONS]" value="<?= htmlspecialchars(implode(', ', array_map('intval', $listPageSizeOptions)), ENT_QUOTES, 'UTF-8'); ?>" placeholder="15, 20, 30, 40, 50, 100" data-list-page-options>
+                        <p class="field-hint">Digite os números separados por vírgula. Eles aparecem no seletor das listas.</p>
+                    </div>
+                    <div class="field">
+                        <label class="field-label">Padrão por lista</label>
+                        <div class="list-page-defaults">
+                            <?php
+                                $pageDefaultFields = [
+                                    'LIST_PAGE_SIZE_DEFAULT' => ['Geral', $listPageSizeDefault],
+                                    'LIST_PAGE_SIZE_DEFAULT_CLIENTES' => ['Clientes', $listPageSizeDefaults['clientes'] ?? $listPageSizeDefault],
+                                    'LIST_PAGE_SIZE_DEFAULT_PRODUTOS' => ['Produtos', $listPageSizeDefaults['produtos'] ?? $listPageSizeDefault],
+                                    'LIST_PAGE_SIZE_DEFAULT_FINANCEIRO_ENTRADA' => ['Financeiro entrada', $listPageSizeDefaults['financeiro_entrada'] ?? $listPageSizeDefault],
+                                    'LIST_PAGE_SIZE_DEFAULT_FINANCEIRO_SAIDA' => ['Financeiro saída', $listPageSizeDefaults['financeiro_saida'] ?? $listPageSizeDefault],
+                                ];
+                            ?>
+                            <?php foreach ($pageDefaultFields as $configKey => [$label, $value]): ?>
+                                <label class="list-page-default-row">
+                                    <span><?= htmlspecialchars($label, ENT_QUOTES, 'UTF-8'); ?></span>
+                                    <input type="number" min="1" max="500" name="config[<?= htmlspecialchars($configKey, ENT_QUOTES, 'UTF-8'); ?>]" value="<?= (int)$value; ?>" data-list-page-default>
                                 </label>
                             <?php endforeach; ?>
                         </div>
-                    </div>
-                    <div class="field">
-                        <label for="list-page-size-default">Quantidade padrão por página</label>
-                        <select id="list-page-size-default" name="config[LIST_PAGE_SIZE_DEFAULT]" data-list-page-default>
-                            <?php foreach ($listPageSizeAvailable as $pageSize): ?>
-                                <option value="<?= (int)$pageSize; ?>" <?= (int)$listPageSizeDefault === (int)$pageSize ? 'selected' : ''; ?>><?= (int)$pageSize; ?> por página</option>
-                            <?php endforeach; ?>
-                        </select>
-                        <p class="field-hint">Esse valor entra automaticamente nas paginações quando a tela abre.</p>
+                        <p class="field-hint">Cada lista pode abrir com uma quantidade diferente. Ex.: Clientes 30, Produtos 50.</p>
                     </div>
                 </div>
                 <div class="appearance-panel" data-appearance-panel="visual">
@@ -1081,25 +1091,20 @@ $previewMatrixDefault = app_logo_matrix_values($logoTintPreviewHex);
     }
     .appearance-panel { display: none; gap: 20px; }
     .appearance-panel.active { display: flex; flex-direction: column; }
-    .list-page-options {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 10px;
+    .list-page-defaults {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+        gap: 12px;
     }
-    .check-card {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
+    .list-page-default-row {
+        display: grid;
+        gap: 6px;
         border: 1px solid var(--border);
-        border-radius: 999px;
-        padding: 9px 13px;
+        border-radius: 14px;
+        padding: 12px;
         background: var(--surface-alt);
         color: var(--text);
         font-weight: 800;
-        cursor: pointer;
-    }
-    .check-card input {
-        accent-color: var(--primary);
     }
     .quick-actions-config {
         display: grid;
@@ -2484,18 +2489,27 @@ $previewMatrixDefault = app_logo_matrix_values($logoTintPreviewHex);
             setAppearanceTab(storedAppearanceTab || 'geral');
         }
 
-        const listPageDefault = document.querySelector('[data-list-page-default]');
+        const listPageOptionsInput = document.querySelector('[data-list-page-options]');
+        const listPageDefaults = document.querySelectorAll('[data-list-page-default]');
         const syncDefaultPageOption = () => {
-            if (!listPageDefault) {
+            if (!listPageOptionsInput) {
                 return;
             }
-            const defaultOption = document.querySelector(`[data-list-page-option][value="${listPageDefault.value}"]`);
-            if (defaultOption) {
-                defaultOption.checked = true;
-            }
+            const values = String(listPageOptionsInput.value || '')
+                .split(/[,\s;]+/)
+                .map((value) => parseInt(value, 10))
+                .filter((value) => Number.isFinite(value) && value > 0);
+            listPageDefaults.forEach((input) => {
+                const value = parseInt(input.value || '0', 10);
+                if (Number.isFinite(value) && value > 0) {
+                    values.push(value);
+                }
+            });
+            const unique = Array.from(new Set(values)).sort((left, right) => left - right);
+            listPageOptionsInput.value = unique.join(', ');
         };
-        if (listPageDefault) {
-            listPageDefault.addEventListener('change', syncDefaultPageOption);
+        if (listPageOptionsInput) {
+            listPageDefaults.forEach((input) => input.addEventListener('change', syncDefaultPageOption));
             syncDefaultPageOption();
         }
 

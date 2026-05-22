@@ -26,16 +26,17 @@ class ClientesController extends Controller
     {
         $this->auth->ensureRole(['admin','gestor','financeiro']);
         $clientes = $this->clientes->all();
-        $pageSizeAvailable = [15, 20, 30, 40, 50, 100];
         $pageSizeRaw = $this->config->get('LIST_PAGE_SIZE_OPTIONS', '15,20,30,40,50,100') ?: '15,20,30,40,50,100';
-        $pageSizeOptions = array_values(array_intersect($pageSizeAvailable, array_map('intval', explode(',', $pageSizeRaw))));
+        $pageSizeOptions = array_values(array_map(
+            fn (int $size): int => min(500, $size),
+            array_filter(array_map('intval', preg_split('/[,\s;]+/', $pageSizeRaw)), fn (int $size): bool => $size > 0)
+        ));
         if (!$pageSizeOptions) {
-            $pageSizeOptions = $pageSizeAvailable;
+            $pageSizeOptions = [15, 20, 30, 40, 50, 100];
         }
-        $pageSizeDefault = (int)($this->config->get('LIST_PAGE_SIZE_DEFAULT', '15') ?: '15');
-        if (!in_array($pageSizeDefault, $pageSizeOptions, true)) {
-            $pageSizeDefault = $pageSizeOptions[0];
-        }
+        $pageSizeDefault = max(1, min(500, (int)($this->config->get('LIST_PAGE_SIZE_DEFAULT_CLIENTES', $this->config->get('LIST_PAGE_SIZE_DEFAULT', '15')) ?: '15')));
+        $pageSizeOptions = array_values(array_unique(array_merge($pageSizeOptions, [$pageSizeDefault])));
+        sort($pageSizeOptions);
 
         if ($this->wantsJson()) {
             $this->json($clientes);

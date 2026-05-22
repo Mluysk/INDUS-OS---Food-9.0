@@ -223,16 +223,20 @@ class ConfigController extends Controller
         } elseif ($financeiroAlertaVencimentoDias > 365) {
             $financeiroAlertaVencimentoDias = 365;
         }
-        $listPageSizeAvailable = [15, 20, 30, 40, 50, 100];
         $listPageSizeRaw = $this->config->get('LIST_PAGE_SIZE_OPTIONS', '15,20,30,40,50,100') ?: '15,20,30,40,50,100';
-        $listPageSizeOptions = array_values(array_intersect($listPageSizeAvailable, array_map('intval', explode(',', $listPageSizeRaw))));
+        $listPageSizeOptions = $this->normalisePageSizes($listPageSizeRaw);
         if (!$listPageSizeOptions) {
-            $listPageSizeOptions = $listPageSizeAvailable;
+            $listPageSizeOptions = [15, 20, 30, 40, 50, 100];
         }
-        $listPageSizeDefault = (int)($this->config->get('LIST_PAGE_SIZE_DEFAULT', '15') ?: '15');
-        if (!in_array($listPageSizeDefault, $listPageSizeOptions, true)) {
-            $listPageSizeDefault = $listPageSizeOptions[0];
-        }
+        $listPageSizeDefault = $this->normalisePageSize($this->config->get('LIST_PAGE_SIZE_DEFAULT', '15') ?: '15', 15);
+        $listPageSizeDefaults = [
+            'clientes' => $this->normalisePageSize($this->config->get('LIST_PAGE_SIZE_DEFAULT_CLIENTES', (string)$listPageSizeDefault), $listPageSizeDefault),
+            'produtos' => $this->normalisePageSize($this->config->get('LIST_PAGE_SIZE_DEFAULT_PRODUTOS', (string)$listPageSizeDefault), $listPageSizeDefault),
+            'financeiro_entrada' => $this->normalisePageSize($this->config->get('LIST_PAGE_SIZE_DEFAULT_FINANCEIRO_ENTRADA', (string)$listPageSizeDefault), $listPageSizeDefault),
+            'financeiro_saida' => $this->normalisePageSize($this->config->get('LIST_PAGE_SIZE_DEFAULT_FINANCEIRO_SAIDA', (string)$listPageSizeDefault), $listPageSizeDefault),
+        ];
+        $listPageSizeOptions = array_values(array_unique(array_merge($listPageSizeOptions, [$listPageSizeDefault], array_values($listPageSizeDefaults))));
+        sort($listPageSizeOptions);
 
         $backupFull = $this->config->get('BACKUP_FULL_ENABLED', '1') === '1' ? '1' : '0';
         $backupModulesRaw = $this->config->get('BACKUP_MODULES', implode(', ', array_keys($this->backupModuleOptions())));
@@ -270,9 +274,9 @@ class ConfigController extends Controller
             'performanceIncludeSunday' => $performanceIncludeSunday,
             'allowNegativeStock' => $allowNegativeStock,
             'financeiroAlertaVencimentoDias' => $financeiroAlertaVencimentoDias,
-            'listPageSizeAvailable' => $listPageSizeAvailable,
             'listPageSizeOptions' => $listPageSizeOptions,
             'listPageSizeDefault' => $listPageSizeDefault,
+            'listPageSizeDefaults' => $listPageSizeDefaults,
             'roleLabels' => $roles,
             'hierarchyModules' => $moduleOptions,
             'roleHierarchy' => $hierarchy,
@@ -542,23 +546,21 @@ class ConfigController extends Controller
             $data['FINANCEIRO_ALERTA_VENCIMENTO_DIAS'] = (string)$financeDays;
         }
 
-        $listPageSizeAvailable = [15, 20, 30, 40, 50, 100];
         if (isset($data['LIST_PAGE_SIZE_OPTIONS']) || isset($data['LIST_PAGE_SIZE_DEFAULT'])) {
-            $selectedRaw = $data['LIST_PAGE_SIZE_OPTIONS'] ?? [];
-            if (!is_array($selectedRaw)) {
-                $selectedRaw = explode(',', (string)$selectedRaw);
+            $selected = $this->normalisePageSizes($data['LIST_PAGE_SIZE_OPTIONS'] ?? []);
+            $defaultPageSize = $this->normalisePageSize($data['LIST_PAGE_SIZE_DEFAULT'] ?? 15, 15);
+            $defaultKeys = [
+                'LIST_PAGE_SIZE_DEFAULT_CLIENTES',
+                'LIST_PAGE_SIZE_DEFAULT_PRODUTOS',
+                'LIST_PAGE_SIZE_DEFAULT_FINANCEIRO_ENTRADA',
+                'LIST_PAGE_SIZE_DEFAULT_FINANCEIRO_SAIDA',
+            ];
+            foreach ($defaultKeys as $defaultKey) {
+                $data[$defaultKey] = (string)$this->normalisePageSize($data[$defaultKey] ?? $defaultPageSize, $defaultPageSize);
+                $selected[] = (int)$data[$defaultKey];
             }
-            $selected = array_values(array_intersect($listPageSizeAvailable, array_map('intval', $selectedRaw)));
-            $defaultPageSize = (int)($data['LIST_PAGE_SIZE_DEFAULT'] ?? 15);
-            if (!in_array($defaultPageSize, $listPageSizeAvailable, true)) {
-                $defaultPageSize = 15;
-            }
-            if (!$selected) {
-                $selected = [$defaultPageSize];
-            }
-            if (!in_array($defaultPageSize, $selected, true)) {
-                $selected[] = $defaultPageSize;
-            }
+            $selected[] = $defaultPageSize;
+            $selected = array_values(array_unique($selected));
             sort($selected);
             $data['LIST_PAGE_SIZE_OPTIONS'] = implode(',', $selected);
             $data['LIST_PAGE_SIZE_DEFAULT'] = (string)$defaultPageSize;
@@ -894,6 +896,34 @@ class ConfigController extends Controller
         }
 
         return $hex;
+    }
+
+    private function normalisePageSize(mixed $value, int $fallback = 15): int
+    {
+        $size = (int)$value;
+        if ($size < 1) {
+            return max(1, min(500, $fallback));
+        }
+        return max(1, min(500, $size));
+    }
+
+    /**
+     * @return array<int>
+     */
+    private function normalisePageSizes(mixed $value): array
+    {
+        $raw = is_array($value) ? $value : preg_split('/[,\s;]+/', (string)$value);
+        $sizes = [];
+        foreach ($raw ?: [] as $item) {
+            $size = (int)$item;
+            if ($size < 1) {
+                continue;
+            }
+            $sizes[] = max(1, min(500, $size));
+        }
+        $sizes = array_values(array_unique($sizes));
+        sort($sizes);
+        return $sizes;
     }
 
     /**
