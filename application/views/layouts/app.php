@@ -1290,15 +1290,28 @@ $brandTitleOffsetY = (int)($theme['title_offset_y'] ?? 0);
             display: flex;
             align-items: center;
             gap: 12px;
+            min-width: 0;
+            max-width: min(100%, 360px);
             background: var(--surface-alt);
             border-radius: 999px;
             padding: 10px 16px;
             border: 1px solid var(--border);
             box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
         }
+        .user-badge > div:last-child {
+            min-width: 0;
+        }
+        .user-badge strong,
+        .user-badge small {
+            display: block;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
         .user-avatar {
             width: 38px;
             height: 38px;
+            flex: 0 0 38px;
             border-radius: 50%;
             background: var(--primary-soft);
             color: var(--primary-dark);

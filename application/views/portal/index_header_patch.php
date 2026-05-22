@@ -88,14 +88,15 @@ include __DIR__.'/index_with_patch.php';
         display: inline-flex;
         align-items: center;
         gap: 0.72rem;
-        max-width: 300px;
+        min-width: 0;
+        max-width: min(100%, 360px);
         min-height: 48px;
         padding: 0.48rem 0.95rem 0.48rem 0.5rem;
-        border: 1px solid var(--portal-card-border, rgba(15, 23, 42, 0.08));
+        border: 1px solid var(--border, var(--portal-card-border, rgba(15, 23, 42, 0.08)));
         border-radius: 999px;
-        background: var(--portal-card-bg, rgba(255, 255, 255, 0.95));
+        background: var(--surface-alt, var(--portal-card-bg, rgba(255, 255, 255, 0.95)));
         color: var(--text, #1f2933);
-        box-shadow: 0 18px 38px -30px rgba(15, 23, 42, 0.42);
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
     }
 
     html body .portal-client-avatar {
@@ -117,6 +118,7 @@ include __DIR__.'/index_with_patch.php';
         display: grid;
         gap: 0.08rem;
         line-height: 1.08;
+        overflow: hidden;
     }
 
     html body .portal-client-store,
@@ -177,7 +179,7 @@ include __DIR__.'/index_with_patch.php';
         }
 
         html body .topbar .portal-app__client {
-            max-width: 210px;
+            max-width: min(100%, 280px);
             min-height: 43px;
             padding: 0.4rem 0.72rem 0.4rem 0.42rem;
         }

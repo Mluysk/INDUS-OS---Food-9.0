@@ -121,13 +121,14 @@ include __DIR__.'/index_whatsapp_beside_contact_type_patch.php';
 
         html body .portal-app__profile {
             display: grid !important;
-            grid-template-columns: minmax(0, 1fr) auto !important;
+            grid-template-columns: minmax(0, auto) auto !important;
             gap: 0.55rem !important;
+            justify-content: end !important;
         }
 
         html body .portal-app__client {
-            max-width: none !important;
-            justify-content: center !important;
+            max-width: min(100%, 280px) !important;
+            justify-content: flex-start !important;
         }
 
         html body .portal-app__nav {

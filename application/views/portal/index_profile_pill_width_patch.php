@@ -7,20 +7,19 @@ include __DIR__.'/index_settings_document_width_patch.php';
     html body .topbar .portal-profile-pill,
     html body .topbar .portal-app__client,
     html body .topbar [data-cliente-badge],
-    html body .portal-app__profile,
     html body .portal-app__client,
     html body [data-cliente-badge] {
-        width: max-content !important;
-        min-width: max-content !important;
-        max-width: min(calc(100vw - 2rem), 46ch) !important;
+        width: auto !important;
+        min-width: 0 !important;
+        max-width: min(calc(100vw - 2rem), 360px) !important;
         display: inline-flex !important;
         align-items: center !important;
         justify-content: flex-start !important;
         gap: 0.62rem !important;
         white-space: nowrap !important;
-        overflow: visible !important;
+        overflow: hidden !important;
         box-sizing: border-box !important;
-        flex: 0 0 auto !important;
+        flex: 0 1 auto !important;
     }
 
     html body .portal-app__profile strong,
@@ -33,16 +32,16 @@ include __DIR__.'/index_settings_document_width_patch.php';
         min-width: 0 !important;
         width: auto !important;
         white-space: nowrap !important;
-        overflow: visible !important;
-        text-overflow: clip !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
     }
 
     html body .portal-app__profile small,
     html body .portal-app__client small,
     html body [data-cliente-badge] small {
         white-space: nowrap !important;
-        overflow: visible !important;
-        text-overflow: clip !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
     }
 
     html body .portal-app__profile [class*="avatar"],
@@ -124,7 +123,6 @@ include __DIR__.'/index_settings_document_width_patch.php';
         html body .topbar .portal-profile-pill,
         html body .topbar .portal-app__client,
         html body .topbar [data-cliente-badge],
-        html body .portal-app__profile,
         html body .portal-app__client,
         html body [data-cliente-badge] {
             max-width: calc(100vw - 1.25rem) !important;
