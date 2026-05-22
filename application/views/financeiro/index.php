@@ -19,7 +19,7 @@ if (!function_exists('financeiro_format_date')) {
 <style>
     .finance-tabs,
     .finance-card-tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
-    .finance-tab-panel > .panel > .finance-card-tabs { margin-bottom: 4px; transform: translateY(-39px); }
+    .finance-tab-panel > .panel > .finance-card-tabs { position: relative !important; top: -39px !important; margin-bottom: -35px !important; transform: none !important; }
     .finance-tab-button,
     .finance-card-tab-button { display: inline-flex; align-items: center; gap: 8px; border: 1px solid var(--border, #e5e7eb); border-radius: 999px; padding: 8px 14px; font-weight: 700; background: var(--surface-alt, #f8fafc); color: var(--text, #111827); cursor: pointer; }
     .finance-tab-button .icon,
