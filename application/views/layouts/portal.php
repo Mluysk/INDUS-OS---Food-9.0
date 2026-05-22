@@ -110,7 +110,7 @@ $currentYear = date('Y');
         const root = document.documentElement;
         const toggle = document.getElementById('toggle-theme');
         if (storedTheme === 'dark') { root.setAttribute('data-theme', 'dark'); toggle.checked = true; }
-        const applyGlobalZoom = () => { const width = window.innerWidth; const height = window.innerHeight; const shouldZoom = width <= 1366 && height <= 768; document.documentElement.style.zoom = shouldZoom ? '0.87' : ''; };
+        const applyGlobalZoom = () => { const width = window.innerWidth; const height = window.innerHeight; const shouldZoom = width >= 900 && width <= 1366 && height <= 768; document.documentElement.style.zoom = shouldZoom ? '0.87' : ''; };
         applyGlobalZoom();
         window.addEventListener('resize', applyGlobalZoom);
         toggle?.addEventListener('change', () => { const mode = toggle.checked ? 'dark' : 'light'; root.setAttribute('data-theme', mode); localStorage.setItem('portal-theme', mode); });

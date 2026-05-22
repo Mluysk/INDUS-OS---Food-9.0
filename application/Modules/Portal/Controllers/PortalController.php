@@ -41,7 +41,7 @@ class PortalController extends Controller
                 return in_array((int)($produto['id'] ?? 0), $allowedIds, true);
             }
         ));
-        $this->render('portal/index_whatsapp_beside_contact_type_patch', [
+        $this->render('portal/index_mobile_patch', [
             'catalogo' => $produtos,
         ], [
             'layout' => 'layouts/portal',
