@@ -131,32 +131,7 @@ include __DIR__.'/index_whatsapp_beside_contact_type_patch.php';
         }
 
         html body .portal-app__nav {
-            position: sticky;
-            top: 0;
-            z-index: 20;
-            display: grid !important;
-            grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
-            gap: 0.38rem !important;
-            margin: 0 -0.75rem 1rem !important;
-            padding: 0.55rem 0.75rem !important;
-            background: color-mix(in srgb, var(--bg, #f5f5f5) 86%, transparent);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid var(--portal-card-border, rgba(15, 23, 42, 0.08));
-            overflow-x: auto;
-            scrollbar-width: none;
-        }
-
-        html body .portal-app__nav::-webkit-scrollbar {
-            display: none;
-        }
-
-        html body .portal-tab {
-            width: 100% !important;
-            min-height: 40px !important;
-            padding: 0.52rem 0.35rem !important;
-            font-size: 0.78rem !important;
-            text-align: center !important;
-            white-space: nowrap !important;
+            display: none !important;
         }
 
         html body .portal-app__panels {
