@@ -179,6 +179,12 @@ include __DIR__.'/index_whatsapp_beside_contact_type_patch.php';
             margin: 0.75rem 0 !important;
         }
 
+        html body .portal-catalog-tools input,
+        html body .portal-catalog-tools select {
+            min-height: 46px !important;
+            border-radius: 15px !important;
+        }
+
         html body .portal-catalog {
             grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
             gap: 0.62rem !important;

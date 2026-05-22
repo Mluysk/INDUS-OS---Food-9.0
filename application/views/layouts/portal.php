@@ -63,10 +63,18 @@ $currentYear = date('Y');
         .footer-brand img { max-height: 65px; width: auto; display: block; }
         .portal-app { width: min(100% - 28px, 1580px) !important; max-width: 1580px !important; margin-left: auto !important; margin-right: auto !important; }
         .portal-app__panels, .portal-panel, .portal-catalog-card, .portal-cart-card { min-width: 0; }
-        .portal-catalog-tools { display: grid; grid-template-columns: minmax(180px, 1fr) minmax(140px, 220px); gap: 0.75rem; margin: 0.9rem 0 1rem; align-items: end; }
-        .portal-catalog-tools__field { display: flex; flex-direction: column; gap: 0.28rem; }
-        .portal-catalog-tools label { margin: 0; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted); }
-        .portal-catalog-tools input, .portal-catalog-tools select { min-height: 42px; padding: 0.62rem 0.75rem; font-size: 0.9rem; border-radius: 12px; }
+        .portal-catalog-tools { display: grid; grid-template-columns: minmax(180px, 1fr) minmax(140px, 240px); gap: 0.85rem; margin: 0.9rem 0 1rem; align-items: end; }
+        .portal-catalog-tools__field { display: flex; flex-direction: column; gap: 0.35rem; }
+        .portal-catalog-tools label { display: inline-flex; align-items: center; gap: 0.42rem; margin: 0; font-size: 0.72rem; font-weight: 900; letter-spacing: 0.05em; text-transform: uppercase; color: var(--primary); }
+        .portal-catalog-tools__icon { width: 16px; height: 16px; display: inline-flex; align-items: center; justify-content: center; color: var(--primary); }
+        .portal-catalog-tools__icon svg { width: 16px; height: 16px; stroke: currentColor; }
+        .portal-catalog-tools__control { position: relative; display: block; }
+        .portal-catalog-tools__control-icon { position: absolute; left: 0.86rem; top: 50%; width: 18px; height: 18px; transform: translateY(-50%); color: var(--primary); pointer-events: none; }
+        .portal-catalog-tools__control-icon svg { width: 18px; height: 18px; stroke: currentColor; }
+        .portal-catalog-tools input, .portal-catalog-tools select { min-height: 48px; padding: 0.72rem 0.9rem 0.72rem 2.75rem; font-size: 0.94rem; font-weight: 750; border-radius: 16px; border: 1px solid color-mix(in srgb, var(--primary, #2563eb) 32%, var(--border, rgba(15,23,42,0.08))); background: linear-gradient(135deg, color-mix(in srgb, var(--primary, #2563eb) 8%, #fff), rgba(255,255,255,0.96)); box-shadow: 0 18px 34px -30px color-mix(in srgb, var(--primary, #2563eb) 55%, transparent); }
+        .portal-catalog-tools select { appearance: none; padding-right: 2.35rem; cursor: pointer; }
+        .portal-catalog-tools__select::after { content: ''; position: absolute; right: 0.92rem; top: 50%; width: 9px; height: 9px; border-right: 2px solid var(--primary); border-bottom: 2px solid var(--primary); transform: translateY(-64%) rotate(45deg); pointer-events: none; }
+        .portal-catalog-tools input:focus, .portal-catalog-tools select:focus { outline: 3px solid color-mix(in srgb, var(--primary, #2563eb) 18%, transparent); border-color: var(--primary); box-shadow: 0 20px 42px -28px color-mix(in srgb, var(--primary, #2563eb) 70%, transparent); }
         .portal-catalog-empty-filter { display: none; margin: 0.5rem 0 0; padding: 0.8rem 0.95rem; border: 1px dashed var(--border); border-radius: 12px; color: var(--muted); font-size: 0.9rem; font-weight: 600; }
         .portal-catalog-empty-filter.is-visible { display: block; }
         .portal-catalog { grid-template-columns: repeat(auto-fill, minmax(178px, 1fr)) !important; gap: 0.95rem !important; }
@@ -256,7 +264,7 @@ $currentYear = date('Y');
                 catalog.dataset.filterToolsReady = '1';
                 const tools = document.createElement('div');
                 tools.className = 'portal-catalog-tools';
-                tools.innerHTML = `<div class="portal-catalog-tools__field"><label for="portal-product-search">Buscar produto</label><input id="portal-product-search" type="search" placeholder="Nome, SKU ou unidade"></div><div class="portal-catalog-tools__field"><label for="portal-product-filter">Categoria</label><select id="portal-product-filter"><option value="">Todos</option></select></div>`;
+                tools.innerHTML = `<div class="portal-catalog-tools__field"><label for="portal-product-search"><span class="portal-catalog-tools__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="m21 21-4.34-4.34"></path><circle cx="11" cy="11" r="7"></circle></svg></span><span>Buscar produto</span></label><span class="portal-catalog-tools__control"><span class="portal-catalog-tools__control-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="m21 21-4.34-4.34"></path><circle cx="11" cy="11" r="7"></circle></svg></span><input id="portal-product-search" type="search" placeholder="Nome, SKU ou unidade"></span></div><div class="portal-catalog-tools__field"><label for="portal-product-filter"><span class="portal-catalog-tools__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M7 12h10"></path><path d="M10 18h4"></path></svg></span><span>Categoria</span></label><span class="portal-catalog-tools__control portal-catalog-tools__select"><span class="portal-catalog-tools__control-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7h-9"></path><path d="M14 17H5"></path><circle cx="17" cy="17" r="3"></circle><circle cx="7" cy="7" r="3"></circle></svg></span><select id="portal-product-filter"><option value="">Todos</option></select></span></div>`;
                 catalog.parentNode.insertBefore(tools, catalog);
                 const empty = document.createElement('p');
                 empty.className = 'portal-catalog-empty-filter';
