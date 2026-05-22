@@ -2,20 +2,24 @@
 namespace App\Modules\Financeiro\Controllers;
 
 use App\Core\Controller;
+use App\Services\ConfigService;
 use App\Services\FinanceiroService;
 
 class FinanceiroController extends Controller
 {
     private FinanceiroService $financeiro;
+    private ConfigService $config;
 
     public function __construct(
         \App\Core\Container $container,
         \App\Services\AuthService $auth,
         \App\Services\AuditService $audit,
-        FinanceiroService $financeiro
+        FinanceiroService $financeiro,
+        ConfigService $config
     ) {
         parent::__construct($container, $auth, $audit);
         $this->financeiro = $financeiro;
+        $this->config = $config;
     }
 
     public function index(): void
@@ -23,6 +27,16 @@ class FinanceiroController extends Controller
         $this->auth->ensureRole(['admin','gestor','financeiro']);
         $entradas = $this->financeiro->listarLancamentos('entrada');
         $saidas = $this->financeiro->listarLancamentos('saida');
+        $pageSizeAvailable = [15, 20, 30, 40, 50, 100];
+        $pageSizeRaw = $this->config->get('LIST_PAGE_SIZE_OPTIONS', '15,20,30,40,50,100') ?: '15,20,30,40,50,100';
+        $pageSizeOptions = array_values(array_intersect($pageSizeAvailable, array_map('intval', explode(',', $pageSizeRaw))));
+        if (!$pageSizeOptions) {
+            $pageSizeOptions = $pageSizeAvailable;
+        }
+        $pageSizeDefault = (int)($this->config->get('LIST_PAGE_SIZE_DEFAULT', '15') ?: '15');
+        if (!in_array($pageSizeDefault, $pageSizeOptions, true)) {
+            $pageSizeDefault = $pageSizeOptions[0];
+        }
 
         if ($this->wantsJson()) {
             $this->json([
@@ -35,6 +49,8 @@ class FinanceiroController extends Controller
         $this->render('financeiro/index', [
             'entradas' => $entradas,
             'saidas' => $saidas,
+            'listPageSizeOptions' => $pageSizeOptions,
+            'listPageSizeDefault' => $pageSizeDefault,
         ], [
             'title' => 'Financeiro',
             'activeMenu' => 'financeiro',

@@ -798,6 +798,8 @@ if (!function_exists('financeiro_format_date')) {
         const listUrl = <?= json_encode($url('financeiro/titulos')); ?>;
         const lancamentosBaseUrl = <?= json_encode($url('financeiro/lancamentos')); ?>;
         const todayValue = <?= json_encode($hoje); ?>;
+        const configuredPageSizeOptions = <?= json_encode(array_values(array_map('intval', $listPageSizeOptions ?? [15, 20, 30, 40, 50, 100]))); ?>;
+        const configuredPageSizeDefault = <?= json_encode((int)($listPageSizeDefault ?? 15)); ?>;
         const financeRows = {
             entrada: <?= json_encode(array_values($entradas), JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT); ?>,
             saida: <?= json_encode(array_values($saidas), JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT); ?>
@@ -806,10 +808,11 @@ if (!function_exists('financeiro_format_date')) {
             entrada: { field: '', direction: '' },
             saida: { field: '', direction: '' }
         };
-        const financePageSizeOptions = [15, 20, 30, 40, 50, 100];
+        const financePageSizeOptions = configuredPageSizeOptions.length ? configuredPageSizeOptions : [15, 20, 30, 40, 50, 100];
+        const financePageSizeDefault = financePageSizeOptions.includes(configuredPageSizeDefault) ? configuredPageSizeDefault : financePageSizeOptions[0];
         const financePaginationState = {
-            entrada: { page: 1, perPage: 15 },
-            saida: { page: 1, perPage: 15 }
+            entrada: { page: 1, perPage: financePageSizeDefault },
+            saida: { page: 1, perPage: financePageSizeDefault }
         };
         const emptyMessages = {
             entrada: 'Nenhuma entrada cadastrada.',
@@ -1781,8 +1784,8 @@ if (!function_exists('financeiro_format_date')) {
         };
 
         const paginateRows = (tipo, rows) => {
-            const state = financePaginationState[tipo] || { page: 1, perPage: 15 };
-            const perPage = financePageSizeOptions.includes(Number(state.perPage)) ? Number(state.perPage) : 15;
+            const state = financePaginationState[tipo] || { page: 1, perPage: financePageSizeDefault };
+            const perPage = financePageSizeOptions.includes(Number(state.perPage)) ? Number(state.perPage) : financePageSizeDefault;
             const totalPages = Math.max(1, Math.ceil(rows.length / perPage));
             const page = Math.min(Math.max(1, Number(state.page) || 1), totalPages);
             state.page = page;
@@ -2473,7 +2476,7 @@ if (!function_exists('financeiro_format_date')) {
             }
             const tipo = select.dataset.financePageSize;
             if (financePaginationState[tipo]) {
-                financePaginationState[tipo].perPage = Number(select.value) || 15;
+                financePaginationState[tipo].perPage = Number(select.value) || financePageSizeDefault;
                 resetFinancePage(tipo);
                 renderFinanceList(tipo);
             }

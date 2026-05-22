@@ -323,6 +323,11 @@ INSERT INTO configuracoes (chave, valor) VALUES
 ON DUPLICATE KEY UPDATE valor = VALUES(valor);
 
 INSERT INTO configuracoes (chave, valor) VALUES
+ ('LIST_PAGE_SIZE_OPTIONS','15,20,30,40,50,100'),
+ ('LIST_PAGE_SIZE_DEFAULT','15')
+ON DUPLICATE KEY UPDATE valor = VALUES(valor);
+
+INSERT INTO configuracoes (chave, valor) VALUES
  ('BACKUP_FULL_ENABLED','1'),
  ('BACKUP_MODULES','auth, clientes, produtos, producao, estoque, expedicao, financeiro, relatorios, config, portal')
 ON DUPLICATE KEY UPDATE valor = VALUES(valor);

@@ -1,0 +1,4 @@
+INSERT INTO configuracoes (chave, valor) VALUES
+ ('LIST_PAGE_SIZE_OPTIONS','15,20,30,40,50,100'),
+ ('LIST_PAGE_SIZE_DEFAULT','15')
+ON DUPLICATE KEY UPDATE valor = VALUES(valor);

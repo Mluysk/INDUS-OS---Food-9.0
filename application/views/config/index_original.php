@@ -68,6 +68,9 @@ $performanceIncludeSaturday = $performanceIncludeSaturday ?? '1';
 $performanceIncludeSunday = $performanceIncludeSunday ?? '1';
 $allowNegativeStock = $allowNegativeStock ?? '0';
 $financeiroAlertaVencimentoDias = isset($financeiroAlertaVencimentoDias) ? (int)$financeiroAlertaVencimentoDias : 7;
+$listPageSizeAvailable = $listPageSizeAvailable ?? [15, 20, 30, 40, 50, 100];
+$listPageSizeOptions = $listPageSizeOptions ?? $listPageSizeAvailable;
+$listPageSizeDefault = isset($listPageSizeDefault) ? (int)$listPageSizeDefault : 15;
 
 $palette = [
     ['name' => 'Grafite Suave', 'hex' => '#4F535C'],
@@ -530,13 +533,37 @@ $previewMatrixDefault = app_logo_matrix_values($logoTintPreviewHex);
             <p class="card-subtitle">Ajuste o título, logos e a paleta neutra usada pelo painel.</p>
 
             <div class="appearance-subtabs" role="tablist" aria-label="Seções de personalização">
-                <button type="button" class="appearance-subtab active" data-appearance-tab="visual" aria-selected="true">Visual</button>
+                <button type="button" class="appearance-subtab active" data-appearance-tab="geral" aria-selected="true">Geral</button>
+                <button type="button" class="appearance-subtab" data-appearance-tab="visual" aria-selected="false">Visual</button>
                 <button type="button" class="appearance-subtab" data-appearance-tab="cards" aria-selected="false">Cards</button>
                 <button type="button" class="appearance-subtab" data-appearance-tab="portal" aria-selected="false">Portal</button>
             </div>
 
             <div class="appearance-panels">
-                <div class="appearance-panel active" data-appearance-panel="visual">
+                <div class="appearance-panel active" data-appearance-panel="geral">
+                    <div class="field">
+                        <label class="field-label">Listas por página</label>
+                        <p class="field-hint">Escolha quais quantidades aparecem no seletor das listas e qual delas será usada como padrão.</p>
+                        <div class="list-page-options">
+                            <?php foreach ($listPageSizeAvailable as $pageSize): ?>
+                                <label class="check-card">
+                                    <input type="checkbox" name="config[LIST_PAGE_SIZE_OPTIONS][]" value="<?= (int)$pageSize; ?>" <?= in_array((int)$pageSize, array_map('intval', $listPageSizeOptions), true) ? 'checked' : ''; ?> data-list-page-option>
+                                    <span><?= (int)$pageSize; ?></span>
+                                </label>
+                            <?php endforeach; ?>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label for="list-page-size-default">Quantidade padrão por página</label>
+                        <select id="list-page-size-default" name="config[LIST_PAGE_SIZE_DEFAULT]" data-list-page-default>
+                            <?php foreach ($listPageSizeAvailable as $pageSize): ?>
+                                <option value="<?= (int)$pageSize; ?>" <?= (int)$listPageSizeDefault === (int)$pageSize ? 'selected' : ''; ?>><?= (int)$pageSize; ?> por página</option>
+                            <?php endforeach; ?>
+                        </select>
+                        <p class="field-hint">Esse valor entra automaticamente nas paginações quando a tela abre.</p>
+                    </div>
+                </div>
+                <div class="appearance-panel" data-appearance-panel="visual">
 
             <div class="field">
                 <label for="theme-title">Título exibido no painel</label>
@@ -1054,6 +1081,26 @@ $previewMatrixDefault = app_logo_matrix_values($logoTintPreviewHex);
     }
     .appearance-panel { display: none; gap: 20px; }
     .appearance-panel.active { display: flex; flex-direction: column; }
+    .list-page-options {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+    .check-card {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        padding: 9px 13px;
+        background: var(--surface-alt);
+        color: var(--text);
+        font-weight: 800;
+        cursor: pointer;
+    }
+    .check-card input {
+        accent-color: var(--primary);
+    }
     .quick-actions-config {
         display: grid;
         gap: 12px;
@@ -2434,7 +2481,22 @@ $previewMatrixDefault = app_logo_matrix_values($logoTintPreviewHex);
                 button.addEventListener('click', () => setAppearanceTab(button.dataset.appearanceTab));
             });
             const storedAppearanceTab = localStorage.getItem('configAppearanceTab');
-            setAppearanceTab(storedAppearanceTab || 'visual');
+            setAppearanceTab(storedAppearanceTab || 'geral');
+        }
+
+        const listPageDefault = document.querySelector('[data-list-page-default]');
+        const syncDefaultPageOption = () => {
+            if (!listPageDefault) {
+                return;
+            }
+            const defaultOption = document.querySelector(`[data-list-page-option][value="${listPageDefault.value}"]`);
+            if (defaultOption) {
+                defaultOption.checked = true;
+            }
+        };
+        if (listPageDefault) {
+            listPageDefault.addEventListener('change', syncDefaultPageOption);
+            syncDefaultPageOption();
         }
 
         const quickActionsInput = document.getElementById('quick-actions-config');
