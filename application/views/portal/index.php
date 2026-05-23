@@ -1,5 +1,11 @@
 <?php
 $portalLoginLogo = htmlspecialchars($asset($theme['logo_dark'] ?? 'uploads/branding/logowhite.png'), ENT_QUOTES, 'UTF-8');
+$portalLoginLogoSize = (int)($theme['logo_dark_size'] ?? 74);
+if ($portalLoginLogoSize < 24) {
+    $portalLoginLogoSize = 24;
+} elseif ($portalLoginLogoSize > 140) {
+    $portalLoginLogoSize = 140;
+}
 $appDisplayName = htmlspecialchars($appName ?? 'IndusOS Food', ENT_QUOTES, 'UTF-8');
 $appTaglineText = htmlspecialchars($appTagline ?? 'Sistema de Controle Industrial (SCI)', ENT_QUOTES, 'UTF-8');
 $supportData = $support ?? [];
@@ -27,7 +33,7 @@ if ($supportWhatsapp !== '') {
     <div class="portal-hero__content">
         <div class="portal-brand-card">
             <div class="portal-brand-card__logo" aria-hidden="true">
-                <span class="portal-login-logo" style="--portal-login-logo: url('<?= $portalLoginLogo; ?>');"></span>
+                <span class="portal-login-logo" style="--portal-login-logo: url('<?= $portalLoginLogo; ?>'); --portal-login-logo-size: <?= $portalLoginLogoSize; ?>px;"></span>
             </div>
             <span class="portal-brand-card__tag">Portal do cliente</span>
             <h1>Bem-vindo ao <?= $appDisplayName; ?></h1>
@@ -352,21 +358,17 @@ if ($supportWhatsapp !== '') {
     .portal-brand-card__logo {
         display: flex;
         gap: 12px;
-        align-items: flex-start;
-        justify-content: flex-start;
-        width: 312px;
-        max-width: 100%;
-        margin-bottom: 0.85rem;
+        align-items: center;
+        margin-bottom: 1.5rem;
     }
 
     .portal-login-logo {
         display: block;
-        width: 312px;
-        max-width: 100%;
-        height: 89px;
+        width: min(calc(var(--portal-login-logo-size, 74px) * 3.52), 78%);
+        height: var(--portal-login-logo-size, 74px);
         background: var(--primary, #2563eb);
-        -webkit-mask: var(--portal-login-logo) left center / contain no-repeat;
-        mask: var(--portal-login-logo) left center / contain no-repeat;
+        -webkit-mask: var(--portal-login-logo) center / contain no-repeat;
+        mask: var(--portal-login-logo) center / contain no-repeat;
         filter: drop-shadow(0 18px 28px color-mix(in srgb, var(--primary, #2563eb) 24%, transparent));
     }
 
