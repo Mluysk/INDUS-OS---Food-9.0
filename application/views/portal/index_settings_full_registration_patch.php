@@ -284,6 +284,7 @@ include __DIR__.'/index_settings_sections_patch.php';
     }
 
     html body .portal-brand-card__tag,
+    html body .portal-app__header-links,
     html body .auth-toggle__btn.active,
     html body .document-toggle__btn.active,
     html body .portal-app__tag,
@@ -303,6 +304,16 @@ include __DIR__.'/index_settings_sections_patch.php';
         color: color-mix(in srgb, var(--primary, #2563eb) 84%, #0f172a) !important;
         border-color: color-mix(in srgb, var(--primary, #2563eb) 26%, transparent) !important;
         box-shadow: 0 14px 28px -22px color-mix(in srgb, var(--primary, #2563eb) 62%, transparent) !important;
+    }
+
+    html body .portal-app__header-links {
+        background: color-mix(in srgb, var(--primary, #2563eb) 14%, #ffffff) !important;
+        border-color: color-mix(in srgb, var(--primary, #2563eb) 26%, transparent) !important;
+    }
+
+    html[data-theme="dark"] body .portal-app__header-links {
+        background: color-mix(in srgb, var(--primary, #2563eb) 18%, rgba(15, 23, 42, 0.86)) !important;
+        border-color: color-mix(in srgb, var(--primary, #2563eb) 32%, transparent) !important;
     }
 
     html body .portal-tab.is-active,
