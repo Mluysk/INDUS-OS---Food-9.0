@@ -694,6 +694,7 @@ if ($supportWhatsapp !== '') {
         padding: 0.85rem 1.3rem;
         font-weight: 600;
         cursor: pointer;
+        text-decoration: none;
         transition: transform 0.18s ease, box-shadow 0.18s ease;
     }
 
