@@ -181,6 +181,14 @@ include __DIR__.'/index_settings_sections_patch.php';
         display: block;
     }
 
+    html {
+        --portal-hero-gradient: radial-gradient(120% 120% at 10% 0%, color-mix(in srgb, var(--primary, #2563eb) 14%, transparent), rgba(15, 23, 42, 0)) !important;
+    }
+
+    html[data-theme="dark"] {
+        --portal-hero-gradient: radial-gradient(120% 120% at 10% 0%, color-mix(in srgb, var(--primary, #2563eb) 24%, transparent), rgba(15, 23, 42, 0)) !important;
+    }
+
     html body .portal-settings-palette {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
@@ -275,6 +283,82 @@ include __DIR__.'/index_settings_sections_patch.php';
         box-shadow: 0 18px 35px -20px color-mix(in srgb, var(--primary, #2563eb) 86%, transparent) !important;
     }
 
+    html body .portal-brand-card__tag,
+    html body .auth-toggle__btn.active,
+    html body .document-toggle__btn.active,
+    html body .portal-app__tag,
+    html body .portal-app__link,
+    html body .portal-tab.is-active,
+    html body .portal-view-toggle__btn.active,
+    html body .portal-orders-action--confirm,
+    html body .portal-modal__tag,
+    html body .portal-modal__meta,
+    html body .portal-welcome__icon,
+    html body .portal-product__tag,
+    html body .portal-product__sku,
+    html body .portal-products-list__tag,
+    html body .portal-orders-status,
+    html body .portal-catalog-card__icon {
+        background: color-mix(in srgb, var(--primary, #2563eb) 14%, #ffffff) !important;
+        color: color-mix(in srgb, var(--primary, #2563eb) 84%, #0f172a) !important;
+        border-color: color-mix(in srgb, var(--primary, #2563eb) 26%, transparent) !important;
+        box-shadow: 0 14px 28px -22px color-mix(in srgb, var(--primary, #2563eb) 62%, transparent) !important;
+    }
+
+    html body .portal-tab.is-active,
+    html body .portal-view-toggle__btn.active,
+    html body .auth-toggle__btn.active,
+    html body .document-toggle__btn.active {
+        background: linear-gradient(135deg, var(--primary, #2563eb), color-mix(in srgb, var(--primary, #2563eb) 72%, #ffffff)) !important;
+        color: #fff !important;
+    }
+
+    html body .portal-product button[data-add] {
+        background: linear-gradient(135deg, var(--primary, #2563eb), color-mix(in srgb, var(--primary, #2563eb) 72%, #0f172a)) !important;
+        box-shadow: 0 16px 26px -18px color-mix(in srgb, var(--primary, #2563eb) 90%, transparent) !important;
+    }
+
+    html body .portal-product button[data-add] .portal-add-cart-plus {
+        color: var(--primary, #2563eb) !important;
+        border-color: var(--primary, #2563eb) !important;
+    }
+
+    html body .portal-app__link-icon,
+    html body .portal-catalog-tools label,
+    html body .portal-catalog-tools__icon,
+    html body .portal-catalog-tools__control-icon,
+    html body .portal-product__weight-pill,
+    html body .portal-product__price,
+    html body .portal-orders-action {
+        color: var(--primary, #2563eb) !important;
+    }
+
+    html body .portal-catalog-tools input,
+    html body .portal-catalog-tools select,
+    html body .portal-product__weight-pill {
+        border-color: color-mix(in srgb, var(--primary, #2563eb) 32%, var(--portal-card-border, rgba(15,23,42,0.08))) !important;
+        background: linear-gradient(135deg, color-mix(in srgb, var(--primary, #2563eb) 8%, #fff), rgba(255,255,255,0.96)) !important;
+        box-shadow: 0 18px 34px -30px color-mix(in srgb, var(--primary, #2563eb) 55%, transparent) !important;
+    }
+
+    html body .portal-catalog-tools__select::after {
+        border-color: var(--primary, #2563eb) !important;
+    }
+
+    html body .portal-cart-float {
+        background: linear-gradient(135deg, var(--portal-cart-color, var(--primary, #2563eb)), color-mix(in srgb, var(--portal-cart-color, var(--primary, #2563eb)) 72%, #0f172a)) !important;
+        box-shadow: 0 22px 42px -18px color-mix(in srgb, var(--portal-cart-color, var(--primary, #2563eb)) 78%, transparent) !important;
+    }
+
+    html body .portal-cart-float__count {
+        color: var(--portal-cart-color, var(--primary, #2563eb)) !important;
+        border-color: var(--portal-cart-color, var(--primary, #2563eb)) !important;
+    }
+
+    html body .portal-cart-stack.is-open .portal-cart-card {
+        border-color: color-mix(in srgb, var(--portal-cart-color, var(--primary, #2563eb)) 22%, var(--portal-card-border, rgba(15, 23, 42, 0.08))) !important;
+    }
+
     @media (max-width: 640px) {
         html body .portal-settings-custom-color {
             align-items: stretch;
@@ -330,12 +414,31 @@ include __DIR__.'/index_settings_sections_patch.php';
         };
     };
 
+    const portalCartColorState = () => {
+        const cliente = readCliente();
+        const palette = portalPaletteState();
+        return normalizeHex(cliente.portal_cart_hex || localStorage.getItem('portal-cart-hex') || palette.hex) || palette.hex;
+    };
+
+    const applyPortalCartColor = (hex) => {
+        const normalized = normalizeHex(hex) || portalPaletteState().hex;
+        document.documentElement.style.setProperty('--portal-cart-color', normalized);
+        localStorage.setItem('portal-cart-hex', normalized);
+        const input = document.getElementById('portal-cart-hex');
+        const picker = document.getElementById('portal-cart-picker');
+        if (input) input.value = normalized;
+        if (picker) picker.value = normalized;
+    };
+
     const applyPortalPalette = (hex, name = 'Cor personalizada') => {
         const normalized = normalizeHex(hex) || '#2563EB';
         document.documentElement.style.setProperty('--primary', normalized);
         document.documentElement.style.setProperty('--portal-primary', normalized);
         localStorage.setItem('portal-primary-hex', normalized);
         localStorage.setItem('portal-primary-name', name || 'Cor personalizada');
+        if (!localStorage.getItem('portal-cart-hex')) {
+            applyPortalCartColor(normalized);
+        }
         document.querySelectorAll('[data-portal-palette-choice]').forEach((item) => {
             const active = normalizeHex(item.dataset.hex) === normalized;
             item.classList.toggle('is-active', active);
@@ -386,6 +489,7 @@ include __DIR__.'/index_settings_sections_patch.php';
         const docType = onlyDigits(first(c.cpf)).length === 11 && onlyDigits(first(c.cnpj)).length !== 14 ? 'cpf' : 'cnpj';
         const hasBranch = Boolean(first(c.nome_filial, c.filial_nome, c.im));
         const paletteState = portalPaletteState();
+        const cartColor = portalCartColorState();
         const paletteMarkup = portalPalette.map((item) => {
             const active = item.hex.toUpperCase() === paletteState.hex.toUpperCase();
             return `<label class="portal-settings-swatch ${active ? 'is-active' : ''}" data-portal-palette-choice data-name="${escapeHtml(item.name)}" data-hex="${escapeHtml(item.hex)}"><input type="radio" name="portal_palette_choice" value="${escapeHtml(item.hex)}" ${active ? 'checked' : ''}><span class="portal-settings-swatch-color" style="--swatch-color:${escapeHtml(item.hex)}"></span><span class="portal-settings-swatch-meta"><strong>${escapeHtml(item.name)}</strong><small>${escapeHtml(item.hex)}</small></span></label>`;
@@ -465,6 +569,13 @@ include __DIR__.'/index_settings_sections_patch.php';
                                     <input type="color" id="portal-custom-picker" value="${escapeHtml(paletteState.hex)}">
                                     <input id="portal-custom-hex" type="text" value="${escapeHtml(paletteState.hex)}" placeholder="#2563EB">
                                     <input id="portal-custom-name" type="hidden" value="${escapeHtml(paletteState.name)}">
+                                </div>
+                            </div>
+                            <div class="portal-settings-field">
+                                <label for="portal-cart-hex">Cor do carrinho flutuante</label>
+                                <div class="portal-settings-custom-color">
+                                    <input type="color" id="portal-cart-picker" value="${escapeHtml(cartColor)}">
+                                    <input id="portal-cart-hex" type="text" value="${escapeHtml(cartColor)}" placeholder="#2563EB">
                                 </div>
                             </div>
                         </div>
@@ -574,6 +685,15 @@ include __DIR__.'/index_settings_sections_patch.php';
         };
         customPicker?.addEventListener('input', (event) => syncCustomColor(event.currentTarget.value));
         customHex?.addEventListener('input', (event) => syncCustomColor(event.currentTarget.value));
+        const cartPicker = form.querySelector('#portal-cart-picker');
+        const cartHex = form.querySelector('#portal-cart-hex');
+        const syncCartColor = (value) => {
+            const normalized = normalizeHex(value);
+            if (!normalized) return;
+            applyPortalCartColor(normalized);
+        };
+        cartPicker?.addEventListener('input', (event) => syncCartColor(event.currentTarget.value));
+        cartHex?.addEventListener('input', (event) => syncCartColor(event.currentTarget.value));
         form.querySelector('[data-settings-back]')?.addEventListener('click', () => {
             document.querySelectorAll('[data-portal-tab-panel]').forEach((panel) => { panel.hidden = panel.dataset.portalTabPanel !== 'novo-pedido'; });
         });
@@ -619,6 +739,7 @@ include __DIR__.'/index_settings_sections_patch.php';
             cliente.filial_nome = cliente.nome_filial;
             cliente.portal_palette_hex = normalizeHex(value(form, '#portal-custom-hex')) || portalPaletteState().hex;
             cliente.portal_palette_name = value(form, '#portal-custom-name') || localStorage.getItem('portal-primary-name') || 'Cor personalizada';
+            cliente.portal_cart_hex = normalizeHex(value(form, '#portal-cart-hex')) || portalCartColorState();
             cliente.cep = value(form, '#portal-full-cep');
             cliente.endereco = value(form, '#portal-full-endereco');
             cliente.numero = value(form, '#portal-full-numero');
@@ -639,11 +760,13 @@ include __DIR__.'/index_settings_sections_patch.php';
         panels.insertAdjacentHTML('beforeend', fullSettingsMarkup());
         const paletteState = portalPaletteState();
         applyPortalPalette(paletteState.hex, paletteState.name);
+        applyPortalCartColor(portalCartColorState());
         bindFullForm();
     };
 
     const initialPalette = portalPaletteState();
     applyPortalPalette(initialPalette.hex, initialPalette.name);
+    applyPortalCartColor(portalCartColorState());
 
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', () => { apply(); window.setTimeout(apply, 360); }, { once: true });
