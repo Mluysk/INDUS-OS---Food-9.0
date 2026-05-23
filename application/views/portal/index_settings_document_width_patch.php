@@ -75,7 +75,7 @@ include __DIR__.'/index_settings_documents_first_patch.php';
 
     html body .portal-settings-personalization-row {
         display: grid !important;
-        grid-template-columns: minmax(0, 1.25fr) minmax(0, 1.25fr) minmax(230px, 0.8fr) !important;
+        grid-template-columns: minmax(0, 1fr) minmax(320px, 1.35fr) !important;
         gap: 1rem !important;
         align-items: stretch !important;
         width: 100% !important;
@@ -311,10 +311,9 @@ include __DIR__.'/index_settings_documents_first_patch.php';
     const moveBranchToPersonalization = () => {
         const section = document.querySelector('[data-settings-section="personalizacao"]');
         const store = document.getElementById('portal-full-store')?.closest('.portal-settings-field');
-        const branch = document.getElementById('portal-full-branch')?.closest('.portal-settings-field');
         const branchRow = document.querySelector('.portal-settings-branch-row');
         const title = section?.querySelector('.portal-settings-section-title');
-        if (!section || !title || !store || !branch || !branchRow) return;
+        if (!section || !title || !store || !branchRow) return;
 
         let row = section.querySelector('.portal-settings-personalization-row');
         if (!row) {
@@ -324,7 +323,6 @@ include __DIR__.'/index_settings_documents_first_patch.php';
         }
 
         row.appendChild(store);
-        row.appendChild(branch);
         row.appendChild(branchRow);
     };
 

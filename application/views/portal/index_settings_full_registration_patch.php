@@ -70,6 +70,8 @@ include __DIR__.'/index_settings_sections_patch.php';
 
     html body .portal-settings-branch-row {
         display: grid;
+        grid-template-columns: max-content minmax(220px, 1fr);
+        align-items: center;
         gap: 0.75rem;
         padding: 0.9rem;
         border: 1px solid var(--portal-card-border, rgba(15, 23, 42, 0.08));
@@ -139,6 +141,16 @@ include __DIR__.'/index_settings_sections_patch.php';
     html body .portal-settings-branch-name[hidden],
     html body .portal-settings-doc-field[hidden] {
         display: none !important;
+    }
+
+    html body .portal-settings-branch-name {
+        min-width: 0;
+    }
+
+    @media (max-width: 640px) {
+        html body .portal-settings-branch-row {
+            grid-template-columns: 1fr;
+        }
     }
 
     html body .portal-settings-uf-wrap {
@@ -283,7 +295,6 @@ include __DIR__.'/index_settings_sections_patch.php';
                             <h4 class="portal-settings-section-title">Personalização</h4>
                             <div class="portal-settings-grid">
                                 <div class="portal-settings-field"><label for="portal-full-store">Nome da loja</label><input id="portal-full-store" type="text" value="${escapeHtml(first(c.nome_loja, c.nome_fantasia, c.razao_social, c.nome))}" placeholder="Nome da loja"></div>
-                                <div class="portal-settings-field"><label for="portal-full-branch">Nome da filial</label><input id="portal-full-branch" type="text" value="${escapeHtml(first(c.nome_filial, c.filial_nome, c.im))}" placeholder="Nome da filial"></div>
                             </div>
                             <div class="portal-settings-option"><div><strong>Tema do portal</strong><small>Alternar entre modo claro e noturno.</small></div><button type="button" class="portal-btn portal-btn--ghost" data-settings-theme>Alternar tema</button></div>
                         </div>
@@ -423,7 +434,7 @@ include __DIR__.'/index_settings_sections_patch.php';
             cliente.razao_social = value(form, '#portal-full-razao') || cliente.nome;
             cliente.nome_fantasia = value(form, '#portal-full-fantasia') || cliente.razao_social;
             cliente.nome_loja = value(form, '#portal-full-store') || cliente.nome_fantasia;
-            cliente.nome_filial = checked(form, '#portal-full-has-branch') ? value(form, '#portal-full-filial') : value(form, '#portal-full-branch');
+            cliente.nome_filial = checked(form, '#portal-full-has-branch') ? value(form, '#portal-full-filial') : '';
             cliente.filial_nome = cliente.nome_filial;
             cliente.cep = value(form, '#portal-full-cep');
             cliente.endereco = value(form, '#portal-full-endereco');
