@@ -85,6 +85,10 @@ include __DIR__.'/index_with_patch.php';
     }
 
     html body .topbar .portal-app__client {
+        display: none !important;
+    }
+
+    html body .topbar .portal-client-pill-main {
         display: inline-flex;
         align-items: center;
         gap: 10px;
@@ -99,6 +103,10 @@ include __DIR__.'/index_with_patch.php';
         color: var(--text, #1f2933);
         box-shadow: 0 16px 34px -30px rgba(15, 23, 42, 0.46);
         overflow: hidden;
+    }
+
+    html body .portal-client-source-hidden {
+        display: none !important;
     }
 
     html body .portal-client-avatar {
@@ -187,7 +195,7 @@ include __DIR__.'/index_with_patch.php';
             gap: 0.5rem;
         }
 
-        html body .topbar .portal-app__client {
+        html body .topbar .portal-client-pill-main {
             max-width: min(100%, 340px);
             min-height: 0;
             padding: 6px 13px;
@@ -243,9 +251,9 @@ include __DIR__.'/index_with_patch.php';
         return cleanStoreName(cliente.nome_fantasia || cliente.nome_loja || cliente.razao_social || cliente.nome, fallback);
     };
 
-    const getBranchName = () => {
+    const getBranchName = (fallback = 'Filial') => {
         const cliente = readCliente();
-        return String(cliente.nome_filial || cliente.filial_nome || cliente.im || '').trim();
+        return String(cliente.nome_filial || cliente.filial_nome || cliente.filial || cliente.im || fallback || 'Filial').trim();
     };
 
     const initialsFrom = (value) => {
@@ -271,25 +279,52 @@ include __DIR__.'/index_with_patch.php';
         window.setTimeout(() => { title.dataset.portalGreetingLock = '0'; }, 0);
     };
 
+    const ensureProfilePill = () => {
+        const profile = document.querySelector('.topbar .portal-app__profile') || document.querySelector('.portal-app__profile');
+        if (!profile) return null;
+        const source = profile.querySelector('[data-cliente-badge]');
+        if (source) {
+            source.classList.add('portal-client-source-hidden');
+            source.setAttribute('aria-hidden', 'true');
+            source.setAttribute('style', 'display:none!important;');
+        }
+        let pill = profile.querySelector('.portal-client-pill-main');
+        if (!pill) {
+            pill = document.createElement('span');
+            pill.className = 'portal-client-pill-main';
+            pill.setAttribute('aria-live', 'polite');
+            if (source) {
+                source.insertAdjacentElement('afterend', pill);
+            } else {
+                profile.prepend(pill);
+            }
+        }
+        return { source, pill };
+    };
+
     const renderProfileBadge = () => {
-        const badge = document.querySelector('.topbar .portal-app__client');
-        if (!badge) return;
-        const current = String(badge.textContent || '').trim();
+        const parts = ensureProfilePill();
+        if (!parts) return;
+        const { source, pill } = parts;
+        const current = String(source?.textContent || '').trim();
         const storeName = getStoreName(cleanStoreName(current, 'Cliente'));
         const branchName = getBranchName();
-        const subline = branchName || 'Cliente';
+        const subline = branchName || 'Filial';
         const renderKey = `${storeName}|${subline}`;
-        badge.dataset.portalRenderedKey = renderKey;
-        badge.className = 'portal-app__client portal-user-pill-forced';
-        badge.setAttribute('style', 'display:inline-flex!important;align-items:center!important;justify-content:flex-start!important;gap:10px!important;width:auto!important;min-width:0!important;max-width:min(100%,360px)!important;height:auto!important;min-height:0!important;padding:6px 13px!important;border-radius:999px!important;overflow:hidden!important;box-sizing:border-box!important;');
-        badge.innerHTML = `
+        if (pill.dataset.portalRenderedKey === renderKey) {
+            renderGreeting();
+            return;
+        }
+        pill.dataset.portalRenderedKey = renderKey;
+        pill.setAttribute('style', 'display:inline-flex!important;align-items:center!important;justify-content:flex-start!important;gap:10px!important;width:auto!important;min-width:0!important;max-width:min(100%,360px)!important;height:auto!important;min-height:0!important;padding:6px 13px!important;border-radius:999px!important;overflow:hidden!important;box-sizing:border-box!important;');
+        pill.innerHTML = `
             <span class="portal-client-avatar" aria-hidden="true" style="width:48px!important;height:48px!important;min-width:48px!important;flex:0 0 48px!important;font-size:1rem!important;font-weight:900!important;line-height:1!important;">${escapeHtml(initialsFrom(storeName))}</span>
             <span class="portal-client-lines" style="display:grid!important;gap:2px!important;line-height:1.05!important;min-width:0!important;">
                 <strong class="portal-client-store" style="display:block!important;font-size:1.05rem!important;font-weight:900!important;line-height:1.05!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;">${escapeHtml(storeName)}</strong>
                 <small class="portal-client-branch" style="display:block!important;font-size:0.88rem!important;font-weight:700!important;line-height:1.05!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;">${escapeHtml(subline)}</small>
             </span>
         `;
-        badge.title = branchName ? `${storeName} - ${branchName}` : storeName;
+        pill.title = branchName ? `${storeName} - ${branchName}` : storeName;
         renderGreeting();
     };
 
