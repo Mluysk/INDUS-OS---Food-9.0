@@ -136,12 +136,14 @@ include __DIR__.'/index_with_patch.php';
         color: var(--text, #0f172a);
         font-size: 1rem;
         font-weight: 900;
+        transform: translateY(9px);
     }
 
     html body .portal-client-branch {
         color: var(--text-muted, #64748b);
         font-size: 0.78rem;
         font-weight: 700;
+        transform: translateY(-9px);
     }
 
     html body .topbar #portal-logout {
