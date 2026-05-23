@@ -321,7 +321,7 @@ if ($supportWhatsapp !== '') {
 
 <style>
     :root {
-        --portal-hero-gradient: radial-gradient(120% 120% at 10% 0%, rgba(59, 130, 246, 0.12), rgba(15, 23, 42, 0));
+        --portal-hero-gradient: radial-gradient(120% 120% at 10% 0%, color-mix(in srgb, var(--primary, #2563eb) 14%, transparent), rgba(15, 23, 42, 0));
         --portal-card-bg: rgba(255, 255, 255, 0.95);
         --portal-card-border: rgba(15, 23, 42, 0.08);
         --portal-muted: rgba(71, 85, 105, 0.8);
@@ -329,7 +329,7 @@ if ($supportWhatsapp !== '') {
     }
 
     [data-theme="dark"] {
-        --portal-hero-gradient: radial-gradient(120% 120% at 10% 0%, rgba(37, 99, 235, 0.22), rgba(15, 23, 42, 0));
+        --portal-hero-gradient: radial-gradient(120% 120% at 10% 0%, color-mix(in srgb, var(--primary, #2563eb) 24%, transparent), rgba(15, 23, 42, 0));
         --portal-card-bg: rgba(15, 23, 42, 0.78);
         --portal-card-border: rgba(148, 163, 184, 0.16);
         --portal-muted: rgba(148, 163, 184, 0.78);
@@ -418,8 +418,8 @@ if ($supportWhatsapp !== '') {
         gap: 6px;
         padding: 0.35rem 0.85rem;
         border-radius: 999px;
-        background: rgba(59, 130, 246, 0.12);
-        color: rgba(37, 99, 235, 0.9);
+        background: color-mix(in srgb, var(--primary, #2563eb) 14%, transparent);
+        color: color-mix(in srgb, var(--primary, #2563eb) 84%, #0f172a);
         font-size: 0.85rem;
         font-weight: 600;
         letter-spacing: 0.02em;
@@ -503,14 +503,14 @@ if ($supportWhatsapp !== '') {
     }
 
     .auth-toggle__btn.active {
-        background: linear-gradient(135deg, rgba(37, 99, 235, 0.16), rgba(37, 99, 235, 0.32));
-        color: rgba(30, 64, 175, 0.92);
-        box-shadow: inset 0 0 0 1px rgba(37, 99, 235, 0.18);
+        background: linear-gradient(135deg, color-mix(in srgb, var(--primary, #2563eb) 16%, transparent), color-mix(in srgb, var(--primary, #2563eb) 32%, transparent));
+        color: color-mix(in srgb, var(--primary, #2563eb) 76%, #0f172a);
+        box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--primary, #2563eb) 18%, transparent);
     }
 
     [data-theme="dark"] .auth-toggle__btn.active {
-        color: rgba(191, 219, 254, 0.9);
-        background: linear-gradient(135deg, rgba(96, 165, 250, 0.22), rgba(59, 130, 246, 0.32));
+        color: color-mix(in srgb, var(--primary, #2563eb) 34%, #ffffff);
+        background: linear-gradient(135deg, color-mix(in srgb, var(--primary, #2563eb) 22%, transparent), color-mix(in srgb, var(--primary, #2563eb) 32%, transparent));
     }
 
     .auth-panels {
