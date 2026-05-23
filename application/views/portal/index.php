@@ -240,6 +240,12 @@ if ($supportWhatsapp !== '') {
     </div>
 </section>
 
+<button type="button" class="portal-floating-support" data-portal-jump="suporte" aria-label="Abrir suporte">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M12 3a7 7 0 0 0-7 7v2.25A2.75 2.75 0 0 0 7.75 15H9a1 1 0 0 0 1-1v-3.5a1 1 0 0 0-1-1H6.5A5.5 5.5 0 0 1 12 4.5a5.5 5.5 0 0 1 5.5 5H15a1 1 0 0 0-1 1V14a1 1 0 0 0 1 1h2.5v.5a2 2 0 0 1-2 2H14a2 2 0 0 0-2-1.5h-1a2 2 0 1 0 0 4h1a2 2 0 0 0 1.73-1h1.77a3.5 3.5 0 0 0 3.5-3.5V10a7 7 0 0 0-7-7Z" />
+    </svg>
+</button>
+
 <div id="portal-welcome-modal" class="portal-modal" hidden>
     <div class="portal-modal__backdrop" data-welcome-dismiss></div>
     <div class="portal-modal__dialog portal-modal__dialog--welcome" role="dialog" aria-modal="true" aria-labelledby="portal-welcome-title">
@@ -1570,6 +1576,42 @@ if ($supportWhatsapp !== '') {
         display: block;
     }
 
+    .portal-floating-support {
+        display: none;
+        position: fixed;
+        right: 18px;
+        bottom: 92px;
+        width: 56px;
+        height: 56px;
+        border: 0;
+        border-radius: 999px;
+        background: linear-gradient(135deg, var(--primary, #2563eb), color-mix(in srgb, var(--primary, #2563eb) 72%, #ffffff));
+        color: #fff;
+        box-shadow: 0 22px 46px -20px color-mix(in srgb, var(--primary, #2563eb) 70%, transparent);
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        z-index: 1120;
+        transition: transform 0.18s ease, box-shadow 0.18s ease;
+    }
+
+    .portal-floating-support svg {
+        width: 25px;
+        height: 25px;
+        fill: currentColor;
+    }
+
+    .portal-floating-support:hover,
+    .portal-floating-support:focus-visible {
+        transform: translateY(-2px);
+        box-shadow: 0 28px 54px -22px color-mix(in srgb, var(--primary, #2563eb) 78%, transparent);
+        outline: none;
+    }
+
+    body[data-portal-state="app"] .portal-floating-support {
+        display: none;
+    }
+
     @media (max-width: 720px) {
         .portal-auth-card {
             padding: 1.6rem 1.7rem;
@@ -1928,6 +1970,14 @@ if ($supportWhatsapp !== '') {
 
         .portal-app__header-links {
             flex-wrap: wrap;
+        }
+
+        .portal-app__link[data-portal-jump="suporte"] {
+            display: none;
+        }
+
+        body[data-portal-state="app"] .portal-floating-support {
+            display: inline-flex;
         }
     }
 
