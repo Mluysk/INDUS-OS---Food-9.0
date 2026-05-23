@@ -112,7 +112,7 @@ $currentYear = date('Y');
     <?php if (!empty($flash['success'])): ?><div class="container"><div class="alert alert-success"><?= htmlspecialchars($flash['success'], ENT_QUOTES, 'UTF-8'); ?></div></div><?php endif; ?>
     <?php if (!empty($flash['error'])): ?><div class="container"><div class="alert alert-error"><?= htmlspecialchars($flash['error'], ENT_QUOTES, 'UTF-8'); ?></div></div><?php endif; ?>
     <?= $content ?? '' ?>
-    <footer role="contentinfo"><div class="footer-brand"><img src="<?= $footerLogo; ?>" alt="Logotipo rodapé IndusOS" loading="lazy"></div><div>INDUS•OS © <?= $currentYear; ?> • Todos os direitos reservados<br><a href="https://mystic-designer.com.br/" target="_blank" rel="noopener noreferrer" style="color: inherit;"><span>Created by </span><span style="color: var(--primary); font-weight: 700;">Mystic Designer®</span></a></div></footer>
+    <footer role="contentinfo"><div class="footer-brand"><img src="<?= $footerLogo; ?>" alt="Logotipo rodapé IndusOS" loading="lazy"></div><div>INDUS•OS © <?= $currentYear; ?> • Todos os direitos reservados<br><a href="https://mystic-designer.com.br/" target="_blank" rel="noopener noreferrer" style="color: inherit; text-decoration: none;"><span>Created by </span><span style="color: var(--primary); font-weight: 700;">Mystic Designer®</span></a></div></footer>
     <script>
         const storedTheme = localStorage.getItem('portal-theme');
         const root = document.documentElement;
