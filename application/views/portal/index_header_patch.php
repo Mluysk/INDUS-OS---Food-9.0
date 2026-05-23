@@ -277,13 +277,9 @@ include __DIR__.'/index_with_patch.php';
         const branchName = getBranchName();
         const subline = branchName || 'Cliente';
         const renderKey = `${storeName}|${subline}`;
-        if (badge.dataset.portalRenderedKey === renderKey && badge.querySelector('.portal-client-lines')) {
-            renderGreeting();
-            window.setTimeout(renderGreeting, 80);
-            return;
-        }
         badge.dataset.portalRenderedKey = renderKey;
-        badge.setAttribute('style', 'display:inline-flex!important;align-items:center!important;gap:10px!important;width:auto!important;max-width:min(100%,360px)!important;min-height:0!important;padding:6px 13px!important;border-radius:999px!important;');
+        badge.className = 'portal-app__client portal-user-pill-forced';
+        badge.setAttribute('style', 'display:inline-flex!important;align-items:center!important;justify-content:flex-start!important;gap:10px!important;width:auto!important;min-width:0!important;max-width:min(100%,360px)!important;height:auto!important;min-height:0!important;padding:6px 13px!important;border-radius:999px!important;overflow:hidden!important;box-sizing:border-box!important;');
         badge.innerHTML = `
             <span class="portal-client-avatar" aria-hidden="true" style="width:48px!important;height:48px!important;min-width:48px!important;flex:0 0 48px!important;font-size:1rem!important;font-weight:900!important;line-height:1!important;">${escapeHtml(initialsFrom(storeName))}</span>
             <span class="portal-client-lines" style="display:grid!important;gap:2px!important;line-height:1.05!important;min-width:0!important;">
