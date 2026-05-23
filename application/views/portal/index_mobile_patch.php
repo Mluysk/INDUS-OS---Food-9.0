@@ -43,7 +43,7 @@ include __DIR__.'/index_whatsapp_beside_contact_type_patch.php';
         html body .portal-auth-card {
             width: 100% !important;
             border-radius: 20px !important;
-            padding: 1.15rem !important;
+            padding: 1.25rem !important;
         }
 
         html body .portal-brand-card__logo {
@@ -63,6 +63,20 @@ include __DIR__.'/index_whatsapp_beside_contact_type_patch.php';
         html body .auth-panel__subtitle,
         html body .portal-auth-cta {
             font-size: 0.93rem !important;
+        }
+
+        html body .auth-panel__header h2 {
+            font-size: clamp(1.6rem, 7.6vw, 2rem) !important;
+        }
+
+        html body .auth-panel__subtitle {
+            max-width: none !important;
+            line-height: 1.38 !important;
+        }
+
+        html body .portal-auth-cta {
+            align-items: stretch !important;
+            flex-direction: column !important;
         }
 
         html body .auth-panel input,

@@ -400,16 +400,27 @@ if ($supportWhatsapp !== '') {
     }
 
     .portal-auth-card {
-        background: var(--portal-card-bg);
-        border: 1px solid var(--portal-card-border);
+        position: relative;
+        background:
+            linear-gradient(135deg, color-mix(in srgb, var(--primary, #2563eb) 7%, transparent), transparent 42%),
+            var(--portal-card-bg);
+        border: 1px solid color-mix(in srgb, var(--primary, #2563eb) 18%, var(--portal-card-border));
         border-radius: 26px;
-        box-shadow: 0 28px 60px -42px rgba(15, 23, 42, 0.55);
+        box-shadow: 0 32px 70px -44px rgba(15, 23, 42, 0.58);
         backdrop-filter: blur(12px);
-        padding: 2rem 2.25rem;
+        padding: clamp(1.45rem, 3vw, 2.45rem);
         display: flex;
         flex-direction: column;
-        gap: 1.75rem;
+        gap: 1.35rem;
         overflow: hidden;
+    }
+
+    .portal-auth-card::before {
+        content: '';
+        position: absolute;
+        inset: 0 0 auto;
+        height: 5px;
+        background: linear-gradient(90deg, var(--primary, #2563eb), color-mix(in srgb, var(--primary, #2563eb) 55%, #ffffff));
     }
 
     .portal-flash {
@@ -477,14 +488,14 @@ if ($supportWhatsapp !== '') {
     }
 
     .auth-panel {
-        width: 50%;
-        padding-right: 2rem;
+        width: 100%;
+        padding-right: 0;
         display: flex;
         flex-direction: column;
-        gap: 0.8rem;
+        gap: 0.85rem;
         transition: opacity 0.3s ease, transform 0.3s ease;
-        opacity: 0.35;
-        transform: translateY(6px);
+        opacity: 1;
+        transform: none;
     }
 
     .portal-auth-card[data-mode="login"] .auth-panel--login,
@@ -494,18 +505,31 @@ if ($supportWhatsapp !== '') {
     }
 
     .auth-panel label {
-        font-weight: 600;
+        margin-top: 0.2rem;
+        font-weight: 850;
         font-size: 0.95rem;
         color: var(--portal-muted);
     }
 
     .auth-panel input {
-        border-radius: 14px;
-        border: 1px solid rgba(148, 163, 184, 0.35);
-        padding: 0.75rem 0.95rem;
+        width: 100%;
+        min-height: 54px;
+        border-radius: 16px;
+        border: 1px solid color-mix(in srgb, var(--primary, #2563eb) 18%, rgba(148, 163, 184, 0.42));
+        padding: 0.9rem 1rem;
         font-size: 1rem;
+        font-weight: 700;
         background: rgba(255, 255, 255, 0.92);
         color: inherit;
+        box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.05);
+        transition: border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
+    }
+
+    .auth-panel input:focus {
+        outline: none;
+        border-color: var(--primary, #2563eb);
+        box-shadow: 0 0 0 4px color-mix(in srgb, var(--primary, #2563eb) 14%, transparent);
+        transform: translateY(-1px);
     }
 
     [data-theme="dark"] .auth-panel input {
@@ -515,17 +539,31 @@ if ($supportWhatsapp !== '') {
 
     .auth-panel__header h2 {
         margin: 0;
-        font-size: 1.45rem;
+        font-size: clamp(1.75rem, 3vw, 2.25rem);
+        line-height: 1.05;
+        letter-spacing: 0;
     }
 
     .auth-panel__subtitle {
-        margin: 0.35rem 0 0.9rem;
+        margin: 0.55rem 0 1.1rem;
         color: var(--portal-muted);
-        font-size: 0.95rem;
+        font-size: 1rem;
+        line-height: 1.42;
+        max-width: 36ch;
+    }
+
+    .auth-panel .portal-btn--primary {
+        min-height: 54px;
+        margin-top: 0.35rem;
+        width: 100%;
+        border-radius: 16px;
+        font-weight: 850;
     }
 
     .portal-auth-cta {
-        margin-top: 1.2rem;
+        margin-top: 0.95rem;
+        padding-top: 1rem;
+        border-top: 1px solid color-mix(in srgb, var(--primary, #2563eb) 12%, var(--portal-card-border));
         display: flex;
         flex-wrap: wrap;
         gap: 0.75rem;
@@ -533,6 +571,13 @@ if ($supportWhatsapp !== '') {
         justify-content: space-between;
         font-size: 0.95rem;
         color: var(--portal-muted);
+    }
+
+    .portal-auth-cta .portal-btn {
+        min-height: 44px;
+        padding: 0.68rem 1.05rem;
+        border-radius: 14px;
+        font-weight: 850;
     }
 
     .auth-panel__switch {
