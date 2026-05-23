@@ -807,7 +807,7 @@ $previewMatrixDefault = app_logo_matrix_values($logoTintPreviewHex);
                 <div class="appearance-panel" data-appearance-panel="portal">
                     <div class="support-card">
                         <h3>Logo do login do portal</h3>
-                        <p class="card-subtitle">Configure as logos clara e escura do login, com tamanho e posiÃ§Ã£o independentes.</p>
+                        <p class="card-subtitle">Configure as logos clara e escura do login, com tamanho e posi&ccedil;&atilde;o independentes.</p>
                         <div class="field">
                             <span class="field-label">Filtro da paleta do cliente</span>
                             <label class="switch" for="portal-login-logo-filter">
