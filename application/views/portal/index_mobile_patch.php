@@ -47,7 +47,9 @@ include __DIR__.'/index_whatsapp_beside_contact_type_patch.php';
         }
 
         html body .portal-brand-card__logo {
-            margin-bottom: 0.9rem !important;
+            width: 276px !important;
+            max-width: 100% !important;
+            margin-bottom: 0.7rem !important;
         }
 
         html body .portal-logo {
@@ -55,8 +57,9 @@ include __DIR__.'/index_whatsapp_beside_contact_type_patch.php';
         }
 
         html body .portal-login-logo {
-            width: min(230px, 82%) !important;
-            height: 58px !important;
+            width: 276px !important;
+            max-width: 100% !important;
+            height: 70px !important;
         }
 
         html body .portal-brand-card h1 {

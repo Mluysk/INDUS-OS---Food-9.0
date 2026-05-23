@@ -352,17 +352,21 @@ if ($supportWhatsapp !== '') {
     .portal-brand-card__logo {
         display: flex;
         gap: 12px;
-        align-items: center;
-        margin-bottom: 1.5rem;
+        align-items: flex-start;
+        justify-content: flex-start;
+        width: 312px;
+        max-width: 100%;
+        margin-bottom: 0.85rem;
     }
 
     .portal-login-logo {
         display: block;
-        width: min(260px, 78%);
-        height: 74px;
+        width: 312px;
+        max-width: 100%;
+        height: 89px;
         background: var(--primary, #2563eb);
-        -webkit-mask: var(--portal-login-logo) center / contain no-repeat;
-        mask: var(--portal-login-logo) center / contain no-repeat;
+        -webkit-mask: var(--portal-login-logo) left center / contain no-repeat;
+        mask: var(--portal-login-logo) left center / contain no-repeat;
         filter: drop-shadow(0 18px 28px color-mix(in srgb, var(--primary, #2563eb) 24%, transparent));
     }
 
