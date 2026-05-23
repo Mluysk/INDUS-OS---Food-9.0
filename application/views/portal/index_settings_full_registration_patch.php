@@ -403,8 +403,20 @@ include __DIR__.'/index_settings_sections_patch.php';
         { name: 'Turquesa Calmante', hex: '#2AA9A1' },
         { name: 'Terracota Quente', hex: '#D97941' },
         { name: 'Oliva Moderna', hex: '#8A9A5B' },
+        { name: 'Marfim Suave', hex: '#F5E6CC' },
         { name: 'Carvao Noturno', hex: '#222831' },
-        { name: 'Indigo Eletrico', hex: '#3949AB' }
+        { name: 'Ciano Boreal', hex: '#3AA7D6' },
+        { name: 'Ameixa Profunda', hex: '#5C2A72' },
+        { name: 'Cobre Acetinado', hex: '#BD7449' },
+        { name: 'Neve Polar', hex: '#ECF2F8' },
+        { name: 'Cedro Classico', hex: '#7A5230' },
+        { name: 'Rose Antigo', hex: '#CE6F8C' },
+        { name: 'Indigo Eletrico', hex: '#3949AB' },
+        { name: 'Pistache Claro', hex: '#C3D18A' },
+        { name: 'Slate Elegante', hex: '#5B6D7D' },
+        { name: 'Brisa Perolada', hex: '#E7F1F8' },
+        { name: 'Ambar Dourado', hex: '#E8A03F' },
+        { name: 'Menta Serena', hex: '#9FD7C5' }
     ];
 
     const normalizeHex = (value) => {
