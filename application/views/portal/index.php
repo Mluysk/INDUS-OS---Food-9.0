@@ -6,10 +6,10 @@ $portalLogoDark = htmlspecialchars($asset($portalLoginLogoDarkPath), ENT_QUOTES,
 $portalLoginLogoFilter = ($theme['portal_login_logo_filter'] ?? '0') === '1';
 $portalLoginLogoLightSize = max(24, min(180, (int)($theme['portal_login_logo_light_size'] ?? 60)));
 $portalLoginLogoDarkSize = max(24, min(180, (int)($theme['portal_login_logo_dark_size'] ?? 60)));
-$portalLoginLogoLightOffsetX = max(-80, min(80, (int)($theme['portal_login_logo_light_offset_x'] ?? 0)));
-$portalLoginLogoLightOffsetY = max(-80, min(80, (int)($theme['portal_login_logo_light_offset_y'] ?? 0)));
-$portalLoginLogoDarkOffsetX = max(-80, min(80, (int)($theme['portal_login_logo_dark_offset_x'] ?? 0)));
-$portalLoginLogoDarkOffsetY = max(-80, min(80, (int)($theme['portal_login_logo_dark_offset_y'] ?? 0)));
+$portalLoginLogoLightOffsetX = max(-120, min(120, (int)($theme['portal_login_logo_light_offset_x'] ?? 0)));
+$portalLoginLogoLightOffsetY = max(-120, min(120, (int)($theme['portal_login_logo_light_offset_y'] ?? 0)));
+$portalLoginLogoDarkOffsetX = max(-120, min(120, (int)($theme['portal_login_logo_dark_offset_x'] ?? 0)));
+$portalLoginLogoDarkOffsetY = max(-120, min(120, (int)($theme['portal_login_logo_dark_offset_y'] ?? 0)));
 $appDisplayName = htmlspecialchars($appName ?? 'IndusOS Food', ENT_QUOTES, 'UTF-8');
 $appTaglineText = htmlspecialchars($appTagline ?? 'Sistema de Controle Industrial (SCI)', ENT_QUOTES, 'UTF-8');
 $supportData = $support ?? [];

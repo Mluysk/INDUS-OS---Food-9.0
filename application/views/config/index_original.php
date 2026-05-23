@@ -837,10 +837,10 @@ $previewMatrixDefault = app_logo_matrix_values($logoTintPreviewHex);
                                     <label class="slider-label" for="portal-login-logo-light-size">Tamanho <output id="portal-login-logo-light-size-val"><?= htmlspecialchars($portalLoginLogoLightSize, ENT_QUOTES, 'UTF-8'); ?>px</output></label>
                                     <input type="range" id="portal-login-logo-light-size" name="config[PORTAL_LOGIN_LOGO_LIGHT_SIZE]" min="24" max="180" value="<?= htmlspecialchars($portalLoginLogoLightSize, ENT_QUOTES, 'UTF-8'); ?>" data-preview="preview-portal-login-light">
                                     <div class="pos-grid">
-                                        <label class="slider-label" for="portal-login-logo-light-x">PosiÃ§Ã£o X <output id="portal-login-logo-light-x-val"><?= htmlspecialchars($portalLoginLogoLightOffsetX, ENT_QUOTES, 'UTF-8'); ?>px</output></label>
-                                        <input type="range" id="portal-login-logo-light-x" name="config[PORTAL_LOGIN_LOGO_LIGHT_OFFSET_X]" min="-80" max="80" value="<?= htmlspecialchars($portalLoginLogoLightOffsetX, ENT_QUOTES, 'UTF-8'); ?>" data-preview="preview-portal-login-light" data-axis="x">
-                                        <label class="slider-label" for="portal-login-logo-light-y">PosiÃ§Ã£o Y <output id="portal-login-logo-light-y-val"><?= htmlspecialchars($portalLoginLogoLightOffsetY, ENT_QUOTES, 'UTF-8'); ?>px</output></label>
-                                        <input type="range" id="portal-login-logo-light-y" name="config[PORTAL_LOGIN_LOGO_LIGHT_OFFSET_Y]" min="-80" max="80" value="<?= htmlspecialchars($portalLoginLogoLightOffsetY, ENT_QUOTES, 'UTF-8'); ?>" data-preview="preview-portal-login-light" data-axis="y">
+                                        <label class="slider-label" for="portal-login-logo-light-x">Posi&ccedil;&atilde;o X <output id="portal-login-logo-light-x-val"><?= htmlspecialchars($portalLoginLogoLightOffsetX, ENT_QUOTES, 'UTF-8'); ?>px</output></label>
+                                        <input type="range" id="portal-login-logo-light-x" name="config[PORTAL_LOGIN_LOGO_LIGHT_OFFSET_X]" min="-120" max="120" value="<?= htmlspecialchars($portalLoginLogoLightOffsetX, ENT_QUOTES, 'UTF-8'); ?>" data-preview="preview-portal-login-light" data-axis="x">
+                                        <label class="slider-label" for="portal-login-logo-light-y">Posi&ccedil;&atilde;o Y <output id="portal-login-logo-light-y-val"><?= htmlspecialchars($portalLoginLogoLightOffsetY, ENT_QUOTES, 'UTF-8'); ?>px</output></label>
+                                        <input type="range" id="portal-login-logo-light-y" name="config[PORTAL_LOGIN_LOGO_LIGHT_OFFSET_Y]" min="-120" max="120" value="<?= htmlspecialchars($portalLoginLogoLightOffsetY, ENT_QUOTES, 'UTF-8'); ?>" data-preview="preview-portal-login-light" data-axis="y">
                                     </div>
                                 </div>
                             </div>
@@ -862,10 +862,10 @@ $previewMatrixDefault = app_logo_matrix_values($logoTintPreviewHex);
                                     <label class="slider-label" for="portal-login-logo-dark-size">Tamanho <output id="portal-login-logo-dark-size-val"><?= htmlspecialchars($portalLoginLogoDarkSize, ENT_QUOTES, 'UTF-8'); ?>px</output></label>
                                     <input type="range" id="portal-login-logo-dark-size" name="config[PORTAL_LOGIN_LOGO_DARK_SIZE]" min="24" max="180" value="<?= htmlspecialchars($portalLoginLogoDarkSize, ENT_QUOTES, 'UTF-8'); ?>" data-preview="preview-portal-login-dark">
                                     <div class="pos-grid">
-                                        <label class="slider-label" for="portal-login-logo-dark-x">PosiÃ§Ã£o X <output id="portal-login-logo-dark-x-val"><?= htmlspecialchars($portalLoginLogoDarkOffsetX, ENT_QUOTES, 'UTF-8'); ?>px</output></label>
-                                        <input type="range" id="portal-login-logo-dark-x" name="config[PORTAL_LOGIN_LOGO_DARK_OFFSET_X]" min="-80" max="80" value="<?= htmlspecialchars($portalLoginLogoDarkOffsetX, ENT_QUOTES, 'UTF-8'); ?>" data-preview="preview-portal-login-dark" data-axis="x">
-                                        <label class="slider-label" for="portal-login-logo-dark-y">PosiÃ§Ã£o Y <output id="portal-login-logo-dark-y-val"><?= htmlspecialchars($portalLoginLogoDarkOffsetY, ENT_QUOTES, 'UTF-8'); ?>px</output></label>
-                                        <input type="range" id="portal-login-logo-dark-y" name="config[PORTAL_LOGIN_LOGO_DARK_OFFSET_Y]" min="-80" max="80" value="<?= htmlspecialchars($portalLoginLogoDarkOffsetY, ENT_QUOTES, 'UTF-8'); ?>" data-preview="preview-portal-login-dark" data-axis="y">
+                                        <label class="slider-label" for="portal-login-logo-dark-x">Posi&ccedil;&atilde;o X <output id="portal-login-logo-dark-x-val"><?= htmlspecialchars($portalLoginLogoDarkOffsetX, ENT_QUOTES, 'UTF-8'); ?>px</output></label>
+                                        <input type="range" id="portal-login-logo-dark-x" name="config[PORTAL_LOGIN_LOGO_DARK_OFFSET_X]" min="-120" max="120" value="<?= htmlspecialchars($portalLoginLogoDarkOffsetX, ENT_QUOTES, 'UTF-8'); ?>" data-preview="preview-portal-login-dark" data-axis="x">
+                                        <label class="slider-label" for="portal-login-logo-dark-y">Posi&ccedil;&atilde;o Y <output id="portal-login-logo-dark-y-val"><?= htmlspecialchars($portalLoginLogoDarkOffsetY, ENT_QUOTES, 'UTF-8'); ?>px</output></label>
+                                        <input type="range" id="portal-login-logo-dark-y" name="config[PORTAL_LOGIN_LOGO_DARK_OFFSET_Y]" min="-120" max="120" value="<?= htmlspecialchars($portalLoginLogoDarkOffsetY, ENT_QUOTES, 'UTF-8'); ?>" data-preview="preview-portal-login-dark" data-axis="y">
                                     </div>
                                 </div>
                             </div>
@@ -2437,6 +2437,8 @@ $previewMatrixDefault = app_logo_matrix_values($logoTintPreviewHex);
                 preview: '#preview-portal-login-light',
                 min: 24,
                 max: 180,
+                offsetMin: -120,
+                offsetMax: 120,
             },
             {
                 size: '#portal-login-logo-dark-size',
@@ -2448,10 +2450,12 @@ $previewMatrixDefault = app_logo_matrix_values($logoTintPreviewHex);
                 preview: '#preview-portal-login-dark',
                 min: 24,
                 max: 180,
+                offsetMin: -120,
+                offsetMax: 120,
             },
         ];
 
-        const applyLogoSizeAndOffset = ({ size, x, y, output, outputX, outputY, preview, min, max, cssSize, cssX, cssY }) => {
+        const applyLogoSizeAndOffset = ({ size, x, y, output, outputX, outputY, preview, min, max, offsetMin = -80, offsetMax = 80, cssSize, cssX, cssY }) => {
             const sizeInput = document.querySelector(size);
             const offsetX = document.querySelector(x);
             const offsetY = document.querySelector(y);
@@ -2467,8 +2471,8 @@ $previewMatrixDefault = app_logo_matrix_values($logoTintPreviewHex);
             if (outputEl) {
                 outputEl.textContent = `${sizeVal}px`;
             }
-            const xVal = offsetX ? clampNumber(parseInt(offsetX.value || '0', 10), -80, 80) : 0;
-            const yVal = offsetY ? clampNumber(parseInt(offsetY.value || '0', 10), -80, 80) : 0;
+            const xVal = offsetX ? clampNumber(parseInt(offsetX.value || '0', 10), offsetMin, offsetMax) : 0;
+            const yVal = offsetY ? clampNumber(parseInt(offsetY.value || '0', 10), offsetMin, offsetMax) : 0;
             if (outputXEl) {
                 outputXEl.textContent = `${xVal}px`;
             }
