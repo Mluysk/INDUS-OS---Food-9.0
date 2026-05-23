@@ -129,7 +129,7 @@ include __DIR__.'/index_whatsapp_beside_contact_type_patch.php';
         html body .portal-app__client {
             width: auto !important;
             min-width: 0 !important;
-            max-width: min(100%, 236px) !important;
+            max-width: min(100%, 340px) !important;
         }
 
         html body .portal-app__nav {

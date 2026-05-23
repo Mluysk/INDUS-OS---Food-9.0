@@ -11,13 +11,13 @@ include __DIR__.'/index_settings_document_width_patch.php';
     html body [data-cliente-badge] {
         width: auto !important;
         min-width: 0 !important;
-        max-width: min(calc(100vw - 2rem), 250px) !important;
+        max-width: min(calc(100vw - 2rem), 360px) !important;
         height: auto !important;
-        min-height: 58px !important;
+        min-height: 0 !important;
         display: inline-flex !important;
         align-items: center !important;
         justify-content: flex-start !important;
-        gap: 0.58rem !important;
+        gap: 10px !important;
         white-space: nowrap !important;
         overflow: hidden !important;
         box-sizing: border-box !important;
@@ -52,14 +52,14 @@ include __DIR__.'/index_settings_document_width_patch.php';
     html body .portal-app__profile [class*="initial"],
     html body .portal-app__client [class*="initial"],
     html body [data-cliente-badge] [class*="initial"] {
-        width: 42px !important;
-        height: 42px !important;
-        min-width: 42px !important;
-        min-height: 42px !important;
-        max-width: 42px !important;
-        max-height: 42px !important;
+        width: 48px !important;
+        height: 48px !important;
+        min-width: 48px !important;
+        min-height: 48px !important;
+        max-width: 48px !important;
+        max-height: 48px !important;
         aspect-ratio: 1 / 1 !important;
-        flex: 0 0 42px !important;
+        flex: 0 0 48px !important;
         display: inline-grid !important;
         place-items: center !important;
         border-radius: 999px !important;
@@ -71,14 +71,14 @@ include __DIR__.'/index_settings_document_width_patch.php';
     html body .portal-app__profile > span:first-child:not(:last-child),
     html body .portal-app__client > span:first-child:not(:last-child),
     html body [data-cliente-badge] > span:first-child:not(:last-child) {
-        width: 42px !important;
-        height: 42px !important;
-        min-width: 42px !important;
-        min-height: 42px !important;
-        max-width: 42px !important;
-        max-height: 42px !important;
+        width: 48px !important;
+        height: 48px !important;
+        min-width: 48px !important;
+        min-height: 48px !important;
+        max-width: 48px !important;
+        max-height: 48px !important;
         aspect-ratio: 1 / 1 !important;
-        flex: 0 0 42px !important;
+        flex: 0 0 48px !important;
         display: inline-grid !important;
         place-items: center !important;
         border-radius: 999px !important;
@@ -129,9 +129,9 @@ include __DIR__.'/index_settings_document_width_patch.php';
         html body [data-cliente-badge] {
             width: auto !important;
             min-width: 0 !important;
-            max-width: min(calc(100vw - 1.25rem), 236px) !important;
+            max-width: min(calc(100vw - 1.25rem), 340px) !important;
             height: auto !important;
-            min-height: 54px !important;
+            min-height: 0 !important;
         }
 
         html body .portal-settings-field:has(#portal-full-cidade) {
