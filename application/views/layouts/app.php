@@ -18,7 +18,15 @@ $menuItems = [
 ];
 
 $role = $user['papel'] ?? 'cliente';
-$userBranchLabel = trim((string)($user['nome_filial'] ?? $user['filial_nome'] ?? $user['filial'] ?? ''));
+$roleLabels = [
+    'admin' => 'Administrador',
+    'gestor' => 'Gestor',
+    'producao' => 'Producao',
+    'expedicao' => 'Expedicao',
+    'financeiro' => 'Financeiro',
+    'cliente' => 'Cliente',
+];
+$userHierarchyLabel = $roleLabels[$role] ?? ucfirst((string)$role);
 $activeKey = $activeMenu ?? '';
 $basePathPrefix = rtrim($basePath ?? '', '/');
 $segmentMap = [
@@ -1697,9 +1705,7 @@ $brandTitleOffsetY = (int)($theme['title_offset_y'] ?? 0);
                     <div class="user-avatar" style="width:48px!important;height:48px!important;min-width:48px!important;flex:0 0 48px!important;font-size:1rem!important;font-weight:900!important;line-height:1!important;"><?= $initials ?: 'U'; ?></div>
                     <div style="display:grid!important;gap:2px!important;line-height:1.05!important;min-width:0!important;">
                         <strong style="display:block!important;font-size:1.05rem!important;font-weight:900!important;line-height:1.05!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;"><?= htmlspecialchars($user['nome'] ?? 'Usuário', ENT_QUOTES, 'UTF-8'); ?></strong>
-                        <?php if ($userBranchLabel !== ''): ?>
-                            <small style="display:block!important;color: var(--text-muted); text-transform: capitalize; font-size:0.88rem!important;font-weight:700!important;line-height:1.05!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;"><?= htmlspecialchars($userBranchLabel, ENT_QUOTES, 'UTF-8'); ?></small>
-                        <?php endif; ?>
+                        <small style="display:block!important;color: var(--text-muted); text-transform: capitalize; font-size:0.88rem!important;font-weight:700!important;line-height:1.05!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;"><?= htmlspecialchars($userHierarchyLabel, ENT_QUOTES, 'UTF-8'); ?></small>
                     </div>
                 </div>
             </div>
