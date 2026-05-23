@@ -455,8 +455,8 @@ class ConfigController extends Controller
             if (!isset($data[$key])) {
                 continue;
             }
-            $minOffset = strpos($key, 'PORTAL_LOGIN_LOGO_') === 0 ? -120 : -80;
-            $maxOffset = strpos($key, 'PORTAL_LOGIN_LOGO_') === 0 ? 120 : 80;
+            $minOffset = strpos($key, 'PORTAL_LOGIN_LOGO_') === 0 ? -200 : -80;
+            $maxOffset = strpos($key, 'PORTAL_LOGIN_LOGO_') === 0 ? 200 : 80;
             $val = (int)$data[$key];
             $val = max($minOffset, min($maxOffset, $val));
             $data[$key] = (string)$val;

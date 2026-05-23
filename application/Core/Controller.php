@@ -228,8 +228,8 @@ abstract class Controller
 
             foreach ($offsetKeys as $themeKey => $configKey) {
                 $raw = $configService->get($configKey, $theme[$themeKey]) ?: $theme[$themeKey];
-                $minOffset = strpos($configKey, 'PORTAL_LOGIN_LOGO_') === 0 ? -120 : -80;
-                $maxOffset = strpos($configKey, 'PORTAL_LOGIN_LOGO_') === 0 ? 120 : 80;
+                $minOffset = strpos($configKey, 'PORTAL_LOGIN_LOGO_') === 0 ? -200 : -80;
+                $maxOffset = strpos($configKey, 'PORTAL_LOGIN_LOGO_') === 0 ? 200 : 80;
                 $val = is_numeric($raw) ? (int)$raw : 0;
                 $val = max($minOffset, min($maxOffset, $val));
                 $theme[$themeKey] = (string)$val;
