@@ -37,12 +37,12 @@ include __DIR__.'/index_with_patch.php';
     html body .portal-greeting-pill {
         display: inline-flex;
         align-items: center;
-        max-width: min(360px, 100%);
-        padding: 0.38rem 0.88rem;
+        max-width: min(320px, 100%);
+        padding: 0.34rem 0.82rem;
         border-radius: 999px;
-        border: 1px solid color-mix(in srgb, var(--primary, #dc2626) 24%, transparent);
-        background: color-mix(in srgb, var(--primary, #dc2626) 11%, #ffffff);
-        box-shadow: 0 18px 38px -28px color-mix(in srgb, var(--primary, #dc2626) 42%, transparent);
+        border: 1px solid color-mix(in srgb, var(--primary, #2563eb) 30%, transparent);
+        background: color-mix(in srgb, var(--primary, #2563eb) 14%, #ffffff);
+        box-shadow: 0 18px 38px -28px color-mix(in srgb, var(--primary, #2563eb) 48%, transparent);
         vertical-align: middle;
     }
 
@@ -50,12 +50,11 @@ include __DIR__.'/index_with_patch.php';
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
-        color: var(--text-muted, #64748b);
-        font-size: 0.46em;
+        color: color-mix(in srgb, var(--primary, #2563eb) 82%, #0f172a);
+        font-size: 0.77em;
         font-weight: 900;
         line-height: 1.12;
-        text-transform: uppercase;
-        letter-spacing: 0.04em;
+        letter-spacing: 0;
     }
 
     html body .portal-app__header-links {
@@ -272,10 +271,14 @@ include __DIR__.'/index_with_patch.php';
         const title = document.querySelector('[data-cliente-nome]');
         if (!title) return;
         const storeName = getStoreName();
+        const branchName = getBranchName();
         const icon = title.querySelector('.portal-greeting-icon')?.outerHTML || '';
+        const branchPill = branchName
+            ? `<span class="portal-greeting-pill"><small class="portal-greeting-branch">${escapeHtml(branchName)}</small></span>`
+            : '';
         title.dataset.portalGreetingLock = '1';
         title.dataset.portalGreetingManaged = '1';
-        title.innerHTML = `${icon}<span class="portal-greeting-label">${greetingLabel()},</span><span class="portal-greeting-store-name">${escapeHtml(storeName)}</span>`;
+        title.innerHTML = `${icon}<span class="portal-greeting-label">${greetingLabel()},</span><span class="portal-greeting-store-name">${escapeHtml(storeName)}</span>${branchPill}`;
         window.setTimeout(() => { title.dataset.portalGreetingLock = '0'; }, 0);
     };
 
