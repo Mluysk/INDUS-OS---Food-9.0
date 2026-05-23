@@ -1287,19 +1287,24 @@ $brandTitleOffsetY = (int)($theme['title_offset_y'] ?? 0);
             font-size: 1rem;
         }
         .user-badge {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            min-width: 0;
-            max-width: min(100%, 360px);
-            background: var(--surface-alt);
-            border-radius: 999px;
-            padding: 10px 16px;
-            border: 1px solid var(--border);
-            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+            display: inline-flex !important;
+            align-items: center !important;
+            gap: 10px !important;
+            width: auto !important;
+            min-width: 0 !important;
+            max-width: min(100%, 360px) !important;
+            min-height: 0 !important;
+            background: var(--surface-alt) !important;
+            border-radius: 999px !important;
+            padding: 6px 13px !important;
+            border: 1px solid var(--border) !important;
+            box-shadow: 0 16px 34px -30px rgba(15, 23, 42, 0.46) !important;
         }
         .user-badge > div:last-child {
             min-width: 0;
+            display: grid;
+            gap: 3px;
+            line-height: 1.05;
         }
         .user-badge strong,
         .user-badge small {
@@ -1309,16 +1314,28 @@ $brandTitleOffsetY = (int)($theme['title_offset_y'] ?? 0);
             white-space: nowrap;
         }
         .user-avatar {
-            width: 38px;
-            height: 38px;
-            flex: 0 0 38px;
+            width: 48px !important;
+            height: 48px !important;
+            flex: 0 0 48px !important;
             border-radius: 50%;
             background: var(--primary-soft);
             color: var(--primary-dark);
             display: flex;
             align-items: center;
             justify-content: center;
+            font-weight: 900;
+            font-size: 1rem;
+        }
+        .user-badge strong {
+            color: var(--text);
+            font-size: 1.05rem;
+            font-weight: 900;
+            line-height: 1.05;
+        }
+        .user-badge small {
+            font-size: 0.88rem;
             font-weight: 700;
+            line-height: 1.05;
         }
         body.theme-dark .user-avatar {
             color: #0f172a;
@@ -1554,7 +1571,8 @@ $brandTitleOffsetY = (int)($theme['title_offset_y'] ?? 0);
                 min-width: 0;
             }
             .user-badge {
-                width: 100%;
+                width: auto !important;
+                max-width: min(100%, 360px) !important;
                 justify-content: flex-start;
             }
         }
