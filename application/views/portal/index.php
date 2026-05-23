@@ -1,5 +1,5 @@
 <?php
-$portalLoginLogo = htmlspecialchars($asset('uploads/branding/logowhite.png'), ENT_QUOTES, 'UTF-8');
+$portalLoginLogo = htmlspecialchars($asset($theme['logo_dark'] ?? 'uploads/branding/logowhite.png'), ENT_QUOTES, 'UTF-8');
 $appDisplayName = htmlspecialchars($appName ?? 'IndusOS Food', ENT_QUOTES, 'UTF-8');
 $appTaglineText = htmlspecialchars($appTagline ?? 'Sistema de Controle Industrial (SCI)', ENT_QUOTES, 'UTF-8');
 $supportData = $support ?? [];
