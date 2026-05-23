@@ -194,7 +194,7 @@ include __DIR__.'/index_settings_sections_patch.php';
         const name = cliente.nome_fantasia || cliente.nome_loja || cliente.razao_social || cliente.nome || 'Cliente';
         document.querySelectorAll('[data-cliente-badge]').forEach((item) => { item.textContent = name; });
         const title = document.querySelector('[data-cliente-nome]');
-        if (title) title.textContent = name;
+        if (title && title.dataset.portalGreetingManaged !== '1') title.textContent = name;
         window.dispatchEvent(new StorageEvent('storage', { key: 'portal-cliente' }));
     };
 

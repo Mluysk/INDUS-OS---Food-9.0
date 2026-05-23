@@ -2842,10 +2842,10 @@ $catalogoPayload = json_encode(array_map(static function ($produto) {
     const enterApp = (cliente, options = {}) => {
         const { showWelcome = false, preferredTab = 'novo-pedido' } = options;
         persistCliente(cliente);
-        const displayName = cliente && (cliente.nome_fantasia || cliente.razao_social || cliente.nome)
-            ? (cliente.nome_fantasia || cliente.razao_social || cliente.nome)
+        const displayName = cliente && (cliente.nome_fantasia || cliente.nome_loja || cliente.razao_social || cliente.nome)
+            ? (cliente.nome_fantasia || cliente.nome_loja || cliente.razao_social || cliente.nome)
             : 'Cliente';
-        if (welcomeName) {
+        if (welcomeName && welcomeName.dataset.portalGreetingManaged !== '1') {
             welcomeName.textContent = displayName;
         }
         if (clienteBadge) {
@@ -2882,8 +2882,8 @@ $catalogoPayload = json_encode(array_map(static function ($produto) {
                 const data = JSON.parse(raw);
                 if (data && typeof data === 'object') {
                     state.cliente = data;
-                    const storedName = data.nome_fantasia || data.razao_social || data.nome || 'Cliente';
-                    if (welcomeName) {
+                    const storedName = data.nome_fantasia || data.nome_loja || data.razao_social || data.nome || 'Cliente';
+                    if (welcomeName && welcomeName.dataset.portalGreetingManaged !== '1') {
                         welcomeName.textContent = storedName;
                     }
                     if (clienteBadge) {

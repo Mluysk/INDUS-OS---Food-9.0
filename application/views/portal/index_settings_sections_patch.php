@@ -70,7 +70,7 @@ include __DIR__.'/index_settings_tab_patch.php';
         const badge = document.querySelector('[data-cliente-badge]');
         const title = document.querySelector('[data-cliente-nome]');
         if (badge) badge.textContent = name;
-        if (title) title.textContent = name;
+        if (title && title.dataset.portalGreetingManaged !== '1') title.textContent = name;
         window.dispatchEvent(new StorageEvent('storage', { key: 'portal-cliente' }));
     };
 

@@ -233,9 +233,14 @@ include __DIR__.'/index_with_patch.php';
         }
     };
 
+    const cleanStoreName = (value, fallback = 'Cliente') => {
+        const text = String(value || '').replace(/\s+Cliente$/i, '').trim();
+        return text || fallback;
+    };
+
     const getStoreName = (fallback = 'Cliente') => {
         const cliente = readCliente();
-        return String(cliente.nome_fantasia || cliente.nome_loja || cliente.razao_social || cliente.nome || fallback || 'Cliente').trim();
+        return cleanStoreName(cliente.nome_fantasia || cliente.nome_loja || cliente.razao_social || cliente.nome, fallback);
     };
 
     const getBranchName = () => {
@@ -259,21 +264,18 @@ include __DIR__.'/index_with_patch.php';
         const title = document.querySelector('[data-cliente-nome]');
         if (!title) return;
         const storeName = getStoreName();
-        const branchName = getBranchName();
         const icon = title.querySelector('.portal-greeting-icon')?.outerHTML || '';
-        const branchPill = branchName
-            ? `<span class="portal-greeting-pill"><small class="portal-greeting-branch">${escapeHtml(branchName)}</small></span>`
-            : '';
         title.dataset.portalGreetingLock = '1';
-        title.innerHTML = `${icon}<span class="portal-greeting-label">${greetingLabel()},</span><span class="portal-greeting-store-name">${escapeHtml(storeName)}</span>${branchPill}`;
-        window.setTimeout(() => { delete title.dataset.portalGreetingLock; }, 0);
+        title.dataset.portalGreetingManaged = '1';
+        title.innerHTML = `${icon}<span class="portal-greeting-label">${greetingLabel()},</span><span class="portal-greeting-store-name">${escapeHtml(storeName)}</span>`;
+        window.setTimeout(() => { title.dataset.portalGreetingLock = '0'; }, 0);
     };
 
     const renderProfileBadge = () => {
         const badge = document.querySelector('.topbar .portal-app__client');
         if (!badge) return;
         const current = String(badge.textContent || '').trim();
-        const storeName = getStoreName(current || 'Cliente');
+        const storeName = getStoreName(cleanStoreName(current, 'Cliente'));
         const branchName = getBranchName();
         const subline = branchName || 'Cliente';
         const renderKey = `${storeName}|${subline}`;
@@ -289,7 +291,6 @@ include __DIR__.'/index_with_patch.php';
         `;
         badge.title = branchName ? `${storeName} - ${branchName}` : storeName;
         renderGreeting();
-        window.setTimeout(renderGreeting, 80);
     };
 
     const run = () => {
@@ -315,8 +316,6 @@ include __DIR__.'/index_with_patch.php';
             profile.classList.toggle('is-visible', Boolean(visible));
             if (visible) {
                 setTimeout(renderProfileBadge, 0);
-                setTimeout(renderProfileBadge, 80);
-                setTimeout(renderGreeting, 160);
             }
         };
 
@@ -328,7 +327,6 @@ include __DIR__.'/index_with_patch.php';
         if (rawBadge) {
             new MutationObserver(() => {
                 setTimeout(renderProfileBadge, 0);
-                setTimeout(renderGreeting, 120);
             }).observe(rawBadge, { childList: true, characterData: true, subtree: true });
         }
 

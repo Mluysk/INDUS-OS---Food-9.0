@@ -137,7 +137,7 @@ include __DIR__.'/index_header_lift_patch.php';
         const badge = document.querySelector('[data-cliente-badge]');
         const title = document.querySelector('[data-cliente-nome]');
         if (badge) badge.textContent = name;
-        if (title) title.textContent = name;
+        if (title && title.dataset.portalGreetingManaged !== '1') title.textContent = name;
     };
 
     const fieldValue = (selector) => document.querySelector(selector)?.value.trim() || '';

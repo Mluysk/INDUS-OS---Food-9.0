@@ -321,10 +321,15 @@ include __DIR__.'/index.php';
     const getStoredClientName = () => {
         try {
             const data = JSON.parse(localStorage.getItem('portal-cliente') || 'null');
-            return data?.nome_fantasia || data?.razao_social || data?.nome || '';
+            return data?.nome_fantasia || data?.nome_loja || data?.razao_social || data?.nome || '';
         } catch (error) {
             return '';
         }
+    };
+
+    const cleanClientName = (value, fallback = 'Cliente') => {
+        const text = String(value || '').replace(/\s+Cliente$/i, '').trim();
+        return text || fallback;
     };
 
     const setupThemeButton = () => {
@@ -361,9 +366,10 @@ include __DIR__.'/index.php';
         title.dataset.greetingReady = '1';
 
         const apply = () => {
+            if (title.dataset.portalGreetingManaged === '1') return;
             const current = String(badge?.textContent || '').trim();
             const stored = getStoredClientName();
-            const name = current && current !== 'Cliente' ? current : (stored || 'Cliente');
+            const name = current && current !== 'Cliente' ? cleanClientName(current) : cleanClientName(stored);
             const greeting = getGreetingInfo();
             title.innerHTML = `<span class="portal-greeting-icon">${greeting.icon}</span><span class="portal-greeting-text">${greeting.text}, ${name}</span>`;
         };
