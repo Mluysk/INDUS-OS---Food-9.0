@@ -55,7 +55,8 @@ $currentYear = date('Y');
         .alert { border-radius: 14px; padding: 0.9rem 1rem; margin-bottom: 1rem; font-weight: 600; }
         .alert-success { background: rgba(22, 163, 74, 0.15); color: #15803d; }
         .alert-error { background: rgba(220, 38, 38, 0.18); color: #b91c1c; }
-        .topbar { display: flex; justify-content: space-between; align-items: center; padding: 1rem 1.5rem; }
+        .topbar { display: flex; justify-content: space-between; align-items: center; padding: 1rem 1.5rem; background: var(--primary); color: var(--primary-contrast); box-shadow: 0 14px 32px -28px color-mix(in srgb, var(--primary, #2563eb) 80%, transparent); }
+        .topbar strong { color: var(--primary-contrast); }
         .theme-toggle { display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.95rem; color: var(--muted); }
         .theme-toggle input { width: auto; }
         footer { text-align: center; padding: 2.5rem 1.5rem 3.5rem; color: var(--muted); font-size: 0.92rem; }
@@ -105,6 +106,8 @@ $currentYear = date('Y');
         @media (max-width: 720px) { .portal-app { width: min(100% - 18px, 100%) !important; } .portal-catalog-tools { grid-template-columns: 1fr; } .portal-catalog { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)) !important; } }
         @media (min-width: 1024px) { .portal-app__grid { align-items: start; grid-template-columns: minmax(0, 1fr) minmax(375px, 425px) !important; } .portal-cart-stack { position: sticky; top: 1.25rem; align-self: start; display: flex; flex-direction: column; max-height: calc(100vh - 2.5rem); min-height: 0; } .portal-cart-card { display: flex; flex-direction: column; max-height: calc(100vh - 7rem); min-height: 0; overflow: hidden; font-size: 0.88rem; line-height: 1.3; padding: 1.15rem !important; } .portal-cart-card h3 { font-size: 1.08rem; line-height: 1.2; margin: 0 0 0.6rem; } .portal-cart-table { display: flex; flex: 1 1 auto; flex-direction: column; min-height: 0; width: 100%; } .portal-cart-table thead, .portal-cart-table tfoot { display: table; width: 100%; table-layout: fixed; flex: 0 0 auto; } .portal-cart-table th { font-size: 0.68rem; letter-spacing: 0.04em; padding: 0.45rem 0.35rem !important; } .portal-cart-table td { font-size: 0.82rem; line-height: 1.25; padding: 0.52rem 0.35rem !important; } .portal-cart-table tbody td:first-child { font-size: 0.78rem; font-weight: 600; } .portal-cart-table tfoot td { font-size: 0.9rem; font-weight: 700; } .portal-cart-empty { font-size: 0.82rem !important; } .portal-cart-table tbody { display: block; flex: 1 1 auto; max-height: min(52vh, 460px); min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding-right: 4px; scrollbar-width: thin; } .portal-cart-table tbody tr { display: table; width: 100%; table-layout: fixed; } .portal-cart-table th, .portal-cart-table td { vertical-align: middle; } .portal-cart-actions { flex: 0 0 auto; } .portal-cart-actions .portal-btn, #btn-finalizar { font-size: 0.88rem; padding: 0.72rem 1rem; } }
         @media (min-width: 1400px) { .portal-app__grid { grid-template-columns: minmax(0, 1fr) minmax(388px, 438px) !important; } .portal-catalog { grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)) !important; } }
+        html body .topbar { background: var(--primary, #2563eb) !important; color: var(--primary-contrast, #fff) !important; border-bottom: none !important; }
+        html body .topbar strong { color: var(--primary-contrast, #fff) !important; }
     </style>
 </head>
 <body>
