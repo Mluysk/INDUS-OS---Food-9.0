@@ -283,11 +283,12 @@ include __DIR__.'/index_with_patch.php';
             return;
         }
         badge.dataset.portalRenderedKey = renderKey;
+        badge.setAttribute('style', 'display:inline-flex!important;align-items:center!important;gap:10px!important;width:auto!important;max-width:min(100%,360px)!important;min-height:0!important;padding:6px 13px!important;border-radius:999px!important;');
         badge.innerHTML = `
-            <span class="portal-client-avatar" aria-hidden="true">${escapeHtml(initialsFrom(storeName))}</span>
-            <span class="portal-client-lines">
-                <strong class="portal-client-store">${escapeHtml(storeName)}</strong>
-                <small class="portal-client-branch">${escapeHtml(subline)}</small>
+            <span class="portal-client-avatar" aria-hidden="true" style="width:48px!important;height:48px!important;min-width:48px!important;flex:0 0 48px!important;font-size:1rem!important;font-weight:900!important;line-height:1!important;">${escapeHtml(initialsFrom(storeName))}</span>
+            <span class="portal-client-lines" style="display:grid!important;gap:2px!important;line-height:1.05!important;min-width:0!important;">
+                <strong class="portal-client-store" style="display:block!important;font-size:1.05rem!important;font-weight:900!important;line-height:1.05!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;">${escapeHtml(storeName)}</strong>
+                <small class="portal-client-branch" style="display:block!important;font-size:0.88rem!important;font-weight:700!important;line-height:1.05!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;">${escapeHtml(subline)}</small>
             </span>
         `;
         badge.title = branchName ? `${storeName} - ${branchName}` : storeName;
