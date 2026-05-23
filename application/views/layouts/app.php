@@ -1692,11 +1692,11 @@ $brandTitleOffsetY = (int)($theme['title_offset_y'] ?? 0);
                         <span>Sair</span>
                     </button>
                 </form>
-                <div class="user-badge">
-                    <div class="user-avatar"><?= $initials ?: 'U'; ?></div>
-                    <div>
-                        <strong><?= htmlspecialchars($user['nome'] ?? 'Usuário', ENT_QUOTES, 'UTF-8'); ?></strong><br>
-                        <small style="color: var(--text-muted); text-transform: capitalize;"><?= htmlspecialchars($role, ENT_QUOTES, 'UTF-8'); ?></small>
+                <div class="user-badge" style="display:inline-flex!important;align-items:center!important;gap:10px!important;width:auto!important;max-width:min(100%,360px)!important;min-height:0!important;padding:6px 13px!important;border-radius:999px!important;">
+                    <div class="user-avatar" style="width:48px!important;height:48px!important;min-width:48px!important;flex:0 0 48px!important;font-size:1rem!important;font-weight:900!important;line-height:1!important;"><?= $initials ?: 'U'; ?></div>
+                    <div style="display:grid!important;gap:2px!important;line-height:1.05!important;min-width:0!important;">
+                        <strong style="display:block!important;font-size:1.05rem!important;font-weight:900!important;line-height:1.05!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;"><?= htmlspecialchars($user['nome'] ?? 'Usuário', ENT_QUOTES, 'UTF-8'); ?></strong>
+                        <small style="display:block!important;color: var(--text-muted); text-transform: capitalize; font-size:0.88rem!important;font-weight:700!important;line-height:1.05!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;"><?= htmlspecialchars($role, ENT_QUOTES, 'UTF-8'); ?></small>
                     </div>
                 </div>
             </div>
