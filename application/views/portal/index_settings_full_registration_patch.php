@@ -180,6 +180,107 @@ include __DIR__.'/index_settings_sections_patch.php';
     html body .portal-settings-state-flag.is-visible {
         display: block;
     }
+
+    html body .portal-settings-palette {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+        gap: 10px;
+    }
+
+    html body .portal-settings-swatch {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        min-height: 62px;
+        padding: 10px 12px;
+        border-radius: 12px;
+        border: 1px solid var(--portal-card-border, rgba(15, 23, 42, 0.08));
+        background: color-mix(in srgb, var(--portal-surface, #fff) 88%, transparent);
+        color: var(--text, #0f172a);
+        cursor: pointer;
+        box-shadow: 0 16px 30px -28px rgba(15, 23, 42, 0.45);
+    }
+
+    html body .portal-settings-swatch input {
+        display: none;
+    }
+
+    html body .portal-settings-swatch.is-active {
+        border-color: var(--primary, #2563eb);
+        box-shadow: 0 18px 36px -28px color-mix(in srgb, var(--primary, #2563eb) 72%, transparent);
+    }
+
+    html body .portal-settings-swatch-color {
+        width: 42px;
+        height: 42px;
+        flex: 0 0 42px;
+        border-radius: 12px;
+        background: var(--swatch-color);
+        border: 3px solid rgba(255, 255, 255, 0.72);
+        box-shadow: inset 0 0 0 1px rgba(15, 23, 42, 0.14);
+    }
+
+    html body .portal-settings-swatch-meta {
+        display: grid;
+        gap: 2px;
+        min-width: 0;
+    }
+
+    html body .portal-settings-swatch-meta strong,
+    html body .portal-settings-swatch-meta small {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    html body .portal-settings-swatch-meta strong {
+        font-weight: 900;
+    }
+
+    html body .portal-settings-swatch-meta small {
+        color: var(--text-muted, #64748b);
+        font-size: 0.78rem;
+        font-weight: 850;
+        text-transform: uppercase;
+    }
+
+    html body .portal-settings-custom-color {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px;
+        border-radius: 12px;
+        border: 1px dashed var(--portal-card-border, rgba(15, 23, 42, 0.12));
+        background: color-mix(in srgb, var(--portal-surface, #fff) 88%, transparent);
+    }
+
+    html body .portal-settings-custom-color input[type="color"] {
+        width: 48px;
+        height: 48px;
+        padding: 0;
+        border: none;
+        background: transparent;
+        cursor: pointer;
+    }
+
+    html body .portal-settings-custom-color input[type="text"] {
+        min-width: 0;
+        flex: 1;
+        font-weight: 850;
+        text-transform: uppercase;
+    }
+
+    html body .portal-btn--primary {
+        background: linear-gradient(135deg, var(--primary, #2563eb), color-mix(in srgb, var(--primary, #2563eb) 78%, #0f172a)) !important;
+        box-shadow: 0 18px 35px -20px color-mix(in srgb, var(--primary, #2563eb) 86%, transparent) !important;
+    }
+
+    @media (max-width: 640px) {
+        html body .portal-settings-custom-color {
+            align-items: stretch;
+            flex-direction: column;
+        }
+    }
 </style>
 <script>
 (function () {
@@ -194,6 +295,59 @@ include __DIR__.'/index_settings_sections_patch.php';
 
     const readCliente = () => {
         try { return JSON.parse(localStorage.getItem('portal-cliente') || '{}') || {}; } catch (error) { return {}; }
+    };
+
+    const portalPalette = [
+        { name: 'Grafite Suave', hex: '#4F535C' },
+        { name: 'Azul Primario', hex: '#2563EB' },
+        { name: 'Vermelho Energia', hex: '#DC2626' },
+        { name: 'Amarelo Solar', hex: '#FACC15' },
+        { name: 'Verde Selva', hex: '#2F855A' },
+        { name: 'Vinho Urbano', hex: '#8C1C3C' },
+        { name: 'Lavanda Nebulosa', hex: '#8A7AAE' },
+        { name: 'Turquesa Calmante', hex: '#2AA9A1' },
+        { name: 'Terracota Quente', hex: '#D97941' },
+        { name: 'Oliva Moderna', hex: '#8A9A5B' },
+        { name: 'Carvao Noturno', hex: '#222831' },
+        { name: 'Indigo Eletrico', hex: '#3949AB' }
+    ];
+
+    const normalizeHex = (value) => {
+        const text = String(value || '').trim();
+        const match = text.match(/^#?([0-9a-f]{6})$/i);
+        return match ? `#${match[1].toUpperCase()}` : '';
+    };
+
+    const portalPaletteState = () => {
+        const cliente = readCliente();
+        const storedHex = normalizeHex(localStorage.getItem('portal-primary-hex'));
+        const themeHex = <?= json_encode($theme['primary_hex'] ?? '#2563EB'); ?>;
+        const hex = normalizeHex(cliente.portal_palette_hex || storedHex || themeHex) || '#2563EB';
+        const match = portalPalette.find((item) => item.hex.toUpperCase() === hex.toUpperCase());
+        return {
+            hex,
+            name: cliente.portal_palette_name || localStorage.getItem('portal-primary-name') || match?.name || 'Cor personalizada'
+        };
+    };
+
+    const applyPortalPalette = (hex, name = 'Cor personalizada') => {
+        const normalized = normalizeHex(hex) || '#2563EB';
+        document.documentElement.style.setProperty('--primary', normalized);
+        document.documentElement.style.setProperty('--portal-primary', normalized);
+        localStorage.setItem('portal-primary-hex', normalized);
+        localStorage.setItem('portal-primary-name', name || 'Cor personalizada');
+        document.querySelectorAll('[data-portal-palette-choice]').forEach((item) => {
+            const active = normalizeHex(item.dataset.hex) === normalized;
+            item.classList.toggle('is-active', active);
+            const input = item.querySelector('input');
+            if (input) input.checked = active;
+        });
+        const customHex = document.getElementById('portal-custom-hex');
+        const customPicker = document.getElementById('portal-custom-picker');
+        const customName = document.getElementById('portal-custom-name');
+        if (customHex) customHex.value = normalized;
+        if (customPicker) customPicker.value = normalized;
+        if (customName) customName.value = name || 'Cor personalizada';
     };
 
     const first = (...values) => values.map((value) => String(value || '').trim()).find(Boolean) || '';
@@ -231,6 +385,11 @@ include __DIR__.'/index_settings_sections_patch.php';
         const doc = first(c.documento, c.cnpj, c.cpf);
         const docType = onlyDigits(first(c.cpf)).length === 11 && onlyDigits(first(c.cnpj)).length !== 14 ? 'cpf' : 'cnpj';
         const hasBranch = Boolean(first(c.nome_filial, c.filial_nome, c.im));
+        const paletteState = portalPaletteState();
+        const paletteMarkup = portalPalette.map((item) => {
+            const active = item.hex.toUpperCase() === paletteState.hex.toUpperCase();
+            return `<label class="portal-settings-swatch ${active ? 'is-active' : ''}" data-portal-palette-choice data-name="${escapeHtml(item.name)}" data-hex="${escapeHtml(item.hex)}"><input type="radio" name="portal_palette_choice" value="${escapeHtml(item.hex)}" ${active ? 'checked' : ''}><span class="portal-settings-swatch-color" style="--swatch-color:${escapeHtml(item.hex)}"></span><span class="portal-settings-swatch-meta"><strong>${escapeHtml(item.name)}</strong><small>${escapeHtml(item.hex)}</small></span></label>`;
+        }).join('');
         return `
             <section class="portal-panel" id="portal-tab-configuracao" data-portal-tab-panel="configuracao" hidden>
                 <div class="portal-settings-tab-card">
@@ -296,7 +455,18 @@ include __DIR__.'/index_settings_sections_patch.php';
                             <div class="portal-settings-grid">
                                 <div class="portal-settings-field"><label for="portal-full-store">Nome da loja</label><input id="portal-full-store" type="text" value="${escapeHtml(first(c.nome_loja, c.nome_fantasia, c.razao_social, c.nome))}" placeholder="Nome da loja"></div>
                             </div>
-                            <div class="portal-settings-option"><div><strong>Tema do portal</strong><small>Alternar entre modo claro e noturno.</small></div><button type="button" class="portal-btn portal-btn--ghost" data-settings-theme>Alternar tema</button></div>
+                            <div class="portal-settings-field">
+                                <label>Paleta de cor</label>
+                                <div class="portal-settings-palette">${paletteMarkup}</div>
+                            </div>
+                            <div class="portal-settings-field">
+                                <label for="portal-custom-hex">Cor personalizada</label>
+                                <div class="portal-settings-custom-color">
+                                    <input type="color" id="portal-custom-picker" value="${escapeHtml(paletteState.hex)}">
+                                    <input id="portal-custom-hex" type="text" value="${escapeHtml(paletteState.hex)}" placeholder="#2563EB">
+                                    <input id="portal-custom-name" type="hidden" value="${escapeHtml(paletteState.name)}">
+                                </div>
+                            </div>
                         </div>
                         <div class="portal-settings-feedback" data-settings-feedback aria-live="polite"></div>
                         <div class="portal-settings-actions"><button type="button" class="portal-btn portal-btn--ghost" data-settings-back="novo-pedido">Voltar</button><button type="submit" class="portal-btn portal-btn--primary">Atualizar cadastro</button></div>
@@ -392,7 +562,18 @@ include __DIR__.'/index_settings_sections_patch.php';
         form.dataset.fullBound = '1';
         document.querySelectorAll('[data-settings-section-trigger]').forEach((button) => button.addEventListener('click', () => setSection(button.dataset.settingsSectionTrigger || 'cadastro')));
         document.querySelectorAll('[data-settings-doc]').forEach((button) => button.addEventListener('click', () => setDoc(button.dataset.settingsDoc || 'cnpj')));
-        form.querySelector('[data-settings-theme]')?.addEventListener('click', () => document.querySelector('.portal-theme-button')?.click());
+        document.querySelectorAll('[data-portal-palette-choice]').forEach((label) => {
+            label.addEventListener('click', () => applyPortalPalette(label.dataset.hex, label.dataset.name));
+        });
+        const customPicker = form.querySelector('#portal-custom-picker');
+        const customHex = form.querySelector('#portal-custom-hex');
+        const syncCustomColor = (value) => {
+            const normalized = normalizeHex(value);
+            if (!normalized) return;
+            applyPortalPalette(normalized, 'Cor personalizada');
+        };
+        customPicker?.addEventListener('input', (event) => syncCustomColor(event.currentTarget.value));
+        customHex?.addEventListener('input', (event) => syncCustomColor(event.currentTarget.value));
         form.querySelector('[data-settings-back]')?.addEventListener('click', () => {
             document.querySelectorAll('[data-portal-tab-panel]').forEach((panel) => { panel.hidden = panel.dataset.portalTabPanel !== 'novo-pedido'; });
         });
@@ -436,6 +617,8 @@ include __DIR__.'/index_settings_sections_patch.php';
             cliente.nome_loja = value(form, '#portal-full-store') || cliente.nome_fantasia;
             cliente.nome_filial = checked(form, '#portal-full-has-branch') ? value(form, '#portal-full-filial') : '';
             cliente.filial_nome = cliente.nome_filial;
+            cliente.portal_palette_hex = normalizeHex(value(form, '#portal-custom-hex')) || portalPaletteState().hex;
+            cliente.portal_palette_name = value(form, '#portal-custom-name') || localStorage.getItem('portal-primary-name') || 'Cor personalizada';
             cliente.cep = value(form, '#portal-full-cep');
             cliente.endereco = value(form, '#portal-full-endereco');
             cliente.numero = value(form, '#portal-full-numero');
@@ -454,8 +637,13 @@ include __DIR__.'/index_settings_sections_patch.php';
         if (!panels) return;
         document.getElementById('portal-tab-configuracao')?.remove();
         panels.insertAdjacentHTML('beforeend', fullSettingsMarkup());
+        const paletteState = portalPaletteState();
+        applyPortalPalette(paletteState.hex, paletteState.name);
         bindFullForm();
     };
+
+    const initialPalette = portalPaletteState();
+    applyPortalPalette(initialPalette.hex, initialPalette.name);
 
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', () => { apply(); window.setTimeout(apply, 360); }, { once: true });

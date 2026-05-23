@@ -175,13 +175,6 @@ include __DIR__.'/index_header_lift_patch.php';
                         <input id="portal-settings-city" type="text" value="${escapeHtml(cliente.cidade || '')}" placeholder="Cidade">
                     </div>
                 </div>
-                <div class="portal-settings-option">
-                    <div>
-                        <strong>Tema do portal</strong>
-                        <small>Alternar entre modo claro e noturno.</small>
-                    </div>
-                    <button type="button" class="portal-btn portal-btn--ghost" data-portal-settings-theme>Alternar tema</button>
-                </div>
                 <div class="portal-settings-feedback" data-portal-settings-feedback aria-live="polite"></div>
                 <div class="portal-settings-actions">
                     <button type="button" class="portal-btn portal-btn--ghost" data-portal-settings-close>Cancelar</button>
@@ -238,9 +231,6 @@ include __DIR__.'/index_header_lift_patch.php';
                 modal.hidden = true;
                 modal.setAttribute('aria-hidden', 'true');
             });
-        });
-        modal.querySelector('[data-portal-settings-theme]')?.addEventListener('click', () => {
-            document.querySelector('.portal-theme-button')?.click();
         });
         modal.querySelector('[data-portal-edit-register]')?.addEventListener('click', () => {
             modal.querySelector('[data-portal-edit-area]')?.classList.toggle('is-open');

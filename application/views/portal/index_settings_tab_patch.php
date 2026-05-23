@@ -109,13 +109,6 @@ include __DIR__.'/index_icons_refined_patch.php';
                                 <input id="portal-tab-city" type="text" value="${escapeHtml(cliente.cidade || '')}" placeholder="Cidade">
                             </div>
                         </div>
-                        <div class="portal-settings-option">
-                            <div>
-                                <strong>Tema do portal</strong>
-                                <small>Alternar entre modo claro e noturno.</small>
-                            </div>
-                            <button type="button" class="portal-btn portal-btn--ghost" data-portal-tab-theme>Alternar tema</button>
-                        </div>
                         <div class="portal-settings-feedback" data-portal-tab-feedback aria-live="polite"></div>
                         <div class="portal-settings-actions">
                             <button type="button" class="portal-btn portal-btn--ghost" data-portal-tab-go="novo-pedido">Voltar</button>
@@ -153,9 +146,6 @@ include __DIR__.'/index_icons_refined_patch.php';
         form.dataset.bound = '1';
         form.querySelector('[data-portal-tab-edit-register]')?.addEventListener('click', () => {
             form.querySelector('[data-portal-tab-edit-area]')?.classList.toggle('is-open');
-        });
-        form.querySelector('[data-portal-tab-theme]')?.addEventListener('click', () => {
-            document.querySelector('.portal-theme-button')?.click();
         });
         form.querySelector('[data-portal-tab-go]')?.addEventListener('click', (event) => {
             setActivePortalPanel(event.currentTarget.dataset.portalTabGo || 'novo-pedido');

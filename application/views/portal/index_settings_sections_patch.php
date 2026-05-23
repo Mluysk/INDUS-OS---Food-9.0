@@ -133,13 +133,6 @@ include __DIR__.'/index_settings_tab_patch.php';
                                     <input id="portal-settings-branch-main" type="text" value="${escapeHtml(cliente.nome_filial || cliente.filial_nome || cliente.im || '')}" placeholder="Nome da filial">
                                 </div>
                             </div>
-                            <div class="portal-settings-option">
-                                <div>
-                                    <strong>Tema do portal</strong>
-                                    <small>Alternar entre modo claro e noturno.</small>
-                                </div>
-                                <button type="button" class="portal-btn portal-btn--ghost" data-settings-theme>Alternar tema</button>
-                            </div>
                         </div>
                         <div class="portal-settings-feedback" data-settings-feedback aria-live="polite"></div>
                         <div class="portal-settings-actions">
@@ -175,9 +168,6 @@ include __DIR__.'/index_settings_tab_patch.php';
         form.dataset.sectionsBound = '1';
         document.querySelectorAll('[data-settings-section-trigger]').forEach((button) => {
             button.addEventListener('click', () => setSettingsSection(button.dataset.settingsSectionTrigger || 'cadastro'));
-        });
-        form.querySelector('[data-settings-theme]')?.addEventListener('click', () => {
-            document.querySelector('.portal-theme-button')?.click();
         });
         form.querySelector('[data-settings-back]')?.addEventListener('click', (event) => {
             setPortalPanel(event.currentTarget.dataset.settingsBack || 'novo-pedido');

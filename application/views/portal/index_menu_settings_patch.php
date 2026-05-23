@@ -139,13 +139,6 @@ include __DIR__.'/index_menu_cart_patch.php';
                     </h3>
                     <button type="button" class="portal-settings-modal__close" aria-label="Fechar" data-portal-settings-close>${closeIcon}</button>
                 </div>
-                <div class="portal-settings-option">
-                    <div>
-                        <strong>Tema do portal</strong>
-                        <small>Alternar entre modo claro e noturno.</small>
-                    </div>
-                    <button type="button" class="portal-btn portal-btn--ghost" data-portal-settings-theme>Alternar tema</button>
-                </div>
             </div>
         `;
         document.body.appendChild(modal);
@@ -155,9 +148,6 @@ include __DIR__.'/index_menu_cart_patch.php';
                 modal.setAttribute('aria-hidden', 'true');
             });
         });
-        modal.querySelector('[data-portal-settings-theme]')?.addEventListener('click', () => {
-            document.querySelector('.portal-theme-button')?.click();
-        });
         return modal;
     };
 
@@ -165,7 +155,7 @@ include __DIR__.'/index_menu_cart_patch.php';
         const modal = ensureSettingsModal();
         modal.hidden = false;
         modal.setAttribute('aria-hidden', 'false');
-        modal.querySelector('[data-portal-settings-theme]')?.focus();
+        modal.querySelector('[data-portal-settings-close]')?.focus();
     };
 
     const run = () => {
