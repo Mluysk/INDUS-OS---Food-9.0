@@ -251,9 +251,9 @@ include __DIR__.'/index_with_patch.php';
         return cleanStoreName(cliente.nome_fantasia || cliente.nome_loja || cliente.razao_social || cliente.nome, fallback);
     };
 
-    const getBranchName = (fallback = 'Filial') => {
+    const getBranchName = () => {
         const cliente = readCliente();
-        return String(cliente.nome_filial || cliente.filial_nome || cliente.filial || cliente.im || fallback || 'Filial').trim();
+        return String(cliente.nome_filial || cliente.filial_nome || cliente.filial || '').trim();
     };
 
     const initialsFrom = (value) => {
@@ -309,8 +309,10 @@ include __DIR__.'/index_with_patch.php';
         const current = String(source?.textContent || '').trim();
         const storeName = getStoreName(cleanStoreName(current, 'Cliente'));
         const branchName = getBranchName();
-        const subline = branchName || 'Filial';
-        const renderKey = `${storeName}|${subline}`;
+        const branchLine = branchName
+            ? `<small class="portal-client-branch" style="display:block!important;font-size:0.88rem!important;font-weight:700!important;line-height:1.05!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;">${escapeHtml(branchName)}</small>`
+            : '';
+        const renderKey = `${storeName}|${branchName}`;
         if (pill.dataset.portalRenderedKey === renderKey) {
             renderGreeting();
             return;
@@ -321,7 +323,7 @@ include __DIR__.'/index_with_patch.php';
             <span class="portal-client-avatar" aria-hidden="true" style="width:48px!important;height:48px!important;min-width:48px!important;flex:0 0 48px!important;font-size:1rem!important;font-weight:900!important;line-height:1!important;">${escapeHtml(initialsFrom(storeName))}</span>
             <span class="portal-client-lines" style="display:grid!important;gap:2px!important;line-height:1.05!important;min-width:0!important;">
                 <strong class="portal-client-store" style="display:block!important;font-size:1.05rem!important;font-weight:900!important;line-height:1.05!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;">${escapeHtml(storeName)}</strong>
-                <small class="portal-client-branch" style="display:block!important;font-size:0.88rem!important;font-weight:700!important;line-height:1.05!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;">${escapeHtml(subline)}</small>
+                ${branchLine}
             </span>
         `;
         pill.title = branchName ? `${storeName} - ${branchName}` : storeName;
