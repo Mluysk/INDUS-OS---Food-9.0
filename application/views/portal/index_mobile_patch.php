@@ -54,6 +54,11 @@ include __DIR__.'/index_whatsapp_beside_contact_type_patch.php';
             max-height: 46px !important;
         }
 
+        html body .portal-login-logo {
+            width: min(230px, 82%) !important;
+            height: 58px !important;
+        }
+
         html body .portal-brand-card h1 {
             font-size: clamp(1.8rem, 9vw, 2.45rem) !important;
             line-height: 1.05 !important;

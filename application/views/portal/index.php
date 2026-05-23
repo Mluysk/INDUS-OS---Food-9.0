@@ -1,6 +1,5 @@
 <?php
-$portalLogoLight = htmlspecialchars($asset($theme['logo_light'] ?? 'img/logo.png'), ENT_QUOTES, 'UTF-8');
-$portalLogoDark = htmlspecialchars($asset($theme['logo_dark'] ?? 'img/logodark.png'), ENT_QUOTES, 'UTF-8');
+$portalLoginLogo = htmlspecialchars($asset('uploads/branding/logowhite.png'), ENT_QUOTES, 'UTF-8');
 $appDisplayName = htmlspecialchars($appName ?? 'IndusOS Food', ENT_QUOTES, 'UTF-8');
 $appTaglineText = htmlspecialchars($appTagline ?? 'Sistema de Controle Industrial (SCI)', ENT_QUOTES, 'UTF-8');
 $supportData = $support ?? [];
@@ -28,8 +27,7 @@ if ($supportWhatsapp !== '') {
     <div class="portal-hero__content">
         <div class="portal-brand-card">
             <div class="portal-brand-card__logo" aria-hidden="true">
-                <img class="portal-logo portal-logo-light" src="<?= $portalLogoLight; ?>" alt="Logotipo modo claro">
-                <img class="portal-logo portal-logo-dark" src="<?= $portalLogoDark; ?>" alt="Logotipo modo escuro">
+                <span class="portal-login-logo" style="--portal-login-logo: url('<?= $portalLoginLogo; ?>');"></span>
             </div>
             <span class="portal-brand-card__tag">Portal do cliente</span>
             <h1>Bem-vindo ao <?= $appDisplayName; ?></h1>
@@ -356,6 +354,16 @@ if ($supportWhatsapp !== '') {
         gap: 12px;
         align-items: center;
         margin-bottom: 1.5rem;
+    }
+
+    .portal-login-logo {
+        display: block;
+        width: min(260px, 78%);
+        height: 74px;
+        background: var(--primary, #2563eb);
+        -webkit-mask: var(--portal-login-logo) center / contain no-repeat;
+        mask: var(--portal-login-logo) center / contain no-repeat;
+        filter: drop-shadow(0 18px 28px color-mix(in srgb, var(--primary, #2563eb) 24%, transparent));
     }
 
     .portal-logo {
