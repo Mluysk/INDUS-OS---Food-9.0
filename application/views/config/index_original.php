@@ -31,6 +31,15 @@ $logoCompactLightOffsetX = $themeDefaults['THEME_LOGO_COMPACT_LIGHT_OFFSET_X'] ?
 $logoCompactLightOffsetY = $themeDefaults['THEME_LOGO_COMPACT_LIGHT_OFFSET_Y'] ?? '0';
 $logoCompactDarkOffsetX = $themeDefaults['THEME_LOGO_COMPACT_DARK_OFFSET_X'] ?? '0';
 $logoCompactDarkOffsetY = $themeDefaults['THEME_LOGO_COMPACT_DARK_OFFSET_Y'] ?? '0';
+$portalLoginLogoFilter = $themeDefaults['PORTAL_LOGIN_LOGO_FILTER'] ?? '0';
+$portalLoginLogoLight = $themeDefaults['PORTAL_LOGIN_LOGO_LIGHT'] ?? $themeLogoLight;
+$portalLoginLogoDark = $themeDefaults['PORTAL_LOGIN_LOGO_DARK'] ?? $themeLogoDark;
+$portalLoginLogoLightSize = $themeDefaults['PORTAL_LOGIN_LOGO_LIGHT_SIZE'] ?? '60';
+$portalLoginLogoDarkSize = $themeDefaults['PORTAL_LOGIN_LOGO_DARK_SIZE'] ?? '60';
+$portalLoginLogoLightOffsetX = $themeDefaults['PORTAL_LOGIN_LOGO_LIGHT_OFFSET_X'] ?? '0';
+$portalLoginLogoLightOffsetY = $themeDefaults['PORTAL_LOGIN_LOGO_LIGHT_OFFSET_Y'] ?? '0';
+$portalLoginLogoDarkOffsetX = $themeDefaults['PORTAL_LOGIN_LOGO_DARK_OFFSET_X'] ?? '0';
+$portalLoginLogoDarkOffsetY = $themeDefaults['PORTAL_LOGIN_LOGO_DARK_OFFSET_Y'] ?? '0';
 $noteDefaults = $noteDefaults ?? [];
 $noteNome = $noteDefaults['NOTE_FABRICA_NOME'] ?? $themeTitle;
 $noteDoc = $noteDefaults['NOTE_FABRICA_DOC'] ?? 'CNPJ 00.000.000/0000-00';
@@ -49,6 +58,8 @@ $logoDarkUrl = $assetHelper($themeLogoDark);
 $logoCompactLightUrl = $assetHelper($themeLogoCompactLight);
 $logoCompactDarkUrl = $assetHelper($themeLogoCompactDark);
 $logoFooterUrl = $assetHelper($themeLogoFooter);
+$portalLoginLogoLightUrl = $assetHelper($portalLoginLogoLight);
+$portalLoginLogoDarkUrl = $assetHelper($portalLoginLogoDark);
 $noteLogoUrl = $assetHelper($noteLogoPath);
 
 $portalSupport = $portalSupport ?? ($support ?? []);
@@ -794,6 +805,72 @@ $previewMatrixDefault = app_logo_matrix_values($logoTintPreviewHex);
                     </div>
                 </div>
                 <div class="appearance-panel" data-appearance-panel="portal">
+                    <div class="support-card">
+                        <h3>Logo do login do portal</h3>
+                        <p class="card-subtitle">Configure as logos clara e escura do login, com tamanho e posiÃ§Ã£o independentes.</p>
+                        <div class="field">
+                            <span class="field-label">Filtro da paleta do cliente</span>
+                            <label class="switch" for="portal-login-logo-filter">
+                                <input type="hidden" name="config[PORTAL_LOGIN_LOGO_FILTER]" value="0">
+                                <input type="checkbox" id="portal-login-logo-filter" name="config[PORTAL_LOGIN_LOGO_FILTER]" value="1" <?= $portalLoginLogoFilter === '1' ? 'checked' : ''; ?>>
+                                <span class="switch-track" aria-hidden="true"></span>
+                                <span class="switch-text">Colorir no login com a cor escolhida pelo cliente</span>
+                            </label>
+                            <p class="field-hint">Ligado usa a logo do modo escuro com filtro da paleta do portal. Desligado usa a logo do modo claro.</p>
+                        </div>
+                        <div class="logo-grid portal-login-logo-grid">
+                            <div class="logo-field">
+                                <div class="logo-preview light">
+                                    <header>Tema claro</header>
+                                    <div class="preview-body">
+                                        <img src="<?= htmlspecialchars($portalLoginLogoLightUrl, ENT_QUOTES, 'UTF-8'); ?>" alt="PrÃ©-visualizaÃ§Ã£o logo clara do login do portal" id="preview-portal-login-light">
+                                    </div>
+                                </div>
+                                <label class="logo-label" for="portal-login-logo-light">Caminho logo tema claro</label>
+                                <input id="portal-login-logo-light" name="config[PORTAL_LOGIN_LOGO_LIGHT]" value="<?= htmlspecialchars($portalLoginLogoLight, ENT_QUOTES, 'UTF-8'); ?>" placeholder="uploads/branding/logodark.png">
+                                <label class="upload-label" for="portal-login-logo-light-file">
+                                    <span>Enviar novo arquivo</span>
+                                    <input type="file" id="portal-login-logo-light-file" name="portal_login_logo_light_file" accept="image/*">
+                                </label>
+                                <div class="logo-tuners">
+                                    <div class="move-key-label">Chave de movimento</div>
+                                    <label class="slider-label" for="portal-login-logo-light-size">Tamanho <output id="portal-login-logo-light-size-val"><?= htmlspecialchars($portalLoginLogoLightSize, ENT_QUOTES, 'UTF-8'); ?>px</output></label>
+                                    <input type="range" id="portal-login-logo-light-size" name="config[PORTAL_LOGIN_LOGO_LIGHT_SIZE]" min="24" max="180" value="<?= htmlspecialchars($portalLoginLogoLightSize, ENT_QUOTES, 'UTF-8'); ?>" data-preview="preview-portal-login-light">
+                                    <div class="pos-grid">
+                                        <label class="slider-label" for="portal-login-logo-light-x">PosiÃ§Ã£o X <output id="portal-login-logo-light-x-val"><?= htmlspecialchars($portalLoginLogoLightOffsetX, ENT_QUOTES, 'UTF-8'); ?>px</output></label>
+                                        <input type="range" id="portal-login-logo-light-x" name="config[PORTAL_LOGIN_LOGO_LIGHT_OFFSET_X]" min="-80" max="80" value="<?= htmlspecialchars($portalLoginLogoLightOffsetX, ENT_QUOTES, 'UTF-8'); ?>" data-preview="preview-portal-login-light" data-axis="x">
+                                        <label class="slider-label" for="portal-login-logo-light-y">PosiÃ§Ã£o Y <output id="portal-login-logo-light-y-val"><?= htmlspecialchars($portalLoginLogoLightOffsetY, ENT_QUOTES, 'UTF-8'); ?>px</output></label>
+                                        <input type="range" id="portal-login-logo-light-y" name="config[PORTAL_LOGIN_LOGO_LIGHT_OFFSET_Y]" min="-80" max="80" value="<?= htmlspecialchars($portalLoginLogoLightOffsetY, ENT_QUOTES, 'UTF-8'); ?>" data-preview="preview-portal-login-light" data-axis="y">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="logo-field">
+                                <div class="logo-preview dark">
+                                    <header>Tema escuro</header>
+                                    <div class="preview-body">
+                                        <img src="<?= htmlspecialchars($portalLoginLogoDarkUrl, ENT_QUOTES, 'UTF-8'); ?>" alt="PrÃ©-visualizaÃ§Ã£o logo escura do login do portal" id="preview-portal-login-dark">
+                                    </div>
+                                </div>
+                                <label class="logo-label" for="portal-login-logo-dark">Caminho logo tema escuro</label>
+                                <input id="portal-login-logo-dark" name="config[PORTAL_LOGIN_LOGO_DARK]" value="<?= htmlspecialchars($portalLoginLogoDark, ENT_QUOTES, 'UTF-8'); ?>" placeholder="uploads/branding/logowhite.png">
+                                <label class="upload-label" for="portal-login-logo-dark-file">
+                                    <span>Enviar novo arquivo</span>
+                                    <input type="file" id="portal-login-logo-dark-file" name="portal_login_logo_dark_file" accept="image/*">
+                                </label>
+                                <div class="logo-tuners">
+                                    <div class="move-key-label">Chave de movimento</div>
+                                    <label class="slider-label" for="portal-login-logo-dark-size">Tamanho <output id="portal-login-logo-dark-size-val"><?= htmlspecialchars($portalLoginLogoDarkSize, ENT_QUOTES, 'UTF-8'); ?>px</output></label>
+                                    <input type="range" id="portal-login-logo-dark-size" name="config[PORTAL_LOGIN_LOGO_DARK_SIZE]" min="24" max="180" value="<?= htmlspecialchars($portalLoginLogoDarkSize, ENT_QUOTES, 'UTF-8'); ?>" data-preview="preview-portal-login-dark">
+                                    <div class="pos-grid">
+                                        <label class="slider-label" for="portal-login-logo-dark-x">PosiÃ§Ã£o X <output id="portal-login-logo-dark-x-val"><?= htmlspecialchars($portalLoginLogoDarkOffsetX, ENT_QUOTES, 'UTF-8'); ?>px</output></label>
+                                        <input type="range" id="portal-login-logo-dark-x" name="config[PORTAL_LOGIN_LOGO_DARK_OFFSET_X]" min="-80" max="80" value="<?= htmlspecialchars($portalLoginLogoDarkOffsetX, ENT_QUOTES, 'UTF-8'); ?>" data-preview="preview-portal-login-dark" data-axis="x">
+                                        <label class="slider-label" for="portal-login-logo-dark-y">PosiÃ§Ã£o Y <output id="portal-login-logo-dark-y-val"><?= htmlspecialchars($portalLoginLogoDarkOffsetY, ENT_QUOTES, 'UTF-8'); ?>px</output></label>
+                                        <input type="range" id="portal-login-logo-dark-y" name="config[PORTAL_LOGIN_LOGO_DARK_OFFSET_Y]" min="-80" max="80" value="<?= htmlspecialchars($portalLoginLogoDarkOffsetY, ENT_QUOTES, 'UTF-8'); ?>" data-preview="preview-portal-login-dark" data-axis="y">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     <div class="support-card">
                 <h3>Suporte do portal</h3>
                 <p class="card-subtitle">Defina os canais exibidos na aba "Suporte" para seus clientes.</p>
@@ -1646,9 +1723,15 @@ $previewMatrixDefault = app_logo_matrix_values($logoTintPreviewHex);
         display: grid;
         gap: 16px;
     }
+    .portal-login-logo-grid {
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    }
     @media (min-width: 960px) {
         .logo-grid {
             grid-template-columns: repeat(4, minmax(0, 1fr));
+        }
+        .portal-login-logo-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
         }
     }
     .logo-field {
@@ -2344,6 +2427,28 @@ $previewMatrixDefault = app_logo_matrix_values($logoTintPreviewHex);
                 cssX: '--logo-compact-dark-x',
                 cssY: '--logo-compact-dark-y',
             },
+            {
+                size: '#portal-login-logo-light-size',
+                x: '#portal-login-logo-light-x',
+                y: '#portal-login-logo-light-y',
+                output: '#portal-login-logo-light-size-val',
+                outputX: '#portal-login-logo-light-x-val',
+                outputY: '#portal-login-logo-light-y-val',
+                preview: '#preview-portal-login-light',
+                min: 24,
+                max: 180,
+            },
+            {
+                size: '#portal-login-logo-dark-size',
+                x: '#portal-login-logo-dark-x',
+                y: '#portal-login-logo-dark-y',
+                output: '#portal-login-logo-dark-size-val',
+                outputX: '#portal-login-logo-dark-x-val',
+                outputY: '#portal-login-logo-dark-y-val',
+                preview: '#preview-portal-login-dark',
+                min: 24,
+                max: 180,
+            },
         ];
 
         const applyLogoSizeAndOffset = ({ size, x, y, output, outputX, outputY, preview, min, max, cssSize, cssX, cssY }) => {
@@ -2415,6 +2520,8 @@ $previewMatrixDefault = app_logo_matrix_values($logoTintPreviewHex);
             { file: '#logo-dark-file', text: '#logo-dark', preview: '#preview-dark' },
             { file: '#logo-compact-light-file', text: '#logo-compact-light', preview: '#preview-compact-light' },
             { file: '#logo-compact-dark-file', text: '#logo-compact-dark', preview: '#preview-compact-dark' },
+            { file: '#portal-login-logo-light-file', text: '#portal-login-logo-light', preview: '#preview-portal-login-light' },
+            { file: '#portal-login-logo-dark-file', text: '#portal-login-logo-dark', preview: '#preview-portal-login-dark' },
         ];
 
         logoBindings.forEach(({ file, text, preview }) => {

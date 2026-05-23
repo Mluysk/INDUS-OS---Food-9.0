@@ -99,6 +99,15 @@ class ConfigController extends Controller
             'THEME_LOGO_COMPACT_DARK_OFFSET_Y' => $this->config->get('THEME_LOGO_COMPACT_DARK_OFFSET_Y', '0') ?: '0',
             'THEME_TITLE_COLORIZE' => $this->config->get('THEME_TITLE_COLORIZE', '0') === '1' ? '1' : '0',
             'THEME_LOGO_FILTER' => $this->config->get('THEME_LOGO_FILTER', '0') === '1' ? '1' : '0',
+            'PORTAL_LOGIN_LOGO_LIGHT' => $this->config->get('PORTAL_LOGIN_LOGO_LIGHT', $this->config->get('THEME_LOGO_LIGHT', 'uploads/branding/logodark.png')) ?: 'uploads/branding/logodark.png',
+            'PORTAL_LOGIN_LOGO_DARK' => $this->config->get('PORTAL_LOGIN_LOGO_DARK', $this->config->get('THEME_LOGO_DARK', 'uploads/branding/logowhite.png')) ?: 'uploads/branding/logowhite.png',
+            'PORTAL_LOGIN_LOGO_LIGHT_SIZE' => $this->config->get('PORTAL_LOGIN_LOGO_LIGHT_SIZE', '60') ?: '60',
+            'PORTAL_LOGIN_LOGO_DARK_SIZE' => $this->config->get('PORTAL_LOGIN_LOGO_DARK_SIZE', '60') ?: '60',
+            'PORTAL_LOGIN_LOGO_LIGHT_OFFSET_X' => $this->config->get('PORTAL_LOGIN_LOGO_LIGHT_OFFSET_X', '0') ?: '0',
+            'PORTAL_LOGIN_LOGO_LIGHT_OFFSET_Y' => $this->config->get('PORTAL_LOGIN_LOGO_LIGHT_OFFSET_Y', '0') ?: '0',
+            'PORTAL_LOGIN_LOGO_DARK_OFFSET_X' => $this->config->get('PORTAL_LOGIN_LOGO_DARK_OFFSET_X', '0') ?: '0',
+            'PORTAL_LOGIN_LOGO_DARK_OFFSET_Y' => $this->config->get('PORTAL_LOGIN_LOGO_DARK_OFFSET_Y', '0') ?: '0',
+            'PORTAL_LOGIN_LOGO_FILTER' => $this->config->get('PORTAL_LOGIN_LOGO_FILTER', '0') === '1' ? '1' : '0',
         ];
 
         $notaDefaults = [
@@ -315,6 +324,8 @@ class ConfigController extends Controller
                 'THEME_LOGO_COMPACT_LIGHT' => 'logo_compact_light_file',
                 'THEME_LOGO_COMPACT_DARK' => 'logo_compact_dark_file',
                 'THEME_LOGO_FOOTER' => 'logo_footer_file',
+                'PORTAL_LOGIN_LOGO_LIGHT' => 'portal_login_logo_light_file',
+                'PORTAL_LOGIN_LOGO_DARK' => 'portal_login_logo_dark_file',
                 'NOTE_LOGO' => 'note_logo_file',
             ];
 
@@ -395,6 +406,7 @@ class ConfigController extends Controller
 
         $data['THEME_TITLE_COLORIZE'] = isset($data['THEME_TITLE_COLORIZE']) && $data['THEME_TITLE_COLORIZE'] === '1' ? '1' : '0';
         $data['THEME_LOGO_FILTER'] = isset($data['THEME_LOGO_FILTER']) && $data['THEME_LOGO_FILTER'] === '1' ? '1' : '0';
+        $data['PORTAL_LOGIN_LOGO_FILTER'] = isset($data['PORTAL_LOGIN_LOGO_FILTER']) && $data['PORTAL_LOGIN_LOGO_FILTER'] === '1' ? '1' : '0';
 
         if (isset($data['THEME_TITLE_SIZE'])) {
             $size = (int)$data['THEME_TITLE_SIZE'];
@@ -411,6 +423,8 @@ class ConfigController extends Controller
             'THEME_LOGO_DARK_SIZE' => ['min' => 24, 'max' => 140],
             'THEME_LOGO_COMPACT_LIGHT_SIZE' => ['min' => 16, 'max' => 120],
             'THEME_LOGO_COMPACT_DARK_SIZE' => ['min' => 16, 'max' => 120],
+            'PORTAL_LOGIN_LOGO_LIGHT_SIZE' => ['min' => 24, 'max' => 180],
+            'PORTAL_LOGIN_LOGO_DARK_SIZE' => ['min' => 24, 'max' => 180],
         ];
 
         foreach ($logoSizeKeys as $key => $bounds) {
@@ -431,6 +445,10 @@ class ConfigController extends Controller
             'THEME_LOGO_COMPACT_LIGHT_OFFSET_Y',
             'THEME_LOGO_COMPACT_DARK_OFFSET_X',
             'THEME_LOGO_COMPACT_DARK_OFFSET_Y',
+            'PORTAL_LOGIN_LOGO_LIGHT_OFFSET_X',
+            'PORTAL_LOGIN_LOGO_LIGHT_OFFSET_Y',
+            'PORTAL_LOGIN_LOGO_DARK_OFFSET_X',
+            'PORTAL_LOGIN_LOGO_DARK_OFFSET_Y',
         ];
 
         foreach ($logoOffsetKeys as $key) {
@@ -462,6 +480,8 @@ class ConfigController extends Controller
             'THEME_LOGO_COMPACT_LIGHT',
             'THEME_LOGO_COMPACT_DARK',
             'THEME_LOGO_FOOTER',
+            'PORTAL_LOGIN_LOGO_LIGHT',
+            'PORTAL_LOGIN_LOGO_DARK',
             'NOTE_LOGO',
         ];
 

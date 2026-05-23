@@ -76,6 +76,15 @@ abstract class Controller
             'logo_compact_light_offset_y' => '0',
             'logo_compact_dark_offset_x' => '0',
             'logo_compact_dark_offset_y' => '0',
+            'portal_login_logo_light' => 'uploads/branding/logodark.png',
+            'portal_login_logo_dark' => 'uploads/branding/logowhite.png',
+            'portal_login_logo_light_size' => '60',
+            'portal_login_logo_dark_size' => '60',
+            'portal_login_logo_light_offset_x' => '0',
+            'portal_login_logo_light_offset_y' => '0',
+            'portal_login_logo_dark_offset_x' => '0',
+            'portal_login_logo_dark_offset_y' => '0',
+            'portal_login_logo_filter' => '0',
         ];
         $quickActionDefaults = [
             [
@@ -159,10 +168,14 @@ abstract class Controller
             $theme['logo_compact_dark'] = $configService->get('THEME_LOGO_COMPACT_DARK', $compactFallback) ?: $compactFallback;
             $theme['logo_compact'] = $theme['logo_compact_light'];
             $theme['logo_footer'] = $configService->get('THEME_LOGO_FOOTER', $theme['logo_footer']) ?: $theme['logo_footer'];
+            $theme['portal_login_logo_light'] = $configService->get('PORTAL_LOGIN_LOGO_LIGHT', $theme['logo_light']) ?: $theme['logo_light'];
+            $theme['portal_login_logo_dark'] = $configService->get('PORTAL_LOGIN_LOGO_DARK', $theme['logo_dark']) ?: $theme['logo_dark'];
             $colorize = $configService->get('THEME_TITLE_COLORIZE', $theme['title_colorize']) ?: $theme['title_colorize'];
             $theme['title_colorize'] = $colorize === '1' ? '1' : '0';
             $logoFilter = $configService->get('THEME_LOGO_FILTER', $theme['logo_filter']) ?: $theme['logo_filter'];
             $theme['logo_filter'] = $logoFilter === '1' ? '1' : '0';
+            $portalLoginLogoFilter = $configService->get('PORTAL_LOGIN_LOGO_FILTER', $theme['portal_login_logo_filter']) ?: $theme['portal_login_logo_filter'];
+            $theme['portal_login_logo_filter'] = $portalLoginLogoFilter === '1' ? '1' : '0';
             $titleSize = $configService->get('THEME_TITLE_SIZE', $theme['title_size']) ?: $theme['title_size'];
             if (!is_numeric($titleSize)) {
                 $titleSize = $theme['title_size'];
@@ -187,6 +200,8 @@ abstract class Controller
                 'logo_dark_size' => ['key' => 'THEME_LOGO_DARK_SIZE', 'min' => 24, 'max' => 140],
                 'logo_compact_light_size' => ['key' => 'THEME_LOGO_COMPACT_LIGHT_SIZE', 'min' => 16, 'max' => 120],
                 'logo_compact_dark_size' => ['key' => 'THEME_LOGO_COMPACT_DARK_SIZE', 'min' => 16, 'max' => 120],
+                'portal_login_logo_light_size' => ['key' => 'PORTAL_LOGIN_LOGO_LIGHT_SIZE', 'min' => 24, 'max' => 180],
+                'portal_login_logo_dark_size' => ['key' => 'PORTAL_LOGIN_LOGO_DARK_SIZE', 'min' => 24, 'max' => 180],
             ];
 
             foreach ($sizeKeys as $themeKey => $settings) {
@@ -205,6 +220,10 @@ abstract class Controller
                 'logo_compact_light_offset_y' => 'THEME_LOGO_COMPACT_LIGHT_OFFSET_Y',
                 'logo_compact_dark_offset_x' => 'THEME_LOGO_COMPACT_DARK_OFFSET_X',
                 'logo_compact_dark_offset_y' => 'THEME_LOGO_COMPACT_DARK_OFFSET_Y',
+                'portal_login_logo_light_offset_x' => 'PORTAL_LOGIN_LOGO_LIGHT_OFFSET_X',
+                'portal_login_logo_light_offset_y' => 'PORTAL_LOGIN_LOGO_LIGHT_OFFSET_Y',
+                'portal_login_logo_dark_offset_x' => 'PORTAL_LOGIN_LOGO_DARK_OFFSET_X',
+                'portal_login_logo_dark_offset_y' => 'PORTAL_LOGIN_LOGO_DARK_OFFSET_Y',
             ];
 
             foreach ($offsetKeys as $themeKey => $configKey) {
