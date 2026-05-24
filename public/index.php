@@ -121,6 +121,8 @@ $router->add('POST', '/config/import/produtos', [ConfigDataController::class, 'i
 
 // API rotas JWT
 $router->add('POST', '/api/auth/token', [AuthApiController::class, 'token']);
+$router->add('GET', '/api/auth/cliente', [AuthApiController::class, 'cliente']);
+$router->add('PATCH', '/api/auth/cliente', [AuthApiController::class, 'updateCliente']);
 $router->add('GET', '/api/produtos', [ProdutosApiController::class, 'index']);
 $router->add('GET', '/api/pedidos', [PedidosApiController::class, 'index']);
 $router->add('POST', '/api/pedidos', [PedidosApiController::class, 'store']);

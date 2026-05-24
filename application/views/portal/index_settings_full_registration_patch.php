@@ -756,7 +756,7 @@ include __DIR__.'/index_settings_sections_patch.php';
         form.querySelector('#portal-full-cep')?.addEventListener('blur', fillFromCep);
         form.querySelector('#portal-full-estado')?.addEventListener('input', syncFlag);
         syncFlag();
-        form.addEventListener('submit', (event) => {
+        form.addEventListener('submit', async (event) => {
             event.preventDefault();
             const senha = value(form, '#portal-full-senha');
             const confirma = value(form, '#portal-full-confirma');
@@ -794,7 +794,30 @@ include __DIR__.'/index_settings_sections_patch.php';
             cliente.estado = value(form, '#portal-full-estado').toUpperCase();
             if (senha) cliente.senha_atualizada = true;
             writeCliente(cliente);
-            if (feedback) feedback.textContent = 'Cadastro atualizado.';
+            if (feedback) feedback.textContent = 'Salvando no banco de dados...';
+            try {
+                const token = localStorage.getItem('portal-token') || '';
+                if (token) {
+                    const response = await fetch(`${basePath}/api/auth/cliente`, {
+                        method: 'PATCH',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`,
+                        },
+                        body: JSON.stringify(cliente),
+                    });
+                    const json = await response.json().catch(() => ({}));
+                    if (!response.ok) throw new Error(json.message || 'NÃ£o foi possÃ­vel salvar no banco.');
+                    if (json.cliente) {
+                        writeCliente(json.cliente);
+                        applyPaletteForCurrentState();
+                    }
+                }
+                if (feedback) feedback.textContent = 'Cadastro atualizado.';
+            } catch (error) {
+                if (feedback) feedback.textContent = error.message || 'NÃ£o foi possÃ­vel salvar no banco.';
+                return;
+            }
             window.setTimeout(() => { if (feedback) feedback.textContent = ''; }, 3900);
         });
     };

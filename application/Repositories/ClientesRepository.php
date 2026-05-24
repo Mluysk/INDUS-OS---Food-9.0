@@ -4,6 +4,30 @@ namespace App\Repositories;
 class ClientesRepository extends BaseRepository
 {
     protected string $table = 'clientes';
+    private bool $portalCustomizationColumnsReady = false;
+
+    public function ensurePortalCustomizationColumns(): void
+    {
+        if ($this->portalCustomizationColumnsReady) {
+            return;
+        }
+
+        $columns = [
+            'portal_palette_hex' => "ALTER TABLE {$this->table} ADD COLUMN portal_palette_hex VARCHAR(7) NULL AFTER estado",
+            'portal_palette_name' => "ALTER TABLE {$this->table} ADD COLUMN portal_palette_name VARCHAR(80) NULL AFTER portal_palette_hex",
+            'portal_cart_hex' => "ALTER TABLE {$this->table} ADD COLUMN portal_cart_hex VARCHAR(7) NULL AFTER portal_palette_name",
+        ];
+
+        foreach ($columns as $column => $sql) {
+            $stmt = $this->db->prepare("SHOW COLUMNS FROM {$this->table} LIKE :column");
+            $stmt->execute(['column' => $column]);
+            if (!$stmt->fetch()) {
+                $this->db->exec($sql);
+            }
+        }
+
+        $this->portalCustomizationColumnsReady = true;
+    }
 
     public function findByDocumento(string $documento): ?array
     {
@@ -25,10 +49,17 @@ class ClientesRepository extends BaseRepository
 
     public function findByUsuarioId(int $usuarioId): ?array
     {
+        $this->ensurePortalCustomizationColumns();
         $stmt = $this->db->prepare("SELECT * FROM {$this->table} WHERE usuario_id = :usuario");
         $stmt->execute(['usuario' => $usuarioId]);
         $cliente = $stmt->fetch();
         return $cliente ?: null;
+    }
+
+    public function updatePortalProfile(int $id, array $data): bool
+    {
+        $this->ensurePortalCustomizationColumns();
+        return $this->update($id, $data);
     }
 
     public function findByEmail(string $email): ?array

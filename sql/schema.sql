@@ -34,6 +34,9 @@ CREATE TABLE IF NOT EXISTS clientes (
   bairro VARCHAR(120),
   cidade VARCHAR(120),
   estado VARCHAR(2),
+  portal_palette_hex VARCHAR(7),
+  portal_palette_name VARCHAR(80),
+  portal_cart_hex VARCHAR(7),
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
   CONSTRAINT fk_clientes_usuario FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

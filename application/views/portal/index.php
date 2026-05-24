@@ -3099,6 +3099,24 @@ $catalogoPayload = json_encode(array_map(static function ($produto) {
         }
     };
 
+    const refreshClienteFromApi = async () => {
+        if (!state.token) return null;
+        try {
+            const response = await fetch(`${basePath}/api/auth/cliente`, {
+                headers: { 'Authorization': `Bearer ${state.token}` },
+            });
+            const json = await response.json().catch(() => ({}));
+            if (!response.ok) throw new Error(json.message || 'NÃ£o foi possÃ­vel sincronizar o cliente.');
+            if (json.cliente) {
+                persistCliente(json.cliente);
+                return json.cliente;
+            }
+        } catch (error) {
+            // Mantem os dados locais quando estiver offline ou com token expirado.
+        }
+        return null;
+    };
+
     const aplicarCep = async (cep) => {
         if (!cepStatus) return;
         setFeedback(cepStatus, 'Consultando CEP…');
@@ -3168,10 +3186,11 @@ $catalogoPayload = json_encode(array_map(static function ($produto) {
         ordersRefreshButton.addEventListener('click', () => carregarPedidos(true));
     }
 
-    const atualizarTokenState = () => {
+    const atualizarTokenState = async () => {
         if (state.token) {
             loadStoredCliente();
-            enterApp(state.cliente || {}, { showWelcome: false });
+            const syncedCliente = await refreshClienteFromApi();
+            enterApp(syncedCliente || state.cliente || {}, { showWelcome: false });
         } else {
             leaveApp();
         }
