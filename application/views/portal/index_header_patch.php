@@ -140,15 +140,24 @@ include __DIR__.'/index_with_patch.php';
     }
 
     html body .portal-client-store {
-        color: var(--text, #0f172a);
+        color: var(--text, #0f172a) !important;
         font-size: 1.05rem;
         font-weight: 900;
     }
 
     html body .portal-client-branch {
-        color: var(--text-muted, #64748b);
+        color: var(--text-muted, #64748b) !important;
         font-size: 0.88rem;
         font-weight: 700;
+    }
+
+    html[data-theme="light"] body .topbar .portal-client-pill-main,
+    html[data-theme="light"] body .topbar .portal-client-pill-main .portal-client-store {
+        color: #0f172a !important;
+    }
+
+    html[data-theme="light"] body .topbar .portal-client-pill-main .portal-client-branch {
+        color: #64748b !important;
     }
 
     html body .topbar #portal-logout {
