@@ -513,6 +513,13 @@ include __DIR__.'/index_whatsapp_beside_contact_type_patch.php';
         box-shadow: 0 12px 24px -20px color-mix(in srgb, var(--primary, #2563eb) 55%, transparent) !important;
     }
 
+    html body .portal-app__header-links .portal-app__link.is-active,
+    html body .portal-app__header-links .portal-app__link[aria-current="page"] {
+        background: var(--primary, #2563eb) !important;
+        color: #ffffff !important;
+        box-shadow: 0 16px 30px -20px color-mix(in srgb, var(--primary, #2563eb) 72%, transparent) !important;
+    }
+
     html[data-theme="dark"] body .portal-product .badge {
         background: color-mix(in srgb, var(--primary, #3b82f6) 20%, rgba(15, 23, 42, 0.88)) !important;
         border-color: color-mix(in srgb, var(--primary, #3b82f6) 42%, transparent) !important;
@@ -561,5 +568,40 @@ include __DIR__.'/index_whatsapp_beside_contact_type_patch.php';
     });
     setTimeout(moveSettingsButton, 80);
     setTimeout(moveSettingsButton, 300);
+})();
+</script>
+<script>
+(function () {
+    const syncHeaderMenuState = () => {
+        const activeTab = document.querySelector('[data-portal-tab-trigger].is-active')?.dataset.portalTabTrigger || 'novo-pedido';
+        document.querySelectorAll('.portal-app__header-links [data-portal-jump]').forEach((button) => {
+            const isActive = button.dataset.portalJump === activeTab;
+            button.classList.toggle('is-active', isActive);
+            if (isActive) {
+                button.setAttribute('aria-current', 'page');
+            } else {
+                button.removeAttribute('aria-current');
+            }
+        });
+    };
+
+    const bindHeaderMenuState = () => {
+        document.querySelectorAll('[data-portal-tab-trigger], .portal-app__header-links [data-portal-jump]').forEach((button) => {
+            button.addEventListener('click', () => setTimeout(syncHeaderMenuState, 0));
+        });
+        syncHeaderMenuState();
+    };
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', bindHeaderMenuState, { once: true });
+    } else {
+        bindHeaderMenuState();
+    }
+    window.addEventListener('storage', (event) => {
+        if (event.key === 'portal-cliente') {
+            setTimeout(syncHeaderMenuState, 0);
+        }
+    });
+    setTimeout(syncHeaderMenuState, 120);
 })();
 </script>
