@@ -72,10 +72,10 @@ include __DIR__.'/index_whatsapp_beside_contact_type_patch.php';
         }
 
         html body .topbar [data-portal-settings].portal-mobile-settings-button {
-            width: 42px !important;
-            height: 42px !important;
-            min-width: 42px !important;
-            min-height: 42px !important;
+            width: 39.4px !important;
+            height: 39.4px !important;
+            min-width: 39.4px !important;
+            min-height: 39.4px !important;
             display: inline-grid !important;
             place-items: center !important;
             padding: 0 !important;
@@ -87,14 +87,14 @@ include __DIR__.'/index_whatsapp_beside_contact_type_patch.php';
         }
 
         html body .topbar [data-portal-settings].portal-mobile-settings-button .portal-app__link-icon {
-            width: 20px !important;
-            height: 20px !important;
+            width: 23px !important;
+            height: 23px !important;
             margin: 0 !important;
         }
 
         html body .topbar [data-portal-settings].portal-mobile-settings-button .portal-app__link-icon svg {
-            width: 20px !important;
-            height: 20px !important;
+            width: 23px !important;
+            height: 23px !important;
             color: var(--primary, #2563eb) !important;
             fill: none !important;
             stroke: currentColor !important;
