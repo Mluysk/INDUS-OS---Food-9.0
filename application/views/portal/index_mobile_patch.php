@@ -55,6 +55,13 @@ include __DIR__.'/index_whatsapp_beside_contact_type_patch.php';
             gap: 0.45rem !important;
         }
 
+        html body:not([data-portal-state="app"]) .topbar .portal-app__profile,
+        html body:not([data-portal-state="app"]) .topbar .portal-client-pill-main,
+        html body:not([data-portal-state="app"]) .topbar [data-portal-settings],
+        html body:not([data-portal-state="app"]) .topbar #portal-logout {
+            display: none !important;
+        }
+
         html body .topbar .portal-client-pill-main {
             display: inline-flex !important;
             max-width: min(calc(100vw - 8.5rem), 260px) !important;
