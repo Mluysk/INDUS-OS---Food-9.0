@@ -74,7 +74,7 @@ $loginUrl = htmlspecialchars($url('portal'), ENT_QUOTES, 'UTF-8');
                 <input type="text" id="registro-fantasia" name="nome_fantasia" placeholder="Como prefere ser chamado">
 
                 <div class="address-grid">
-                    <div class="field-group">
+                    <div class="field-group address-grid__cep">
                         <label for="registro-cep">CEP</label>
                         <input type="text" id="registro-cep" name="cep" placeholder="00000-000" maxlength="9" inputmode="numeric" required>
                     </div>
@@ -84,7 +84,7 @@ $loginUrl = htmlspecialchars($url('portal'), ENT_QUOTES, 'UTF-8');
                     </div>
                     <div class="field-group">
                         <label for="registro-numero">Número</label>
-                        <input type="text" id="registro-numero" name="numero" placeholder="123" required>
+                        <input type="text" id="registro-numero" name="numero" placeholder="123" maxlength="5" inputmode="numeric" required>
                     </div>
                     <div class="field-group">
                         <label for="registro-bairro">Bairro</label>
@@ -346,13 +346,22 @@ $loginUrl = htmlspecialchars($url('portal'), ENT_QUOTES, 'UTF-8');
 
     @media (min-width: 640px) {
         .address-grid {
-            grid-template-columns: repeat(2, minmax(0, 1fr));
+            grid-template-columns: minmax(128px, 0.58fr) minmax(0, 1.42fr);
         }
     }
 
     @media (min-width: 960px) {
         .address-grid {
-            grid-template-columns: repeat(3, minmax(0, 1fr));
+            grid-template-columns: minmax(132px, 0.58fr) minmax(0, 2.35fr) minmax(92px, 0.42fr);
+        }
+
+        .address-grid__cep,
+        .address-grid .field-group:has(#registro-cep) {
+            max-width: 11.5rem;
+        }
+
+        .address-grid .field-group:has(#registro-numero) {
+            max-width: 7.5rem;
         }
     }
 
