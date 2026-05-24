@@ -255,7 +255,7 @@ $loginUrl = htmlspecialchars($url('portal'), ENT_QUOTES, 'UTF-8');
     .auth-panel label {
         display: block;
         font-weight: 600;
-        margin-bottom: 0.3rem;
+        margin-bottom: 3px;
     }
 
     .auth-panel input {
@@ -479,7 +479,7 @@ $loginUrl = htmlspecialchars($url('portal'), ENT_QUOTES, 'UTF-8');
     }
 
     .auth-panel label {
-        margin: 0 0 0.42rem;
+        margin: 0 0 3px;
         color: var(--text, #111827);
         font-weight: 800;
     }

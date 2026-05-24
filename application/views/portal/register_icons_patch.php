@@ -6,8 +6,7 @@ include __DIR__.'/register_branch_patch.php';
         display: flex;
         align-items: center;
         gap: 0.42rem;
-        min-height: 24px;
-        margin: 0 0 0.48rem;
+        margin: 0 0 3px;
         line-height: 1.2;
     }
 
