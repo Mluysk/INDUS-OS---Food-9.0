@@ -172,7 +172,7 @@ include __DIR__.'/index_with_patch.php';
     }
 
     html[data-theme="dark"] body .topbar #portal-logout {
-        border-color: var(--bg, #0f172a) !important;
+        border-color: #ffffff !important;
     }
 
     html body .portal-app__header > .portal-app__profile {
