@@ -425,10 +425,20 @@ include __DIR__.'/index_settings_sections_patch.php';
         return match ? `#${match[1].toUpperCase()}` : '';
     };
 
+    const systemThemeHex = normalizeHex(<?= json_encode($theme['primary_hex'] ?? '#2563EB'); ?>) || '#2563EB';
+    const hasPortalSession = () => Boolean(localStorage.getItem('portal-token'));
+
     const portalPaletteState = () => {
         const cliente = readCliente();
         const storedHex = normalizeHex(localStorage.getItem('portal-primary-hex'));
-        const themeHex = <?= json_encode($theme['primary_hex'] ?? '#2563EB'); ?>;
+        const themeHex = systemThemeHex;
+        if (!hasPortalSession()) {
+            const systemMatch = portalPalette.find((item) => item.hex.toUpperCase() === themeHex.toUpperCase());
+            return {
+                hex: themeHex,
+                name: systemMatch?.name || 'Cor do sistema'
+            };
+        }
         const hex = normalizeHex(cliente.portal_palette_hex || storedHex || themeHex) || '#2563EB';
         const match = portalPalette.find((item) => item.hex.toUpperCase() === hex.toUpperCase());
         return {
@@ -453,13 +463,15 @@ include __DIR__.'/index_settings_sections_patch.php';
         if (picker) picker.value = normalized;
     };
 
-    const applyPortalPalette = (hex, name = 'Cor personalizada') => {
+    const applyPortalPalette = (hex, name = 'Cor personalizada', persist = true) => {
         const normalized = normalizeHex(hex) || '#2563EB';
         document.documentElement.style.setProperty('--primary', normalized);
         document.documentElement.style.setProperty('--portal-primary', normalized);
-        localStorage.setItem('portal-primary-hex', normalized);
-        localStorage.setItem('portal-primary-name', name || 'Cor personalizada');
-        if (!localStorage.getItem('portal-cart-hex')) {
+        if (persist) {
+            localStorage.setItem('portal-primary-hex', normalized);
+            localStorage.setItem('portal-primary-name', name || 'Cor personalizada');
+        }
+        if (persist && !localStorage.getItem('portal-cart-hex')) {
             applyPortalCartColor(normalized);
         }
         document.querySelectorAll('[data-portal-palette-choice]').forEach((item) => {
@@ -474,6 +486,17 @@ include __DIR__.'/index_settings_sections_patch.php';
         if (customHex) customHex.value = normalized;
         if (customPicker) customPicker.value = normalized;
         if (customName) customName.value = name || 'Cor personalizada';
+    };
+
+    const applyPaletteForCurrentState = () => {
+        const sessionActive = hasPortalSession();
+        const paletteState = portalPaletteState();
+        applyPortalPalette(paletteState.hex, paletteState.name, sessionActive);
+        if (sessionActive) {
+            applyPortalCartColor(portalCartColorState());
+        } else {
+            document.documentElement.style.setProperty('--portal-cart-color', paletteState.hex);
+        }
     };
 
     const first = (...values) => values.map((value) => String(value || '').trim()).find(Boolean) || '';
@@ -781,15 +804,11 @@ include __DIR__.'/index_settings_sections_patch.php';
         if (!panels) return;
         document.getElementById('portal-tab-configuracao')?.remove();
         panels.insertAdjacentHTML('beforeend', fullSettingsMarkup());
-        const paletteState = portalPaletteState();
-        applyPortalPalette(paletteState.hex, paletteState.name);
-        applyPortalCartColor(portalCartColorState());
+        applyPaletteForCurrentState();
         bindFullForm();
     };
 
-    const initialPalette = portalPaletteState();
-    applyPortalPalette(initialPalette.hex, initialPalette.name);
-    applyPortalCartColor(portalCartColorState());
+    applyPaletteForCurrentState();
 
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', () => { apply(); window.setTimeout(apply, 360); }, { once: true });
@@ -797,5 +816,11 @@ include __DIR__.'/index_settings_sections_patch.php';
         apply();
         window.setTimeout(apply, 360);
     }
+
+    window.addEventListener('storage', (event) => {
+        if (event.key === 'portal-cliente' || event.key === 'portal-token' || event.key === 'portal-primary-hex') {
+            applyPaletteForCurrentState();
+        }
+    });
 })();
 </script>

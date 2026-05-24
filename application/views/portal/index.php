@@ -2958,10 +2958,21 @@ $catalogoPayload = json_encode(array_map(static function ($produto) {
         });
     };
 
+    const notifyPortalStorage = (key) => {
+        try {
+            window.dispatchEvent(new StorageEvent('storage', { key }));
+        } catch (error) {
+            const event = new Event('storage');
+            event.key = key;
+            window.dispatchEvent(event);
+        }
+    };
+
     const persistCliente = (cliente) => {
         if (!cliente) {
             localStorage.removeItem('portal-cliente');
             state.cliente = null;
+            notifyPortalStorage('portal-cliente');
             return;
         }
         try {
@@ -2970,6 +2981,7 @@ $catalogoPayload = json_encode(array_map(static function ($produto) {
             // ignore storage failures
         }
         state.cliente = cliente;
+        notifyPortalStorage('portal-cliente');
     };
 
     const enterApp = (cliente, options = {}) => {
@@ -2997,6 +3009,7 @@ $catalogoPayload = json_encode(array_map(static function ($produto) {
         state.token = '';
         persistCliente(null);
         localStorage.removeItem('portal-token');
+        notifyPortalStorage('portal-token');
         setPortalState('auth', 'novo-pedido');
         setAuthMode('login');
         renderListaProdutos();
@@ -3128,6 +3141,7 @@ $catalogoPayload = json_encode(array_map(static function ($produto) {
                 }
                 state.token = json.access_token;
                 localStorage.setItem('portal-token', state.token);
+                notifyPortalStorage('portal-token');
                 persistCliente(json.cliente || null);
                 setFeedback(loginFeedback, 'Autenticação concluída! Bem-vindo.', 'success');
                 enterApp(json.cliente || null, { showWelcome: true, preferredTab: 'novo-pedido' });

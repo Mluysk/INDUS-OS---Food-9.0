@@ -15,6 +15,7 @@ $asset = static function (string $path) use ($basePath): string {
 };
 $footerLogoPath = $theme['logo_footer'] ?? 'img/rodape/logo.png';
 $footerLogo = htmlspecialchars($asset($footerLogoPath), ENT_QUOTES, 'UTF-8');
+$portalPrimaryHex = htmlspecialchars($theme['primary_hex'] ?? '#2563EB', ENT_QUOTES, 'UTF-8');
 $currentYear = date('Y');
 ?>
 <!DOCTYPE html>
@@ -27,8 +28,8 @@ $currentYear = date('Y');
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        :root { color-scheme: light dark; font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; --bg: #f5f5f5; --text: #1f2933; --muted: #52606d; --primary: #2563eb; --primary-contrast: #fff; --card: #ffffffd9; --border: rgba(15,23,42,0.08); }
-        [data-theme="dark"] { --bg: #0f172a; --text: #e2e8f0; --muted: #94a3b8; --primary: #3b82f6; --card: rgba(15,23,42,0.8); --border: rgba(148,163,184,0.16); }
+        :root { color-scheme: light dark; font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; --bg: #f5f5f5; --text: #1f2933; --muted: #52606d; --primary: <?= $portalPrimaryHex; ?>; --portal-system-primary: <?= $portalPrimaryHex; ?>; --primary-contrast: #fff; --card: #ffffffd9; --border: rgba(15,23,42,0.08); }
+        [data-theme="dark"] { --bg: #0f172a; --text: #e2e8f0; --muted: #94a3b8; --primary: var(--portal-system-primary, <?= $portalPrimaryHex; ?>); --card: rgba(15,23,42,0.8); --border: rgba(148,163,184,0.16); }
         body { margin: 0; background: var(--bg); color: var(--text); }
         *, *::before, *::after { box-sizing: border-box; }
         img, video { max-width: 100%; height: auto; }
