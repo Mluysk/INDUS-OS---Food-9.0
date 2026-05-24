@@ -605,9 +605,9 @@ if ($supportWhatsapp !== '') {
     }
 
     .portal-auth-title__icon {
-        width: 56px;
-        height: 56px;
-        flex: 0 0 56px;
+        width: 62px;
+        height: 62px;
+        flex: 0 0 62px;
         display: inline-grid;
         place-items: center;
         border-radius: 14px;
@@ -618,8 +618,8 @@ if ($supportWhatsapp !== '') {
     }
 
     .portal-auth-title__icon svg {
-        width: 38px;
-        height: 38px;
+        width: 44px;
+        height: 44px;
     }
 
     [data-theme="dark"] .portal-auth-title__icon {
@@ -1663,15 +1663,15 @@ if ($supportWhatsapp !== '') {
         }
 
         .portal-auth-title__icon {
-            width: 52px;
-            height: 52px;
-            flex-basis: 52px;
+            width: 58px;
+            height: 58px;
+            flex-basis: 58px;
             border-radius: 13px;
         }
 
         .portal-auth-title__icon svg {
-            width: 35px;
-            height: 35px;
+            width: 41px;
+            height: 41px;
         }
 
         .auth-panel {
