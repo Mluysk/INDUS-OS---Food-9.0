@@ -16,11 +16,11 @@ include __DIR__.'/index_whatsapp_beside_contact_type_patch.php';
         }
 
         html body .portal-theme-button {
-            transform: translateY(-3px) !important;
+            transform: translateY(0) !important;
         }
 
         html body .portal-theme-button:hover {
-            transform: translateY(-4px) !important;
+            transform: translateY(-1px) !important;
         }
 
         html body .topbar {
@@ -96,8 +96,11 @@ include __DIR__.'/index_whatsapp_beside_contact_type_patch.php';
             width: 20px !important;
             height: 20px !important;
             color: var(--primary, #2563eb) !important;
-            fill: currentColor !important;
-            stroke: none !important;
+            fill: none !important;
+            stroke: currentColor !important;
+            stroke-width: 1.85 !important;
+            stroke-linecap: round !important;
+            stroke-linejoin: round !important;
         }
 
         html[data-theme="dark"] body .topbar [data-portal-settings].portal-mobile-settings-button {
