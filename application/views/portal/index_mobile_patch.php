@@ -493,8 +493,8 @@ include __DIR__.'/index_whatsapp_beside_contact_type_patch.php';
         }
 
         html body .portal-floating-support svg {
-            width: 40px !important;
-            height: 40px !important;
+            width: 46px !important;
+            height: 46px !important;
         }
 
         html body .portal-modal {
@@ -550,8 +550,6 @@ include __DIR__.'/index_whatsapp_beside_contact_type_patch.php';
     html body .portal-app__header-links .portal-app__link.is-active .portal-app__link-icon svg,
     html body .portal-app__header-links .portal-app__link[aria-current="page"] .portal-app__link-icon svg {
         color: #ffffff !important;
-        fill: currentColor !important;
-        stroke: currentColor !important;
     }
 
     html[data-theme="dark"] body .portal-product .badge {
@@ -623,6 +621,11 @@ include __DIR__.'/index_whatsapp_beside_contact_type_patch.php';
         if (settingsButton) {
             settingsButton.classList.toggle('is-active', settingsOpen);
             settingsButton.setAttribute('aria-pressed', settingsOpen ? 'true' : 'false');
+            if (settingsOpen) {
+                settingsButton.setAttribute('aria-current', 'page');
+            } else if (!settingsButton.dataset.portalJump) {
+                settingsButton.removeAttribute('aria-current');
+            }
         }
     };
 
