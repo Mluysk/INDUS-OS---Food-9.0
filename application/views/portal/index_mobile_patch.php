@@ -520,6 +520,15 @@ include __DIR__.'/index_whatsapp_beside_contact_type_patch.php';
         box-shadow: 0 16px 30px -20px color-mix(in srgb, var(--primary, #2563eb) 72%, transparent) !important;
     }
 
+    html body .portal-app__header-links .portal-app__link.is-active .portal-app__link-icon,
+    html body .portal-app__header-links .portal-app__link[aria-current="page"] .portal-app__link-icon,
+    html body .portal-app__header-links .portal-app__link.is-active .portal-app__link-icon svg,
+    html body .portal-app__header-links .portal-app__link[aria-current="page"] .portal-app__link-icon svg {
+        color: #ffffff !important;
+        fill: currentColor !important;
+        stroke: currentColor !important;
+    }
+
     html[data-theme="dark"] body .portal-product .badge {
         background: color-mix(in srgb, var(--primary, #3b82f6) 20%, rgba(15, 23, 42, 0.88)) !important;
         border-color: color-mix(in srgb, var(--primary, #3b82f6) 42%, transparent) !important;
