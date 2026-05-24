@@ -72,10 +72,10 @@ include __DIR__.'/index_whatsapp_beside_contact_type_patch.php';
         }
 
         html body .topbar [data-portal-settings].portal-mobile-settings-button {
-            width: 40px !important;
-            height: 40px !important;
-            min-width: 40px !important;
-            min-height: 40px !important;
+            width: 42px !important;
+            height: 42px !important;
+            min-width: 42px !important;
+            min-height: 42px !important;
             display: inline-grid !important;
             place-items: center !important;
             padding: 0 !important;
@@ -592,12 +592,23 @@ include __DIR__.'/index_whatsapp_beside_contact_type_patch.php';
                 button.removeAttribute('aria-current');
             }
         });
+        const settingsButton = document.querySelector('[data-portal-settings]');
+        const settingsModal = document.getElementById('portal-settings-modal');
+        const settingsOpen = Boolean(settingsModal && !settingsModal.hidden && settingsModal.getAttribute('aria-hidden') !== 'true');
+        if (settingsButton) {
+            settingsButton.classList.toggle('is-active', settingsOpen);
+            settingsButton.setAttribute('aria-pressed', settingsOpen ? 'true' : 'false');
+        }
     };
 
     const bindHeaderMenuState = () => {
-        document.querySelectorAll('[data-portal-tab-trigger], .portal-app__header-links [data-portal-jump]').forEach((button) => {
+        document.querySelectorAll('[data-portal-tab-trigger], .portal-app__header-links [data-portal-jump], [data-portal-settings], [data-portal-settings-close]').forEach((button) => {
             button.addEventListener('click', () => setTimeout(syncHeaderMenuState, 0));
         });
+        const settingsModal = document.getElementById('portal-settings-modal');
+        if (settingsModal) {
+            new MutationObserver(syncHeaderMenuState).observe(settingsModal, { attributes: true, attributeFilter: ['hidden', 'aria-hidden'] });
+        }
         syncHeaderMenuState();
     };
 
