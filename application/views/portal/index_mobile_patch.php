@@ -80,9 +80,9 @@ include __DIR__.'/index_whatsapp_beside_contact_type_patch.php';
             place-items: center !important;
             padding: 0 !important;
             border-radius: 999px !important;
-            border: 2px solid #ffffff !important;
-            background: var(--primary, #2563eb) !important;
-            color: #ffffff !important;
+            border: 1px solid color-mix(in srgb, var(--primary, #2563eb) 22%, transparent) !important;
+            background: color-mix(in srgb, var(--primary, #2563eb) 12%, #ffffff) !important;
+            color: var(--primary, #2563eb) !important;
             box-shadow: 0 14px 26px -24px color-mix(in srgb, var(--primary, #2563eb) 80%, #0f172a) !important;
         }
 
@@ -95,9 +95,19 @@ include __DIR__.'/index_whatsapp_beside_contact_type_patch.php';
         html body .topbar [data-portal-settings].portal-mobile-settings-button .portal-app__link-icon svg {
             width: 20px !important;
             height: 20px !important;
-            color: #ffffff !important;
+            color: var(--primary, #2563eb) !important;
             fill: currentColor !important;
             stroke: none !important;
+        }
+
+        html[data-theme="dark"] body .topbar [data-portal-settings].portal-mobile-settings-button {
+            background: color-mix(in srgb, var(--primary, #3b82f6) 20%, rgba(15, 23, 42, 0.9)) !important;
+            border-color: color-mix(in srgb, var(--primary, #3b82f6) 38%, transparent) !important;
+            color: color-mix(in srgb, var(--primary, #3b82f6) 80%, #ffffff) !important;
+        }
+
+        html[data-theme="dark"] body .topbar [data-portal-settings].portal-mobile-settings-button .portal-app__link-icon svg {
+            color: color-mix(in srgb, var(--primary, #3b82f6) 80%, #ffffff) !important;
         }
 
         html body .topbar [data-portal-settings].portal-mobile-settings-button .portal-app__link-text {
