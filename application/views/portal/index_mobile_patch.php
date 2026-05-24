@@ -28,31 +28,35 @@ include __DIR__.'/index_whatsapp_beside_contact_type_patch.php';
             white-space: nowrap;
         }
 
-        html body .topbar #portal-logout {
-            display: none !important;
-        }
-
         html body .topbar .portal-top-actions {
-            width: 100% !important;
-            margin-left: 0 !important;
-            display: flex !important;
-            flex-direction: column !important;
+            width: auto !important;
+            margin-left: auto !important;
+            display: inline-flex !important;
+            flex-direction: row !important;
             align-items: center !important;
-            justify-content: center !important;
-            gap: 0.55rem !important;
+            justify-content: flex-end !important;
+            flex-wrap: wrap !important;
+            gap: 0.5rem !important;
         }
 
         html body .topbar .portal-app__profile.is-visible {
-            width: 100% !important;
+            width: auto !important;
             display: inline-flex !important;
-            justify-content: center !important;
+            justify-content: flex-end !important;
             align-items: center !important;
+            gap: 0.45rem !important;
         }
 
         html body .topbar .portal-client-pill-main {
             display: inline-flex !important;
-            max-width: min(calc(100vw - 1.5rem), 340px) !important;
-            margin: 0 auto !important;
+            max-width: min(calc(100vw - 8.5rem), 260px) !important;
+            margin: 0 !important;
+        }
+
+        html body .topbar #portal-logout {
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
         }
 
         html body .portal-hero {
