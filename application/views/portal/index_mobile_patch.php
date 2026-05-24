@@ -27,6 +27,12 @@ include __DIR__.'/index_whatsapp_beside_contact_type_patch.php';
             white-space: nowrap;
         }
 
+        html body .topbar .portal-app__profile,
+        html body .topbar .portal-client-pill-main,
+        html body .topbar #portal-logout {
+            display: none !important;
+        }
+
         html body .portal-hero {
             padding: 1rem 0.8rem 2rem !important;
         }
