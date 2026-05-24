@@ -18,6 +18,7 @@ include __DIR__.'/index_whatsapp_beside_contact_type_patch.php';
         html body .topbar {
             gap: 0.75rem !important;
             padding: 0.85rem 0.95rem !important;
+            flex-wrap: wrap !important;
         }
 
         html body .topbar > div {
@@ -27,10 +28,31 @@ include __DIR__.'/index_whatsapp_beside_contact_type_patch.php';
             white-space: nowrap;
         }
 
-        html body .topbar .portal-app__profile,
-        html body .topbar .portal-client-pill-main,
         html body .topbar #portal-logout {
             display: none !important;
+        }
+
+        html body .topbar .portal-top-actions {
+            width: 100% !important;
+            margin-left: 0 !important;
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: center !important;
+            justify-content: center !important;
+            gap: 0.55rem !important;
+        }
+
+        html body .topbar .portal-app__profile.is-visible {
+            width: 100% !important;
+            display: inline-flex !important;
+            justify-content: center !important;
+            align-items: center !important;
+        }
+
+        html body .topbar .portal-client-pill-main {
+            display: inline-flex !important;
+            max-width: min(calc(100vw - 1.5rem), 340px) !important;
+            margin: 0 auto !important;
         }
 
         html body .portal-hero {
