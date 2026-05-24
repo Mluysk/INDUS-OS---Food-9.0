@@ -1504,14 +1504,39 @@ $brandTitleOffsetY = (int)($theme['title_offset_y'] ?? 0);
                 gap: 10px;
                 margin-bottom: 10px;
                 text-align: center;
+                width: 100%;
             }
             .brand-identity {
                 gap: 6px;
                 align-items: center;
                 justify-content: center;
+                width: 100%;
+                text-align: center;
             }
             .brand-logos {
                 justify-content: center;
+                width: 100%;
+                text-align: center;
+            }
+            .brand-logo-img[data-logo-variant="light"] {
+                margin-inline: auto;
+                transform: translate(0, var(--logo-light-y, 0px)) !important;
+            }
+            .brand-logo-img[data-logo-variant="dark"] {
+                margin-inline: auto;
+                transform: translate(0, var(--logo-dark-y, 0px)) !important;
+            }
+            .brand-title {
+                display: flex !important;
+                justify-content: center;
+                width: 100%;
+                text-align: center;
+                transform: translate(0, var(--brand-title-y, 0px)) !important;
+            }
+            .brand-tagline {
+                display: block;
+                width: 100%;
+                text-align: center;
             }
             .sidebar-body {
                 margin-top: 8px;
