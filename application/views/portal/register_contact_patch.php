@@ -22,55 +22,55 @@ include __DIR__.'/register_icons_patch.php';
     html body .portal-contact-type {
         display: flex;
         align-items: center;
-        gap: 0.55rem;
+        gap: 0.42rem;
         flex-wrap: wrap;
-        margin: 0.55rem 0 1.05rem;
-        padding: 0.72rem;
-        border: 1px solid color-mix(in srgb, var(--primary, #dc2626) 14%, var(--portal-card-border, rgba(15, 23, 42, 0.08)));
-        border-radius: 18px;
-        background: linear-gradient(135deg, color-mix(in srgb, var(--primary, #dc2626) 8%, #ffffff), rgba(255, 255, 255, 0.82));
-        box-shadow: 0 16px 34px -30px rgba(15, 23, 42, 0.55);
+        margin: 0.36rem 0 0.78rem;
+        padding: 0.38rem 0.44rem;
+        border: 1px solid color-mix(in srgb, var(--primary, #dc2626) 10%, var(--portal-card-border, rgba(15, 23, 42, 0.08)));
+        border-radius: 14px;
+        background: color-mix(in srgb, var(--primary, #dc2626) 4%, #ffffff);
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.65);
         color: var(--portal-muted, rgba(71, 85, 105, 0.82));
         font-weight: 750;
     }
 
     [data-theme="dark"] html body .portal-contact-type {
-        background: linear-gradient(135deg, color-mix(in srgb, var(--primary, #dc2626) 14%, rgba(15, 23, 42, 0.92)), rgba(15, 23, 42, 0.7));
-        border-color: color-mix(in srgb, var(--primary, #dc2626) 24%, rgba(148, 163, 184, 0.16));
+        background: color-mix(in srgb, var(--primary, #dc2626) 10%, rgba(15, 23, 42, 0.86));
+        border-color: color-mix(in srgb, var(--primary, #dc2626) 18%, rgba(148, 163, 184, 0.16));
     }
 
     html body .portal-contact-type__title {
         display: inline-flex;
         align-items: center;
         gap: 0.35rem;
-        min-height: 38px;
-        padding: 0 0.55rem;
+        min-height: 30px;
+        padding: 0 0.46rem;
         color: var(--text, #111827);
-        font-size: 0.88rem;
+        font-size: 0.8rem;
         letter-spacing: 0.04em;
         text-transform: uppercase;
     }
 
     html body .portal-contact-type__title .portal-form-icon {
-        width: 17px;
-        height: 17px;
+        width: 16px;
+        height: 16px;
         color: var(--text-muted, #64748b);
     }
 
     html body .portal-contact-type label {
         display: inline-flex;
         align-items: center;
-        gap: 0.48rem;
-        min-height: 38px;
+        gap: 0.38rem;
+        min-height: 30px;
         margin: 0;
-        padding: 0.45rem 0.82rem;
-        border: 1px solid color-mix(in srgb, var(--primary, #dc2626) 12%, rgba(148, 163, 184, 0.28));
+        padding: 0.32rem 0.62rem;
+        border: 1px solid color-mix(in srgb, var(--primary, #dc2626) 10%, rgba(148, 163, 184, 0.26));
         border-radius: 999px;
-        background: rgba(255, 255, 255, 0.88);
+        background: rgba(255, 255, 255, 0.76);
         color: var(--text, #111827);
         cursor: pointer;
-        font-size: 0.92rem;
-        box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.65);
+        font-size: 0.84rem;
+        box-shadow: none;
         transition: background 0.18s ease, border-color 0.18s ease, color 0.18s ease, transform 0.18s ease;
     }
 
@@ -80,10 +80,10 @@ include __DIR__.'/register_icons_patch.php';
     }
 
     html body .portal-contact-type label:has(input[type="radio"]:checked) {
-        border-color: color-mix(in srgb, var(--primary, #dc2626) 56%, transparent);
-        background: linear-gradient(135deg, var(--primary, #dc2626), color-mix(in srgb, var(--primary, #dc2626) 74%, #ffffff));
+        border-color: color-mix(in srgb, var(--primary, #dc2626) 42%, transparent);
+        background: var(--primary, #dc2626);
         color: #fff;
-        box-shadow: var(--primary-shadow, 0 14px 28px -20px rgba(220, 38, 38, 0.7));
+        box-shadow: 0 10px 22px -18px color-mix(in srgb, var(--primary, #dc2626) 76%, transparent);
     }
 
     html body .portal-contact-type label:hover {
@@ -91,8 +91,8 @@ include __DIR__.'/register_icons_patch.php';
     }
 
     html body .portal-contact-type input[type="radio"] {
-        width: 15px;
-        height: 15px;
+        width: 13px;
+        height: 13px;
         accent-color: var(--primary, #dc2626);
     }
 
