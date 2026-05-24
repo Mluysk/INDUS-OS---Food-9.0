@@ -207,9 +207,34 @@ include __DIR__.'/index_whatsapp_beside_contact_type_patch.php';
         }
 
         html body .portal-app__welcome h2[data-cliente-nome] {
+            display: grid !important;
+            grid-template-columns: 1fr !important;
+            justify-items: center !important;
+            text-align: center !important;
             font-size: clamp(1.55rem, 8vw, 2.2rem) !important;
             line-height: 1.08 !important;
+            gap: 0.48rem !important;
             overflow-wrap: anywhere;
+        }
+
+        html body .portal-app__welcome h2[data-cliente-nome] .portal-greeting-head {
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            gap: 0.56rem !important;
+            width: 100% !important;
+        }
+
+        html body .portal-app__welcome h2[data-cliente-nome] .portal-greeting-store-name {
+            display: block !important;
+            max-width: 100% !important;
+            white-space: normal !important;
+            text-align: center !important;
+        }
+
+        html body .portal-app__welcome h2[data-cliente-nome] .portal-greeting-pill {
+            justify-self: center !important;
+            max-width: min(100%, 320px) !important;
         }
 
         html body .portal-app__subtitle {

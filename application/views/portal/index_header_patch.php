@@ -22,11 +22,16 @@ include __DIR__.'/index_with_patch.php';
         border-radius: 24px !important;
     }
 
+    html body .portal-greeting-head,
     html body .portal-greeting-label,
     html body .portal-greeting-store-name {
         display: inline-flex;
         align-items: center;
         white-space: nowrap;
+    }
+
+    html body .portal-greeting-head {
+        gap: 0.78rem;
     }
 
     html body .portal-greeting-store-name {
@@ -291,7 +296,7 @@ include __DIR__.'/index_with_patch.php';
             : '';
         title.dataset.portalGreetingLock = '1';
         title.dataset.portalGreetingManaged = '1';
-        title.innerHTML = `${icon}<span class="portal-greeting-label">${greetingLabel()},</span><span class="portal-greeting-store-name">${escapeHtml(storeName)}</span>${branchPill}`;
+        title.innerHTML = `<span class="portal-greeting-head">${icon}<span class="portal-greeting-label">${greetingLabel()},</span></span><span class="portal-greeting-store-name">${escapeHtml(storeName)}</span>${branchPill}`;
         window.setTimeout(() => { title.dataset.portalGreetingLock = '0'; }, 0);
     };
 
