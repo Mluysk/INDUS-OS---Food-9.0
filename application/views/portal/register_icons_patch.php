@@ -19,7 +19,7 @@ include __DIR__.'/register_branch_patch.php';
         width: 18px;
         height: 18px;
         flex: 0 0 18px;
-        color: var(--text-muted, #64748b);
+        color: var(--primary, #dc2626);
         stroke-width: 1.9;
     }
 

@@ -27,6 +27,17 @@ $loginUrl = htmlspecialchars($url('portal'), ENT_QUOTES, 'UTF-8');
         <div class="portal-auth-card" data-auth-card>
             <form id="portal-register-form" class="auth-panel auth-panel--register" method="post" action="<?= $actionUrl; ?>" novalidate>
                 <div class="auth-panel__header">
+                    <h2 class="portal-auth-title">
+                        <span class="portal-auth-title__icon" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M16 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="9.5" cy="7" r="4"></circle>
+                                <path d="M19 8v6"></path>
+                                <path d="M22 11h-6"></path>
+                            </svg>
+                        </span>
+                        <span>Crie sua conta</span>
+                    </h2>
                     <h2>Dados do responsável</h2>
                     <p class="auth-panel__subtitle">Informe seus dados de contato para ativarmos o portal.</p>
                 </div>
@@ -426,6 +437,168 @@ $loginUrl = htmlspecialchars($url('portal'), ENT_QUOTES, 'UTF-8');
 
     .cep-feedback[data-state="success"] {
         color: #15803d;
+    }
+
+    .auth-panel__header > h2:not(.portal-auth-title) {
+        display: none;
+    }
+
+    .portal-hero--register {
+        background: radial-gradient(120% 120% at 10% 0%, color-mix(in srgb, var(--primary, #2563eb) 14%, transparent), rgba(15, 23, 42, 0));
+    }
+
+    [data-theme="dark"] .portal-hero--register {
+        background: radial-gradient(120% 120% at 10% 0%, color-mix(in srgb, var(--primary, #2563eb) 22%, transparent), rgba(15, 23, 42, 0));
+    }
+
+    .portal-brand-card__tag {
+        background: color-mix(in srgb, var(--primary, #2563eb) 12%, transparent);
+        color: color-mix(in srgb, var(--primary, #2563eb) 82%, var(--text, #0f172a));
+    }
+
+    [data-theme="dark"] .portal-brand-card__tag {
+        background: color-mix(in srgb, var(--primary, #2563eb) 22%, transparent);
+        color: color-mix(in srgb, var(--primary, #2563eb) 70%, #ffffff);
+    }
+
+    .portal-auth-card {
+        border-radius: 28px;
+        padding: clamp(1.65rem, 3vw, 2.5rem);
+        box-shadow: 0 30px 70px -44px rgba(15, 23, 42, 0.58);
+    }
+
+    .auth-panel--register {
+        display: grid;
+        gap: 1.05rem;
+    }
+
+    .auth-panel label {
+        margin: 0 0 0.42rem;
+        color: var(--text, #111827);
+        font-weight: 800;
+    }
+
+    .auth-panel input {
+        width: 100%;
+        min-height: 52px;
+        border-radius: 16px;
+        border-color: color-mix(in srgb, var(--primary, #2563eb) 16%, rgba(148, 163, 184, 0.42));
+        padding: 0.82rem 1rem;
+        font-weight: 700;
+        box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.04);
+        transition: border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
+    }
+
+    .auth-panel input:focus {
+        outline: none;
+        border-color: var(--primary, #2563eb);
+        box-shadow: 0 0 0 4px color-mix(in srgb, var(--primary, #2563eb) 14%, transparent);
+        transform: translateY(-1px);
+    }
+
+    .portal-auth-title {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .portal-auth-title__icon {
+        width: 62px;
+        height: 62px;
+        flex: 0 0 62px;
+        display: inline-grid;
+        place-items: center;
+        border-radius: 14px;
+        color: var(--primary, #2563eb);
+        background: color-mix(in srgb, var(--primary, #2563eb) 13%, #ffffff);
+        border: 1px solid color-mix(in srgb, var(--primary, #2563eb) 18%, transparent);
+        box-shadow: 0 16px 30px -24px color-mix(in srgb, var(--primary, #2563eb) 70%, transparent);
+    }
+
+    .portal-auth-title__icon svg {
+        width: 44px;
+        height: 44px;
+    }
+
+    [data-theme="dark"] .portal-auth-title__icon {
+        color: color-mix(in srgb, var(--primary, #2563eb) 72%, #ffffff);
+        background: color-mix(in srgb, var(--primary, #2563eb) 20%, rgba(15, 23, 42, 0.9));
+        border-color: color-mix(in srgb, var(--primary, #2563eb) 28%, rgba(255, 255, 255, 0.14));
+    }
+
+    .auth-panel__header h2 {
+        font-size: clamp(1.75rem, 3vw, 2.25rem);
+        line-height: 1.05;
+        letter-spacing: 0;
+    }
+
+    .auth-panel__subtitle {
+        margin: 0.55rem 0 1.35rem;
+        font-size: 1rem;
+        line-height: 1.42;
+    }
+
+    .document-toggle {
+        margin: 0.35rem 0;
+        padding: 0.9rem 1rem;
+        border: 1px solid color-mix(in srgb, var(--primary, #2563eb) 12%, var(--portal-card-border));
+        border-radius: 18px;
+        background: color-mix(in srgb, var(--primary, #2563eb) 6%, transparent);
+    }
+
+    .document-toggle__buttons {
+        background: color-mix(in srgb, var(--primary, #2563eb) 9%, rgba(148, 163, 184, 0.1));
+    }
+
+    .document-toggle__btn.active {
+        background: linear-gradient(135deg, color-mix(in srgb, var(--primary, #2563eb) 18%, #ffffff), var(--primary, #2563eb));
+        color: #fff;
+    }
+
+    [data-theme="dark"] .document-toggle__btn.active {
+        background: linear-gradient(135deg, color-mix(in srgb, var(--primary, #2563eb) 36%, rgba(15, 23, 42, 0.8)), var(--primary, #2563eb));
+        color: #fff;
+    }
+
+    .document-fields,
+    .address-grid,
+    .field-grid {
+        gap: 1.15rem;
+    }
+
+    .portal-btn {
+        border-radius: 16px;
+        padding: 0.95rem 1.35rem;
+        font-weight: 850;
+    }
+
+    .portal-btn--primary {
+        background: linear-gradient(135deg, var(--primary, #2563eb), color-mix(in srgb, var(--primary, #2563eb) 78%, #ffffff));
+        box-shadow: var(--primary-shadow, 0 16px 32px -20px rgba(37, 99, 235, 0.7));
+    }
+
+    .portal-btn--ghost {
+        background: color-mix(in srgb, var(--primary, #2563eb) 7%, transparent);
+        color: color-mix(in srgb, var(--primary, #2563eb) 84%, var(--text, #0f172a));
+        border-color: color-mix(in srgb, var(--primary, #2563eb) 26%, transparent);
+    }
+
+    @media (max-width: 720px) {
+        .portal-auth-title {
+            gap: 0.6rem;
+        }
+
+        .portal-auth-title__icon {
+            width: 58px;
+            height: 58px;
+            flex-basis: 58px;
+            border-radius: 13px;
+        }
+
+        .portal-auth-title__icon svg {
+            width: 41px;
+            height: 41px;
+        }
     }
 </style>
 
