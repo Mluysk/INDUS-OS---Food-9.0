@@ -708,13 +708,13 @@ $brandTitleOffsetY = (int)($theme['title_offset_y'] ?? 0);
             box-shadow: 0 12px 30px -18px rgba(15, 23, 42, 0.35);
             position: fixed;
             top: 60px;
-            left: calc(var(--sidebar-width) - 33px);
+            left: calc(var(--sidebar-width) - 29px);
             z-index: 999;
             width: 40px;
             height: 40px;
         }
         .sidebar.collapsed .collapse-toggle {
-            left: calc(var(--sidebar-width-collapsed) - 33px);
+            left: calc(var(--sidebar-width-collapsed) - 29px);
             top: 60px;
         }
         .collapse-toggle:hover {
@@ -723,11 +723,6 @@ $brandTitleOffsetY = (int)($theme['title_offset_y'] ?? 0);
         .collapse-toggle .icon {
             width: 22px;
             height: 22px;
-        }
-        @media (min-width: 901px) {
-            .collapse-toggle .icon {
-                transform: translateX(4px);
-            }
         }
         .mobile-menu-toggle,
         .sidebar-backdrop {
