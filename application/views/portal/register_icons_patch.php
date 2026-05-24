@@ -5,7 +5,10 @@ include __DIR__.'/register_branch_patch.php';
     html body .auth-panel label.portal-icon-label {
         display: flex;
         align-items: center;
-        gap: 0.38rem;
+        gap: 0.42rem;
+        min-height: 24px;
+        margin: 0 0 0.48rem;
+        line-height: 1.2;
     }
 
     html body .document-toggle > span.portal-icon-label,
@@ -19,6 +22,7 @@ include __DIR__.'/register_branch_patch.php';
         width: 18px;
         height: 18px;
         flex: 0 0 18px;
+        align-self: center;
         color: var(--primary, #dc2626);
         stroke-width: 1.9;
     }
