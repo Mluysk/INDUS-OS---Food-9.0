@@ -526,8 +526,11 @@ include __DIR__.'/index_whatsapp_beside_contact_type_patch.php';
 
         if (media.matches) {
             button.classList.add('portal-mobile-settings-button');
-            if (pill && button.parentElement !== profile) {
-                profile.insertBefore(button, pill);
+            const logout = profile.querySelector('#portal-logout');
+            if (logout && button.nextElementSibling !== logout) {
+                profile.insertBefore(button, logout);
+            } else if (pill && button.parentElement !== profile) {
+                pill.insertAdjacentElement('afterend', button);
             } else if (!pill && button.parentElement !== profile) {
                 profile.prepend(button);
             }
