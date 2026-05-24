@@ -724,6 +724,11 @@ $brandTitleOffsetY = (int)($theme['title_offset_y'] ?? 0);
             width: 22px;
             height: 22px;
         }
+        @media (min-width: 901px) {
+            .collapse-toggle .icon {
+                transform: translateX(4px);
+            }
+        }
         .mobile-menu-toggle,
         .sidebar-backdrop {
             display: none;
