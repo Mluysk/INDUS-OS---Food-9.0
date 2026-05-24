@@ -138,6 +138,23 @@ include __DIR__.'/register_icons_patch.php';
         typeGroup.insertAdjacentElement('afterend', whatsappField);
         maskPhoneInput(whatsappField.querySelector('#registro-whatsapp'));
 
+        const addressGrid = form.querySelector('.address-grid');
+        if (addressGrid) {
+            const moveBeforeAddress = [
+                document.querySelector('label[for="registro-nome"]'),
+                document.getElementById('registro-nome'),
+                document.querySelector('label[for="registro-email"]'),
+                document.getElementById('registro-email'),
+                contatoLabel,
+                contatoInput,
+                typeGroup,
+                whatsappField
+            ].filter(Boolean);
+            moveBeforeAddress.forEach((element) => {
+                addressGrid.parentNode.insertBefore(element, addressGrid);
+            });
+        }
+
         if (window.lucide && typeof window.lucide.createIcons === 'function') {
             window.lucide.createIcons();
         }
