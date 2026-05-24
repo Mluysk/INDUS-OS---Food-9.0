@@ -463,10 +463,24 @@ include __DIR__.'/index_settings_sections_patch.php';
         if (picker) picker.value = normalized;
     };
 
+    const syncMobileBrowserBarColor = (hex) => {
+        const normalized = normalizeHex(hex) || systemThemeHex;
+        let meta = document.querySelector('meta[name="theme-color"][data-portal-mobile-bar]');
+        if (!meta) {
+            meta = document.createElement('meta');
+            meta.name = 'theme-color';
+            meta.media = '(max-width: 767px)';
+            meta.dataset.portalMobileBar = '1';
+            document.head.appendChild(meta);
+        }
+        meta.content = normalized;
+    };
+
     const applyPortalPalette = (hex, name = 'Cor personalizada', persist = true) => {
         const normalized = normalizeHex(hex) || '#2563EB';
         document.documentElement.style.setProperty('--primary', normalized);
         document.documentElement.style.setProperty('--portal-primary', normalized);
+        syncMobileBrowserBarColor(normalized);
         if (persist) {
             localStorage.setItem('portal-primary-hex', normalized);
             localStorage.setItem('portal-primary-name', name || 'Cor personalizada');
