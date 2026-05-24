@@ -42,11 +42,15 @@ $loginUrl = htmlspecialchars($url('portal'), ENT_QUOTES, 'UTF-8');
                     <p class="auth-panel__subtitle">Informe seus dados de contato para ativarmos o portal.</p>
                 </div>
 
-                <label for="registro-email">E-mail</label>
-                <input type="email" id="registro-email" name="email" required>
+                <div class="field-group portal-field-email">
+                    <label for="registro-email">E-mail</label>
+                    <input type="email" id="registro-email" name="email" required>
+                </div>
 
-                <label for="registro-telefone">Telefone</label>
-                <input type="tel" id="registro-telefone" name="telefone" placeholder="(11) 99999-0000">
+                <div class="field-group portal-field-contact">
+                    <label for="registro-telefone">Telefone</label>
+                    <input type="tel" id="registro-telefone" name="telefone" placeholder="(11) 99999-0000">
+                </div>
 
                 <div class="document-toggle" role="radiogroup" aria-label="Tipo de documento">
                     <span>Documento</span>
@@ -67,11 +71,15 @@ $loginUrl = htmlspecialchars($url('portal'), ENT_QUOTES, 'UTF-8');
                     </div>
                 </div>
 
-                <label for="registro-razao">Razão social / Nome fiscal</label>
-                <input type="text" id="registro-razao" name="razao_social" placeholder="Use para emissão fiscal">
+                <div class="field-group portal-field-razao">
+                    <label for="registro-razao">Razão social / Nome fiscal</label>
+                    <input type="text" id="registro-razao" name="razao_social" placeholder="Use para emissão fiscal">
+                </div>
 
-                <label for="registro-fantasia">Nome fantasia</label>
-                <input type="text" id="registro-fantasia" name="nome_fantasia" placeholder="Como prefere ser chamado">
+                <div class="field-group portal-field-store">
+                    <label for="registro-fantasia">Nome fantasia</label>
+                    <input type="text" id="registro-fantasia" name="nome_fantasia" placeholder="Como prefere ser chamado">
+                </div>
 
                 <div class="address-grid">
                     <div class="field-group address-grid__cep">

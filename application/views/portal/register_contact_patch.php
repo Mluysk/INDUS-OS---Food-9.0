@@ -196,14 +196,12 @@ include __DIR__.'/register_icons_patch.php';
         const addressGrid = form.querySelector('.address-grid');
         if (addressGrid) {
             const moveBeforeAddress = [
-                document.querySelector('label[for="registro-email"]'),
-                document.getElementById('registro-email'),
-                contatoLabel,
-                contatoInput,
+                document.getElementById('registro-email')?.closest('.field-group'),
+                contatoInput.closest('.field-group'),
                 typeGroup,
                 whatsappField
             ].filter(Boolean);
-            moveBeforeAddress.forEach((element) => {
+            [...new Set(moveBeforeAddress)].forEach((element) => {
                 addressGrid.parentNode.insertBefore(element, addressGrid);
             });
         }
