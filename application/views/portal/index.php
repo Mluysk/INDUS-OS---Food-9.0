@@ -3346,8 +3346,7 @@ $catalogoPayload = json_encode(array_map(static function ($produto) {
     renderListaProdutos();
     atualizarCarrinho();
     if (state.token) {
-        loadStoredCliente();
-        enterApp(state.cliente || {}, { showWelcome: false });
+        atualizarTokenState();
     } else {
         setPortalState('auth', 'novo-pedido');
         setAuthMode('login');
