@@ -72,10 +72,10 @@ include __DIR__.'/index_whatsapp_beside_contact_type_patch.php';
         }
 
         html body .topbar [data-portal-settings].portal-mobile-settings-button {
-            width: 39.2px !important;
-            height: 39.2px !important;
-            min-width: 39.2px !important;
-            min-height: 39.2px !important;
+            width: 40px !important;
+            height: 40px !important;
+            min-width: 40px !important;
+            min-height: 40px !important;
             display: inline-grid !important;
             place-items: center !important;
             padding: 0 !important;
