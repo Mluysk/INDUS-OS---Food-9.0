@@ -360,16 +360,34 @@ $loginUrl = htmlspecialchars($url('portal'), ENT_QUOTES, 'UTF-8');
 
     @media (min-width: 960px) {
         .address-grid {
-            grid-template-columns: minmax(132px, 0.58fr) minmax(0, 2.35fr) minmax(92px, 0.42fr);
+            grid-template-columns: minmax(132px, 0.58fr) minmax(0, 0.705fr) minmax(0, 1.645fr) minmax(92px, 0.42fr);
         }
 
         .address-grid__cep,
         .address-grid .field-group:has(#registro-cep) {
+            grid-column: 1;
             max-width: 11.5rem;
         }
 
+        .address-grid .field-group:has(#registro-endereco) {
+            grid-column: 2 / 4;
+        }
+
         .address-grid .field-group:has(#registro-numero) {
+            grid-column: 4;
             max-width: 7.5rem;
+        }
+
+        .address-grid .field-group:has(#registro-bairro) {
+            grid-column: 1 / 3;
+        }
+
+        .address-grid .field-group:has(#registro-cidade) {
+            grid-column: 3;
+        }
+
+        .address-grid .field-group:has(#registro-estado) {
+            grid-column: 4;
         }
     }
 
