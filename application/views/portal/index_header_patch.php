@@ -164,11 +164,15 @@ include __DIR__.'/index_with_patch.php';
         min-height: 44px;
         padding: 0.72rem 1rem;
         border-radius: 999px;
-        background: var(--surface-alt, rgba(148, 163, 184, 0.16));
-        border: 1px solid var(--border, rgba(148, 163, 184, 0.3));
-        color: var(--text, #1f2933);
+        background: var(--primary, #2563eb) !important;
+        border: 2px solid #ffffff !important;
+        color: #ffffff !important;
         font-weight: 850;
-        box-shadow: 0 14px 26px -24px rgba(15, 23, 42, 0.4);
+        box-shadow: 0 14px 26px -24px color-mix(in srgb, var(--primary, #2563eb) 80%, #0f172a);
+    }
+
+    html[data-theme="dark"] body .topbar #portal-logout {
+        border-color: var(--bg, #0f172a) !important;
     }
 
     html body .portal-app__header > .portal-app__profile {
