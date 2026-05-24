@@ -15,6 +15,14 @@ include __DIR__.'/index_whatsapp_beside_contact_type_patch.php';
             -webkit-text-size-adjust: 100%;
         }
 
+        html body .portal-theme-button {
+            transform: translateY(-6px) !important;
+        }
+
+        html body .portal-theme-button:hover {
+            transform: translateY(-7px) !important;
+        }
+
         html body .topbar {
             gap: 0.75rem !important;
             padding: 0.85rem 0.95rem !important;
@@ -57,6 +65,42 @@ include __DIR__.'/index_whatsapp_beside_contact_type_patch.php';
             display: inline-flex !important;
             align-items: center !important;
             justify-content: center !important;
+        }
+
+        html body .portal-app__header-links [data-portal-settings] {
+            display: none !important;
+        }
+
+        html body .topbar [data-portal-settings].portal-mobile-settings-button {
+            width: 42px !important;
+            height: 42px !important;
+            min-width: 42px !important;
+            min-height: 42px !important;
+            display: inline-grid !important;
+            place-items: center !important;
+            padding: 0 !important;
+            border-radius: 999px !important;
+            border: 2px solid #ffffff !important;
+            background: var(--primary, #2563eb) !important;
+            color: #ffffff !important;
+            box-shadow: 0 14px 26px -24px color-mix(in srgb, var(--primary, #2563eb) 80%, #0f172a) !important;
+        }
+
+        html body .topbar [data-portal-settings].portal-mobile-settings-button .portal-app__link-icon {
+            width: 20px !important;
+            height: 20px !important;
+            margin: 0 !important;
+        }
+
+        html body .topbar [data-portal-settings].portal-mobile-settings-button .portal-app__link-icon svg {
+            width: 20px !important;
+            height: 20px !important;
+            fill: currentColor !important;
+            stroke: none !important;
+        }
+
+        html body .topbar [data-portal-settings].portal-mobile-settings-button .portal-app__link-text {
+            display: none !important;
         }
 
         html body .portal-hero {
@@ -441,3 +485,59 @@ include __DIR__.'/index_whatsapp_beside_contact_type_patch.php';
         }
     }
 </style>
+<style>
+    html body .portal-product .badge {
+        border: 1px solid color-mix(in srgb, var(--primary, #2563eb) 28%, transparent) !important;
+        background: color-mix(in srgb, var(--primary, #2563eb) 14%, #ffffff) !important;
+        color: color-mix(in srgb, var(--primary, #2563eb) 86%, #0f172a) !important;
+        font-weight: 850 !important;
+        box-shadow: 0 12px 24px -20px color-mix(in srgb, var(--primary, #2563eb) 55%, transparent) !important;
+    }
+
+    html[data-theme="dark"] body .portal-product .badge {
+        background: color-mix(in srgb, var(--primary, #3b82f6) 20%, rgba(15, 23, 42, 0.88)) !important;
+        border-color: color-mix(in srgb, var(--primary, #3b82f6) 42%, transparent) !important;
+        color: color-mix(in srgb, var(--primary, #3b82f6) 74%, #ffffff) !important;
+    }
+</style>
+<script>
+(function () {
+    const media = window.matchMedia('(max-width: 820px)');
+    const moveSettingsButton = () => {
+        const button = document.querySelector('[data-portal-settings]');
+        const menu = document.querySelector('.portal-app__header-links');
+        const profile = document.querySelector('.topbar .portal-app__profile');
+        const pill = profile?.querySelector('.portal-client-pill-main');
+        if (!button || !menu || !profile) return;
+
+        if (media.matches) {
+            button.classList.add('portal-mobile-settings-button');
+            if (pill && button.parentElement !== profile) {
+                profile.insertBefore(button, pill);
+            } else if (!pill && button.parentElement !== profile) {
+                profile.prepend(button);
+            }
+            return;
+        }
+
+        button.classList.remove('portal-mobile-settings-button');
+        if (button.parentElement !== menu) {
+            menu.appendChild(button);
+        }
+    };
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', moveSettingsButton, { once: true });
+    } else {
+        moveSettingsButton();
+    }
+    window.addEventListener('resize', moveSettingsButton);
+    window.addEventListener('storage', (event) => {
+        if (event.key === 'portal-cliente') {
+            setTimeout(moveSettingsButton, 0);
+        }
+    });
+    setTimeout(moveSettingsButton, 80);
+    setTimeout(moveSettingsButton, 300);
+})();
+</script>
