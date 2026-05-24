@@ -16,11 +16,11 @@ include __DIR__.'/index_whatsapp_beside_contact_type_patch.php';
         }
 
         html body .portal-theme-button {
-            transform: translateY(-6px) !important;
+            transform: translateY(-3px) !important;
         }
 
         html body .portal-theme-button:hover {
-            transform: translateY(-7px) !important;
+            transform: translateY(-4px) !important;
         }
 
         html body .topbar {
@@ -95,6 +95,7 @@ include __DIR__.'/index_whatsapp_beside_contact_type_patch.php';
         html body .topbar [data-portal-settings].portal-mobile-settings-button .portal-app__link-icon svg {
             width: 20px !important;
             height: 20px !important;
+            color: #ffffff !important;
             fill: currentColor !important;
             stroke: none !important;
         }
