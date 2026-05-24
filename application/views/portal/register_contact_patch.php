@@ -22,17 +22,29 @@ include __DIR__.'/register_icons_patch.php';
     html body .portal-contact-type {
         display: flex;
         align-items: center;
-        gap: 0.85rem;
+        gap: 0.55rem;
         flex-wrap: wrap;
-        margin: 0.5rem 0 1rem;
+        margin: 0.55rem 0 1.05rem;
+        padding: 0.72rem;
+        border: 1px solid color-mix(in srgb, var(--primary, #dc2626) 14%, var(--portal-card-border, rgba(15, 23, 42, 0.08)));
+        border-radius: 18px;
+        background: linear-gradient(135deg, color-mix(in srgb, var(--primary, #dc2626) 8%, #ffffff), rgba(255, 255, 255, 0.82));
+        box-shadow: 0 16px 34px -30px rgba(15, 23, 42, 0.55);
         color: var(--portal-muted, rgba(71, 85, 105, 0.82));
         font-weight: 750;
+    }
+
+    [data-theme="dark"] html body .portal-contact-type {
+        background: linear-gradient(135deg, color-mix(in srgb, var(--primary, #dc2626) 14%, rgba(15, 23, 42, 0.92)), rgba(15, 23, 42, 0.7));
+        border-color: color-mix(in srgb, var(--primary, #dc2626) 24%, rgba(148, 163, 184, 0.16));
     }
 
     html body .portal-contact-type__title {
         display: inline-flex;
         align-items: center;
         gap: 0.35rem;
+        min-height: 38px;
+        padding: 0 0.55rem;
         color: var(--text, #111827);
         font-size: 0.88rem;
         letter-spacing: 0.04em;
@@ -48,16 +60,59 @@ include __DIR__.'/register_icons_patch.php';
     html body .portal-contact-type label {
         display: inline-flex;
         align-items: center;
-        gap: 0.38rem;
+        gap: 0.48rem;
+        min-height: 38px;
         margin: 0;
+        padding: 0.45rem 0.82rem;
+        border: 1px solid color-mix(in srgb, var(--primary, #dc2626) 12%, rgba(148, 163, 184, 0.28));
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.88);
+        color: var(--text, #111827);
         cursor: pointer;
-        font-size: 0.9rem;
+        font-size: 0.92rem;
+        box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.65);
+        transition: background 0.18s ease, border-color 0.18s ease, color 0.18s ease, transform 0.18s ease;
+    }
+
+    [data-theme="dark"] html body .portal-contact-type label {
+        background: rgba(15, 23, 42, 0.78);
+        border-color: rgba(148, 163, 184, 0.2);
+    }
+
+    html body .portal-contact-type label:has(input[type="radio"]:checked) {
+        border-color: color-mix(in srgb, var(--primary, #dc2626) 56%, transparent);
+        background: linear-gradient(135deg, var(--primary, #dc2626), color-mix(in srgb, var(--primary, #dc2626) 74%, #ffffff));
+        color: #fff;
+        box-shadow: var(--primary-shadow, 0 14px 28px -20px rgba(220, 38, 38, 0.7));
+    }
+
+    html body .portal-contact-type label:hover {
+        transform: translateY(-1px);
     }
 
     html body .portal-contact-type input[type="radio"] {
-        width: 16px;
-        height: 16px;
+        width: 15px;
+        height: 15px;
         accent-color: var(--primary, #dc2626);
+    }
+
+    html body .portal-contact-type label:has(input[type="radio"]:checked) input[type="radio"] {
+        accent-color: #fff;
+    }
+
+    @media (max-width: 640px) {
+        html body .portal-contact-type {
+            align-items: stretch;
+        }
+
+        html body .portal-contact-type__title {
+            width: 100%;
+        }
+
+        html body .portal-contact-type label {
+            flex: 1 1 130px;
+            justify-content: center;
+        }
     }
 
     html body .portal-whatsapp-field {
