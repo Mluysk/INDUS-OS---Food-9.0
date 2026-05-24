@@ -467,6 +467,11 @@ include __DIR__.'/index_whatsapp_beside_contact_type_patch.php';
             bottom: max(14px, env(safe-area-inset-bottom)) !important;
         }
 
+        html body .portal-floating-support svg {
+            width: 34px !important;
+            height: 34px !important;
+        }
+
         html body .portal-modal {
             padding: max(12px, env(safe-area-inset-top)) 12px max(12px, env(safe-area-inset-bottom)) !important;
         }
