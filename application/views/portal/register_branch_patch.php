@@ -236,6 +236,27 @@ include __DIR__.'/register.php';
         return digits;
     };
 
+    const findCnpjEmail = (data) => firstValue(
+        data.email,
+        data.correio_eletronico,
+        data.email_empresa,
+        data.email_estabelecimento,
+        data.estabelecimento && data.estabelecimento.email,
+        data.estabelecimento && data.estabelecimento.correio_eletronico
+    );
+
+    const findCnpjPhone = (data) => firstValue(
+        data.ddd_telefone_1,
+        data.telefone_1,
+        data.telefone,
+        data.celular,
+        data.whatsapp,
+        data.estabelecimento && data.estabelecimento.ddd_telefone_1,
+        data.estabelecimento && data.estabelecimento.telefone_1,
+        data.estabelecimento && data.estabelecimento.telefone,
+        data.estabelecimento && data.estabelecimento.celular
+    );
+
     const fetchCnpjData = async (cnpj) => {
         const response = await fetch(`https://brasilapi.com.br/api/cnpj/v1/${cnpj}`);
         const data = await response.json().catch(() => ({}));
@@ -258,7 +279,7 @@ include __DIR__.'/register.php';
             const data = await fetchCnpjData(cnpj);
             const razao = data.razao_social || data.nome || '';
             const fantasia = data.nome_fantasia || razao;
-            const telefone = formatPhone(data.ddd_telefone_1 || data.ddd || '', data.telefone || data.telefone_1 || '');
+            const telefone = formatPhone('', findCnpjPhone(data));
             const endereco = firstValue(data.logradouro, data.descricao_logradouro, data.nome_logradouro, data.endereco);
             const numero = firstValue(data.numero, data.numero_endereco, data.numero_logradouro);
             const bairro = firstValue(data.bairro, data.nome_bairro);
@@ -266,7 +287,7 @@ include __DIR__.'/register.php';
 
             setFieldValue('registro-razao', razao);
             setFieldValue('registro-fantasia', fantasia);
-            setFieldValue('registro-email', data.email || '', false);
+            setFieldValue('registro-email', findCnpjEmail(data), false);
             setFieldValue('registro-telefone', telefone, false);
             setFieldValue('registro-cep', formatCep(data.cep || ''));
             setFieldValue('registro-endereco', endereco);

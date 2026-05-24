@@ -42,9 +42,6 @@ $loginUrl = htmlspecialchars($url('portal'), ENT_QUOTES, 'UTF-8');
                     <p class="auth-panel__subtitle">Informe seus dados de contato para ativarmos o portal.</p>
                 </div>
 
-                <label for="registro-nome">Nome completo</label>
-                <input type="text" id="registro-nome" name="nome" required>
-
                 <label for="registro-email">E-mail</label>
                 <input type="email" id="registro-email" name="email" required>
 

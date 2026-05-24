@@ -39,9 +39,6 @@ class PortalService
         $cnpj = $dados['cnpj'] ?? '';
         $cpf = $dados['cpf'] ?? '';
 
-        if ($nome === '') {
-            throw new \InvalidArgumentException('Informe o nome completo.');
-        }
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             throw new \InvalidArgumentException('E-mail inválido.');
         }
@@ -55,6 +52,15 @@ class PortalService
             throw new \InvalidArgumentException('Informe o nome da filial.');
         }
 
+        if ($nomeFantasia === '') {
+            $nomeFantasia = $nome;
+        }
+        if ($razaoSocial === '') {
+            $razaoSocial = $nomeFantasia;
+        }
+        if ($nome === '') {
+            $nome = $razaoSocial !== '' ? $razaoSocial : ($nomeFantasia !== '' ? $nomeFantasia : $email);
+        }
         if ($nomeFantasia === '') {
             $nomeFantasia = $nome;
         }

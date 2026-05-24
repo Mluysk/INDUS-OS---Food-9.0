@@ -141,8 +141,6 @@ include __DIR__.'/register_icons_patch.php';
         const addressGrid = form.querySelector('.address-grid');
         if (addressGrid) {
             const moveBeforeAddress = [
-                document.querySelector('label[for="registro-nome"]'),
-                document.getElementById('registro-nome'),
                 document.querySelector('label[for="registro-email"]'),
                 document.getElementById('registro-email'),
                 contatoLabel,

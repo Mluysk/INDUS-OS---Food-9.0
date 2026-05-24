@@ -23,7 +23,44 @@ include __DIR__.'/register_contact_patch.php';
         data.estabelecimento && data.estabelecimento.correio_eletronico
     );
 
-    const fillEmailFromCnpj = async (cnpj) => {
+    const formatPhone = (value) => {
+        const digits = onlyDigits(value).slice(0, 11);
+        if (digits.length === 11) return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
+        if (digits.length === 10) return `(${digits.slice(0, 2)}) ${digits.slice(2, 6)}-${digits.slice(6)}`;
+        return digits;
+    };
+
+    const findPhone = (data) => firstValue(
+        data.ddd_telefone_1,
+        data.telefone_1,
+        data.telefone,
+        data.celular,
+        data.whatsapp,
+        data.estabelecimento && data.estabelecimento.ddd_telefone_1,
+        data.estabelecimento && data.estabelecimento.telefone_1,
+        data.estabelecimento && data.estabelecimento.telefone,
+        data.estabelecimento && data.estabelecimento.celular
+    );
+
+    const setFieldValue = (id, value) => {
+        const input = document.getElementById(id);
+        if (!input || !value) return;
+        input.value = value;
+        input.dispatchEvent(new Event('input', { bubbles: true }));
+        input.dispatchEvent(new Event('change', { bubbles: true }));
+    };
+
+    const syncContactType = (phone) => {
+        const digits = onlyDigits(phone);
+        const type = digits.length === 11 ? 'celular' : 'telefone';
+        const option = document.querySelector(`input[name="contato_tipo"][value="${type}"]`);
+        if (option) {
+            option.checked = true;
+            option.dispatchEvent(new Event('change', { bubbles: true }));
+        }
+    };
+
+    const fillContactFromCnpj = async (cnpj) => {
         if (cnpj.length !== 14 || cnpj === lastEmailCnpj) return;
         lastEmailCnpj = cnpj;
         try {
@@ -31,11 +68,11 @@ include __DIR__.'/register_contact_patch.php';
             if (!response.ok) return;
             const data = await response.json();
             const email = findEmail(data);
-            const emailInput = document.getElementById('registro-email');
-            if (emailInput && email) {
-                emailInput.value = email;
-                emailInput.dispatchEvent(new Event('input', { bubbles: true }));
-                emailInput.dispatchEvent(new Event('change', { bubbles: true }));
+            const phone = formatPhone(findPhone(data));
+            setFieldValue('registro-email', email);
+            if (phone) {
+                setFieldValue('registro-telefone', phone);
+                syncContactType(phone);
             }
         } catch (error) {
             lastEmailCnpj = '';
@@ -50,7 +87,7 @@ include __DIR__.'/register_contact_patch.php';
         const handle = () => {
             const cnpj = onlyDigits(cnpjInput.value);
             if (cnpj.length < 14) lastEmailCnpj = '';
-            if (cnpj.length === 14) fillEmailFromCnpj(cnpj);
+            if (cnpj.length === 14) fillContactFromCnpj(cnpj);
         };
 
         cnpjInput.addEventListener('input', handle);

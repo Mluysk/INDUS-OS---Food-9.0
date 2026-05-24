@@ -35,7 +35,6 @@ include __DIR__.'/register_branch_patch.php';
 <script>
 (function () {
     const iconMap = {
-        'registro-nome': 'user-round',
         'registro-email': 'mail',
         'registro-telefone': 'phone',
         'registro-cnpj': 'building-2',
