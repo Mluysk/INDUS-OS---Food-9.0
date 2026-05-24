@@ -58,7 +58,6 @@ include __DIR__.'/index_whatsapp_beside_contact_type_patch.php';
             display: block !important;
             width: auto !important;
             max-width: 100% !important;
-            max-height: 46px !important;
             transform: translate(0, var(--portal-logo-y, 0px)) !important;
             object-fit: contain !important;
         }
@@ -66,7 +65,6 @@ include __DIR__.'/index_whatsapp_beside_contact_type_patch.php';
         html body .portal-logo-filtered {
             width: min(100%, calc(var(--portal-logo-size, 60px) * 3.9)) !important;
             max-width: 100% !important;
-            max-height: 46px !important;
             transform: translate(0, var(--portal-logo-y, 0px)) !important;
         }
 
