@@ -58,7 +58,18 @@ if ($supportWhatsapp !== '') {
         <div class="portal-auth-card" data-auth-card data-mode="login">
             <form id="portal-login-form" class="auth-panel auth-panel--login" autocomplete="on">
                 <div class="auth-panel__header">
-                    <h2>Acesse sua conta</h2>
+                    <h2 class="portal-auth-title">
+                        <span class="portal-auth-title__icon" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="8.5" cy="7" r="3.6"></circle>
+                                <path d="M2.9 19.2a5.8 5.8 0 0 1 9.2-4.7"></path>
+                                <rect x="13.2" y="11.1" width="7.6" height="7.5" rx="1.8"></rect>
+                                <path d="M15.3 11.1V9.7a2.7 2.7 0 0 1 5.4 0v1.4"></path>
+                                <path d="M17 14.8h.01"></path>
+                            </svg>
+                        </span>
+                        <span>Acesse sua conta</span>
+                    </h2>
                     <p class="auth-panel__subtitle">Use seu e-mail, CPF ou CNPJ para acompanhar pedidos e gerar novas solicitações.</p>
                 </div>
                 <label for="login-email">E-mail, CPF ou CNPJ</label>
@@ -585,6 +596,36 @@ if ($supportWhatsapp !== '') {
         font-size: clamp(1.75rem, 3vw, 2.25rem);
         line-height: 1.05;
         letter-spacing: 0;
+    }
+
+    .portal-auth-title {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .portal-auth-title__icon {
+        width: 44px;
+        height: 44px;
+        flex: 0 0 44px;
+        display: inline-grid;
+        place-items: center;
+        border-radius: 14px;
+        color: var(--primary, #2563eb);
+        background: color-mix(in srgb, var(--primary, #2563eb) 13%, #ffffff);
+        border: 1px solid color-mix(in srgb, var(--primary, #2563eb) 18%, transparent);
+        box-shadow: 0 16px 30px -24px color-mix(in srgb, var(--primary, #2563eb) 70%, transparent);
+    }
+
+    .portal-auth-title__icon svg {
+        width: 26px;
+        height: 26px;
+    }
+
+    [data-theme="dark"] .portal-auth-title__icon {
+        color: color-mix(in srgb, var(--primary, #2563eb) 72%, #ffffff);
+        background: color-mix(in srgb, var(--primary, #2563eb) 20%, rgba(15, 23, 42, 0.9));
+        border-color: color-mix(in srgb, var(--primary, #2563eb) 28%, rgba(255, 255, 255, 0.14));
     }
 
     .auth-panel__subtitle {
@@ -1615,6 +1656,22 @@ if ($supportWhatsapp !== '') {
     @media (max-width: 720px) {
         .portal-auth-card {
             padding: 1.6rem 1.7rem;
+        }
+
+        .portal-auth-title {
+            gap: 0.6rem;
+        }
+
+        .portal-auth-title__icon {
+            width: 40px;
+            height: 40px;
+            flex-basis: 40px;
+            border-radius: 13px;
+        }
+
+        .portal-auth-title__icon svg {
+            width: 23px;
+            height: 23px;
         }
 
         .auth-panel {
