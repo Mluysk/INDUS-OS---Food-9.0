@@ -308,7 +308,7 @@ $initialThemeAttr = $themeMode === 'dark' ? 'dark' : 'light';
         }
         @media (min-width: 521px) {
             .brand-logo img {
-                transform: translateX(-26px);
+                transform: translateX(-10px);
             }
         }
         @media (max-width: 520px) {
