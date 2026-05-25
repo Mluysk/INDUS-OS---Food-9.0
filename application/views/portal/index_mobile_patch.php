@@ -442,15 +442,63 @@ include __DIR__.'/index_whatsapp_beside_contact_type_patch.php';
 
         html body #portal-tab-configuracao [data-settings-section="cadastro"] .portal-settings-contact-type {
             display: grid !important;
-            grid-template-columns: 1fr !important;
-            gap: 0.55rem !important;
+            grid-template-columns: 1fr 1fr !important;
+            gap: 0.48rem !important;
+            padding: 0.6rem !important;
+            align-items: center !important;
         }
 
         html body #portal-tab-configuracao [data-settings-section="cadastro"] .portal-settings-doc-toggle__buttons,
-        html body #portal-tab-configuracao [data-settings-section="cadastro"] .portal-settings-contact-type label,
         html body #portal-settings-modal [data-settings-section="cadastro"] .portal-settings-doc-toggle__buttons,
         html body #portal-settings-modal [data-settings-section="cadastro"] .portal-settings-contact-type label {
             width: 100% !important;
+        }
+
+        html body #portal-tab-configuracao [data-settings-section="cadastro"] .portal-settings-contact-type > strong {
+            grid-column: 1 / -1 !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            gap: 0.42rem !important;
+            min-height: 0 !important;
+            margin: 0 0 0.1rem !important;
+            color: var(--text-muted, #64748b) !important;
+            font-size: 0.82rem !important;
+            line-height: 1.15 !important;
+        }
+
+        html body #portal-tab-configuracao [data-settings-section="cadastro"] .portal-settings-contact-type label {
+            width: 100% !important;
+            min-height: 38px !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            gap: 0.42rem !important;
+            margin: 0 !important;
+            padding: 0.42rem 0.58rem !important;
+            border: 1px solid color-mix(in srgb, var(--primary, #dc2626) 14%, rgba(148, 163, 184, 0.28)) !important;
+            border-radius: 999px !important;
+            background: rgba(255, 255, 255, 0.86) !important;
+            color: var(--text, #111827) !important;
+            font-size: 0.86rem !important;
+            font-weight: 850 !important;
+            line-height: 1 !important;
+        }
+
+        html body #portal-tab-configuracao [data-settings-section="cadastro"] .portal-settings-contact-type label:has(input[type="radio"]:checked) {
+            border-color: var(--primary, #dc2626) !important;
+            background: color-mix(in srgb, var(--primary, #dc2626) 12%, #ffffff) !important;
+            color: var(--primary, #dc2626) !important;
+        }
+
+        html body #portal-tab-configuracao [data-settings-section="cadastro"] .portal-settings-contact-type input[type="radio"] {
+            width: 15px !important;
+            height: 15px !important;
+            min-width: 15px !important;
+            min-height: 15px !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            flex: 0 0 15px !important;
+            accent-color: var(--primary, #dc2626) !important;
         }
 
         html body #portal-tab-configuracao [data-settings-section="cadastro"] .portal-settings-doc-toggle__buttons {
