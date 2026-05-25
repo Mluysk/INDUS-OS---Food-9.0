@@ -24,14 +24,14 @@ include __DIR__.'/index.php';
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        gap: 0.55rem;
+        gap: 8px;
         min-height: 44px;
-        padding: 0.72rem 1.1rem;
+        padding: 10px 18px;
         border: 1px solid var(--portal-card-border, rgba(15, 23, 42, 0.08));
         border-radius: 999px;
         background: var(--portal-card-bg, rgba(255, 255, 255, 0.95));
         color: var(--text, #1f2933);
-        font-weight: 800;
+        font-weight: 600;
         box-shadow: 0 18px 38px -28px rgba(15, 23, 42, 0.45);
     }
 
@@ -41,9 +41,33 @@ include __DIR__.'/index.php';
     }
 
     html body .portal-theme-button svg {
-        width: 19px;
-        height: 19px;
+        width: 100%;
+        height: 100%;
         stroke: currentColor;
+    }
+
+    html body .portal-theme-button .theme-icon {
+        width: 18px;
+        height: 18px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    html body .portal-theme-button .theme-icon > svg {
+        display: block;
+    }
+
+    html body .portal-theme-button .theme-icon-dark {
+        display: none;
+    }
+
+    html[data-theme="dark"] body .portal-theme-button .theme-icon-dark {
+        display: inline-flex;
+    }
+
+    html[data-theme="dark"] body .portal-theme-button .theme-icon-light {
+        display: none;
     }
 
     html body .portal-app__welcome {
@@ -343,9 +367,8 @@ include __DIR__.'/index.php';
         topbar.appendChild(button);
 
         const sync = () => {
-            const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-            button.innerHTML = `${isDark ? themeIcon.light : themeIcon.dark}<span>${isDark ? 'Modo claro' : 'Modo noturno'}</span>`;
-            button.setAttribute('aria-label', isDark ? 'Ativar modo claro' : 'Ativar modo noturno');
+            button.innerHTML = `<span class="theme-icon theme-icon-light">${themeIcon.dark}</span><span class="theme-icon theme-icon-dark">${themeIcon.light}</span><span>Alternar tema</span>`;
+            button.setAttribute('aria-label', 'Alternar tema');
         };
 
         button.addEventListener('click', () => {
