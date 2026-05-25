@@ -286,6 +286,78 @@ include __DIR__.'/index_whatsapp_beside_contact_type_patch.php';
             display: none !important;
         }
 
+        html body #portal-settings-modal .portal-settings-modal__dialog {
+            width: min(100%, calc(100vw - 18px)) !important;
+            max-width: calc(100vw - 18px) !important;
+            padding: 1rem !important;
+        }
+
+        html body #portal-settings-modal [data-settings-section="cadastro"],
+        html body #portal-settings-modal [data-settings-section="cadastro"] .portal-settings-card,
+        html body #portal-settings-modal [data-settings-section="cadastro"] .portal-settings-content,
+        html body #portal-settings-modal [data-settings-section="cadastro"] .portal-settings-form,
+        html body #portal-settings-modal [data-settings-section="cadastro"] .portal-settings-grid,
+        html body #portal-settings-modal [data-settings-section="cadastro"] .portal-settings-document-card,
+        html body #portal-settings-modal [data-settings-section="cadastro"] .portal-settings-document-card .portal-settings-grid,
+        html body #portal-settings-modal [data-settings-section="cadastro"] .portal-settings-info-row,
+        html body #portal-settings-modal [data-settings-section="cadastro"] .portal-settings-address-row,
+        html body #portal-settings-modal [data-settings-section="cadastro"] .portal-settings-city-state-row,
+        html body #portal-settings-modal [data-settings-section="cadastro"] .portal-settings-contact-row,
+        html body #portal-settings-modal [data-settings-section="cadastro"] .portal-settings-contact-line,
+        html body #portal-settings-modal [data-settings-section="cadastro"] .portal-settings-top-grid,
+        html body #portal-settings-modal [data-settings-section="cadastro"] .portal-settings-name-email-row {
+            display: grid !important;
+            grid-template-columns: 1fr !important;
+            width: 100% !important;
+            max-width: 100% !important;
+            min-width: 0 !important;
+            gap: 0.78rem !important;
+            overflow: visible !important;
+        }
+
+        html body #portal-settings-modal [data-settings-section="cadastro"] .portal-settings-field,
+        html body #portal-settings-modal [data-settings-section="cadastro"] .portal-settings-contact-type,
+        html body #portal-settings-modal [data-settings-section="cadastro"] .portal-settings-doc-toggle,
+        html body #portal-settings-modal [data-settings-section="cadastro"] .portal-settings-whatsapp-row,
+        html body #portal-settings-modal [data-settings-section="cadastro"] [data-settings-doc-field] {
+            width: 100% !important;
+            max-width: 100% !important;
+            min-width: 0 !important;
+            flex: 1 1 auto !important;
+            margin: 0 !important;
+            transform: none !important;
+        }
+
+        html body #portal-settings-modal [data-settings-section="cadastro"] input,
+        html body #portal-settings-modal [data-settings-section="cadastro"] select,
+        html body #portal-settings-modal [data-settings-section="cadastro"] textarea,
+        html body #portal-settings-modal [data-settings-section="cadastro"] .portal-settings-field input,
+        html body #portal-settings-modal [data-settings-section="cadastro"] #portal-full-cep,
+        html body #portal-settings-modal [data-settings-section="cadastro"] #portal-full-cidade,
+        html body #portal-settings-modal [data-settings-section="cadastro"] #portal-full-estado {
+            width: 100% !important;
+            max-width: 100% !important;
+            min-width: 0 !important;
+        }
+
+        html body #portal-settings-modal [data-settings-section="cadastro"] .portal-settings-doc-toggle,
+        html body #portal-settings-modal [data-settings-section="cadastro"] .portal-settings-contact-type {
+            align-items: stretch !important;
+            padding: 0.72rem !important;
+            border-radius: 14px !important;
+        }
+
+        html body #portal-settings-modal [data-settings-section="cadastro"] .portal-settings-doc-toggle__buttons,
+        html body #portal-settings-modal [data-settings-section="cadastro"] .portal-settings-contact-type label {
+            width: 100% !important;
+        }
+
+        html body #portal-settings-modal [data-settings-section="cadastro"] .portal-settings-actions {
+            display: grid !important;
+            grid-template-columns: 1fr !important;
+            gap: 0.65rem !important;
+        }
+
         html body .portal-app__panels {
             gap: 1rem !important;
         }

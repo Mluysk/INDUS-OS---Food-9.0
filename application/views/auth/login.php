@@ -44,6 +44,12 @@ $logoTintEnabled = ($theme['logo_filter'] ?? '0') === '1';
 $logoLight = $logoLightPath ? $assetHelper($logoLightPath) : '';
 $logoDark = $logoDarkPath ? $assetHelper($logoDarkPath) : '';
 $logoMatrixValues = app_logo_matrix_values($primaryHex);
+$logoLightSize = max(24, min(140, (int)($theme['logo_light_size'] ?? 52)));
+$logoDarkSize = max(24, min(140, (int)($theme['logo_dark_size'] ?? $logoLightSize)));
+$logoLightOffsetX = (int)round(max(-80, min(80, (int)($theme['logo_light_offset_x'] ?? 0))) * 0.5);
+$logoLightOffsetY = (int)round(max(-80, min(80, (int)($theme['logo_light_offset_y'] ?? 0))) * 0.5);
+$logoDarkOffsetX = (int)round(max(-80, min(80, (int)($theme['logo_dark_offset_x'] ?? 0))) * 0.5);
+$logoDarkOffsetY = (int)round(max(-80, min(80, (int)($theme['logo_dark_offset_y'] ?? 0))) * 0.5);
 $titleSize = isset($theme['title_size']) && is_numeric($theme['title_size']) ? (int) $theme['title_size'] : 24;
 if ($titleSize < 16) {
     $titleSize = 16;
@@ -135,8 +141,10 @@ $initialThemeAttr = $themeMode === 'dark' ? 'dark' : 'light';
             align-items: center;
         }
         .brand-logo img {
-            height: 52px;
+            height: var(--login-logo-size, 52px);
             width: auto;
+            max-width: 100%;
+            transform: translate(var(--login-logo-x, 0), var(--login-logo-y, 0));
             transition: opacity 0.2s ease;
             filter: none;
         }
@@ -328,10 +336,10 @@ $initialThemeAttr = $themeMode === 'dark' ? 'dark' : 'light';
                 <div class="brand-logo">
                     <?php if ($logoLight || $logoDark): ?>
                         <?php if ($logoLight): ?>
-                            <img src="<?= htmlspecialchars($logoLight, ENT_QUOTES, 'UTF-8'); ?>" alt="Logo" class="logo-light logo-tintable">
+                            <img src="<?= htmlspecialchars($logoLight, ENT_QUOTES, 'UTF-8'); ?>" alt="Logo" class="logo-light logo-tintable" style="--login-logo-size: <?= $logoLightSize; ?>px; --login-logo-x: <?= $logoLightOffsetX; ?>px; --login-logo-y: <?= $logoLightOffsetY; ?>px;">
                         <?php endif; ?>
                         <?php if ($logoDark): ?>
-                            <img src="<?= htmlspecialchars($logoDark, ENT_QUOTES, 'UTF-8'); ?>" alt="Logo" class="logo-dark logo-tintable">
+                            <img src="<?= htmlspecialchars($logoDark, ENT_QUOTES, 'UTF-8'); ?>" alt="Logo" class="logo-dark logo-tintable" style="--login-logo-size: <?= $logoDarkSize; ?>px; --login-logo-x: <?= $logoDarkOffsetX; ?>px; --login-logo-y: <?= $logoDarkOffsetY; ?>px;">
                         <?php endif; ?>
                     <?php else: ?>
                         <span class="logo-fallback"><?= htmlspecialchars(mb_substr($appName, 0, 2, 'UTF-8'), ENT_QUOTES, 'UTF-8'); ?></span>
