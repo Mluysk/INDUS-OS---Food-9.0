@@ -79,10 +79,10 @@ include __DIR__.'/index_whatsapp_beside_contact_type_patch.php';
         }
 
         html body .topbar [data-portal-settings].portal-mobile-settings-button {
-            width: 42px !important;
-            height: 42px !important;
-            min-width: 42px !important;
-            min-height: 42px !important;
+            width: 46px !important;
+            height: 46px !important;
+            min-width: 46px !important;
+            min-height: 46px !important;
             display: inline-grid !important;
             place-items: center !important;
             padding: 0 !important;
@@ -94,20 +94,24 @@ include __DIR__.'/index_whatsapp_beside_contact_type_patch.php';
         }
 
         html body .topbar [data-portal-settings].portal-mobile-settings-button .portal-app__link-icon {
-            width: 32px !important;
-            height: 32px !important;
+            width: 36px !important;
+            height: 36px !important;
             margin: 0 !important;
+            padding: 0 !important;
+            display: inline-grid !important;
+            place-items: center !important;
         }
 
         html body .topbar [data-portal-settings].portal-mobile-settings-button .portal-app__link-icon svg {
-            width: 32px !important;
-            height: 32px !important;
+            width: 34px !important;
+            height: 34px !important;
             color: var(--primary, #2563eb) !important;
             fill: none !important;
             stroke: currentColor !important;
-            stroke-width: 1.85 !important;
+            stroke-width: 1.95 !important;
             stroke-linecap: round !important;
             stroke-linejoin: round !important;
+            display: block !important;
         }
 
         html[data-theme="dark"] body .topbar [data-portal-settings].portal-mobile-settings-button {
@@ -700,8 +704,20 @@ include __DIR__.'/index_whatsapp_beside_contact_type_patch.php';
         }
 
         html body .portal-floating-support svg {
-            width: 46px !important;
-            height: 46px !important;
+            width: 34px !important;
+            height: 34px !important;
+            display: block !important;
+        }
+
+        html body .portal-floating-support {
+            width: 56px !important;
+            height: 56px !important;
+            min-width: 56px !important;
+            min-height: 56px !important;
+            padding: 0 !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
         }
 
         html body .portal-modal {
