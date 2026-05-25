@@ -306,6 +306,11 @@ $initialThemeAttr = $themeMode === 'dark' ? 'dark' : 'light';
         html.logo-filter-enabled[data-theme="light"] .brand-logo img.logo-light {
             display: none !important;
         }
+        @media (min-width: 521px) {
+            .brand-logo img {
+                transform: translateX(-26px);
+            }
+        }
         @media (max-width: 520px) {
             .login-card {
                 padding: 28px 24px;
