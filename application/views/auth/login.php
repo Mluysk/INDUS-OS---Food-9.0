@@ -317,10 +317,26 @@ $initialThemeAttr = $themeMode === 'dark' ? 'dark' : 'light';
             }
             .brand {
                 flex-direction: column;
-                align-items: flex-start;
+                align-items: center;
+                text-align: center;
+            }
+            .brand-identity,
+            .brand-logo,
+            .brand-text {
+                align-items: center;
+                width: 100%;
+            }
+            .brand-logo {
+                justify-content: center;
+            }
+            .brand-logo img {
+                transform: none;
             }
             .theme-toggle {
                 align-self: flex-end;
+            }
+            .palette-tag {
+                justify-content: center;
             }
         }
     </style>
