@@ -62,6 +62,14 @@ include __DIR__.'/index_whatsapp_beside_contact_type_patch.php';
             display: none !important;
         }
 
+        html body:not([data-portal-state="app"]) {
+            --primary: var(--portal-system-primary, #2563eb) !important;
+        }
+
+        html body:not([data-portal-state="app"]) .portal-floating-support {
+            display: none !important;
+        }
+
         html body .topbar .portal-client-pill-main {
             display: inline-flex !important;
             max-width: min(calc(100vw - 8.5rem), 260px) !important;
@@ -821,8 +829,9 @@ include __DIR__.'/index_whatsapp_beside_contact_type_patch.php';
             display: block !important;
         }
 
-        html body .portal-floating-support {
+        html body[data-portal-state="app"] .portal-floating-support {
             right: max(12px, env(safe-area-inset-right)) !important;
+            bottom: 89px !important;
             width: 56px !important;
             height: 56px !important;
             min-width: 56px !important;
