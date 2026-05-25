@@ -6,6 +6,9 @@ use App\Repositories\ClientesRepository;
 
 class PortalService
 {
+    private const DEFAULT_PORTAL_PALETTE_HEX = '#DC2626';
+    private const DEFAULT_PORTAL_PALETTE_NAME = 'Vermelho Energia';
+
     private UsuariosRepository $usuarios;
     private ClientesRepository $clientes;
     private AuditService $audit;
@@ -127,6 +130,7 @@ class PortalService
         $hash = password_hash($senha, PASSWORD_ARGON2ID);
 
         $pdo = $this->usuarios->getConnection();
+        $this->clientes->ensurePortalCustomizationColumns();
         $pdo->beginTransaction();
         try {
             $usuarioId = $this->usuarios->create([
@@ -156,6 +160,9 @@ class PortalService
                 'cidade' => $cidade,
                 'estado' => $estado,
                 'im' => $nomeFilial ?: null,
+                'portal_palette_hex' => self::DEFAULT_PORTAL_PALETTE_HEX,
+                'portal_palette_name' => self::DEFAULT_PORTAL_PALETTE_NAME,
+                'portal_cart_hex' => self::DEFAULT_PORTAL_PALETTE_HEX,
             ]);
 
             $pdo->commit();
