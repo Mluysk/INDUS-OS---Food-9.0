@@ -188,7 +188,7 @@ include __DIR__.'/register_icons_patch.php';
         whatsappField.className = 'field-group portal-whatsapp-field';
         whatsappField.innerHTML = `
             <label for="registro-whatsapp" class="portal-icon-label"><span class="portal-form-icon" data-lucide="message-circle"></span><span>WhatsApp</span></label>
-            <input type="tel" id="registro-whatsapp" name="whatsapp" placeholder="(11) 99999-0000">
+            <input type="tel" id="registro-whatsapp" name="whatsapp" placeholder="(11) 99999-0000" required>
         `;
         typeGroup.insertAdjacentElement('afterend', whatsappField);
         maskPhoneInput(whatsappField.querySelector('#registro-whatsapp'));

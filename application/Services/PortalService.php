@@ -26,6 +26,8 @@ class PortalService
         $telefone = trim($dados['telefone'] ?? '');
         $contatoTipo = ($dados['contato_tipo'] ?? 'celular') === 'telefone' ? 'telefone' : 'celular';
         $whatsapp = trim($dados['whatsapp'] ?? '');
+        $telefoneDigits = preg_replace('/\D+/', '', $telefone);
+        $whatsappDigits = preg_replace('/\D+/', '', $whatsapp);
         $cep = preg_replace('/\D+/', '', $dados['cep'] ?? '');
         $endereco = trim($dados['endereco'] ?? '');
         $numero = trim($dados['numero'] ?? '');
@@ -38,6 +40,16 @@ class PortalService
         $nomeFilial = $temFilial ? trim($dados['nome_filial'] ?? '') : '';
         $cnpj = $dados['cnpj'] ?? '';
         $cpf = $dados['cpf'] ?? '';
+
+        if ($email === '' || $telefone === '' || $razaoSocial === '' || $nomeFantasia === '' || $whatsapp === '') {
+            throw new \InvalidArgumentException('Preencha todos os campos obrigatorios.');
+        }
+        if (strlen($telefoneDigits) < 10) {
+            throw new \InvalidArgumentException('Informe um telefone valido.');
+        }
+        if (strlen($whatsappDigits) < 10) {
+            throw new \InvalidArgumentException('Informe um WhatsApp valido.');
+        }
 
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             throw new \InvalidArgumentException('E-mail inválido.');

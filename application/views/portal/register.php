@@ -62,7 +62,7 @@ $loginUrl = htmlspecialchars($url('portal'), ENT_QUOTES, 'UTF-8');
 
                 <div class="field-group portal-field-contact">
                     <label for="registro-telefone">Telefone</label>
-                    <input type="tel" id="registro-telefone" name="telefone" placeholder="(11) 99999-0000">
+                    <input type="tel" id="registro-telefone" name="telefone" placeholder="(11) 99999-0000" required>
                 </div>
 
                 <div class="document-toggle" role="radiogroup" aria-label="Tipo de documento">
@@ -76,7 +76,7 @@ $loginUrl = htmlspecialchars($url('portal'), ENT_QUOTES, 'UTF-8');
                 <div class="document-fields">
                     <div class="field-group" data-doc-field="cnpj">
                         <label for="registro-cnpj">CNPJ</label>
-                        <input type="text" id="registro-cnpj" name="cnpj" placeholder="00.000.000/0000-00">
+                        <input type="text" id="registro-cnpj" name="cnpj" placeholder="00.000.000/0000-00" required>
                     </div>
                     <div class="field-group field-group--hidden" data-doc-field="cpf">
                         <label for="registro-cpf">CPF</label>
@@ -563,6 +563,11 @@ $loginUrl = htmlspecialchars($url('portal'), ENT_QUOTES, 'UTF-8');
         transform: translateY(-1px);
     }
 
+    .auth-panel input[aria-invalid="true"] {
+        border-color: #ef4444;
+        box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.12);
+    }
+
     .portal-auth-title {
         display: inline-flex;
         align-items: center;
@@ -715,12 +720,60 @@ $loginUrl = htmlspecialchars($url('portal'), ENT_QUOTES, 'UTF-8');
                 if (input) {
                     if (matches) {
                         input.removeAttribute('disabled');
+                        input.setAttribute('required', 'required');
                     } else {
                         input.value = '';
                         input.setAttribute('disabled', 'disabled');
+                        input.removeAttribute('required');
+                        input.removeAttribute('aria-invalid');
                     }
                 }
             });
+        };
+
+        const validateRequiredFields = () => {
+            [
+                'registro-email',
+                'registro-telefone',
+                'registro-razao',
+                'registro-fantasia',
+                'registro-cep',
+                'registro-endereco',
+                'registro-numero',
+                'registro-bairro',
+                'registro-cidade',
+                'registro-estado',
+                'registro-senha',
+                'registro-confirma',
+                'registro-whatsapp',
+            ].forEach((id) => {
+                const input = document.getElementById(id);
+                if (input) {
+                    input.setAttribute('required', 'required');
+                }
+            });
+
+            const controls = Array.from(form.querySelectorAll('input[required], select[required], textarea[required]'))
+                .filter((control) => !control.disabled);
+            let firstInvalid = null;
+
+            controls.forEach((control) => {
+                const value = String(control.value || '').trim();
+                const valid = value !== '' && control.checkValidity();
+                control.setAttribute('aria-invalid', valid ? 'false' : 'true');
+                if (!valid && !firstInvalid) {
+                    firstInvalid = control;
+                }
+            });
+
+            if (firstInvalid) {
+                setFeedback(feedback, 'Preencha todos os campos obrigatorios antes de cadastrar.', 'error');
+                firstInvalid.focus({ preventScroll: true });
+                firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                return false;
+            }
+
+            return true;
         };
 
         const aplicarCep = async (cep) => {
@@ -764,6 +817,9 @@ $loginUrl = htmlspecialchars($url('portal'), ENT_QUOTES, 'UTF-8');
         if (form) {
             form.addEventListener('submit', async (event) => {
                 event.preventDefault();
+                if (!validateRequiredFields()) {
+                    return;
+                }
                 setFeedback(feedback, 'Enviando dados…');
                 const formData = new FormData(form);
                 const payload = Object.fromEntries(formData.entries());
