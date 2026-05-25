@@ -292,6 +292,68 @@ include __DIR__.'/index_whatsapp_beside_contact_type_patch.php';
             padding: 1rem !important;
         }
 
+        html body #portal-tab-configuracao,
+        html body #portal-tab-configuracao .portal-settings-tab-card,
+        html body #portal-tab-configuracao .portal-settings-form,
+        html body #portal-tab-configuracao [data-settings-section="cadastro"] {
+            width: 100% !important;
+            max-width: 100% !important;
+            min-width: 0 !important;
+            overflow: visible !important;
+        }
+
+        html body #portal-tab-configuracao .portal-settings-tab-card {
+            padding: 1rem !important;
+            border-radius: 18px !important;
+        }
+
+        html body #portal-tab-configuracao .portal-settings-tab-card__head,
+        html body #portal-tab-configuracao .portal-settings-subtabs {
+            width: 100% !important;
+            max-width: 100% !important;
+            min-width: 0 !important;
+        }
+
+        html body #portal-tab-configuracao .portal-settings-tab-card__head {
+            display: grid !important;
+            grid-template-columns: 1fr !important;
+            gap: 0.55rem !important;
+        }
+
+        html body #portal-tab-configuracao .portal-settings-tab-card__head h3,
+        html body #portal-tab-configuracao .portal-settings-tab-card__head p {
+            max-width: 100% !important;
+            overflow-wrap: anywhere !important;
+        }
+
+        html body #portal-tab-configuracao .portal-settings-subtabs {
+            display: grid !important;
+            grid-template-columns: 1fr 1fr !important;
+            gap: 0.45rem !important;
+        }
+
+        html body #portal-tab-configuracao .portal-settings-subtab {
+            width: 100% !important;
+            min-width: 0 !important;
+            justify-content: center !important;
+            padding-inline: 0.55rem !important;
+            white-space: normal !important;
+        }
+
+        html body #portal-tab-configuracao [data-settings-section="cadastro"],
+        html body #portal-tab-configuracao [data-settings-section="cadastro"] .portal-settings-card,
+        html body #portal-tab-configuracao [data-settings-section="cadastro"] .portal-settings-content,
+        html body #portal-tab-configuracao [data-settings-section="cadastro"] .portal-settings-form,
+        html body #portal-tab-configuracao [data-settings-section="cadastro"] .portal-settings-grid,
+        html body #portal-tab-configuracao [data-settings-section="cadastro"] .portal-settings-document-card,
+        html body #portal-tab-configuracao [data-settings-section="cadastro"] .portal-settings-document-card .portal-settings-grid,
+        html body #portal-tab-configuracao [data-settings-section="cadastro"] .portal-settings-info-row,
+        html body #portal-tab-configuracao [data-settings-section="cadastro"] .portal-settings-address-row,
+        html body #portal-tab-configuracao [data-settings-section="cadastro"] .portal-settings-city-state-row,
+        html body #portal-tab-configuracao [data-settings-section="cadastro"] .portal-settings-contact-row,
+        html body #portal-tab-configuracao [data-settings-section="cadastro"] .portal-settings-contact-line,
+        html body #portal-tab-configuracao [data-settings-section="cadastro"] .portal-settings-top-grid,
+        html body #portal-tab-configuracao [data-settings-section="cadastro"] .portal-settings-name-email-row,
         html body #portal-settings-modal [data-settings-section="cadastro"],
         html body #portal-settings-modal [data-settings-section="cadastro"] .portal-settings-card,
         html body #portal-settings-modal [data-settings-section="cadastro"] .portal-settings-content,
@@ -315,6 +377,11 @@ include __DIR__.'/index_whatsapp_beside_contact_type_patch.php';
             overflow: visible !important;
         }
 
+        html body #portal-tab-configuracao [data-settings-section="cadastro"] .portal-settings-field,
+        html body #portal-tab-configuracao [data-settings-section="cadastro"] .portal-settings-contact-type,
+        html body #portal-tab-configuracao [data-settings-section="cadastro"] .portal-settings-doc-toggle,
+        html body #portal-tab-configuracao [data-settings-section="cadastro"] .portal-settings-whatsapp-row,
+        html body #portal-tab-configuracao [data-settings-section="cadastro"] [data-settings-doc-field],
         html body #portal-settings-modal [data-settings-section="cadastro"] .portal-settings-field,
         html body #portal-settings-modal [data-settings-section="cadastro"] .portal-settings-contact-type,
         html body #portal-settings-modal [data-settings-section="cadastro"] .portal-settings-doc-toggle,
@@ -328,6 +395,13 @@ include __DIR__.'/index_whatsapp_beside_contact_type_patch.php';
             transform: none !important;
         }
 
+        html body #portal-tab-configuracao [data-settings-section="cadastro"] input,
+        html body #portal-tab-configuracao [data-settings-section="cadastro"] select,
+        html body #portal-tab-configuracao [data-settings-section="cadastro"] textarea,
+        html body #portal-tab-configuracao [data-settings-section="cadastro"] .portal-settings-field input,
+        html body #portal-tab-configuracao [data-settings-section="cadastro"] #portal-full-cep,
+        html body #portal-tab-configuracao [data-settings-section="cadastro"] #portal-full-cidade,
+        html body #portal-tab-configuracao [data-settings-section="cadastro"] #portal-full-estado,
         html body #portal-settings-modal [data-settings-section="cadastro"] input,
         html body #portal-settings-modal [data-settings-section="cadastro"] select,
         html body #portal-settings-modal [data-settings-section="cadastro"] textarea,
@@ -340,6 +414,16 @@ include __DIR__.'/index_whatsapp_beside_contact_type_patch.php';
             min-width: 0 !important;
         }
 
+        html body #portal-tab-configuracao [data-settings-section="cadastro"] input,
+        html body #portal-tab-configuracao [data-settings-section="cadastro"] select,
+        html body #portal-tab-configuracao [data-settings-section="cadastro"] textarea {
+            min-height: 46px !important;
+            padding: 0.72rem 0.82rem !important;
+            font-size: 16px !important;
+        }
+
+        html body #portal-tab-configuracao [data-settings-section="cadastro"] .portal-settings-doc-toggle,
+        html body #portal-tab-configuracao [data-settings-section="cadastro"] .portal-settings-contact-type,
         html body #portal-settings-modal [data-settings-section="cadastro"] .portal-settings-doc-toggle,
         html body #portal-settings-modal [data-settings-section="cadastro"] .portal-settings-contact-type {
             align-items: stretch !important;
@@ -347,15 +431,59 @@ include __DIR__.'/index_whatsapp_beside_contact_type_patch.php';
             border-radius: 14px !important;
         }
 
+        html body #portal-tab-configuracao [data-settings-section="cadastro"] .portal-settings-doc-toggle {
+            display: grid !important;
+            grid-template-columns: 1fr !important;
+        }
+
+        html body #portal-tab-configuracao [data-settings-section="cadastro"] .portal-settings-contact-type {
+            display: grid !important;
+            grid-template-columns: 1fr !important;
+            gap: 0.55rem !important;
+        }
+
+        html body #portal-tab-configuracao [data-settings-section="cadastro"] .portal-settings-doc-toggle__buttons,
+        html body #portal-tab-configuracao [data-settings-section="cadastro"] .portal-settings-contact-type label,
         html body #portal-settings-modal [data-settings-section="cadastro"] .portal-settings-doc-toggle__buttons,
         html body #portal-settings-modal [data-settings-section="cadastro"] .portal-settings-contact-type label {
             width: 100% !important;
         }
 
+        html body #portal-tab-configuracao [data-settings-section="cadastro"] .portal-settings-doc-toggle__buttons {
+            display: grid !important;
+            grid-template-columns: 1fr 1fr !important;
+            gap: 0.45rem !important;
+        }
+
+        html body #portal-tab-configuracao [data-settings-section="cadastro"] .portal-settings-doc-btn {
+            width: 100% !important;
+            min-width: 0 !important;
+            justify-content: center !important;
+        }
+
+        html body #portal-tab-configuracao [data-settings-section="cadastro"] .portal-settings-branch-row {
+            grid-template-columns: 1fr !important;
+            padding: 0.75rem !important;
+            gap: 0.65rem !important;
+        }
+
+        html body #portal-tab-configuracao [data-settings-section="cadastro"] .portal-settings-branch-switch {
+            width: 100% !important;
+            justify-content: space-between !important;
+        }
+
+        html body #portal-tab-configuracao .portal-settings-actions,
+        html body #portal-tab-configuracao [data-settings-section="cadastro"] .portal-settings-actions,
         html body #portal-settings-modal [data-settings-section="cadastro"] .portal-settings-actions {
             display: grid !important;
             grid-template-columns: 1fr !important;
             gap: 0.65rem !important;
+        }
+
+        html body #portal-tab-configuracao .portal-settings-actions .portal-btn,
+        html body #portal-tab-configuracao [data-settings-section="cadastro"] .portal-settings-actions .portal-btn {
+            width: 100% !important;
+            min-width: 0 !important;
         }
 
         html body .portal-app__panels {
