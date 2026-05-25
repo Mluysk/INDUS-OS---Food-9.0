@@ -221,17 +221,29 @@ if ($supportWhatsapp !== '') {
 
         <section class="portal-panel" id="portal-tab-suporte" data-portal-tab-panel="suporte" hidden>
             <div class="portal-support-card">
-                <h3>Suporte dedicado</h3>
-                <p>Precisa de ajuda? Nossa equipe acompanha toda a jornada, do pedido à expedição.</p>
+                <div class="portal-support-card__head">
+                    <span class="portal-support-card__icon" aria-hidden="true">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                            <path d="M4 12a8 8 0 0 1 16 0" />
+                            <path d="M4 12v3.2a2 2 0 0 0 2 2h1.2a1 1 0 0 0 1-1V12a1 1 0 0 0-1-1H6a2 2 0 0 0-2 1Z" />
+                            <path d="M20 12v3.2a2 2 0 0 1-2 2h-1.2a1 1 0 0 1-1-1V12a1 1 0 0 1 1-1H18a2 2 0 0 1 2 1Z" />
+                            <path d="M18 17.2c0 2-1.7 3.3-4.1 3.3H12" />
+                        </svg>
+                    </span>
+                    <div>
+                        <h3>Suporte dedicado</h3>
+                        <p>Precisa de ajuda? Nossa equipe acompanha toda a jornada, do pedido à expedição.</p>
+                    </div>
+                </div>
                 <ul class="portal-support-card__list">
                     <?php if ($supportEmail !== ''): ?>
-                        <li><strong>E-mail:</strong> <a href="mailto:<?= htmlspecialchars($supportEmail, ENT_QUOTES, 'UTF-8'); ?>"><?= htmlspecialchars($supportEmail, ENT_QUOTES, 'UTF-8'); ?></a></li>
+                        <li data-support-kind="email"><strong>E-mail:</strong> <a href="mailto:<?= htmlspecialchars($supportEmail, ENT_QUOTES, 'UTF-8'); ?>"><?= htmlspecialchars($supportEmail, ENT_QUOTES, 'UTF-8'); ?></a></li>
                     <?php endif; ?>
                     <?php if ($supportTelefone !== ''): ?>
-                        <li><strong>Telefone:</strong> <a href="tel:<?= htmlspecialchars($phoneHref ?: $supportTelefone, ENT_QUOTES, 'UTF-8'); ?>"><?= htmlspecialchars($supportTelefone, ENT_QUOTES, 'UTF-8'); ?></a></li>
+                        <li data-support-kind="phone"><strong>Telefone:</strong> <a href="tel:<?= htmlspecialchars($phoneHref ?: $supportTelefone, ENT_QUOTES, 'UTF-8'); ?>"><?= htmlspecialchars($supportTelefone, ENT_QUOTES, 'UTF-8'); ?></a></li>
                     <?php endif; ?>
                     <?php if ($supportWhatsapp !== ''): ?>
-                        <li><strong>WhatsApp:</strong>
+                        <li data-support-kind="whatsapp"><strong>WhatsApp:</strong>
                             <?php if ($whatsHref !== ''): ?>
                                 <a href="<?= htmlspecialchars($whatsHref, ENT_QUOTES, 'UTF-8'); ?>" target="_blank" rel="noopener"><?= htmlspecialchars($supportWhatsapp, ENT_QUOTES, 'UTF-8'); ?></a>
                             <?php else: ?>
@@ -243,6 +255,17 @@ if ($supportWhatsapp !== '') {
                         <li><strong>Horário:</strong> <?= htmlspecialchars($supportHorario, ENT_QUOTES, 'UTF-8'); ?></li>
                     <?php endif; ?>
                 </ul>
+                <div class="portal-support-card__actions">
+                    <?php if ($whatsHref !== ''): ?>
+                        <a class="portal-support-card__action portal-support-card__action--primary" href="<?= htmlspecialchars($whatsHref, ENT_QUOTES, 'UTF-8'); ?>" target="_blank" rel="noopener">Enviar WhatsApp</a>
+                    <?php endif; ?>
+                    <?php if ($supportEmail !== ''): ?>
+                        <a class="portal-support-card__action" href="mailto:<?= htmlspecialchars($supportEmail, ENT_QUOTES, 'UTF-8'); ?>">Enviar e-mail</a>
+                    <?php endif; ?>
+                    <?php if ($supportTelefone !== ''): ?>
+                        <a class="portal-support-card__action" href="tel:<?= htmlspecialchars($phoneHref ?: $supportTelefone, ENT_QUOTES, 'UTF-8'); ?>">Ligar</a>
+                    <?php endif; ?>
+                </div>
                 <?php if ($supportMensagem !== ''): ?>
                     <p class="portal-support-card__foot"><?= htmlspecialchars($supportMensagem, ENT_QUOTES, 'UTF-8'); ?></p>
                 <?php endif; ?>
@@ -1555,25 +1578,149 @@ if ($supportWhatsapp !== '') {
 
     .portal-support-card__list {
         list-style: none;
-        margin: 1.1rem 0 1.8rem;
+        margin: 1.15rem 0 1rem;
         padding: 0;
         display: grid;
-        gap: 0.6rem;
+        gap: 0.72rem;
+    }
+
+    .portal-support-card__head {
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr);
+        gap: 1rem;
+        align-items: start;
+    }
+
+    .portal-support-card__head h3 {
+        margin: 0 0 0.42rem;
+        color: var(--text, #0f172a);
+        font-size: 1.2rem;
+    }
+
+    .portal-support-card__head p {
+        margin: 0;
+        color: var(--portal-muted);
+        line-height: 1.48;
+    }
+
+    .portal-support-card__icon {
+        width: 52px;
+        height: 52px;
+        display: inline-grid;
+        place-items: center;
+        border-radius: 17px;
+        background: color-mix(in srgb, var(--primary, #2563eb) 12%, #ffffff);
+        color: var(--primary, #2563eb);
+        box-shadow: 0 18px 36px -30px color-mix(in srgb, var(--primary, #2563eb) 80%, transparent);
+    }
+
+    .portal-support-card__icon svg {
+        width: 28px;
+        height: 28px;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+    }
+
+    .portal-support-card__list li {
+        position: relative;
+        min-height: 48px;
+        display: grid;
+        gap: 0.2rem;
+        padding: 0.72rem 0.8rem 0.72rem 3.1rem;
+        border: 1px solid color-mix(in srgb, var(--primary, #2563eb) 12%, rgba(148, 163, 184, 0.22));
+        border-radius: 16px;
+        background: color-mix(in srgb, var(--primary, #2563eb) 4%, #ffffff);
+        color: var(--portal-muted);
+        overflow-wrap: anywhere;
+    }
+
+    .portal-support-card__list li::before {
+        content: '';
+        position: absolute;
+        left: 0.82rem;
+        top: 0.78rem;
+        width: 30px;
+        height: 30px;
+        border-radius: 11px;
+        background: color-mix(in srgb, var(--primary, #2563eb) 14%, #ffffff);
+        box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--primary, #2563eb) 18%, transparent);
+    }
+
+    .portal-support-card__list li::after {
+        position: absolute;
+        left: 0.82rem;
+        top: 0.78rem;
+        width: 30px;
+        height: 30px;
+        display: grid;
+        place-items: center;
+        color: var(--primary, #2563eb);
+        font-size: 0.78rem;
+        font-weight: 950;
+    }
+
+    .portal-support-card__list li[data-support-kind="email"]::after { content: '@'; }
+    .portal-support-card__list li[data-support-kind="phone"]::after { content: 'T'; }
+    .portal-support-card__list li[data-support-kind="whatsapp"]::after { content: 'W'; }
+    .portal-support-card__list li:not([data-support-kind])::after { content: 'H'; }
+
+    .portal-support-card__list strong {
+        display: block;
+        color: var(--text, #0f172a);
+        font-size: 0.76rem;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
     }
 
     .portal-support-card__list a {
-        color: inherit;
+        color: var(--text, #0f172a);
         text-decoration: none;
-        border-bottom: 1px dashed rgba(148, 163, 184, 0.4);
+        border-bottom: 1px dashed color-mix(in srgb, var(--primary, #2563eb) 34%, rgba(148, 163, 184, 0.4));
+        font-weight: 800;
     }
 
     .portal-support-card__list a:hover {
-        color: rgba(37, 99, 235, 0.85);
+        color: var(--primary, #2563eb);
+    }
+
+    .portal-support-card__actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.62rem;
+        margin: 0.3rem 0 1.1rem;
+    }
+
+    .portal-support-card__action {
+        min-height: 40px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid color-mix(in srgb, var(--primary, #2563eb) 20%, rgba(148, 163, 184, 0.34));
+        border-radius: 999px;
+        padding: 0.62rem 0.92rem;
+        background: color-mix(in srgb, var(--primary, #2563eb) 6%, #ffffff);
+        color: var(--primary, #2563eb);
+        text-decoration: none;
+        font-weight: 900;
+        box-shadow: 0 14px 28px -24px color-mix(in srgb, var(--primary, #2563eb) 72%, transparent);
+    }
+
+    .portal-support-card__action--primary {
+        background: var(--primary, #2563eb);
+        border-color: var(--primary, #2563eb);
+        color: #fff;
     }
 
     .portal-support-card__foot {
-        margin-top: 1.2rem;
+        margin: 1rem 0 0;
+        padding: 0.9rem 1rem;
+        border-radius: 16px;
+        background: color-mix(in srgb, var(--primary, #2563eb) 5%, #ffffff);
         color: var(--portal-muted);
+        line-height: 1.45;
     }
 
     .portal-cart-card h3 {

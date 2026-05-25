@@ -561,6 +561,70 @@ include __DIR__.'/index_whatsapp_beside_contact_type_patch.php';
             margin-bottom: 1rem !important;
         }
 
+        html body .portal-support-card__head {
+            grid-template-columns: 1fr !important;
+            gap: 0.72rem !important;
+        }
+
+        html body .portal-support-card__icon {
+            width: 48px !important;
+            height: 48px !important;
+            border-radius: 15px !important;
+        }
+
+        html body .portal-support-card__icon svg {
+            width: 26px !important;
+            height: 26px !important;
+        }
+
+        html body .portal-support-card__head h3 {
+            font-size: 1.08rem !important;
+            margin-bottom: 0.35rem !important;
+        }
+
+        html body .portal-support-card__head p {
+            font-size: 0.9rem !important;
+        }
+
+        html body .portal-support-card__list {
+            margin: 0.95rem 0 0.85rem !important;
+            gap: 0.58rem !important;
+        }
+
+        html body .portal-support-card__list li {
+            min-height: 44px !important;
+            padding: 0.64rem 0.68rem 0.64rem 2.85rem !important;
+            border-radius: 14px !important;
+            font-size: 0.87rem !important;
+        }
+
+        html body .portal-support-card__list li::before,
+        html body .portal-support-card__list li::after {
+            left: 0.72rem !important;
+            top: 0.7rem !important;
+            width: 28px !important;
+            height: 28px !important;
+        }
+
+        html body .portal-support-card__actions {
+            display: grid !important;
+            grid-template-columns: 1fr !important;
+            gap: 0.55rem !important;
+            margin-bottom: 0.85rem !important;
+        }
+
+        html body .portal-support-card__action {
+            width: 100% !important;
+            min-height: 42px !important;
+        }
+
+        html body .portal-support-card__foot {
+            margin-top: 0.85rem !important;
+            padding: 0.78rem 0.86rem !important;
+            border-radius: 14px !important;
+            font-size: 0.88rem !important;
+        }
+
         html body .portal-catalog-card__controls,
         html body .portal-view-toggle {
             width: 100% !important;
