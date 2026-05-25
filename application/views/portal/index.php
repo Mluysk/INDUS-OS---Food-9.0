@@ -1738,29 +1738,34 @@ if ($supportWhatsapp !== '') {
 
     .portal-modal__dialog--welcome {
         max-width: 460px;
-        gap: 1.5rem;
-        padding: clamp(2rem, 3.6vw, 2.5rem);
+        gap: 0;
+        padding: clamp(1.55rem, 3.6vw, 2.15rem);
+        border-radius: 28px;
+        background:
+            radial-gradient(120% 80% at 0% 0%, color-mix(in srgb, var(--primary, #2563eb) 10%, transparent), transparent 58%),
+            var(--portal-card-bg, #ffffff);
+        border: 1px solid color-mix(in srgb, var(--primary, #2563eb) 12%, var(--portal-card-border, rgba(15, 23, 42, 0.08)));
     }
 
     .portal-welcome {
         display: grid;
-        gap: 1.5rem;
+        gap: 1rem;
     }
 
     .portal-welcome__icon {
-        width: 72px;
-        height: 72px;
-        border-radius: 24px;
-        background: linear-gradient(135deg, rgba(37, 99, 235, 0.92), rgba(59, 130, 246, 0.95));
+        width: 64px;
+        height: 64px;
+        border-radius: 22px;
+        background: color-mix(in srgb, var(--primary, #2563eb) 13%, #ffffff);
         display: grid;
         place-items: center;
-        color: #fff;
-        box-shadow: 0 28px 70px -48px rgba(37, 99, 235, 0.9);
+        color: var(--primary, #2563eb);
+        box-shadow: 0 18px 34px -28px color-mix(in srgb, var(--primary, #2563eb) 80%, transparent);
     }
 
     .portal-welcome__icon svg {
-        width: 34px;
-        height: 34px;
+        width: 30px;
+        height: 30px;
         fill: currentColor;
     }
 
@@ -1768,49 +1773,78 @@ if ($supportWhatsapp !== '') {
         display: inline-flex;
         align-items: center;
         gap: 0.35rem;
-        padding: 0.35rem 0.8rem;
+        width: fit-content;
+        padding: 0.36rem 0.82rem;
         border-radius: 999px;
-        background: rgba(37, 99, 235, 0.12);
-        color: rgba(37, 99, 235, 0.92);
-        font-weight: 600;
+        background: color-mix(in srgb, var(--primary, #2563eb) 12%, #ffffff);
+        color: var(--primary, #2563eb);
+        font-weight: 800;
         font-size: 0.8rem;
         letter-spacing: 0.02em;
     }
 
+    .portal-welcome h3 {
+        margin: 0.25rem 0 0;
+        font-size: clamp(1.45rem, 4vw, 1.85rem);
+        line-height: 1.05;
+        color: var(--text, #0f172a);
+    }
+
     .portal-welcome__lead {
+        margin: 0;
         color: var(--portal-muted);
-        line-height: 1.6;
+        line-height: 1.55;
+        font-size: 0.98rem;
+    }
+
+    .portal-welcome__lead strong {
+        color: var(--text, #0f172a);
+        font-weight: 900;
     }
 
     .portal-welcome__tips {
         list-style: none;
-        margin: 0;
+        margin: 0.1rem 0 0;
         padding: 0;
         display: grid;
-        gap: 0.75rem;
+        gap: 0.62rem;
     }
 
     .portal-welcome__tips li {
-        display: flex;
-        align-items: flex-start;
-        gap: 0.6rem;
+        position: relative;
+        display: block;
+        padding: 0.74rem 0.84rem 0.74rem 2.35rem;
+        border: 1px solid color-mix(in srgb, var(--primary, #2563eb) 12%, rgba(148, 163, 184, 0.22));
+        border-radius: 16px;
+        background: color-mix(in srgb, var(--primary, #2563eb) 4%, #ffffff);
         color: var(--portal-muted);
+        line-height: 1.34;
+        font-weight: 650;
     }
 
     .portal-welcome__tips li::before {
         content: '';
-        width: 8px;
-        height: 8px;
-        margin-top: 0.4rem;
+        position: absolute;
+        left: 0.86rem;
+        top: 0.92rem;
+        width: 9px;
+        height: 9px;
         border-radius: 999px;
-        background: rgba(37, 99, 235, 0.35);
-        flex-shrink: 0;
+        background: var(--primary, #2563eb);
+        box-shadow: 0 0 0 5px color-mix(in srgb, var(--primary, #2563eb) 12%, transparent);
+    }
+
+    .portal-welcome__tips strong {
+        color: var(--text, #0f172a);
+        font-weight: 900;
+        white-space: nowrap;
     }
 
     .portal-welcome__footer {
         display: flex;
         justify-content: flex-end;
         gap: 0.75rem;
+        margin-top: 0.25rem;
     }
 
     @media (max-width: 600px) {

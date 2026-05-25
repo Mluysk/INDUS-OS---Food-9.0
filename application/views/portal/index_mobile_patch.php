@@ -781,11 +781,78 @@ include __DIR__.'/index_whatsapp_beside_contact_type_patch.php';
             overflow-y: auto !important;
         }
 
+        html body .portal-modal__dialog--welcome {
+            width: min(100%, 348px) !important;
+            padding: 1.05rem !important;
+            border-radius: 20px !important;
+        }
+
+        html body .portal-welcome {
+            gap: 0.82rem !important;
+        }
+
+        html body .portal-welcome__icon {
+            width: 58px !important;
+            height: 58px !important;
+            border-radius: 18px !important;
+        }
+
+        html body .portal-welcome__icon svg {
+            width: 28px !important;
+            height: 28px !important;
+        }
+
+        html body .portal-welcome__tag {
+            width: 100% !important;
+            justify-content: center !important;
+            padding: 0.34rem 0.7rem !important;
+        }
+
+        html body .portal-welcome h3 {
+            margin: 0.08rem 0 0 !important;
+            font-size: 1.22rem !important;
+        }
+
+        html body .portal-welcome__lead {
+            font-size: 0.9rem !important;
+            line-height: 1.45 !important;
+        }
+
+        html body .portal-welcome__tips {
+            gap: 0.5rem !important;
+        }
+
+        html body .portal-welcome__tips li {
+            display: block !important;
+            padding: 0.66rem 0.74rem 0.66rem 2rem !important;
+            border-radius: 14px !important;
+            font-size: 0.86rem !important;
+            line-height: 1.28 !important;
+        }
+
+        html body .portal-welcome__tips li::before {
+            left: 0.74rem !important;
+            top: 0.82rem !important;
+            width: 7px !important;
+            height: 7px !important;
+        }
+
+        html body .portal-welcome__tips strong {
+            display: inline !important;
+            white-space: normal !important;
+        }
+
         html body .portal-modal__footer,
         html body .portal-welcome__footer {
             display: grid !important;
             grid-template-columns: 1fr !important;
             gap: 0.65rem !important;
+            margin-top: 0.12rem !important;
+        }
+
+        html body .portal-welcome__footer .portal-btn {
+            min-height: 42px !important;
+            border-radius: 13px !important;
         }
 
         html body footer {
