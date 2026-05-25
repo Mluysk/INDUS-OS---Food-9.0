@@ -758,6 +758,7 @@ include __DIR__.'/index_whatsapp_beside_contact_type_patch.php';
         }
 
         html body .portal-floating-support {
+            right: max(12px, env(safe-area-inset-right)) !important;
             width: 56px !important;
             height: 56px !important;
             min-width: 56px !important;
