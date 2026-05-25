@@ -651,6 +651,16 @@ $loginUrl = htmlspecialchars($url('portal'), ENT_QUOTES, 'UTF-8');
     }
 
     @media (max-width: 720px) {
+        .portal-brand-card__logo {
+            justify-content: center;
+            width: 100%;
+        }
+
+        .portal-logo,
+        .portal-logo-filtered {
+            transform: translate(0, var(--portal-logo-y, 0));
+        }
+
         .portal-auth-title {
             gap: 0.6rem;
         }
