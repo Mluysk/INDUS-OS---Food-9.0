@@ -2610,6 +2610,20 @@ $catalogoPayload = json_encode(array_map(static function ($produto) {
         } else {
             portalAppSection?.setAttribute('hidden', '');
             portalHero?.removeAttribute('hidden');
+            localStorage.removeItem('portal-primary-hex');
+            localStorage.removeItem('portal-primary-name');
+            const systemPrimary = getComputedStyle(document.documentElement).getPropertyValue('--portal-system-primary').trim() || '#2563eb';
+            document.documentElement.style.setProperty('--primary', systemPrimary);
+            document.documentElement.style.setProperty('--portal-primary', systemPrimary);
+            let mobileThemeColor = document.querySelector('meta[name="theme-color"][data-portal-mobile-bar]');
+            if (!mobileThemeColor) {
+                mobileThemeColor = document.createElement('meta');
+                mobileThemeColor.name = 'theme-color';
+                mobileThemeColor.media = '(max-width: 767px)';
+                mobileThemeColor.dataset.portalMobileBar = '1';
+                document.head.appendChild(mobileThemeColor);
+            }
+            mobileThemeColor.content = systemPrimary;
             pedidosCarregados = false;
             renderPedidos([]);
             setFeedback(ordersFeedback, '', '');

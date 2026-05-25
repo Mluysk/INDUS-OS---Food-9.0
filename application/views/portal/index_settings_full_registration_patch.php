@@ -478,6 +478,10 @@ include __DIR__.'/index_settings_sections_patch.php';
 
     const applyPortalPalette = (hex, name = 'Cor personalizada', persist = true) => {
         const normalized = normalizeHex(hex) || '#2563EB';
+        if (!persist) {
+            localStorage.removeItem('portal-primary-hex');
+            localStorage.removeItem('portal-primary-name');
+        }
         document.documentElement.style.setProperty('--primary', normalized);
         document.documentElement.style.setProperty('--portal-primary', normalized);
         syncMobileBrowserBarColor(normalized);
