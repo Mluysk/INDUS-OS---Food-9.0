@@ -338,7 +338,125 @@
         }
 
         document.querySelector('[data-print-daily-output]')?.addEventListener('click', () => {
-            window.print();
+            const report = document.querySelector('[data-daily-output-report]');
+            if (!report) {
+                window.print();
+                return;
+            }
+
+            const printWindow = window.open('', '_blank', 'width=1100,height=800');
+            if (!printWindow) {
+                window.print();
+                return;
+            }
+
+            printWindow.document.write(`<!doctype html>
+                <html lang="pt-BR">
+                <head>
+                    <meta charset="utf-8">
+                    <title>Relatorio de saida</title>
+                    <style>
+                        @page { margin: 12mm; }
+                        * { box-sizing: border-box; }
+                        body {
+                            margin: 0;
+                            color: #0f172a;
+                            background: #fff;
+                            font-family: Arial, Helvetica, sans-serif;
+                        }
+                        .daily-output-report {
+                            display: block;
+                            width: 100%;
+                            border: 0;
+                            padding: 0;
+                            background: #fff;
+                            box-shadow: none;
+                        }
+                        .daily-output-report__title {
+                            display: flex;
+                            justify-content: space-between;
+                            gap: 16px;
+                            align-items: flex-start;
+                            margin-bottom: 14px;
+                            color: #475569;
+                            font-weight: 800;
+                        }
+                        .daily-output-report__title strong {
+                            color: #0f172a;
+                            font-size: 18px;
+                        }
+                        .daily-output-summary {
+                            display: grid;
+                            grid-template-columns: repeat(3, 1fr);
+                            gap: 8px;
+                            margin-bottom: 16px;
+                        }
+                        .daily-output-summary div {
+                            border: 1px solid #dbe3ee;
+                            border-radius: 8px;
+                            padding: 8px;
+                            break-inside: avoid;
+                        }
+                        .daily-output-summary span {
+                            display: block;
+                            color: #64748b;
+                            font-size: 10px;
+                            font-weight: 800;
+                            text-transform: uppercase;
+                        }
+                        .daily-output-summary strong {
+                            display: block;
+                            margin-top: 4px;
+                            color: #0f172a;
+                            font-size: 14px;
+                        }
+                        .daily-output-table-wrap {
+                            overflow: visible;
+                        }
+                        table {
+                            width: 100%;
+                            border-collapse: collapse;
+                            table-layout: auto;
+                            font-size: 11px;
+                        }
+                        thead {
+                            display: table-header-group;
+                        }
+                        tfoot {
+                            display: table-footer-group;
+                        }
+                        tr {
+                            break-inside: avoid;
+                            page-break-inside: avoid;
+                        }
+                        th,
+                        td {
+                            border-bottom: 1px solid #e2e8f0;
+                            padding: 7px 6px;
+                            text-align: left;
+                            white-space: normal;
+                            word-break: break-word;
+                        }
+                        th {
+                            color: #475569;
+                            font-size: 10px;
+                            text-transform: uppercase;
+                        }
+                    </style>
+                </head>
+                <body>${report.outerHTML}</body>
+                </html>`);
+            printWindow.document.close();
+            printWindow.focus();
+            const printReport = () => {
+                printWindow.print();
+                setTimeout(() => printWindow.close(), 500);
+            };
+            if (printWindow.document.readyState === 'complete') {
+                setTimeout(printReport, 100);
+            } else {
+                printWindow.addEventListener('load', printReport, { once: true });
+            }
         });
 
         const storeChecks = document.querySelectorAll('.daily-output-store-pill input[type="checkbox"]');
@@ -824,6 +942,17 @@
     }
 
     @media print {
+        @page {
+            margin: 12mm;
+        }
+
+        html,
+        body {
+            height: auto !important;
+            overflow: visible !important;
+            background: #fff !important;
+        }
+
         body * {
             visibility: hidden !important;
         }
@@ -836,10 +965,35 @@
         .daily-output-report {
             position: absolute;
             inset: 0 auto auto 0;
-            width: 100%;
+            width: 100% !important;
             border: 0;
             box-shadow: none;
             background: #fff;
+        }
+
+        .daily-output-table-wrap {
+            overflow: visible !important;
+        }
+
+        .daily-output-table {
+            width: 100% !important;
+            table-layout: auto;
+            font-size: 11px;
+        }
+
+        .daily-output-table thead {
+            display: table-header-group;
+        }
+
+        .daily-output-table tr {
+            break-inside: avoid;
+            page-break-inside: avoid;
+        }
+
+        .daily-output-table th,
+        .daily-output-table td {
+            white-space: normal !important;
+            word-break: break-word;
         }
     }
 </style>
