@@ -201,14 +201,15 @@ class PedidosService
         return $this->pedidos->all();
     }
 
-    public function gerarSaidaDoDia(?string $data = null): array
+    public function gerarSaidaDoDia(?string $data = null, array $lojas = []): array
     {
         $data = trim((string)($data ?: date('Y-m-d')));
         if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $data)) {
             $data = date('Y-m-d');
         }
+        $lojas = array_values(array_filter(array_map('intval', $lojas), static fn (int $id): bool => $id > 0));
 
-        $relatorio = $this->pedidos->relatorioSaidaPorDia($data);
+        $relatorio = $this->pedidos->relatorioSaidaPorDia($data, $lojas);
         $itens = array_map(static function (array $item): array {
             $quantidade = (float)($item['quantidade'] ?? 0);
             $valorTotal = (float)($item['valor_total'] ?? 0);
@@ -230,6 +231,7 @@ class PedidosService
         $resumo = $relatorio['resumo'] ?? [];
         return [
             'data' => $data,
+            'lojas' => $lojas,
             'itens' => $itens,
             'resumo' => [
                 'pedidos' => (int)($resumo['pedidos'] ?? 0),

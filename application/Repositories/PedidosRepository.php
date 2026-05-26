@@ -70,9 +70,22 @@ class PedidosRepository extends BaseRepository
         return $pedido ?: null;
     }
 
-    public function relatorioSaidaPorDia(string $data): array
+    public function relatorioSaidaPorDia(string $data, array $lojas = []): array
     {
         $this->ensurePedidoExtraColumns();
+        $lojas = array_values(array_filter(array_map('intval', $lojas), static fn (int $id): bool => $id > 0));
+        $params = ['data' => $data];
+        $lojaWhere = '';
+        if ($lojas) {
+            $placeholders = [];
+            foreach ($lojas as $idx => $lojaId) {
+                $key = 'loja' . $idx;
+                $placeholders[] = ':' . $key;
+                $params[$key] = $lojaId;
+            }
+            $lojaWhere = ' AND ped.cliente_id IN (' . implode(', ', $placeholders) . ')';
+        }
+
         $stmt = $this->db->prepare("
             SELECT
                 pi.produto_id,
@@ -89,10 +102,11 @@ class PedidosRepository extends BaseRepository
             INNER JOIN produtos p ON p.id = pi.produto_id
             WHERE DATE(ped.created_at) = :data
               AND COALESCE(ped.status, '') <> 'cancelado'
+              {$lojaWhere}
             GROUP BY pi.produto_id, p.sku, p.nome, p.unidade, p.peso_liquido
             ORDER BY p.nome ASC, p.sku ASC
         ");
-        $stmt->execute(['data' => $data]);
+        $stmt->execute($params);
         $itens = $stmt->fetchAll();
 
         $resumo = $this->db->prepare("
@@ -108,8 +122,9 @@ class PedidosRepository extends BaseRepository
             INNER JOIN produtos p ON p.id = pi.produto_id
             WHERE DATE(ped.created_at) = :data
               AND COALESCE(ped.status, '') <> 'cancelado'
+              {$lojaWhere}
         ");
-        $resumo->execute(['data' => $data]);
+        $resumo->execute($params);
 
         return [
             'itens' => $itens,

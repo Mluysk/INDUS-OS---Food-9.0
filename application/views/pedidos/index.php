@@ -128,6 +128,9 @@
         $saidaItens = $saidaDia['itens'] ?? [];
         $saidaData = $saidaDia['data'] ?? date('Y-m-d');
         $saidaDataLabel = date('d/m/Y', strtotime($saidaData));
+        $saidaLojasSelecionadas = array_map('intval', $saidaDia['lojas'] ?? []);
+        $saidaComFiltroLojas = count($saidaLojasSelecionadas) > 0;
+        $saidaLojasLabel = $saidaComFiltroLojas ? count($saidaLojasSelecionadas).' loja(s) selecionada(s)' : 'Todas as lojas';
     ?>
     <div class="pedidos-tab-panel" id="panel-saida-dia" role="tabpanel" aria-labelledby="tab-saida-dia" data-tab-panel="saida-dia" hidden>
         <div class="daily-output-head">
@@ -136,16 +139,55 @@
                 <p class="panel-description">Selecione uma data para consolidar todos os produtos vendidos em pedidos internos e pedidos do portal.</p>
             </div>
             <form class="daily-output-filter" method="get" action="<?= htmlspecialchars($url('pedidos'), ENT_QUOTES, 'UTF-8'); ?>">
-                <label for="saida-data">Dia da saida</label>
-                <input type="date" id="saida-data" name="saida_data" value="<?= htmlspecialchars($saidaData, ENT_QUOTES, 'UTF-8'); ?>">
-                <button type="submit" class="button button-primary">Gerar relatorio</button>
-                <button type="button" class="button" data-print-daily-output>Imprimir</button>
+                <div class="daily-output-filter__top">
+                    <label class="daily-output-date" for="saida-data">
+                        Dia da saida
+                        <input type="date" id="saida-data" name="saida_data" value="<?= htmlspecialchars($saidaData, ENT_QUOTES, 'UTF-8'); ?>">
+                    </label>
+                    <button type="submit" class="button button-primary">Gerar relatorio</button>
+                    <button type="button" class="button" data-print-daily-output>Imprimir</button>
+                </div>
+                <div class="daily-output-stores">
+                    <div class="daily-output-stores__head">
+                        <div>
+                            <span>Filtro de lojas</span>
+                            <strong><?= htmlspecialchars($saidaLojasLabel, ENT_QUOTES, 'UTF-8'); ?></strong>
+                        </div>
+                        <div class="daily-output-stores__actions">
+                            <button type="button" data-output-store-select-all>Marcar todas</button>
+                            <button type="button" data-output-store-clear>Limpar</button>
+                        </div>
+                    </div>
+                    <div class="daily-output-store-list">
+                        <?php foreach (($clientes ?? []) as $cliente): ?>
+                            <?php
+                                $lojaId = (int)($cliente['id'] ?? 0);
+                                if ($lojaId <= 0) {
+                                    continue;
+                                }
+                                $lojaNome = $cliente['nome_fantasia'] ?? $cliente['razao_social'] ?? ('Loja '.$lojaId);
+                                $lojaDoc = $cliente['cnpj'] ?? $cliente['cpf'] ?? '';
+                                $checked = in_array($lojaId, $saidaLojasSelecionadas, true);
+                            ?>
+                            <label class="daily-output-store-pill">
+                                <input type="checkbox" name="saida_lojas[]" value="<?= $lojaId; ?>" <?= $checked ? 'checked' : ''; ?>>
+                                <span>
+                                    <strong><?= htmlspecialchars($lojaNome, ENT_QUOTES, 'UTF-8'); ?></strong>
+                                    <?php if ($lojaDoc !== ''): ?>
+                                        <small><?= htmlspecialchars($lojaDoc, ENT_QUOTES, 'UTF-8'); ?></small>
+                                    <?php endif; ?>
+                                </span>
+                            </label>
+                        <?php endforeach; ?>
+                    </div>
+                    <p>Sem lojas marcadas, o relatorio mostra todas. Marque apenas as lojas que devem aparecer.</p>
+                </div>
             </form>
         </div>
 
         <div class="daily-output-report" data-daily-output-report>
             <div class="daily-output-report__title">
-                <span>Relatorio de saida</span>
+                <span>Relatorio de saida - <?= htmlspecialchars($saidaLojasLabel, ENT_QUOTES, 'UTF-8'); ?></span>
                 <strong><?= htmlspecialchars($saidaDataLabel, ENT_QUOTES, 'UTF-8'); ?></strong>
             </div>
             <div class="daily-output-summary">
@@ -288,6 +330,18 @@
             window.print();
         });
 
+        const storeChecks = document.querySelectorAll('.daily-output-store-pill input[type="checkbox"]');
+        document.querySelector('[data-output-store-select-all]')?.addEventListener('click', () => {
+            storeChecks.forEach((checkbox) => {
+                checkbox.checked = true;
+            });
+        });
+        document.querySelector('[data-output-store-clear]')?.addEventListener('click', () => {
+            storeChecks.forEach((checkbox) => {
+                checkbox.checked = false;
+            });
+        });
+
         document.querySelectorAll('.pedido-edit-btn').forEach((button) => {
             button.addEventListener('click', () => {
                 const novoPedidoTab = document.querySelector('[data-tab-target="novo-pedido"]');
@@ -394,13 +448,20 @@
     }
 
     .daily-output-filter {
+        display: grid;
+        gap: 0.65rem;
+        min-width: min(100%, 620px);
+    }
+
+    .daily-output-filter__top {
         display: flex;
         align-items: end;
         gap: 0.65rem;
         flex-wrap: wrap;
+        justify-content: flex-end;
     }
 
-    .daily-output-filter label {
+    .daily-output-date {
         display: grid;
         gap: 0.35rem;
         color: var(--text-muted, #64748b);
@@ -408,7 +469,7 @@
         font-weight: 800;
     }
 
-    .daily-output-filter input {
+    .daily-output-date input {
         min-height: 40px;
         border: 1px solid var(--border, #e5e7eb);
         border-radius: 999px;
@@ -416,6 +477,113 @@
         color: var(--text, #111827);
         background: var(--surface, #fff);
         font-weight: 800;
+    }
+
+    .daily-output-stores {
+        display: grid;
+        gap: 0.65rem;
+        border: 1px solid color-mix(in srgb, var(--primary, #dc2626) 14%, var(--border, #e5e7eb));
+        border-radius: 18px;
+        padding: 0.75rem;
+        background: color-mix(in srgb, var(--primary, #dc2626) 4%, var(--surface, #fff));
+    }
+
+    .daily-output-stores__head {
+        display: flex;
+        justify-content: space-between;
+        gap: 0.75rem;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+
+    .daily-output-stores__head span {
+        display: block;
+        color: var(--text-muted, #64748b);
+        font-size: 0.72rem;
+        font-weight: 850;
+        text-transform: uppercase;
+    }
+
+    .daily-output-stores__head strong {
+        display: block;
+        margin-top: 0.2rem;
+        color: var(--text, #111827);
+        font-size: 0.92rem;
+    }
+
+    .daily-output-stores__actions {
+        display: inline-flex;
+        gap: 0.45rem;
+        align-items: center;
+    }
+
+    .daily-output-stores__actions button {
+        border: 0;
+        border-radius: 999px;
+        padding: 0.35rem 0.62rem;
+        color: var(--primary, #dc2626);
+        background: color-mix(in srgb, var(--primary, #dc2626) 10%, transparent);
+        font-size: 0.76rem;
+        font-weight: 850;
+        cursor: pointer;
+    }
+
+    .daily-output-store-list {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.5rem;
+        max-height: 190px;
+        overflow: auto;
+        padding-right: 0.15rem;
+    }
+
+    .daily-output-store-pill {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        min-width: 0;
+        border: 1px solid var(--border, #e5e7eb);
+        border-radius: 14px;
+        padding: 0.55rem 0.65rem;
+        background: var(--surface, #fff);
+        cursor: pointer;
+    }
+
+    .daily-output-store-pill input {
+        width: 16px;
+        height: 16px;
+        accent-color: var(--primary, #dc2626);
+        flex: 0 0 auto;
+    }
+
+    .daily-output-store-pill span {
+        display: grid;
+        min-width: 0;
+        gap: 0.1rem;
+    }
+
+    .daily-output-store-pill strong,
+    .daily-output-store-pill small {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .daily-output-store-pill strong {
+        color: var(--text, #111827);
+        font-size: 0.84rem;
+        font-weight: 850;
+    }
+
+    .daily-output-store-pill small,
+    .daily-output-stores p {
+        color: var(--text-muted, #64748b);
+        font-size: 0.74rem;
+        font-weight: 700;
+    }
+
+    .daily-output-stores p {
+        margin: 0;
     }
 
     .daily-output-report {
@@ -533,15 +701,21 @@
         }
 
         .daily-output-head,
-        .daily-output-filter {
+        .daily-output-filter,
+        .daily-output-filter__top {
             display: grid;
             grid-template-columns: 1fr;
             width: 100%;
         }
 
         .daily-output-filter .button,
-        .daily-output-filter input {
+        .daily-output-date input {
             width: 100%;
+        }
+
+        .daily-output-store-list {
+            grid-template-columns: 1fr;
+            max-height: 240px;
         }
 
         .daily-output-summary {

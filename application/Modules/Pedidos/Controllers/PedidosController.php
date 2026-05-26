@@ -45,7 +45,12 @@ class PedidosController extends Controller
         $notePixEnabled = $this->config->get('NOTE_PIX_ENABLED', '0') === '1';
         $notePixKey = trim((string)$this->config->get('NOTE_PIX_KEY', ''));
         $saidaData = isset($_GET['saida_data']) ? (string)$_GET['saida_data'] : date('Y-m-d');
-        $saidaDia = $this->pedidos->gerarSaidaDoDia($saidaData);
+        $saidaLojas = $_GET['saida_lojas'] ?? [];
+        if (!is_array($saidaLojas)) {
+            $saidaLojas = [$saidaLojas];
+        }
+        $saidaLojas = array_values(array_filter(array_map('intval', $saidaLojas), static fn (int $id): bool => $id > 0));
+        $saidaDia = $this->pedidos->gerarSaidaDoDia($saidaData, $saidaLojas);
 
         if ($this->wantsJson()) {
             $this->json($lista);
