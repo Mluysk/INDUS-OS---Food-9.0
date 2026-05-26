@@ -214,19 +214,27 @@
                 <table class="data-table daily-output-table">
                     <thead>
                         <tr>
-                            <th><span class="daily-output-sort-head">SKU <span>⇅</span></span></th>
-                            <th><span class="daily-output-sort-head">Produto <span>⇅</span></span></th>
-                            <th><span class="daily-output-sort-head">Pedidos <span>⇅</span></span></th>
-                            <th><span class="daily-output-sort-head">Quantidade <span>⇅</span></span></th>
-                            <th><span class="daily-output-sort-head">Valor medio <span>⇅</span></span></th>
-                            <th><span class="daily-output-sort-head">Valor total <span>⇅</span></span></th>
-                            <th><span class="daily-output-sort-head">Peso total <span>⇅</span></span></th>
+                            <th><button type="button" class="daily-output-sort-head" data-output-sort-field="sku" data-output-sort-type="text">SKU <span>⇅</span></button></th>
+                            <th><button type="button" class="daily-output-sort-head" data-output-sort-field="produto" data-output-sort-type="text">Produto <span>⇅</span></button></th>
+                            <th><button type="button" class="daily-output-sort-head" data-output-sort-field="pedidos" data-output-sort-type="number">Pedidos <span>⇅</span></button></th>
+                            <th><button type="button" class="daily-output-sort-head" data-output-sort-field="quantidade" data-output-sort-type="number">Quantidade <span>⇅</span></button></th>
+                            <th><button type="button" class="daily-output-sort-head" data-output-sort-field="valor_medio" data-output-sort-type="number">Valor medio <span>⇅</span></button></th>
+                            <th><button type="button" class="daily-output-sort-head" data-output-sort-field="valor_total" data-output-sort-type="number">Valor total <span>⇅</span></button></th>
+                            <th><button type="button" class="daily-output-sort-head" data-output-sort-field="peso_total" data-output-sort-type="number">Peso total <span>⇅</span></button></th>
                         </tr>
                     </thead>
                     <tbody>
                         <?php if ($saidaItens): ?>
                             <?php foreach ($saidaItens as $item): ?>
-                                <tr>
+                                <tr
+                                    data-sort-sku="<?= htmlspecialchars((string)($item['sku'] ?? '-'), ENT_QUOTES, 'UTF-8'); ?>"
+                                    data-sort-produto="<?= htmlspecialchars((string)($item['nome'] ?? 'Produto'), ENT_QUOTES, 'UTF-8'); ?>"
+                                    data-sort-pedidos="<?= (int)($item['pedidos'] ?? 0); ?>"
+                                    data-sort-quantidade="<?= htmlspecialchars((string)((float)($item['quantidade'] ?? 0)), ENT_QUOTES, 'UTF-8'); ?>"
+                                    data-sort-valor_medio="<?= htmlspecialchars((string)((float)($item['valor_medio'] ?? 0)), ENT_QUOTES, 'UTF-8'); ?>"
+                                    data-sort-valor_total="<?= htmlspecialchars((string)((float)($item['valor_total'] ?? 0)), ENT_QUOTES, 'UTF-8'); ?>"
+                                    data-sort-peso_total="<?= htmlspecialchars((string)((float)($item['peso_total'] ?? 0)), ENT_QUOTES, 'UTF-8'); ?>"
+                                >
                                     <td><?= htmlspecialchars($item['sku'] ?? '-', ENT_QUOTES, 'UTF-8'); ?></td>
                                     <td><?= htmlspecialchars($item['nome'] ?? 'Produto', ENT_QUOTES, 'UTF-8'); ?></td>
                                     <td><?= (int)($item['pedidos'] ?? 0); ?></td>
@@ -459,6 +467,54 @@
                 printWindow.addEventListener('load', printReport, { once: true });
             }
         });
+
+        const outputSortState = { field: '', direction: '' };
+        const outputSortButtons = document.querySelectorAll('[data-output-sort-field]');
+        const outputTableBody = document.querySelector('.daily-output-table tbody');
+        const updateOutputSortButtons = () => {
+            outputSortButtons.forEach((button) => {
+                const isActive = outputSortState.field === button.dataset.outputSortField && outputSortState.direction;
+                const indicator = button.querySelector('span');
+                button.dataset.direction = isActive ? outputSortState.direction : '';
+                button.setAttribute('aria-sort', isActive ? (outputSortState.direction === 'asc' ? 'ascending' : 'descending') : 'none');
+                if (indicator) {
+                    indicator.textContent = isActive ? (outputSortState.direction === 'asc' ? '▲' : '▼') : '⇅';
+                    indicator.classList.toggle('active', Boolean(isActive));
+                }
+            });
+        };
+        const outputSortValue = (row, field, type) => {
+            const value = row.getAttribute(`data-sort-${field}`) || '';
+            if (type === 'number') {
+                return Number.parseFloat(value) || 0;
+            }
+            return value.toLocaleLowerCase('pt-BR');
+        };
+        outputSortButtons.forEach((button) => {
+            button.addEventListener('click', () => {
+                if (!outputTableBody) {
+                    return;
+                }
+                const field = button.dataset.outputSortField || '';
+                const type = button.dataset.outputSortType || 'text';
+                const nextDirection = outputSortState.field === field && outputSortState.direction === 'asc' ? 'desc' : 'asc';
+                outputSortState.field = field;
+                outputSortState.direction = nextDirection;
+
+                const rows = Array.from(outputTableBody.querySelectorAll('tr[data-sort-sku]'));
+                rows.sort((left, right) => {
+                    const leftValue = outputSortValue(left, field, type);
+                    const rightValue = outputSortValue(right, field, type);
+                    const result = type === 'number'
+                        ? leftValue - rightValue
+                        : String(leftValue).localeCompare(String(rightValue), 'pt-BR', { numeric: true, sensitivity: 'base' });
+                    return nextDirection === 'desc' ? -result : result;
+                });
+                rows.forEach((row) => outputTableBody.appendChild(row));
+                updateOutputSortButtons();
+            });
+        });
+        updateOutputSortButtons();
 
         const storeChecks = document.querySelectorAll('.daily-output-store-pill input[type="checkbox"]');
         const storeFilter = document.querySelector('[data-output-store-filter]');
@@ -854,6 +910,15 @@
         display: inline-flex;
         align-items: center;
         gap: 0.38rem;
+        border: 0;
+        padding: 0;
+        color: inherit;
+        background: transparent;
+        font: inherit;
+        font-weight: 800;
+        text-transform: inherit;
+        letter-spacing: inherit;
+        cursor: pointer;
     }
 
     .daily-output-sort-head > span {
@@ -868,6 +933,13 @@
         font-size: 0.78rem;
         font-weight: 850;
         line-height: 1;
+        transition: all 0.18s ease;
+    }
+
+    .daily-output-sort-head:hover > span,
+    .daily-output-sort-head > span.active {
+        color: var(--primary, #dc2626);
+        background: color-mix(in srgb, var(--primary, #dc2626) 12%, transparent);
     }
 
     .pedido-actions {
