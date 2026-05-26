@@ -144,43 +144,49 @@
                         Dia da saida
                         <input type="date" id="saida-data" name="saida_data" value="<?= htmlspecialchars($saidaData, ENT_QUOTES, 'UTF-8'); ?>">
                     </label>
+                    <div class="daily-output-store-filter" data-output-store-filter>
+                        <button type="button" class="button daily-output-store-trigger" data-output-store-trigger aria-expanded="false">
+                            Filtrar lojas
+                            <span><?= htmlspecialchars($saidaLojasLabel, ENT_QUOTES, 'UTF-8'); ?></span>
+                        </button>
+                        <div class="daily-output-stores" data-output-store-popup hidden>
+                            <div class="daily-output-stores__head">
+                                <div>
+                                    <span>Filtro de lojas</span>
+                                    <strong><?= htmlspecialchars($saidaLojasLabel, ENT_QUOTES, 'UTF-8'); ?></strong>
+                                </div>
+                                <div class="daily-output-stores__actions">
+                                    <button type="button" data-output-store-select-all>Marcar todas</button>
+                                    <button type="button" data-output-store-clear>Limpar</button>
+                                </div>
+                            </div>
+                            <div class="daily-output-store-list">
+                                <?php foreach (($clientes ?? []) as $cliente): ?>
+                                    <?php
+                                        $lojaId = (int)($cliente['id'] ?? 0);
+                                        if ($lojaId <= 0) {
+                                            continue;
+                                        }
+                                        $lojaNome = $cliente['nome_fantasia'] ?? $cliente['razao_social'] ?? ('Loja '.$lojaId);
+                                        $lojaDoc = $cliente['cnpj'] ?? $cliente['cpf'] ?? '';
+                                        $checked = in_array($lojaId, $saidaLojasSelecionadas, true);
+                                    ?>
+                                    <label class="daily-output-store-pill">
+                                        <input type="checkbox" name="saida_lojas[]" value="<?= $lojaId; ?>" <?= $checked ? 'checked' : ''; ?>>
+                                        <span>
+                                            <strong><?= htmlspecialchars($lojaNome, ENT_QUOTES, 'UTF-8'); ?></strong>
+                                            <?php if ($lojaDoc !== ''): ?>
+                                                <small><?= htmlspecialchars($lojaDoc, ENT_QUOTES, 'UTF-8'); ?></small>
+                                            <?php endif; ?>
+                                        </span>
+                                    </label>
+                                <?php endforeach; ?>
+                            </div>
+                            <p>Sem lojas marcadas, o relatorio mostra todas.</p>
+                        </div>
+                    </div>
                     <button type="submit" class="button button-primary">Gerar relatorio</button>
                     <button type="button" class="button" data-print-daily-output>Imprimir</button>
-                </div>
-                <div class="daily-output-stores">
-                    <div class="daily-output-stores__head">
-                        <div>
-                            <span>Filtro de lojas</span>
-                            <strong><?= htmlspecialchars($saidaLojasLabel, ENT_QUOTES, 'UTF-8'); ?></strong>
-                        </div>
-                        <div class="daily-output-stores__actions">
-                            <button type="button" data-output-store-select-all>Marcar todas</button>
-                            <button type="button" data-output-store-clear>Limpar</button>
-                        </div>
-                    </div>
-                    <div class="daily-output-store-list">
-                        <?php foreach (($clientes ?? []) as $cliente): ?>
-                            <?php
-                                $lojaId = (int)($cliente['id'] ?? 0);
-                                if ($lojaId <= 0) {
-                                    continue;
-                                }
-                                $lojaNome = $cliente['nome_fantasia'] ?? $cliente['razao_social'] ?? ('Loja '.$lojaId);
-                                $lojaDoc = $cliente['cnpj'] ?? $cliente['cpf'] ?? '';
-                                $checked = in_array($lojaId, $saidaLojasSelecionadas, true);
-                            ?>
-                            <label class="daily-output-store-pill">
-                                <input type="checkbox" name="saida_lojas[]" value="<?= $lojaId; ?>" <?= $checked ? 'checked' : ''; ?>>
-                                <span>
-                                    <strong><?= htmlspecialchars($lojaNome, ENT_QUOTES, 'UTF-8'); ?></strong>
-                                    <?php if ($lojaDoc !== ''): ?>
-                                        <small><?= htmlspecialchars($lojaDoc, ENT_QUOTES, 'UTF-8'); ?></small>
-                                    <?php endif; ?>
-                                </span>
-                            </label>
-                        <?php endforeach; ?>
-                    </div>
-                    <p>Sem lojas marcadas, o relatorio mostra todas. Marque apenas as lojas que devem aparecer.</p>
                 </div>
             </form>
         </div>
@@ -331,6 +337,34 @@
         });
 
         const storeChecks = document.querySelectorAll('.daily-output-store-pill input[type="checkbox"]');
+        const storeFilter = document.querySelector('[data-output-store-filter]');
+        const storeTrigger = document.querySelector('[data-output-store-trigger]');
+        const storePopup = document.querySelector('[data-output-store-popup]');
+        const closeStorePopup = () => {
+            if (!storePopup || !storeTrigger) {
+                return;
+            }
+            storePopup.hidden = true;
+            storeTrigger.setAttribute('aria-expanded', 'false');
+        };
+        storeTrigger?.addEventListener('click', () => {
+            if (!storePopup) {
+                return;
+            }
+            const isOpen = !storePopup.hidden;
+            storePopup.hidden = isOpen;
+            storeTrigger.setAttribute('aria-expanded', isOpen ? 'false' : 'true');
+        });
+        document.addEventListener('click', (event) => {
+            if (storeFilter && !storeFilter.contains(event.target)) {
+                closeStorePopup();
+            }
+        });
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') {
+                closeStorePopup();
+            }
+        });
         document.querySelector('[data-output-store-select-all]')?.addEventListener('click', () => {
             storeChecks.forEach((checkbox) => {
                 checkbox.checked = true;
@@ -479,13 +513,44 @@
         font-weight: 800;
     }
 
+    .daily-output-store-filter {
+        position: relative;
+    }
+
+    .daily-output-store-trigger {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        min-height: 40px;
+        white-space: nowrap;
+    }
+
+    .daily-output-store-trigger span {
+        border-radius: 999px;
+        padding: 0.18rem 0.48rem;
+        color: var(--primary, #dc2626);
+        background: color-mix(in srgb, var(--primary, #dc2626) 10%, transparent);
+        font-size: 0.72rem;
+        font-weight: 850;
+    }
+
     .daily-output-stores {
+        position: absolute;
+        z-index: 20;
+        top: calc(100% + 0.5rem);
+        right: 0;
+        width: min(88vw, 520px);
         display: grid;
         gap: 0.65rem;
         border: 1px solid color-mix(in srgb, var(--primary, #dc2626) 14%, var(--border, #e5e7eb));
         border-radius: 18px;
         padding: 0.75rem;
         background: color-mix(in srgb, var(--primary, #dc2626) 4%, var(--surface, #fff));
+        box-shadow: 0 24px 55px rgba(15, 23, 42, 0.18);
+    }
+
+    .daily-output-stores[hidden] {
+        display: none !important;
     }
 
     .daily-output-stores__head {
@@ -710,6 +775,21 @@
 
         .daily-output-filter .button,
         .daily-output-date input {
+            width: 100%;
+        }
+
+        .daily-output-store-filter,
+        .daily-output-store-trigger {
+            width: 100%;
+        }
+
+        .daily-output-store-trigger {
+            justify-content: center;
+        }
+
+        .daily-output-stores {
+            left: 0;
+            right: auto;
             width: 100%;
         }
 
