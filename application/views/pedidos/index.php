@@ -918,6 +918,14 @@
         white-space: nowrap;
     }
 
+    .daily-output-table th {
+        font-size: calc(0.85rem - 3px);
+    }
+
+    .daily-output-table td {
+        font-size: calc(1rem - 3px);
+    }
+
     .daily-output-sort-head {
         display: inline-flex;
         align-items: center;
