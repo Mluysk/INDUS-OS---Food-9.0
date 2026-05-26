@@ -214,13 +214,13 @@
                 <table class="data-table daily-output-table">
                     <thead>
                         <tr>
-                            <th>SKU</th>
-                            <th>Produto</th>
-                            <th>Pedidos</th>
-                            <th>Quantidade</th>
-                            <th>Valor medio</th>
-                            <th>Valor total</th>
-                            <th>Peso total</th>
+                            <th><span class="daily-output-sort-head">SKU <span>⇅</span></span></th>
+                            <th><span class="daily-output-sort-head">Produto <span>⇅</span></span></th>
+                            <th><span class="daily-output-sort-head">Pedidos <span>⇅</span></span></th>
+                            <th><span class="daily-output-sort-head">Quantidade <span>⇅</span></span></th>
+                            <th><span class="daily-output-sort-head">Valor medio <span>⇅</span></span></th>
+                            <th><span class="daily-output-sort-head">Valor total <span>⇅</span></span></th>
+                            <th><span class="daily-output-sort-head">Peso total <span>⇅</span></span></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -848,6 +848,26 @@
     .daily-output-table th,
     .daily-output-table td {
         white-space: nowrap;
+    }
+
+    .daily-output-sort-head {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.38rem;
+    }
+
+    .daily-output-sort-head > span {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 1.35rem;
+        height: 1.35rem;
+        border-radius: 999px;
+        color: var(--text-muted, #64748b);
+        background: color-mix(in srgb, var(--text-muted, #64748b) 10%, transparent);
+        font-size: 0.78rem;
+        font-weight: 850;
+        line-height: 1;
     }
 
     .pedido-actions {
