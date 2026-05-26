@@ -60,16 +60,22 @@
 
     <div class="pedidos-tab-panel" id="panel-lista-pedidos" role="tabpanel" aria-labelledby="tab-lista-pedidos" data-tab-panel="lista-pedidos" hidden>
         <h3>Lista de pedidos</h3>
+        <div class="pedido-list-toolbar">
+            <label class="pedido-list-search">
+                <span>Buscar pedidos</span>
+                <input type="search" data-pedido-list-search placeholder="Buscar por loja, codigo, data ou valor">
+            </label>
+        </div>
         <div style="overflow-x: auto;">
-            <table class="data-table">
+            <table class="data-table pedido-list-table">
                 <thead>
                     <tr>
-                        <th>ID</th>
-                        <th>Código</th>
-                        <th>Cliente</th>
+                        <th><button type="button" class="pedido-list-sort-head" data-pedido-sort-field="id" data-pedido-sort-type="number">ID <span>&#8645;</span></button></th>
+                        <th><button type="button" class="pedido-list-sort-head" data-pedido-sort-field="codigo" data-pedido-sort-type="text">Código <span>&#8645;</span></button></th>
+                        <th><button type="button" class="pedido-list-sort-head" data-pedido-sort-field="cliente" data-pedido-sort-type="text">Cliente <span>&#8645;</span></button></th>
                         <th>Status</th>
-                        <th>Total</th>
-                        <th>Criado em</th>
+                        <th><button type="button" class="pedido-list-sort-head" data-pedido-sort-field="total" data-pedido-sort-type="number">Total <span>&#8645;</span></button></th>
+                        <th><button type="button" class="pedido-list-sort-head" data-pedido-sort-field="created" data-pedido-sort-type="date">Criado em <span>&#8645;</span></button></th>
                         <th>Ações</th>
                     </tr>
                 </thead>
@@ -81,14 +87,26 @@
                             $statusClass = $status === 'faturado' ? 'badge-success' : ($status === 'cancelado' ? 'badge-danger' : 'badge-warning');
                             $clienteLabel = $clienteMap[(int)($pedido['cliente_id'] ?? 0)]['nome_fantasia']
                                 ?? ($clienteMap[(int)($pedido['cliente_id'] ?? 0)]['razao_social'] ?? ($pedido['cliente_id'] ?? '-'));
+                            $pedidoCodigo = (string)($pedido['codigo'] ?? '-');
+                            $pedidoCreated = (string)($pedido['created_at'] ?? '');
+                            $pedidoTotal = (float)($pedido['total'] ?? 0);
+                            $pedidoSearch = trim($clienteLabel.' '.$pedidoCodigo.' '.$pedidoCreated.' '.number_format($pedidoTotal, 2, ',', '.').' '.$pedidoTotal);
                             ?>
-                            <tr>
+                            <tr
+                                data-pedido-row
+                                data-pedido-search="<?= htmlspecialchars($pedidoSearch, ENT_QUOTES, 'UTF-8'); ?>"
+                                data-sort-id="<?= (int)$pedido['id']; ?>"
+                                data-sort-codigo="<?= htmlspecialchars($pedidoCodigo, ENT_QUOTES, 'UTF-8'); ?>"
+                                data-sort-cliente="<?= htmlspecialchars((string)$clienteLabel, ENT_QUOTES, 'UTF-8'); ?>"
+                                data-sort-total="<?= htmlspecialchars((string)$pedidoTotal, ENT_QUOTES, 'UTF-8'); ?>"
+                                data-sort-created="<?= htmlspecialchars($pedidoCreated, ENT_QUOTES, 'UTF-8'); ?>"
+                            >
                                 <td><?= (int)$pedido['id']; ?></td>
-                                <td><?= htmlspecialchars($pedido['codigo'] ?? '-', ENT_QUOTES, 'UTF-8'); ?></td>
+                                <td><?= htmlspecialchars($pedidoCodigo, ENT_QUOTES, 'UTF-8'); ?></td>
                                 <td><?= htmlspecialchars($clienteLabel, ENT_QUOTES, 'UTF-8'); ?></td>
                                 <td><span class="badge <?= $statusClass; ?>"><?= htmlspecialchars($status, ENT_QUOTES, 'UTF-8'); ?></span></td>
-                                <td>R$ <?= number_format((float)($pedido['total'] ?? 0), 2, ',', '.'); ?></td>
-                                <td><?= htmlspecialchars($pedido['created_at'] ?? '', ENT_QUOTES, 'UTF-8'); ?></td>
+                                <td>R$ <?= number_format($pedidoTotal, 2, ',', '.'); ?></td>
+                                <td><?= htmlspecialchars($pedidoCreated, ENT_QUOTES, 'UTF-8'); ?></td>
                                 <td class="action-cell">
                                     <?php $podeAprovar = !in_array($status, ['producao','separacao','expedicao','faturado','cancelado'], true); ?>
                                     <div class="action-group pedido-actions">
@@ -113,10 +131,13 @@
                             </tr>
                         <?php endforeach; ?>
                     <?php else: ?>
-                        <tr>
+                        <tr data-pedido-empty>
                             <td colspan="7">Nenhum pedido cadastrado.</td>
                         </tr>
                     <?php endif; ?>
+                    <tr data-pedido-no-results hidden>
+                        <td colspan="7">Nenhum pedido encontrado para a busca.</td>
+                    </tr>
                 </tbody>
             </table>
         </div>
@@ -480,6 +501,86 @@
             }
         });
 
+        const normalizePedidoSearch = (value) => String(value || '')
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '')
+            .toLocaleLowerCase('pt-BR');
+        const pedidoRows = Array.from(document.querySelectorAll('[data-pedido-row]'));
+        const pedidoSearch = document.querySelector('[data-pedido-list-search]');
+        const pedidoNoResults = document.querySelector('[data-pedido-no-results]');
+        const updatePedidoSearch = () => {
+            const term = normalizePedidoSearch(pedidoSearch?.value || '');
+            let visible = 0;
+            pedidoRows.forEach((row) => {
+                const match = !term || normalizePedidoSearch(row.dataset.pedidoSearch || '').includes(term);
+                row.hidden = !match;
+                if (match) {
+                    visible += 1;
+                }
+            });
+            if (pedidoNoResults) {
+                pedidoNoResults.hidden = visible > 0 || pedidoRows.length === 0;
+            }
+        };
+        pedidoSearch?.addEventListener('input', updatePedidoSearch);
+        updatePedidoSearch();
+
+        const pedidoSortState = { field: '', direction: '' };
+        const pedidoSortButtons = document.querySelectorAll('[data-pedido-sort-field]');
+        const pedidoTableBody = document.querySelector('.pedido-list-table tbody');
+        const updatePedidoSortButtons = () => {
+            pedidoSortButtons.forEach((button) => {
+                const isActive = pedidoSortState.field === button.dataset.pedidoSortField && pedidoSortState.direction;
+                const indicator = button.querySelector('span');
+                button.dataset.direction = isActive ? pedidoSortState.direction : '';
+                button.setAttribute('aria-sort', isActive ? (pedidoSortState.direction === 'asc' ? 'ascending' : 'descending') : 'none');
+                if (indicator) {
+                    indicator.textContent = isActive ? (pedidoSortState.direction === 'asc' ? '▲' : '▼') : '⇅';
+                    indicator.classList.toggle('active', Boolean(isActive));
+                }
+            });
+        };
+        const pedidoSortValue = (row, field, type) => {
+            const value = row.getAttribute(`data-sort-${field}`) || '';
+            if (type === 'number') {
+                return Number.parseFloat(value) || 0;
+            }
+            if (type === 'date') {
+                const parsed = Date.parse(value.replace(' ', 'T'));
+                return Number.isNaN(parsed) ? 0 : parsed;
+            }
+            return normalizePedidoSearch(value);
+        };
+        pedidoSortButtons.forEach((button) => {
+            button.addEventListener('click', () => {
+                if (!pedidoTableBody) {
+                    return;
+                }
+                const field = button.dataset.pedidoSortField || '';
+                const type = button.dataset.pedidoSortType || 'text';
+                const nextDirection = pedidoSortState.field === field && pedidoSortState.direction === 'asc' ? 'desc' : 'asc';
+                pedidoSortState.field = field;
+                pedidoSortState.direction = nextDirection;
+
+                const rows = Array.from(pedidoTableBody.querySelectorAll('tr[data-pedido-row]'));
+                rows.sort((left, right) => {
+                    const leftValue = pedidoSortValue(left, field, type);
+                    const rightValue = pedidoSortValue(right, field, type);
+                    const result = type === 'number' || type === 'date'
+                        ? leftValue - rightValue
+                        : String(leftValue).localeCompare(String(rightValue), 'pt-BR', { numeric: true, sensitivity: 'base' });
+                    return nextDirection === 'desc' ? -result : result;
+                });
+                rows.forEach((row) => pedidoTableBody.appendChild(row));
+                if (pedidoNoResults) {
+                    pedidoTableBody.appendChild(pedidoNoResults);
+                }
+                updatePedidoSortButtons();
+                updatePedidoSearch();
+            });
+        });
+        updatePedidoSortButtons();
+
         const outputSortState = { field: '', direction: '' };
         const outputSortButtons = document.querySelectorAll('[data-output-sort-field]');
         const outputTableBody = document.querySelector('.daily-output-table tbody');
@@ -662,6 +763,67 @@
 
     .pedidos-tab-panel[hidden] {
         display: none !important;
+    }
+
+    .pedido-list-toolbar {
+        display: flex;
+        justify-content: flex-start;
+        margin: -0.2rem 0 0.85rem;
+    }
+
+    .pedido-list-search {
+        display: grid;
+        gap: 0.35rem;
+        width: min(100%, 390px);
+        color: var(--text-muted, #64748b);
+        font-size: 0.78rem;
+        font-weight: 800;
+    }
+
+    .pedido-list-search input {
+        min-height: 42px;
+        border: 1px solid var(--border, #e5e7eb);
+        border-radius: 999px;
+        padding: 0.55rem 1rem;
+        color: var(--text, #111827);
+        background: var(--surface, #fff);
+        font-weight: 800;
+    }
+
+    .pedido-list-sort-head {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.38rem;
+        border: 0;
+        padding: 0;
+        color: inherit;
+        background: transparent;
+        font: inherit;
+        font-weight: 800;
+        text-transform: inherit;
+        letter-spacing: inherit;
+        cursor: pointer;
+    }
+
+    .pedido-list-sort-head > span {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 1.35rem;
+        height: 1.35rem;
+        border-radius: 999px;
+        color: var(--text-muted, #64748b);
+        background: color-mix(in srgb, var(--text-muted, #64748b) 10%, transparent);
+        font-size: 0.78rem;
+        font-weight: 850;
+        line-height: 1;
+        transition: all 0.18s ease;
+    }
+
+    .pedido-list-sort-head:hover > span,
+    .pedido-list-sort-head > span.active {
+        color: var(--primary, #dc2626);
+        background: color-mix(in srgb, var(--primary, #dc2626) 12%, transparent);
     }
 
     .daily-output-head {
