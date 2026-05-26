@@ -290,6 +290,48 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
             #catalog-table .sort-label--stacked { display: block; margin-top: 1px; line-height: 1.05; }
             .product-actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
             .product-actions form { margin: 0; }
+            .product-icon-btn {
+                position: relative;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                width: 40px;
+                min-width: 40px;
+                height: 40px;
+                min-height: 40px;
+                padding: 0;
+                border: 0;
+                border-radius: 13px;
+                background: var(--surface-muted, #f3f4f6);
+                color: var(--text, #020617);
+                cursor: pointer;
+            }
+            .product-icon-btn svg { width: 18px; height: 18px; stroke-width: 2.25; }
+            .product-icon-btn--danger { color: #dc2626; background: #fff1f2; }
+            .product-icon-btn::after {
+                content: attr(data-tooltip);
+                position: absolute;
+                left: 50%;
+                bottom: calc(100% + 8px);
+                transform: translateX(-50%) translateY(4px);
+                padding: 7px 10px;
+                border-radius: 8px;
+                background: #111827;
+                color: #fff;
+                font-size: 0.72rem;
+                font-weight: 700;
+                line-height: 1;
+                white-space: nowrap;
+                opacity: 0;
+                pointer-events: none;
+                transition: opacity 0.16s ease, transform 0.16s ease;
+                z-index: 40;
+            }
+            .product-icon-btn:hover::after,
+            .product-icon-btn:focus-visible::after {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+            }
             .product-actions .danger { color: #dc2626; border-color: #fecdd3; background: #fff1f2; }
             .product-status { display: inline-flex; margin-top: 4px; padding: 3px 8px; border-radius: 999px; background: #f1f5f9; color: #64748b; font-size: 0.72rem; font-weight: 800; }
             .product-status.is-active { background: #ecfdf5; color: #047857; }
@@ -330,14 +372,18 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
                                 <td>
                                     <?php $payload = json_encode($produto, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP); ?>
                                     <div class="product-actions">
-                                        <button type="button" class="button ghost small js-edit-product" data-product="<?= htmlspecialchars($payload, ENT_QUOTES, 'UTF-8'); ?>">Editar</button>
+                                        <button type="button" class="product-icon-btn js-edit-product" data-product="<?= htmlspecialchars($payload, ENT_QUOTES, 'UTF-8'); ?>" data-tooltip="Editar" aria-label="Editar produto">
+                                            <span data-lucide="pencil" aria-hidden="true"></span>
+                                        </button>
                                         <?php if ($isActive): ?>
                                             <form method="post" action="<?= htmlspecialchars($url('produtos/'.(int)$produto['id'].'/desativar'), ENT_QUOTES, 'UTF-8'); ?>" onsubmit="return confirm('Desativar este produto? Ele deixara de aparecer em novos pedidos.');">
                                                 <button type="submit" class="button ghost small">Desativar</button>
                                             </form>
                                         <?php endif; ?>
                                         <form method="post" action="<?= htmlspecialchars($url('produtos/'.(int)$produto['id'].'/excluir'), ENT_QUOTES, 'UTF-8'); ?>" onsubmit="return confirm('Excluir este produto? Se houver historico, ele sera arquivado/desativado.');">
-                                            <button type="submit" class="button ghost small danger">Excluir</button>
+                                            <button type="submit" class="product-icon-btn product-icon-btn--danger" data-tooltip="Excluir" aria-label="Excluir produto">
+                                                <span data-lucide="trash-2" aria-hidden="true"></span>
+                                            </button>
                                         </form>
                                     </div>
                                 </td>
@@ -749,10 +795,12 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
                 const criado = item.created_at || '';
                 const categoria = item.categoria && item.categoria !== '' ? item.categoria : '—';
                 const encoded = serializeProduct(item);
+                const itemId = Number(item.id || 0);
+                const isActive = Number(item.is_ativo ?? 1) === 1;
 
                 return `
                     <tr>
-                        <td>${Number(item.id)}</td>
+                        <td>${itemId}</td>
                         <td>${item.sku ?? ''}</td>
                         <td>${item.nome ?? ''}</td>
                         <td>${categoria}</td>
@@ -761,10 +809,29 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
                         <td>R$ ${preco}</td>
                         <td>${shelf} dias</td>
                         <td>${criado}</td>
-                        <td><button type="button" class="button ghost small js-edit-product" data-product="${encoded}">Editar</button></td>
+                        <td>
+                            <div class="product-actions">
+                                <button type="button" class="product-icon-btn js-edit-product" data-product="${encoded}" data-tooltip="Editar" aria-label="Editar produto">
+                                    <span data-lucide="pencil" aria-hidden="true"></span>
+                                </button>
+                                ${isActive ? `
+                                    <form method="post" action="${endpoint.replace(/\/$/, '')}/${itemId}/desativar" onsubmit="return confirm('Desativar este produto? Ele deixara de aparecer em novos pedidos.');">
+                                        <button type="submit" class="button ghost small">Desativar</button>
+                                    </form>
+                                ` : ''}
+                                <form method="post" action="${endpoint.replace(/\/$/, '')}/${itemId}/excluir" onsubmit="return confirm('Excluir este produto? Se houver historico, ele sera arquivado/desativado.');">
+                                    <button type="submit" class="product-icon-btn product-icon-btn--danger" data-tooltip="Excluir" aria-label="Excluir produto">
+                                        <span data-lucide="trash-2" aria-hidden="true"></span>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
                     </tr>
                 `;
             }).join('');
+            if (window.lucide) {
+                window.lucide.createIcons({ elements: tbody.querySelectorAll('[data-lucide]') });
+            }
         };
 
         const pageWindow = (currentPage, totalPages) => {
