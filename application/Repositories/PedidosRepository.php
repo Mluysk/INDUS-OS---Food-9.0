@@ -70,6 +70,53 @@ class PedidosRepository extends BaseRepository
         return $pedido ?: null;
     }
 
+    public function relatorioSaidaPorDia(string $data): array
+    {
+        $this->ensurePedidoExtraColumns();
+        $stmt = $this->db->prepare("
+            SELECT
+                pi.produto_id,
+                p.sku,
+                p.nome,
+                p.unidade,
+                p.peso_liquido,
+                COUNT(DISTINCT ped.id) AS pedidos,
+                COALESCE(SUM(pi.quantidade), 0) AS quantidade,
+                COALESCE(SUM(pi.quantidade * pi.preco_unit), 0) AS valor_total,
+                COALESCE(SUM(pi.quantidade * COALESCE(p.peso_liquido, 0)), 0) AS peso_total
+            FROM pedido_itens pi
+            INNER JOIN pedidos ped ON ped.id = pi.pedido_id
+            INNER JOIN produtos p ON p.id = pi.produto_id
+            WHERE DATE(ped.created_at) = :data
+              AND COALESCE(ped.status, '') <> 'cancelado'
+            GROUP BY pi.produto_id, p.sku, p.nome, p.unidade, p.peso_liquido
+            ORDER BY p.nome ASC, p.sku ASC
+        ");
+        $stmt->execute(['data' => $data]);
+        $itens = $stmt->fetchAll();
+
+        $resumo = $this->db->prepare("
+            SELECT
+                COUNT(DISTINCT ped.id) AS pedidos,
+                COUNT(DISTINCT CASE WHEN ped.codigo LIKE 'P-%' THEN ped.id END) AS pedidos_portal,
+                COUNT(DISTINCT CASE WHEN ped.codigo LIKE 'P-%' THEN NULL ELSE ped.id END) AS pedidos_internos,
+                COALESCE(SUM(pi.quantidade), 0) AS quantidade,
+                COALESCE(SUM(pi.quantidade * pi.preco_unit), 0) AS valor_total,
+                COALESCE(SUM(pi.quantidade * COALESCE(p.peso_liquido, 0)), 0) AS peso_total
+            FROM pedidos ped
+            INNER JOIN pedido_itens pi ON pi.pedido_id = ped.id
+            INNER JOIN produtos p ON p.id = pi.produto_id
+            WHERE DATE(ped.created_at) = :data
+              AND COALESCE(ped.status, '') <> 'cancelado'
+        ");
+        $resumo->execute(['data' => $data]);
+
+        return [
+            'itens' => $itens,
+            'resumo' => $resumo->fetch() ?: [],
+        ];
+    }
+
     private function ensurePedidoExtraColumns(): void
     {
         $this->ensureFormaPagamentoColumn();

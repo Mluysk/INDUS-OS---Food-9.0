@@ -44,6 +44,8 @@ class PedidosController extends Controller
 
         $notePixEnabled = $this->config->get('NOTE_PIX_ENABLED', '0') === '1';
         $notePixKey = trim((string)$this->config->get('NOTE_PIX_KEY', ''));
+        $saidaData = isset($_GET['saida_data']) ? (string)$_GET['saida_data'] : date('Y-m-d');
+        $saidaDia = $this->pedidos->gerarSaidaDoDia($saidaData);
 
         if ($this->wantsJson()) {
             $this->json($lista);
@@ -57,6 +59,7 @@ class PedidosController extends Controller
             'clienteMap' => $mapClientes,
             'notePixEnabled' => $notePixEnabled,
             'notePixKey' => $notePixKey,
+            'saidaDia' => $saidaDia,
         ], [
             'title' => 'Pedidos',
             'activeMenu' => 'pedidos',

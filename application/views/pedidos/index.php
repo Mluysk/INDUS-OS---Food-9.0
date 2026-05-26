@@ -7,6 +7,7 @@
         <div class="pedidos-tabs" role="tablist" aria-label="Pedidos">
             <button type="button" class="pedidos-tab is-active" id="tab-novo-pedido" role="tab" aria-selected="true" aria-controls="panel-novo-pedido" data-tab-target="novo-pedido">Novo pedido</button>
             <button type="button" class="pedidos-tab" id="tab-lista-pedidos" role="tab" aria-selected="false" aria-controls="panel-lista-pedidos" data-tab-target="lista-pedidos">Lista de pedidos</button>
+            <button type="button" class="pedidos-tab" id="tab-saida-dia" role="tab" aria-selected="false" aria-controls="panel-saida-dia" data-tab-target="saida-dia">Saida do dia</button>
         </div>
     </div>
 
@@ -120,6 +121,78 @@
             </table>
         </div>
     </div>
+
+    <?php
+        $saidaDia = $saidaDia ?? ['data' => date('Y-m-d'), 'itens' => [], 'resumo' => []];
+        $saidaResumo = $saidaDia['resumo'] ?? [];
+        $saidaItens = $saidaDia['itens'] ?? [];
+        $saidaData = $saidaDia['data'] ?? date('Y-m-d');
+        $saidaDataLabel = date('d/m/Y', strtotime($saidaData));
+    ?>
+    <div class="pedidos-tab-panel" id="panel-saida-dia" role="tabpanel" aria-labelledby="tab-saida-dia" data-tab-panel="saida-dia" hidden>
+        <div class="daily-output-head">
+            <div>
+                <h3>Gerar saida do dia</h3>
+                <p class="panel-description">Selecione uma data para consolidar todos os produtos vendidos em pedidos internos e pedidos do portal.</p>
+            </div>
+            <form class="daily-output-filter" method="get" action="<?= htmlspecialchars($url('pedidos'), ENT_QUOTES, 'UTF-8'); ?>">
+                <label for="saida-data">Dia da saida</label>
+                <input type="date" id="saida-data" name="saida_data" value="<?= htmlspecialchars($saidaData, ENT_QUOTES, 'UTF-8'); ?>">
+                <button type="submit" class="button button-primary">Gerar relatorio</button>
+                <button type="button" class="button" data-print-daily-output>Imprimir</button>
+            </form>
+        </div>
+
+        <div class="daily-output-report" data-daily-output-report>
+            <div class="daily-output-report__title">
+                <span>Relatorio de saida</span>
+                <strong><?= htmlspecialchars($saidaDataLabel, ENT_QUOTES, 'UTF-8'); ?></strong>
+            </div>
+            <div class="daily-output-summary">
+                <div><span>Pedidos</span><strong><?= (int)($saidaResumo['pedidos'] ?? 0); ?></strong></div>
+                <div><span>Portal</span><strong><?= (int)($saidaResumo['pedidos_portal'] ?? 0); ?></strong></div>
+                <div><span>Internos</span><strong><?= (int)($saidaResumo['pedidos_internos'] ?? 0); ?></strong></div>
+                <div><span>Produtos</span><strong><?= (int)($saidaResumo['produtos'] ?? 0); ?></strong></div>
+                <div><span>Qtd. total</span><strong><?= number_format((float)($saidaResumo['quantidade'] ?? 0), 2, ',', '.'); ?></strong></div>
+                <div><span>Valor total</span><strong>R$ <?= number_format((float)($saidaResumo['valor_total'] ?? 0), 2, ',', '.'); ?></strong></div>
+            </div>
+
+            <div class="daily-output-table-wrap">
+                <table class="data-table daily-output-table">
+                    <thead>
+                        <tr>
+                            <th>SKU</th>
+                            <th>Produto</th>
+                            <th>Pedidos</th>
+                            <th>Quantidade</th>
+                            <th>Valor medio</th>
+                            <th>Valor total</th>
+                            <th>Peso total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php if ($saidaItens): ?>
+                            <?php foreach ($saidaItens as $item): ?>
+                                <tr>
+                                    <td><?= htmlspecialchars($item['sku'] ?? '-', ENT_QUOTES, 'UTF-8'); ?></td>
+                                    <td><?= htmlspecialchars($item['nome'] ?? 'Produto', ENT_QUOTES, 'UTF-8'); ?></td>
+                                    <td><?= (int)($item['pedidos'] ?? 0); ?></td>
+                                    <td><?= number_format((float)($item['quantidade'] ?? 0), 2, ',', '.'); ?> <?= htmlspecialchars($item['unidade'] ?? 'un', ENT_QUOTES, 'UTF-8'); ?></td>
+                                    <td>R$ <?= number_format((float)($item['valor_medio'] ?? 0), 2, ',', '.'); ?></td>
+                                    <td>R$ <?= number_format((float)($item['valor_total'] ?? 0), 2, ',', '.'); ?></td>
+                                    <td><?= number_format((float)($item['peso_total'] ?? 0), 3, ',', '.'); ?> kg</td>
+                                </tr>
+                            <?php endforeach; ?>
+                        <?php else: ?>
+                            <tr>
+                                <td colspan="7">Nenhuma saida encontrada para este dia.</td>
+                            </tr>
+                        <?php endif; ?>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 </section>
 
 <script>
@@ -205,6 +278,14 @@
                     panel.hidden = !isActive;
                 });
             });
+        });
+
+        if (new URLSearchParams(window.location.search).has('saida_data')) {
+            document.querySelector('[data-tab-target="saida-dia"]')?.click();
+        }
+
+        document.querySelector('[data-print-daily-output]')?.addEventListener('click', () => {
+            window.print();
         });
 
         document.querySelectorAll('.pedido-edit-btn').forEach((button) => {
@@ -303,6 +384,100 @@
         display: none !important;
     }
 
+    .daily-output-head {
+        display: flex;
+        justify-content: space-between;
+        gap: 1rem;
+        align-items: flex-start;
+        flex-wrap: wrap;
+        margin-bottom: 1rem;
+    }
+
+    .daily-output-filter {
+        display: flex;
+        align-items: end;
+        gap: 0.65rem;
+        flex-wrap: wrap;
+    }
+
+    .daily-output-filter label {
+        display: grid;
+        gap: 0.35rem;
+        color: var(--text-muted, #64748b);
+        font-size: 0.78rem;
+        font-weight: 800;
+    }
+
+    .daily-output-filter input {
+        min-height: 40px;
+        border: 1px solid var(--border, #e5e7eb);
+        border-radius: 999px;
+        padding: 0.5rem 0.8rem;
+        color: var(--text, #111827);
+        background: var(--surface, #fff);
+        font-weight: 800;
+    }
+
+    .daily-output-report {
+        display: grid;
+        gap: 1rem;
+        border: 1px solid color-mix(in srgb, var(--primary, #dc2626) 16%, var(--border, #e5e7eb));
+        border-radius: 18px;
+        padding: 1rem;
+        background: linear-gradient(135deg, color-mix(in srgb, var(--primary, #dc2626) 5%, var(--surface, #fff)), var(--surface, #fff));
+    }
+
+    .daily-output-report__title {
+        display: flex;
+        justify-content: space-between;
+        gap: 1rem;
+        align-items: center;
+        color: var(--text-muted, #64748b);
+        font-weight: 850;
+    }
+
+    .daily-output-report__title strong {
+        color: var(--primary, #dc2626);
+        font-size: 1.2rem;
+    }
+
+    .daily-output-summary {
+        display: grid;
+        grid-template-columns: repeat(6, minmax(120px, 1fr));
+        gap: 0.7rem;
+    }
+
+    .daily-output-summary div {
+        border: 1px solid var(--border, #e5e7eb);
+        border-radius: 14px;
+        padding: 0.85rem;
+        background: var(--surface, #fff);
+    }
+
+    .daily-output-summary span {
+        display: block;
+        color: var(--text-muted, #64748b);
+        font-size: 0.72rem;
+        font-weight: 800;
+        text-transform: uppercase;
+    }
+
+    .daily-output-summary strong {
+        display: block;
+        margin-top: 0.32rem;
+        color: var(--text, #111827);
+        font-size: 1.05rem;
+    }
+
+    .daily-output-table-wrap {
+        overflow-x: auto;
+    }
+
+    .daily-output-table th,
+    .daily-output-table td {
+        white-space: nowrap;
+    }
+
     .pedido-actions {
         display: flex;
         flex-direction: column;
@@ -348,11 +523,49 @@
         .pedidos-tabs {
             width: 100%;
             border-radius: 12px;
+            display: grid;
+            grid-template-columns: 1fr;
         }
 
         .pedidos-tab {
             flex: 1;
             border-radius: 10px;
+        }
+
+        .daily-output-head,
+        .daily-output-filter {
+            display: grid;
+            grid-template-columns: 1fr;
+            width: 100%;
+        }
+
+        .daily-output-filter .button,
+        .daily-output-filter input {
+            width: 100%;
+        }
+
+        .daily-output-summary {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+    }
+
+    @media print {
+        body * {
+            visibility: hidden !important;
+        }
+
+        .daily-output-report,
+        .daily-output-report * {
+            visibility: visible !important;
+        }
+
+        .daily-output-report {
+            position: absolute;
+            inset: 0 auto auto 0;
+            width: 100%;
+            border: 0;
+            box-shadow: none;
+            background: #fff;
         }
     }
 </style>

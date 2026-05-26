@@ -201,6 +201,48 @@ class PedidosService
         return $this->pedidos->all();
     }
 
+    public function gerarSaidaDoDia(?string $data = null): array
+    {
+        $data = trim((string)($data ?: date('Y-m-d')));
+        if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $data)) {
+            $data = date('Y-m-d');
+        }
+
+        $relatorio = $this->pedidos->relatorioSaidaPorDia($data);
+        $itens = array_map(static function (array $item): array {
+            $quantidade = (float)($item['quantidade'] ?? 0);
+            $valorTotal = (float)($item['valor_total'] ?? 0);
+            $pesoTotal = (float)($item['peso_total'] ?? 0);
+
+            return [
+                'produto_id' => (int)($item['produto_id'] ?? 0),
+                'sku' => $item['sku'] ?? '-',
+                'nome' => $item['nome'] ?? 'Produto',
+                'unidade' => $item['unidade'] ?? 'un',
+                'quantidade' => $quantidade,
+                'valor_total' => $valorTotal,
+                'valor_medio' => $quantidade > 0 ? $valorTotal / $quantidade : 0.0,
+                'peso_total' => $pesoTotal,
+                'pedidos' => (int)($item['pedidos'] ?? 0),
+            ];
+        }, $relatorio['itens'] ?? []);
+
+        $resumo = $relatorio['resumo'] ?? [];
+        return [
+            'data' => $data,
+            'itens' => $itens,
+            'resumo' => [
+                'pedidos' => (int)($resumo['pedidos'] ?? 0),
+                'pedidos_portal' => (int)($resumo['pedidos_portal'] ?? 0),
+                'pedidos_internos' => (int)($resumo['pedidos_internos'] ?? 0),
+                'produtos' => count($itens),
+                'quantidade' => (float)($resumo['quantidade'] ?? 0),
+                'valor_total' => (float)($resumo['valor_total'] ?? 0),
+                'peso_total' => (float)($resumo['peso_total'] ?? 0),
+            ],
+        ];
+    }
+
     public function detalhar(int $id): array
     {
         $pedido = $this->pedidos->find($id);
