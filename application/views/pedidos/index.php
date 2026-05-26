@@ -600,9 +600,9 @@
 
     .daily-output-store-list {
         display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 0.5rem;
-        max-height: 190px;
+        grid-template-columns: 1fr;
+        gap: 0.2rem;
+        max-height: 230px;
         overflow: auto;
         padding-right: 0.15rem;
     }
@@ -612,16 +612,19 @@
         align-items: center;
         gap: 0.5rem;
         min-width: 0;
-        border: 1px solid var(--border, #e5e7eb);
-        border-radius: 14px;
-        padding: 0.55rem 0.65rem;
-        background: var(--surface, #fff);
+        border-radius: 10px;
+        padding: 0.38rem 0.45rem;
+        background: transparent;
         cursor: pointer;
     }
 
+    .daily-output-store-pill:hover {
+        background: color-mix(in srgb, var(--primary, #dc2626) 7%, transparent);
+    }
+
     .daily-output-store-pill input {
-        width: 16px;
-        height: 16px;
+        width: 15px;
+        height: 15px;
         accent-color: var(--primary, #dc2626);
         flex: 0 0 auto;
     }
@@ -641,7 +644,7 @@
 
     .daily-output-store-pill strong {
         color: var(--text, #111827);
-        font-size: 0.84rem;
+        font-size: 0.82rem;
         font-weight: 850;
     }
 
