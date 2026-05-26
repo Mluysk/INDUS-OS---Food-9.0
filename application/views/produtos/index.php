@@ -245,15 +245,16 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
             if (!empty($filters['tipo'])) {
                 $queryBase['tipo'] = $filters['tipo'];
             }
-            $sortLink = function (string $column, string $label) use ($activeSort, $activeDir, $queryBase, $url) {
+            $sortLink = function (string $column, string $label, string $labelHtml = '') use ($activeSort, $activeDir, $queryBase, $url) {
                 $qs = $queryBase;
                 $qs['sort'] = $column;
                 $qs['dir'] = ($activeSort === $column && $activeDir === 'asc') ? 'desc' : 'asc';
                 $indicator = $activeSort === $column ? ($activeDir === 'asc' ? '▲' : '▼') : '⇅';
                 $href = $url('produtos' . ($qs ? '?' . http_build_query($qs) : ''));
+                $labelMarkup = $labelHtml !== '' ? $labelHtml : htmlspecialchars($label, ENT_QUOTES, 'UTF-8');
 
                 return '<a class="sort-link" href="' . htmlspecialchars($href, ENT_QUOTES, 'UTF-8') . '" data-sort="' . htmlspecialchars($column, ENT_QUOTES, 'UTF-8') . '" data-next="' . htmlspecialchars($qs['dir'], ENT_QUOTES, 'UTF-8') . '" data-active="' . htmlspecialchars($activeSort, ENT_QUOTES, 'UTF-8') . '" data-direction="' . htmlspecialchars($activeDir, ENT_QUOTES, 'UTF-8') . '">' .
-                    '<span class="sort-label">' . htmlspecialchars($label, ENT_QUOTES, 'UTF-8') . '</span>' .
+                    '<span class="sort-label">' . $labelMarkup . '</span>' .
                     '<span class="sort-indicator' . ($activeSort === $column ? ' active' : '') . '">' . $indicator . '</span>' .
                 '</a>';
             };
@@ -286,6 +287,7 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
             }
             #catalog-table th { white-space: nowrap; font-size: calc(0.85rem - 3px); }
             #catalog-table td { font-size: calc(1rem - 3px); }
+            #catalog-table .sort-label--stacked { display: block; margin-top: 1px; line-height: 1.05; }
             .product-actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
             .product-actions form { margin: 0; }
             .product-actions .danger { color: #dc2626; border-color: #fecdd3; background: #fff1f2; }
@@ -303,7 +305,7 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
                         <th><?= $sortLink('tipo', 'Tipo'); ?></th>
                         <th><?= $sortLink('unidade', 'Unidade'); ?></th>
                         <th><?= $sortLink('preco', 'Preço'); ?></th>
-                        <th><?= $sortLink('shelf_life_dias', 'Validade ( dias )'); ?></th>
+                        <th><?= $sortLink('shelf_life_dias', 'Validade ( dias )', 'Validade <span class="sort-label--stacked">( dias )</span>'); ?></th>
                         <th><?= $sortLink('created_at', 'Criado em'); ?></th>
                         <th>Ações</th>
                     </tr>
