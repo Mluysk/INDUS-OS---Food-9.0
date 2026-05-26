@@ -543,13 +543,16 @@
         position: absolute;
         z-index: 20;
         top: calc(100% + 0.5rem);
-        right: 0;
-        width: min(88vw, 520px);
+        left: 0;
+        right: auto;
+        width: max-content;
+        min-width: 300px;
+        max-width: min(92vw, 380px);
         display: grid;
-        gap: 0.65rem;
+        gap: 0.5rem;
         border: 1px solid color-mix(in srgb, var(--primary, #dc2626) 14%, var(--border, #e5e7eb));
-        border-radius: 18px;
-        padding: 0.75rem;
+        border-radius: 16px;
+        padding: 0.65rem;
         background: color-mix(in srgb, var(--primary, #dc2626) 4%, var(--surface, #fff));
         box-shadow: 0 24px 55px rgba(15, 23, 42, 0.18);
     }
@@ -561,7 +564,7 @@
     .daily-output-stores__head {
         display: flex;
         justify-content: space-between;
-        gap: 0.75rem;
+        gap: 0.5rem;
         align-items: center;
         flex-wrap: wrap;
     }
@@ -601,10 +604,10 @@
     .daily-output-store-list {
         display: grid;
         grid-template-columns: 1fr;
-        gap: 0.2rem;
+        gap: 0.12rem;
         max-height: 230px;
         overflow: auto;
-        padding-right: 0.15rem;
+        padding-right: 0.1rem;
     }
 
     .daily-output-store-pill {
