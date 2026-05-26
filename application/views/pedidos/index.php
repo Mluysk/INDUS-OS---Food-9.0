@@ -129,6 +129,7 @@
         $saidaData = $saidaDia['data'] ?? date('Y-m-d');
         $saidaDataLabel = date('d/m/Y', strtotime($saidaData));
         $saidaLojasSelecionadas = array_map('intval', $saidaDia['lojas'] ?? []);
+        $saidaLojasDisponiveis = $saidaLojasDisponiveis ?? [];
         $saidaComFiltroLojas = count($saidaLojasSelecionadas) > 0;
         $saidaLojasLabel = $saidaComFiltroLojas ? count($saidaLojasSelecionadas).' loja(s) selecionada(s)' : 'Todas as lojas';
     ?>
@@ -161,7 +162,8 @@
                                 </div>
                             </div>
                             <div class="daily-output-store-list">
-                                <?php foreach (($clientes ?? []) as $cliente): ?>
+                                <?php if ($saidaLojasDisponiveis): ?>
+                                <?php foreach ($saidaLojasDisponiveis as $cliente): ?>
                                     <?php
                                         $lojaId = (int)($cliente['id'] ?? 0);
                                         if ($lojaId <= 0) {
@@ -181,8 +183,11 @@
                                         </span>
                                     </label>
                                 <?php endforeach; ?>
+                                <?php else: ?>
+                                    <div class="daily-output-store-empty">Nenhuma loja com saida neste dia.</div>
+                                <?php endif; ?>
                             </div>
-                            <p>Sem lojas marcadas, o relatorio mostra todas.</p>
+                            <p>Sem lojas marcadas, o relatorio mostra todas as lojas com saida neste dia.</p>
                         </div>
                     </div>
                     <button type="submit" class="button button-primary">Gerar relatorio</button>
@@ -641,10 +646,19 @@
     }
 
     .daily-output-store-pill small,
-    .daily-output-stores p {
+    .daily-output-stores p,
+    .daily-output-store-empty {
         color: var(--text-muted, #64748b);
         font-size: 0.74rem;
         font-weight: 700;
+    }
+
+    .daily-output-store-empty {
+        border: 1px dashed var(--border, #e5e7eb);
+        border-radius: 14px;
+        padding: 0.8rem;
+        text-align: center;
+        background: var(--surface, #fff);
     }
 
     .daily-output-stores p {

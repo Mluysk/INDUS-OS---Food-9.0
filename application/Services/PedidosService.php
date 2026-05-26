@@ -245,6 +245,16 @@ class PedidosService
         ];
     }
 
+    public function lojasComSaidaDoDia(?string $data = null): array
+    {
+        $data = trim((string)($data ?: date('Y-m-d')));
+        if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $data)) {
+            $data = date('Y-m-d');
+        }
+
+        return $this->pedidos->lojasComSaidaPorDia($data);
+    }
+
     public function detalhar(int $id): array
     {
         $pedido = $this->pedidos->find($id);

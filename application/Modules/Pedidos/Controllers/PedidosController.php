@@ -50,6 +50,11 @@ class PedidosController extends Controller
             $saidaLojas = [$saidaLojas];
         }
         $saidaLojas = array_values(array_filter(array_map('intval', $saidaLojas), static fn (int $id): bool => $id > 0));
+        $saidaLojasDisponiveis = $this->pedidos->lojasComSaidaDoDia($saidaData);
+        $lojasDisponiveisIds = array_map(static fn (array $loja): int => (int)($loja['id'] ?? 0), $saidaLojasDisponiveis);
+        if ($saidaLojas && $lojasDisponiveisIds) {
+            $saidaLojas = array_values(array_intersect($saidaLojas, $lojasDisponiveisIds));
+        }
         $saidaDia = $this->pedidos->gerarSaidaDoDia($saidaData, $saidaLojas);
 
         if ($this->wantsJson()) {
@@ -65,6 +70,7 @@ class PedidosController extends Controller
             'notePixEnabled' => $notePixEnabled,
             'notePixKey' => $notePixKey,
             'saidaDia' => $saidaDia,
+            'saidaLojasDisponiveis' => $saidaLojasDisponiveis,
         ], [
             'title' => 'Pedidos',
             'activeMenu' => 'pedidos',

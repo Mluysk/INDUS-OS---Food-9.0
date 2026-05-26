@@ -132,6 +132,27 @@ class PedidosRepository extends BaseRepository
         ];
     }
 
+    public function lojasComSaidaPorDia(string $data): array
+    {
+        $this->ensurePedidoExtraColumns();
+        $stmt = $this->db->prepare("
+            SELECT DISTINCT
+                c.id,
+                c.nome_fantasia,
+                c.razao_social,
+                c.cnpj,
+                c.cpf
+            FROM pedidos ped
+            INNER JOIN pedido_itens pi ON pi.pedido_id = ped.id
+            INNER JOIN clientes c ON c.id = ped.cliente_id
+            WHERE DATE(ped.created_at) = :data
+              AND COALESCE(ped.status, '') <> 'cancelado'
+            ORDER BY COALESCE(NULLIF(c.nome_fantasia, ''), c.razao_social, c.id) ASC
+        ");
+        $stmt->execute(['data' => $data]);
+        return $stmt->fetchAll();
+    }
+
     private function ensurePedidoExtraColumns(): void
     {
         $this->ensureFormaPagamentoColumn();
