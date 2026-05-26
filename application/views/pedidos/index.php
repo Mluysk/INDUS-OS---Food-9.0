@@ -451,6 +451,18 @@
                             font-size: 10px;
                             text-transform: uppercase;
                         }
+                        .daily-output-sort-head {
+                            border: 0;
+                            padding: 0;
+                            color: inherit;
+                            background: transparent;
+                            font: inherit;
+                            text-transform: inherit;
+                            letter-spacing: inherit;
+                        }
+                        .daily-output-sort-head span {
+                            display: none;
+                        }
                     ${lt}/style>
                 ${lt}/head>
                 ${lt}body>${report.outerHTML}${lt}/body>
@@ -1087,6 +1099,21 @@
         .daily-output-table td {
             white-space: normal !important;
             word-break: break-word;
+        }
+
+        .daily-output-sort-head {
+            border: 0 !important;
+            padding: 0 !important;
+            color: inherit !important;
+            background: transparent !important;
+            box-shadow: none !important;
+            font: inherit !important;
+            text-transform: inherit !important;
+            letter-spacing: inherit !important;
+        }
+
+        .daily-output-sort-head > span {
+            display: none !important;
         }
     }
 </style>
