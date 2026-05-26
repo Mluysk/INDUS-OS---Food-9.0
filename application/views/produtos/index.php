@@ -284,7 +284,8 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
                 color: inherit;
                 opacity: 1;
             }
-            .data-table th { white-space: nowrap; }
+            #catalog-table th { white-space: nowrap; font-size: calc(0.85rem - 3px); }
+            #catalog-table td { font-size: calc(1rem - 3px); }
             .product-actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
             .product-actions form { margin: 0; }
             .product-actions .danger { color: #dc2626; border-color: #fecdd3; background: #fff1f2; }
