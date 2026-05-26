@@ -350,12 +350,13 @@
                 return;
             }
 
-            printWindow.document.write(`<!doctype html>
-                <html lang="pt-BR">
-                <head>
-                    <meta charset="utf-8">
-                    <title>Relatorio de saida</title>
-                    <style>
+            const lt = String.fromCharCode(60);
+            printWindow.document.write(`${lt}!doctype html>
+                ${lt}html lang="pt-BR">
+                ${lt}head>
+                    ${lt}meta charset="utf-8">
+                    ${lt}title>Relatorio de saida${lt}/title>
+                    ${lt}style>
                         @page { margin: 12mm; }
                         * { box-sizing: border-box; }
                         body {
@@ -442,10 +443,10 @@
                             font-size: 10px;
                             text-transform: uppercase;
                         }
-                    </style>
-                </head>
-                <body>${report.outerHTML}</body>
-                </html>`);
+                    ${lt}/style>
+                ${lt}/head>
+                ${lt}body>${report.outerHTML}${lt}/body>
+                ${lt}/html>`);
             printWindow.document.close();
             printWindow.focus();
             const printReport = () => {
