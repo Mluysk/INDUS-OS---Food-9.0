@@ -108,6 +108,7 @@ class ConfigController extends Controller
             'PORTAL_LOGIN_LOGO_DARK_OFFSET_X' => $this->config->get('PORTAL_LOGIN_LOGO_DARK_OFFSET_X', '0') ?: '0',
             'PORTAL_LOGIN_LOGO_DARK_OFFSET_Y' => $this->config->get('PORTAL_LOGIN_LOGO_DARK_OFFSET_Y', '0') ?: '0',
             'PORTAL_LOGIN_LOGO_FILTER' => $this->config->get('PORTAL_LOGIN_LOGO_FILTER', '0') === '1' ? '1' : '0',
+            'NOTIFICATION_POPUP_SECONDS' => $this->config->get('NOTIFICATION_POPUP_SECONDS', '3') ?: '3',
         ];
 
         $notaDefaults = [
@@ -566,6 +567,12 @@ class ConfigController extends Controller
                 $financeDays = 365;
             }
             $data['FINANCEIRO_ALERTA_VENCIMENTO_DIAS'] = (string)$financeDays;
+        }
+
+        if (isset($data['NOTIFICATION_POPUP_SECONDS'])) {
+            $notificationSeconds = (int)$data['NOTIFICATION_POPUP_SECONDS'];
+            $notificationSeconds = max(1, min(30, $notificationSeconds));
+            $data['NOTIFICATION_POPUP_SECONDS'] = (string)$notificationSeconds;
         }
 
         if (isset($data['LIST_PAGE_SIZE_OPTIONS']) || isset($data['LIST_PAGE_SIZE_DEFAULT'])) {

@@ -85,6 +85,7 @@ abstract class Controller
             'portal_login_logo_dark_offset_x' => '0',
             'portal_login_logo_dark_offset_y' => '0',
             'portal_login_logo_filter' => '0',
+            'notification_popup_seconds' => '3',
         ];
         $quickActionDefaults = [
             [
@@ -161,6 +162,10 @@ abstract class Controller
             $theme['mode'] = strtolower($configService->get('THEME_MODE', $theme['mode']) ?: $theme['mode']);
             $theme['primary_hex'] = $configService->get('THEME_PRIMARY_HEX', $theme['primary_hex']) ?: $theme['primary_hex'];
             $theme['primary_name'] = $configService->get('THEME_PRIMARY_NAME', $theme['primary_name']) ?: $theme['primary_name'];
+            $notificationSeconds = $configService->get('NOTIFICATION_POPUP_SECONDS', $theme['notification_popup_seconds']) ?: $theme['notification_popup_seconds'];
+            $notificationSeconds = is_numeric($notificationSeconds) ? (int)$notificationSeconds : 3;
+            $notificationSeconds = max(1, min(30, $notificationSeconds));
+            $theme['notification_popup_seconds'] = (string)$notificationSeconds;
             $theme['logo_light'] = $configService->get('THEME_LOGO_LIGHT', $theme['logo_light']) ?: $theme['logo_light'];
             $theme['logo_dark'] = $configService->get('THEME_LOGO_DARK', $theme['logo_dark']) ?: $theme['logo_dark'];
             $compactFallback = $configService->get('THEME_LOGO_COMPACT', $theme['logo_compact']) ?: $theme['logo_compact'];

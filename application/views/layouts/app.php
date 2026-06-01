@@ -172,6 +172,9 @@ $logoCompactDark = htmlspecialchars($asset($theme['logo_compact_dark'] ?? ($them
 $footerLogoPath = $theme['logo_footer'] ?? 'img/rodape/logo.png';
 $footerLogo = htmlspecialchars($asset($footerLogoPath), ENT_QUOTES, 'UTF-8');
 $currentYear = date('Y');
+$notificationPopupSeconds = isset($theme['notification_popup_seconds']) ? (int)$theme['notification_popup_seconds'] : 3;
+$notificationPopupSeconds = max(1, min(30, $notificationPopupSeconds));
+$notificationPopupMs = $notificationPopupSeconds * 1000;
 $tagline = $appTagline ?? 'Sistema de Controle Industrial (SCI)';
 $titleColorize = ($theme['title_colorize'] ?? '0') === '1';
 $logoTintEnabled = ($theme['logo_filter'] ?? '0') === '1';
@@ -2255,7 +2258,7 @@ $brandTitleOffsetY = (int)($theme['title_offset_y'] ?? 0);
     };
 
     document.querySelectorAll('.alerts .alert').forEach((toast) => {
-        window.setTimeout(() => closeToast(toast), 3000);
+        window.setTimeout(() => closeToast(toast), <?= (int)$notificationPopupMs; ?>);
         toast.querySelector('.alert-close')?.addEventListener('click', () => closeToast(toast));
     });
 

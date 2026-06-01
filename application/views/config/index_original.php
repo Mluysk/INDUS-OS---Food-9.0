@@ -40,6 +40,8 @@ $portalLoginLogoLightOffsetX = $themeDefaults['PORTAL_LOGIN_LOGO_LIGHT_OFFSET_X'
 $portalLoginLogoLightOffsetY = $themeDefaults['PORTAL_LOGIN_LOGO_LIGHT_OFFSET_Y'] ?? '0';
 $portalLoginLogoDarkOffsetX = $themeDefaults['PORTAL_LOGIN_LOGO_DARK_OFFSET_X'] ?? '0';
 $portalLoginLogoDarkOffsetY = $themeDefaults['PORTAL_LOGIN_LOGO_DARK_OFFSET_Y'] ?? '0';
+$notificationPopupSeconds = isset($themeDefaults['NOTIFICATION_POPUP_SECONDS']) ? (int)$themeDefaults['NOTIFICATION_POPUP_SECONDS'] : 3;
+$notificationPopupSeconds = max(1, min(30, $notificationPopupSeconds));
 $noteDefaults = $noteDefaults ?? [];
 $noteNome = $noteDefaults['NOTE_FABRICA_NOME'] ?? $themeTitle;
 $noteDoc = $noteDefaults['NOTE_FABRICA_DOC'] ?? 'CNPJ 00.000.000/0000-00';
@@ -561,6 +563,11 @@ $previewMatrixDefault = app_logo_matrix_values($logoTintPreviewHex);
                         <label for="list-page-size-options">Números disponíveis por página</label>
                         <input id="list-page-size-options" name="config[LIST_PAGE_SIZE_OPTIONS]" value="<?= htmlspecialchars(implode(', ', array_map('intval', $listPageSizeOptions)), ENT_QUOTES, 'UTF-8'); ?>" placeholder="15, 20, 30, 40, 50, 100" data-list-page-options>
                         <p class="field-hint">Digite os números separados por vírgula. Eles aparecem no seletor das listas.</p>
+                    </div>
+                    <div class="field">
+                        <label for="notification-popup-seconds">Duração dos popups de notificação (segundos)</label>
+                        <input type="number" min="1" max="30" id="notification-popup-seconds" name="config[NOTIFICATION_POPUP_SECONDS]" value="<?= htmlspecialchars((string)$notificationPopupSeconds, ENT_QUOTES, 'UTF-8'); ?>" required>
+                        <p class="field-hint">Define por quantos segundos as notificações gerais ficam visíveis antes de fechar automaticamente.</p>
                     </div>
                     <div class="field">
                         <label class="field-label">Padrão por lista</label>
