@@ -73,10 +73,42 @@ if ($supportWhatsapp !== '') {
                     <p class="auth-panel__subtitle">Use seu e-mail, CPF ou CNPJ para acompanhar pedidos e gerar novas solicitações.</p>
                 </div>
                 <label for="login-email">E-mail, CPF ou CNPJ</label>
-                <input type="text" id="login-email" name="login" placeholder="cliente@empresa.com" required>
+                <div class="portal-input-shell">
+                    <span class="portal-input-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.05" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                        </svg>
+                    </span>
+                    <input type="text" id="login-email" name="login" placeholder="cliente@empresa.com" required>
+                </div>
 
                 <label for="login-password">Senha</label>
-                <input type="password" id="login-password" name="senha" placeholder="••••••••" required>
+                <div class="portal-input-shell portal-input-shell--password">
+                    <span class="portal-input-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.05" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="4" y="11" width="16" height="10" rx="2"></rect>
+                            <path d="M8 11V7a4 4 0 0 1 8 0v4"></path>
+                        </svg>
+                    </span>
+                    <input type="password" id="login-password" name="senha" placeholder="••••••••" required>
+                    <button type="button" class="portal-password-toggle" data-password-toggle aria-label="Mostrar senha" aria-pressed="false">
+                        <span class="portal-password-toggle__icon portal-password-toggle__icon--show" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.05" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6-10-6-10-6Z"></path>
+                                <circle cx="12" cy="12" r="3"></circle>
+                            </svg>
+                        </span>
+                        <span class="portal-password-toggle__icon portal-password-toggle__icon--hide" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.05" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c6.5 0 10 7 10 7a13.16 13.16 0 0 1-2.12 2.95"></path>
+                                <path d="M6.61 6.61A13.53 13.53 0 0 0 2 12s3.5 7 10 7a10.63 10.63 0 0 0 5.39-1.61"></path>
+                                <path d="M14.12 14.12A3 3 0 0 1 9.88 9.88"></path>
+                                <path d="M3 3l18 18"></path>
+                            </svg>
+                        </span>
+                    </button>
+                </div>
 
                 <button type="submit" class="portal-btn portal-btn--primary">Entrar</button>
 
@@ -609,9 +641,96 @@ if ($supportWhatsapp !== '') {
         transform: translateY(-1px);
     }
 
+    .portal-input-shell {
+        position: relative;
+        display: flex;
+        align-items: center;
+        width: 100%;
+    }
+
+    .portal-input-shell input {
+        padding-left: 3.15rem;
+    }
+
+    .portal-input-shell--password input {
+        padding-right: 3.2rem;
+    }
+
+    .portal-input-icon {
+        position: absolute;
+        left: 1rem;
+        top: 50%;
+        z-index: 1;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 1.28rem;
+        height: 1.28rem;
+        color: color-mix(in srgb, var(--primary, #2563eb) 72%, var(--portal-muted));
+        transform: translateY(-50%);
+        pointer-events: none;
+    }
+
+    .portal-input-icon svg,
+    .portal-password-toggle svg {
+        width: 100%;
+        height: 100%;
+        display: block;
+    }
+
+    .portal-password-toggle {
+        position: absolute;
+        right: 0.68rem;
+        top: 50%;
+        z-index: 2;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 2.25rem;
+        height: 2.25rem;
+        border: 1px solid color-mix(in srgb, var(--primary, #2563eb) 16%, transparent);
+        border-radius: 999px;
+        background: color-mix(in srgb, var(--primary, #2563eb) 8%, #ffffff);
+        color: color-mix(in srgb, var(--primary, #2563eb) 78%, #334155);
+        cursor: pointer;
+        transform: translateY(-50%);
+        transition: background 0.18s ease, color 0.18s ease, box-shadow 0.18s ease;
+    }
+
+    .portal-password-toggle:hover,
+    .portal-password-toggle:focus-visible {
+        outline: none;
+        background: color-mix(in srgb, var(--primary, #2563eb) 14%, #ffffff);
+        color: var(--primary, #2563eb);
+        box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary, #2563eb) 12%, transparent);
+    }
+
+    .portal-password-toggle__icon {
+        width: 1.05rem;
+        height: 1.05rem;
+    }
+
+    .portal-password-toggle__icon--hide {
+        display: none;
+    }
+
+    .portal-password-toggle.is-visible .portal-password-toggle__icon--show {
+        display: none;
+    }
+
+    .portal-password-toggle.is-visible .portal-password-toggle__icon--hide {
+        display: inline-flex;
+    }
+
     [data-theme="dark"] .auth-panel input {
         background: rgba(15, 23, 42, 0.82);
         border-color: rgba(71, 85, 105, 0.45);
+    }
+
+    [data-theme="dark"] .portal-password-toggle {
+        background: color-mix(in srgb, var(--primary, #2563eb) 18%, rgba(15, 23, 42, 0.88));
+        border-color: color-mix(in srgb, var(--primary, #2563eb) 24%, rgba(148, 163, 184, 0.18));
+        color: color-mix(in srgb, var(--primary, #2563eb) 66%, #ffffff);
     }
 
     .auth-panel__header h2 {
@@ -3390,6 +3509,20 @@ $catalogoPayload = json_encode(array_map(static function ($produto) {
             leaveApp();
         }
     };
+
+    document.querySelectorAll('[data-password-toggle]').forEach((button) => {
+        const shell = button.closest('.portal-input-shell');
+        const input = shell?.querySelector('input[type="password"], input[type="text"]');
+        if (!input) return;
+        button.addEventListener('click', () => {
+            const visible = input.type === 'text';
+            input.type = visible ? 'password' : 'text';
+            button.classList.toggle('is-visible', !visible);
+            button.setAttribute('aria-pressed', String(!visible));
+            button.setAttribute('aria-label', visible ? 'Mostrar senha' : 'Ocultar senha');
+            input.focus();
+        });
+    });
 
     if (loginForm) {
         loginForm.addEventListener('submit', async (event) => {
