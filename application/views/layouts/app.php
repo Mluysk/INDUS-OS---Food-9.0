@@ -970,21 +970,65 @@ $brandTitleOffsetY = (int)($theme['title_offset_y'] ?? 0);
         .alerts {
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 10px;
+            position: fixed;
+            top: 18px;
+            right: 18px;
+            width: min(380px, calc(100vw - 28px));
+            z-index: 2400;
+            pointer-events: none;
         }
         .alert {
-            padding: 14px 18px;
-            border-radius: 14px;
+            display: grid;
+            grid-template-columns: 1fr auto;
+            align-items: start;
+            gap: 12px;
+            padding: 14px 14px 14px 16px;
+            border-radius: 16px;
             font-weight: 600;
             border: 1px solid transparent;
+            box-shadow: 0 22px 46px -28px rgba(15, 23, 42, 0.58);
+            backdrop-filter: blur(12px);
+            pointer-events: auto;
+            transition: opacity 0.22s ease, transform 0.22s ease;
+            animation: toastIn 0.24s ease both;
+        }
+        .alert.is-hiding {
+            opacity: 0;
+            transform: translateY(-8px) scale(0.98);
+        }
+        .alert-message {
+            line-height: 1.35;
+        }
+        .alert-close {
+            width: 28px;
+            height: 28px;
+            border: 0;
+            border-radius: 999px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(15, 23, 42, 0.08);
+            color: currentColor;
+            cursor: pointer;
+            font-size: 1.2rem;
+            line-height: 1;
+            font-weight: 900;
+            padding: 0;
+            transition: background 0.18s ease;
+        }
+        .alert-close:hover,
+        .alert-close:focus-visible {
+            outline: none;
+            background: rgba(15, 23, 42, 0.14);
         }
         .alert-success {
-            background: rgba(34, 197, 94, 0.12);
+            background: rgba(236, 253, 245, 0.96);
             color: #047857;
             border-color: rgba(34, 197, 94, 0.28);
         }
         .alert-error {
-            background: rgba(248, 113, 113, 0.16);
+            background: rgba(254, 242, 242, 0.96);
             color: #b91c1c;
             border-color: rgba(248, 113, 113, 0.32);
         }
@@ -995,6 +1039,24 @@ $brandTitleOffsetY = (int)($theme['title_offset_y'] ?? 0);
         body.theme-dark .alert-error {
             color: #fca5a5;
             border-color: rgba(248, 113, 113, 0.28);
+        }
+        @keyframes toastIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px) scale(0.98);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+        @media (max-width: 640px) {
+            .alerts {
+                top: 12px;
+                right: 12px;
+                left: 12px;
+                width: auto;
+            }
         }
         .page-content {
             display: flex;
@@ -1737,12 +1799,18 @@ $brandTitleOffsetY = (int)($theme['title_offset_y'] ?? 0);
         </header>
 
         <?php if (($flash['success'] ?? null) || ($flash['error'] ?? null)): ?>
-            <div class="alerts" role="alert">
+            <div class="alerts" role="region" aria-label="Notificações">
                 <?php if ($flash['success'] ?? null): ?>
-                    <div class="alert alert-success">✅ <?= htmlspecialchars($flash['success'], ENT_QUOTES, 'UTF-8'); ?></div>
+                    <div class="alert alert-success" role="alert">
+                        <span class="alert-message"><?= htmlspecialchars($flash['success'], ENT_QUOTES, 'UTF-8'); ?></span>
+                        <button type="button" class="alert-close" aria-label="Fechar notificação">×</button>
+                    </div>
                 <?php endif; ?>
                 <?php if ($flash['error'] ?? null): ?>
-                    <div class="alert alert-error">⚠️ <?= htmlspecialchars($flash['error'], ENT_QUOTES, 'UTF-8'); ?></div>
+                    <div class="alert alert-error" role="alert">
+                        <span class="alert-message"><?= htmlspecialchars($flash['error'], ENT_QUOTES, 'UTF-8'); ?></span>
+                        <button type="button" class="alert-close" aria-label="Fechar notificação">×</button>
+                    </div>
                 <?php endif; ?>
             </div>
         <?php endif; ?>
@@ -2175,6 +2243,20 @@ $brandTitleOffsetY = (int)($theme['title_offset_y'] ?? 0);
             event.preventDefault();
             window.location.href = shortcuts[key];
         }
+    });
+
+    const closeToast = (toast) => {
+        if (!toast || toast.dataset.closing === '1') return;
+        toast.dataset.closing = '1';
+        toast.classList.add('is-hiding');
+        window.setTimeout(() => {
+            toast.remove();
+        }, 240);
+    };
+
+    document.querySelectorAll('.alerts .alert').forEach((toast) => {
+        window.setTimeout(() => closeToast(toast), 3000);
+        toast.querySelector('.alert-close')?.addEventListener('click', () => closeToast(toast));
     });
 
     document.addEventListener('DOMContentLoaded', () => {
