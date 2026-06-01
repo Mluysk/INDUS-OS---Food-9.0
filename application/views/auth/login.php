@@ -246,6 +246,86 @@ $initialThemeAttr = $themeMode === 'dark' ? 'dark' : 'light';
             border-color: var(--primary);
             box-shadow: 0 0 0 3px rgba(91, 97, 111, 0.18);
         }
+        .login-input-shell {
+            position: relative;
+            display: flex;
+            align-items: center;
+            width: 100%;
+        }
+        .login-input-shell input {
+            padding-left: 46px;
+        }
+        .login-input-shell--password input {
+            padding-right: 48px;
+        }
+        .login-input-icon {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            z-index: 1;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 18px;
+            height: 18px;
+            color: var(--primary);
+            transform: translateY(-50%);
+            pointer-events: none;
+            opacity: 0.9;
+        }
+        .login-input-icon svg,
+        .login-password-toggle svg {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+        .login-password-toggle {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            z-index: 2;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 34px;
+            height: 34px;
+            padding: 0;
+            border: 1px solid rgba(148, 163, 184, 0.28);
+            border-radius: 999px;
+            background: rgba(148, 163, 184, 0.14);
+            color: var(--primary);
+            cursor: pointer;
+            box-shadow: none;
+            transform: translateY(-50%) !important;
+            transition: background 0.18s ease, color 0.18s ease, border-color 0.18s ease;
+        }
+        .login-password-toggle:hover,
+        .login-password-toggle:focus-visible {
+            outline: none;
+            background: rgba(148, 163, 184, 0.22);
+            border-color: var(--primary);
+            box-shadow: none;
+            transform: translateY(-50%) !important;
+        }
+        .login-password-toggle__icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            flex: 0 0 17px;
+            width: 17px;
+            height: 17px;
+            color: currentColor;
+            pointer-events: none;
+        }
+        .login-password-toggle__icon--hide {
+            display: none !important;
+        }
+        .login-password-toggle.is-visible .login-password-toggle__icon--show {
+            display: none !important;
+        }
+        .login-password-toggle.is-visible .login-password-toggle__icon--hide {
+            display: inline-flex !important;
+        }
         .btn {
             display: inline-flex;
             align-items: center;
@@ -401,11 +481,43 @@ $initialThemeAttr = $themeMode === 'dark' ? 'dark' : 'light';
         <form method="post" action="<?= htmlspecialchars($urlHelper('login'), ENT_QUOTES, 'UTF-8'); ?>">
             <div style="margin-bottom: 18px;">
                 <label for="login">E-mail, CPF ou CNPJ</label>
-                <input type="text" name="login" id="login" autocomplete="username" value="<?= htmlspecialchars($old['login'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" required>
+                <div class="login-input-shell">
+                    <span class="login-input-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.05" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                        </svg>
+                    </span>
+                    <input type="text" name="login" id="login" autocomplete="username" value="<?= htmlspecialchars($old['login'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" required>
+                </div>
             </div>
             <div style="margin-bottom: 12px;">
                 <label for="senha">Senha</label>
-                <input type="password" name="senha" id="senha" autocomplete="current-password" required>
+                <div class="login-input-shell login-input-shell--password">
+                    <span class="login-input-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.05" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="4" y="11" width="16" height="10" rx="2"></rect>
+                            <path d="M8 11V7a4 4 0 0 1 8 0v4"></path>
+                        </svg>
+                    </span>
+                    <input type="password" name="senha" id="senha" autocomplete="current-password" required>
+                    <button type="button" class="login-password-toggle" data-password-toggle aria-label="Mostrar senha" aria-pressed="false">
+                        <span class="login-password-toggle__icon login-password-toggle__icon--show" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.05" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6-10-6-10-6Z"></path>
+                                <circle cx="12" cy="12" r="3"></circle>
+                            </svg>
+                        </span>
+                        <span class="login-password-toggle__icon login-password-toggle__icon--hide" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.05" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c6.5 0 10 7 10 7a13.16 13.16 0 0 1-2.12 2.95"></path>
+                                <path d="M6.61 6.61A13.53 13.53 0 0 0 2 12s3.5 7 10 7a10.63 10.63 0 0 0 5.39-1.61"></path>
+                                <path d="M14.12 14.12A3 3 0 0 1 9.88 9.88"></path>
+                                <path d="M3 3l18 18"></path>
+                            </svg>
+                        </span>
+                    </button>
+                </div>
             </div>
             <button class="btn" type="submit">Entrar</button>
         </form>
@@ -452,6 +564,20 @@ $initialThemeAttr = $themeMode === 'dark' ? 'dark' : 'light';
 
         applyGlobalZoom();
         window.addEventListener('resize', applyGlobalZoom);
+
+        document.querySelectorAll('[data-password-toggle]').forEach((button) => {
+            const shell = button.closest('.login-input-shell');
+            const input = shell?.querySelector('input[type="password"], input[type="text"]');
+            if (!input) return;
+            button.addEventListener('click', () => {
+                const visible = input.type === 'text';
+                input.type = visible ? 'password' : 'text';
+                button.classList.toggle('is-visible', !visible);
+                button.setAttribute('aria-pressed', String(!visible));
+                button.setAttribute('aria-label', visible ? 'Mostrar senha' : 'Ocultar senha');
+                input.focus();
+            });
+        });
 
         toggle.addEventListener('click', () => {
             const current = root.getAttribute('data-theme');
