@@ -693,8 +693,10 @@ if ($supportWhatsapp !== '') {
         background: color-mix(in srgb, var(--primary, #2563eb) 8%, #ffffff);
         color: color-mix(in srgb, var(--primary, #2563eb) 78%, #334155);
         cursor: pointer;
-        transform: translateY(-50%);
-        transition: background 0.18s ease, color 0.18s ease, box-shadow 0.18s ease;
+        padding: 0;
+        box-shadow: none;
+        transform: translateY(-50%) !important;
+        transition: background 0.18s ease, color 0.18s ease, border-color 0.18s ease;
     }
 
     .portal-password-toggle:hover,
@@ -702,24 +704,32 @@ if ($supportWhatsapp !== '') {
         outline: none;
         background: color-mix(in srgb, var(--primary, #2563eb) 14%, #ffffff);
         color: var(--primary, #2563eb);
-        box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary, #2563eb) 12%, transparent);
+        border-color: color-mix(in srgb, var(--primary, #2563eb) 30%, transparent);
+        box-shadow: none;
+        transform: translateY(-50%) !important;
     }
 
     .portal-password-toggle__icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex: 0 0 1.05rem;
         width: 1.05rem;
         height: 1.05rem;
+        color: currentColor;
+        pointer-events: none;
     }
 
     .portal-password-toggle__icon--hide {
-        display: none;
+        display: none !important;
     }
 
     .portal-password-toggle.is-visible .portal-password-toggle__icon--show {
-        display: none;
+        display: none !important;
     }
 
     .portal-password-toggle.is-visible .portal-password-toggle__icon--hide {
-        display: inline-flex;
+        display: inline-flex !important;
     }
 
     [data-theme="dark"] .auth-panel input {
