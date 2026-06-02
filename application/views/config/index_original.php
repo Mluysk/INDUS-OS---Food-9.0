@@ -2631,6 +2631,123 @@ $previewMatrixDefault = app_logo_matrix_values($logoTintPreviewHex);
             syncDefaultPageOption();
         }
 
+        const showConfigToast = (message, type = 'success') => {
+            let stack = document.querySelector('.alerts');
+            if (!stack) {
+                stack = document.createElement('div');
+                stack.className = 'alerts';
+                stack.setAttribute('role', 'region');
+                stack.setAttribute('aria-label', 'Notificações');
+                document.body.appendChild(stack);
+            }
+            const toast = document.createElement('div');
+            toast.className = `alert ${type === 'error' ? 'alert-error' : 'alert-success'}`;
+            toast.setAttribute('role', 'alert');
+            toast.innerHTML = `<span class="alert-message">${message}</span><button type="button" class="alert-close" aria-label="Fechar notificação">×</button>`;
+            const close = () => {
+                if (toast.dataset.closing === '1') return;
+                toast.dataset.closing = '1';
+                toast.classList.add('is-hiding');
+                window.setTimeout(() => toast.remove(), 240);
+            };
+            toast.querySelector('.alert-close')?.addEventListener('click', close);
+            stack.appendChild(toast);
+            const secondsInput = document.getElementById('notification-popup-seconds');
+            const seconds = Math.max(1, Math.min(30, parseInt(secondsInput?.value || '3', 10) || 3));
+            window.setTimeout(close, seconds * 1000);
+        };
+
+        const installConfigAutosave = () => {
+            const forms = document.querySelectorAll('form[data-tab-panel][action*="config/save"]');
+            const timers = new WeakMap();
+            const controllers = new WeakMap();
+            const pendingLabels = new WeakMap();
+
+            const setLabel = (form, text) => {
+                let label = pendingLabels.get(form);
+                if (!label) {
+                    label = document.createElement('p');
+                    label.className = 'field-hint config-autosave-label';
+                    const footer = form.querySelector('.form-footer');
+                    if (footer) {
+                        footer.prepend(label);
+                    } else {
+                        form.appendChild(label);
+                    }
+                    pendingLabels.set(form, label);
+                }
+                label.textContent = text;
+            };
+
+            const shouldSkip = (event) => {
+                const target = event.target;
+                if (!(target instanceof HTMLInputElement || target instanceof HTMLSelectElement || target instanceof HTMLTextAreaElement)) {
+                    return true;
+                }
+                if (!target.name || target.type === 'file') {
+                    return true;
+                }
+                return target.closest('[data-autosave-skip]') !== null;
+            };
+
+            const autosave = (form) => {
+                const previous = controllers.get(form);
+                if (previous) {
+                    previous.abort();
+                }
+                const controller = new AbortController();
+                controllers.set(form, controller);
+                setLabel(form, 'Salvando automaticamente...');
+
+                const data = new FormData(form);
+                fetch(form.action, {
+                    method: 'POST',
+                    body: data,
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest',
+                    },
+                    signal: controller.signal,
+                })
+                    .then(async (response) => {
+                        const payload = await response.json().catch(() => ({}));
+                        if (!response.ok) {
+                            throw new Error(payload.message || 'Não foi possível salvar automaticamente.');
+                        }
+                        setLabel(form, 'Salvo automaticamente.');
+                        showConfigToast('Configuração salva automaticamente.');
+                    })
+                    .catch((error) => {
+                        if (error.name === 'AbortError') {
+                            return;
+                        }
+                        setLabel(form, 'Falha ao salvar automaticamente.');
+                        showConfigToast(error.message || 'Não foi possível salvar automaticamente.', 'error');
+                    });
+            };
+
+            forms.forEach((form) => {
+                if (form.dataset.configAutosaveReady === '1') {
+                    return;
+                }
+                form.dataset.configAutosaveReady = '1';
+                form.addEventListener('input', (event) => {
+                    if (shouldSkip(event)) {
+                        return;
+                    }
+                    window.clearTimeout(timers.get(form));
+                    timers.set(form, window.setTimeout(() => autosave(form), 850));
+                });
+                form.addEventListener('change', (event) => {
+                    if (shouldSkip(event)) {
+                        return;
+                    }
+                    window.clearTimeout(timers.get(form));
+                    timers.set(form, window.setTimeout(() => autosave(form), 250));
+                });
+            });
+        };
+
         const quickActionsInput = document.getElementById('quick-actions-config');
         if (quickActionsInput) {
             const rows = document.querySelectorAll('[data-qa-row]');
@@ -2658,6 +2775,8 @@ $previewMatrixDefault = app_logo_matrix_values($logoTintPreviewHex);
             }
             syncQuickActions();
         }
+
+        installConfigAutosave();
 
         const appearanceForm = document.querySelector('form[data-tab-panel="appearance"]');
         if (appearanceForm) {
