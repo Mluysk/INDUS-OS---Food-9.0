@@ -9,6 +9,8 @@ class ConfigService
 
     /**
      * Configuracoes visuais e atalhos sao pessoais por usuario logado.
+     * Logos do sistema principal continuam globais, pois representam a marca
+     * do ADM para todas as contas.
      * O restante continua global para preservar regras de producao, estoque,
      * nota, portal e demais parametros operacionais.
      */
@@ -20,6 +22,10 @@ class ConfigService
         'DASH_QUICK_ACTIONS',
     ];
 
+    private const GLOBAL_THEME_PREFIXES = [
+        'THEME_LOGO_',
+    ];
+
     public function __construct(ConfiguracoesRepository $configuracoes)
     {
         $this->configuracoes = $configuracoes;
@@ -27,6 +33,16 @@ class ConfigService
 
     public function get(string $chave, ?string $default = null): ?string
     {
+        if ($this->isGlobalThemeKey($chave)) {
+            $adminKey = $this->adminScopedKey($chave);
+            if ($adminKey !== null) {
+                $adminValue = $this->configuracoes->get($adminKey, null);
+                if ($adminValue !== null) {
+                    return $adminValue;
+                }
+            }
+        }
+
         if ($this->isLoginRequest() && $this->isThemeKey($chave)) {
             $adminKey = $this->adminScopedKey($chave);
             if ($adminKey !== null) {
@@ -66,6 +82,7 @@ class ConfigService
         $update->execute(['chave' => $targetKey, 'valor' => $valor]);
 
         if ($update->rowCount() > 0) {
+            $this->clearLegacyAdminScopedValue($chave);
             return;
         }
 
@@ -76,6 +93,8 @@ class ConfigService
             $retry = $conn->prepare('UPDATE configuracoes SET valor = :valor WHERE chave = :chave');
             $retry->execute(['chave' => $targetKey, 'valor' => $valor]);
         }
+
+        $this->clearLegacyAdminScopedValue($chave);
     }
 
     public function getConnection(): \PDO
@@ -122,6 +141,10 @@ class ConfigService
             return false;
         }
 
+        if ($this->isGlobalThemeKey($chave)) {
+            return false;
+        }
+
         if (in_array($chave, self::USER_SCOPED_KEYS, true)) {
             return true;
         }
@@ -132,6 +155,17 @@ class ConfigService
     private function isThemeKey(string $chave): bool
     {
         foreach (self::USER_SCOPED_PREFIXES as $prefix) {
+            if (str_starts_with($chave, $prefix)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private function isGlobalThemeKey(string $chave): bool
+    {
+        foreach (self::GLOBAL_THEME_PREFIXES as $prefix) {
             if (str_starts_with($chave, $prefix)) {
                 return true;
             }
@@ -162,6 +196,21 @@ class ConfigService
         }
 
         return 'USER_'.$adminId.'_'.$chave;
+    }
+
+    private function clearLegacyAdminScopedValue(string $chave): void
+    {
+        if (!$this->isGlobalThemeKey($chave)) {
+            return;
+        }
+
+        $adminKey = $this->adminScopedKey($chave);
+        if ($adminKey === null) {
+            return;
+        }
+
+        $delete = $this->configuracoes->getConnection()->prepare('DELETE FROM configuracoes WHERE chave = :chave');
+        $delete->execute(['chave' => $adminKey]);
     }
 
     private function currentUserId(): int
