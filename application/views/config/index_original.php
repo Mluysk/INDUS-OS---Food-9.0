@@ -40,6 +40,24 @@ $portalLoginLogoLightOffsetX = $themeDefaults['PORTAL_LOGIN_LOGO_LIGHT_OFFSET_X'
 $portalLoginLogoLightOffsetY = $themeDefaults['PORTAL_LOGIN_LOGO_LIGHT_OFFSET_Y'] ?? '0';
 $portalLoginLogoDarkOffsetX = $themeDefaults['PORTAL_LOGIN_LOGO_DARK_OFFSET_X'] ?? '0';
 $portalLoginLogoDarkOffsetY = $themeDefaults['PORTAL_LOGIN_LOGO_DARK_OFFSET_Y'] ?? '0';
+$configEditPasswordRequired = !empty($configEditPasswordRequired);
+$configEditPasswordSet = !empty($configEditPasswordSet);
+if (!function_exists('render_config_edit_password_field')) {
+    function render_config_edit_password_field(bool $required): void
+    {
+        if (!$required) {
+            return;
+        }
+        $fieldId = 'config-edit-password-'.uniqid('', false);
+        ?>
+        <div class="field config-edit-password-field">
+            <label for="<?= htmlspecialchars($fieldId, ENT_QUOTES, 'UTF-8'); ?>">Senha de autorizacao</label>
+            <input id="<?= htmlspecialchars($fieldId, ENT_QUOTES, 'UTF-8'); ?>" type="password" name="config_edit_password" autocomplete="current-password" required placeholder="Senha definida pelo administrador" data-autosave-skip>
+            <p class="field-hint">Obrigatoria para salvar esta aba. Personalizacao visual nao exige senha.</p>
+        </div>
+        <?php
+    }
+}
 $notificationPopupSeconds = isset($themeDefaults['NOTIFICATION_POPUP_SECONDS']) ? (int)$themeDefaults['NOTIFICATION_POPUP_SECONDS'] : 3;
 $notificationPopupSeconds = max(1, min(30, $notificationPopupSeconds));
 $noteDefaults = $noteDefaults ?? [];
@@ -270,6 +288,7 @@ $previewMatrixDefault = app_logo_matrix_values($logoTintPreviewHex);
                 </div>
             </div>
 
+            <?php render_config_edit_password_field($configEditPasswordRequired); ?>
             <footer class="form-footer">
                 <button type="submit" class="btn-primary">Salvar regras</button>
             </footer>
@@ -301,6 +320,7 @@ $previewMatrixDefault = app_logo_matrix_values($logoTintPreviewHex);
                 </div>
             </div>
 
+            <?php render_config_edit_password_field($configEditPasswordRequired); ?>
             <footer class="form-footer">
                 <button type="submit" class="btn-primary">Salvar desempenho</button>
             </footer>
@@ -357,6 +377,7 @@ $previewMatrixDefault = app_logo_matrix_values($logoTintPreviewHex);
                             <input id="user-password" type="password" name="senha" required minlength="6" placeholder="Digite uma senha segura">
                         </div>
 
+                        <?php render_config_edit_password_field($configEditPasswordRequired); ?>
                         <footer class="form-footer user-actions">
                             <div class="btn-group">
                                 <button type="submit" class="btn-primary" id="user-submit">Salvar usuário</button>
@@ -407,6 +428,9 @@ $previewMatrixDefault = app_logo_matrix_values($logoTintPreviewHex);
                                                 <form method="post" action="<?= htmlspecialchars($url('config/users/delete'), ENT_QUOTES, 'UTF-8'); ?>" class="inline-form user-delete-form">
                                                     <input type="hidden" name="active_tab" value="users">
                                                     <input type="hidden" name="id" value="<?= (int)($user['id'] ?? 0); ?>">
+                                                    <?php if ($configEditPasswordRequired): ?>
+                                                        <input type="password" name="config_edit_password" required placeholder="Senha" autocomplete="current-password" class="inline-password" data-autosave-skip>
+                                                    <?php endif; ?>
                                                     <button type="submit" class="btn-danger ghost">Excluir</button>
                                                 </form>
                                             </td>
@@ -467,6 +491,7 @@ $previewMatrixDefault = app_logo_matrix_values($logoTintPreviewHex);
                             <?php endforeach; ?>
                         </div>
 
+                        <?php render_config_edit_password_field($configEditPasswordRequired); ?>
                         <footer class="form-footer">
                             <button type="submit" class="btn-primary">Salvar hierarquia</button>
                         </footer>
@@ -475,14 +500,30 @@ $previewMatrixDefault = app_logo_matrix_values($logoTintPreviewHex);
             </div>
         </div>
 
-        <div class="card tab-panel" data-tab-panel="admin">
+        <form class="card tab-panel" data-tab-panel="admin" method="post" action="<?= htmlspecialchars($url('config/save'), ENT_QUOTES, 'UTF-8'); ?>">
+            <input type="hidden" name="active_tab" value="admin">
             <h2>Administração</h2>
             <p class="card-subtitle">Centralize informações administrativas e acesso rápido às rotinas de manutenção.</p>
             <div class="field">
                 <label>Atalhos administrativos</label>
                 <p class="field-hint">Use as outras abas para ajustes de usuários, backups, desempenho e personalização do painel.</p>
             </div>
-        </div>
+            <div class="field-grid">
+                <div class="field">
+                    <label for="config-edit-password-new">Senha para alteracoes</label>
+                    <input id="config-edit-password-new" type="password" name="config[CONFIG_EDIT_PASSWORD_NEW]" autocomplete="new-password" minlength="6" placeholder="<?= $configEditPasswordSet ? 'Digite para trocar a senha' : 'Cadastre a senha de autorizacao'; ?>" data-autosave-skip>
+                    <p class="field-hint">Exigida para usuarios nao-admin salvarem configuracoes. Personalizacao visual nao exige senha.</p>
+                </div>
+                <div class="field">
+                    <label for="config-edit-password-confirm">Confirmar senha</label>
+                    <input id="config-edit-password-confirm" type="password" name="config[CONFIG_EDIT_PASSWORD_CONFIRM]" autocomplete="new-password" minlength="6" placeholder="Repita a senha" data-autosave-skip>
+                    <p class="field-hint"><?= $configEditPasswordSet ? 'Senha de autorizacao cadastrada.' : 'Nenhuma senha de autorizacao cadastrada ainda.'; ?></p>
+                </div>
+            </div>
+            <footer class="form-footer">
+                <button type="submit" class="btn-primary">Salvar administracao</button>
+            </footer>
+        </form>
 
         <form class="card tab-panel" data-tab-panel="backup" method="post" enctype="multipart/form-data" action="<?= htmlspecialchars($url('config/save'), ENT_QUOTES, 'UTF-8'); ?>">
             <input type="hidden" name="active_tab" value="backup">
@@ -540,6 +581,7 @@ $previewMatrixDefault = app_logo_matrix_values($logoTintPreviewHex);
                 </div>
             </div>
 
+            <?php render_config_edit_password_field($configEditPasswordRequired); ?>
             <footer class="form-footer backup-actions">
                 <button type="submit" class="btn-secondary" name="run_backup" value="1">Gerar backup agora</button>
                 <button type="submit" class="btn-primary">Salvar backups</button>
@@ -1000,6 +1042,7 @@ $previewMatrixDefault = app_logo_matrix_values($logoTintPreviewHex);
                 <p class="field-hint">Você ainda pode ajustar a chave ou desativar o PIX ao imprimir cada nota.</p>
             </div>
 
+            <?php render_config_edit_password_field($configEditPasswordRequired); ?>
             <footer class="form-footer">
                 <button type="submit" class="btn-primary">Salvar dados da nota</button>
             </footer>
@@ -1333,6 +1376,7 @@ $previewMatrixDefault = app_logo_matrix_values($logoTintPreviewHex);
         flex-wrap: wrap;
     }
     .actions-col .inline-form { margin: 0; }
+    .actions-col .inline-password { width: 112px; min-height: 34px; padding: 7px 10px; border-radius: 10px; font-size: 0.82rem; }
     .actions-col .btn,
     .actions-col .btn-danger,
     .actions-col .btn.ghost,

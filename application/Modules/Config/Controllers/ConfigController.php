@@ -38,6 +38,9 @@ class ConfigController extends Controller
         }
         $stmt = $this->config->getConnection()->query('SELECT * FROM configuracoes');
         $configs = $stmt->fetchAll();
+        $configEditPasswordSet = (string)$this->config->get('CONFIG_EDIT_PASSWORD_HASH', '') !== '';
+        $currentUser = $this->auth->user() ?? [];
+        $configEditPasswordRequired = strtolower((string)($currentUser['papel'] ?? '')) !== 'admin';
 
         $roles = $this->roleLabels();
         $moduleOptions = $this->hierarchyModules();
@@ -291,6 +294,8 @@ class ConfigController extends Controller
             'defaultTab' => $defaultTab,
             'quickActionOptions' => $quickActionOptions,
             'quickActionDefaults' => $quickActionDefaults,
+            'configEditPasswordSet' => $configEditPasswordSet,
+            'configEditPasswordRequired' => $configEditPasswordRequired,
         ], [
             'title' => $isAuditModule ? 'Auditoria' : 'Configurações',
             'activeMenu' => $isAuditModule ? 'auditoria' : 'config',
@@ -310,9 +315,15 @@ class ConfigController extends Controller
             $data = $_POST;
         }
 
+        $activeTab = (string)($_POST['active_tab'] ?? ($data['active_tab'] ?? ''));
+        $errors = [];
+        $this->extractConfigEditPasswordChange($data, $errors);
+        if (!$this->validateConfigEditPassword($activeTab, $errors)) {
+            return;
+        }
+
         $runBackup = isset($_POST['run_backup']) && !$this->wantsJson();
 
-        $errors = [];
         $currentBackupFile = $this->config->get('BACKUP_LAST_FILE', '');
 
         if (!$this->wantsJson()) {
@@ -688,9 +699,80 @@ class ConfigController extends Controller
         $this->redirect($redirect);
     }
 
+    private function extractConfigEditPasswordChange(array &$data, array &$errors): void
+    {
+        $newPassword = (string)($data['CONFIG_EDIT_PASSWORD_NEW'] ?? '');
+        $confirmPassword = (string)($data['CONFIG_EDIT_PASSWORD_CONFIRM'] ?? '');
+        unset($data['CONFIG_EDIT_PASSWORD_NEW'], $data['CONFIG_EDIT_PASSWORD_CONFIRM']);
+
+        if ($newPassword === '' && $confirmPassword === '') {
+            return;
+        }
+
+        if (!$this->currentUserIsAdmin()) {
+            $errors[] = 'Somente o administrador pode alterar a senha de autorizacao.';
+            return;
+        }
+
+        if (strlen($newPassword) < 6) {
+            $errors[] = 'A senha de autorizacao precisa ter ao menos 6 caracteres.';
+            return;
+        }
+
+        if ($newPassword !== $confirmPassword) {
+            $errors[] = 'A confirmacao da senha de autorizacao nao confere.';
+            return;
+        }
+
+        $data['CONFIG_EDIT_PASSWORD_HASH'] = password_hash($newPassword, PASSWORD_ARGON2ID);
+    }
+
+    private function validateConfigEditPassword(string $activeTab, array $errors = []): bool
+    {
+        if (!$this->currentUserIsAdmin() && $activeTab !== 'appearance') {
+            $hash = (string)$this->config->get('CONFIG_EDIT_PASSWORD_HASH', '');
+            $password = (string)($_POST['config_edit_password'] ?? '');
+
+            if ($hash === '') {
+                $errors[] = 'O administrador precisa cadastrar a senha de autorizacao nas configuracoes.';
+            } elseif ($password === '' || !password_verify($password, $hash)) {
+                $errors[] = 'Informe a senha de autorizacao configurada pelo administrador.';
+            }
+        }
+
+        if (!$errors) {
+            return true;
+        }
+
+        $message = implode(' ', $errors);
+        if ($this->wantsJson()) {
+            $this->json(['message' => $message], 403);
+            return false;
+        }
+
+        $this->setFlash('error', $message);
+        $this->redirect('/config?tab='.$this->redirectTabFor($activeTab));
+        return false;
+    }
+
+    private function currentUserIsAdmin(): bool
+    {
+        $user = $this->auth->user() ?? [];
+        return strtolower((string)($user['papel'] ?? '')) === 'admin';
+    }
+
+    private function redirectTabFor(string $activeTab): string
+    {
+        $tab = trim($activeTab);
+        return in_array($tab, ['rules', 'performance', 'backup', 'appearance', 'nota', 'users', 'admin'], true) ? $tab : 'users';
+    }
+
     public function createUser(): void
     {
         $this->auth->ensureRole(['admin']);
+        if (!$this->validateConfigEditPassword('users')) {
+            return;
+        }
 
         $nome = trim((string)($_POST['nome'] ?? ''));
         $email = trim((string)($_POST['email'] ?? ''));
@@ -763,6 +845,9 @@ class ConfigController extends Controller
     public function updateUser(): void
     {
         $this->auth->ensureRole(['admin']);
+        if (!$this->validateConfigEditPassword('users')) {
+            return;
+        }
 
         $id = (int)($_POST['id'] ?? 0);
         $nome = trim((string)($_POST['nome'] ?? ''));
@@ -842,6 +927,9 @@ class ConfigController extends Controller
     public function saveHierarchy(): void
     {
         $this->auth->ensureRole(['admin']);
+        if (!$this->validateConfigEditPassword('users')) {
+            return;
+        }
         $roles = $this->roleLabels();
         $modules = $this->hierarchyModules();
         $payload = $_POST['hierarquia'] ?? [];
@@ -925,6 +1013,9 @@ class ConfigController extends Controller
     public function deleteUser(): void
     {
         $this->auth->ensureRole(['admin']);
+        if (!$this->validateConfigEditPassword('users')) {
+            return;
+        }
         $id = (int)($_POST['id'] ?? 0);
         if ($id <= 0) {
             if ($this->wantsJson()) {
