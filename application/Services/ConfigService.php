@@ -43,7 +43,7 @@ class ConfigService
             }
         }
 
-        if ($this->isLoginRequest() && $this->isThemeKey($chave)) {
+        if (($this->isLoginRequest() || $this->isPublicPortalRequest()) && $this->isThemeKey($chave)) {
             $adminKey = $this->adminScopedKey($chave);
             if ($adminKey !== null) {
                 $adminValue = $this->configuracoes->get($adminKey, null);
@@ -235,6 +235,17 @@ class ConfigService
 
     private function isLoginRequest(): bool
     {
+        return in_array($this->currentRequestPath(), ['/login', '/logout'], true);
+    }
+
+    private function isPublicPortalRequest(): bool
+    {
+        $uri = $this->currentRequestPath();
+        return $uri === '/portal' || $uri === '/portal/registro';
+    }
+
+    private function currentRequestPath(): string
+    {
         $uri = strtok((string)($_SERVER['REQUEST_URI'] ?? ''), '?') ?: '';
         $scriptName = str_replace('\\', '/', (string)($_SERVER['SCRIPT_NAME'] ?? ''));
         $scriptDir = rtrim(dirname($scriptName), '/');
@@ -253,8 +264,6 @@ class ConfigService
         }
 
         $uri = '/' . trim($uri, '/');
-        $uri = $uri === '/' ? '/' : rtrim($uri, '/');
-
-        return in_array($uri, ['/login', '/logout'], true);
+        return $uri === '/' ? '/' : rtrim($uri, '/');
     }
 }
