@@ -100,7 +100,7 @@ class AuthService
             exit;
         }
 
-        $role = (string)($this->currentUser['papel'] ?? '');
+        $role = strtolower(trim((string)($this->currentUser['papel'] ?? '')));
         if ($role === 'admin') {
             return;
         }
@@ -135,8 +135,13 @@ class AuthService
 
         try {
             $conn = $this->usuarios->getConnection();
-            $stmt = $conn->prepare("SELECT valor FROM configuracoes WHERE chave = 'RBAC_MODULES' ORDER BY updated_at DESC LIMIT 1");
-            $stmt->execute();
+            try {
+                $stmt = $conn->prepare('SELECT valor FROM configuracoes WHERE chave = :chave ORDER BY updated_at DESC LIMIT 1');
+                $stmt->execute(['chave' => 'RBAC_MODULES']);
+            } catch (\Throwable $exception) {
+                $stmt = $conn->prepare('SELECT valor FROM configuracoes WHERE chave = :chave ORDER BY id DESC LIMIT 1');
+                $stmt->execute(['chave' => 'RBAC_MODULES']);
+            }
             $raw = $stmt->fetchColumn();
         } catch (\Throwable $exception) {
             return null;
