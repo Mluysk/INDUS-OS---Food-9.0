@@ -100,18 +100,103 @@ class AuthService
             exit;
         }
 
-        if (!in_array($this->currentUser['papel'], $roles, true)) {
-            if ($this->wantsJson()) {
-                http_response_code(403);
-                header('Content-Type: application/json');
-                echo json_encode(['message' => 'Permissões insuficientes']);
-            } else {
-                http_response_code(403);
-                header('Content-Type: text/html; charset=utf-8');
-                echo '<h1>Acesso negado</h1><p>Você não possui permissão para acessar este recurso.</p>';
-            }
-            exit;
+        $role = (string)($this->currentUser['papel'] ?? '');
+        if ($role === 'admin') {
+            return;
         }
+
+        $moduleAccess = $this->moduleAccessForCurrentRequest($role);
+        if ($moduleAccess !== null) {
+            if ($moduleAccess) {
+                return;
+            }
+        } elseif (in_array($role, $roles, true)) {
+            return;
+        }
+
+        if ($this->wantsJson()) {
+            http_response_code(403);
+            header('Content-Type: application/json');
+            echo json_encode(['message' => 'Permissões insuficientes']);
+        } else {
+            http_response_code(403);
+            header('Content-Type: text/html; charset=utf-8');
+            echo '<h1>Acesso negado</h1><p>Você não possui permissão para acessar este recurso.</p>';
+        }
+        exit;
+    }
+
+    private function moduleAccessForCurrentRequest(string $role): ?bool
+    {
+        $module = $this->currentModuleKey();
+        if ($module === null) {
+            return null;
+        }
+
+        try {
+            $conn = $this->usuarios->getConnection();
+            $stmt = $conn->prepare("SELECT valor FROM configuracoes WHERE chave = 'RBAC_MODULES' ORDER BY updated_at DESC LIMIT 1");
+            $stmt->execute();
+            $raw = $stmt->fetchColumn();
+        } catch (\Throwable $exception) {
+            return null;
+        }
+
+        if (!is_string($raw) || trim($raw) === '') {
+            return null;
+        }
+
+        $decoded = json_decode($raw, true);
+        if (!is_array($decoded) || !array_key_exists($role, $decoded) || !is_array($decoded[$role])) {
+            return null;
+        }
+
+        return in_array($module, array_map('strval', $decoded[$role]), true);
+    }
+
+    private function currentModuleKey(): ?string
+    {
+        $path = strtok((string)($_SERVER['REQUEST_URI'] ?? ''), '?') ?: '/';
+        $scriptName = str_replace('\\', '/', (string)($_SERVER['SCRIPT_NAME'] ?? ''));
+        $scriptDir = rtrim(dirname($scriptName), '/');
+        $basePath = rtrim((string)($_SERVER['APP_BASE_PATH'] ?? ''), '/');
+
+        if ($scriptDir !== '' && $scriptDir !== '/' && str_starts_with($path, $scriptDir)) {
+            $path = substr($path, strlen($scriptDir)) ?: '/';
+        }
+
+        if ($basePath !== '' && str_starts_with($path, $basePath)) {
+            $path = substr($path, strlen($basePath)) ?: '/';
+        }
+
+        if (str_starts_with($path, '/index.php')) {
+            $path = substr($path, strlen('/index.php')) ?: '/';
+        }
+
+        $segment = trim($path, '/');
+        $segment = $segment === '' ? 'dashboard' : explode('/', $segment)[0];
+
+        $aliases = [
+            'metas' => 'meta',
+            'meta' => 'meta',
+            'producao' => 'producao',
+            'financeiro' => 'financeiro',
+            'config' => 'config',
+            'auditoria' => 'auditoria',
+            'relatorios' => 'relatorios',
+            'clientes' => 'clientes',
+            'produtos' => 'produtos',
+            'pedidos' => 'pedidos',
+            'mapa' => 'mapa',
+            'desempenho' => 'desempenho',
+            'estoque' => 'estoque',
+            'expedicao' => 'expedicao',
+            'receitas' => 'receitas',
+            'dashboard' => 'dashboard',
+            'portal' => 'portal',
+        ];
+
+        return $aliases[$segment] ?? null;
     }
 
     private function wantsJson(): bool

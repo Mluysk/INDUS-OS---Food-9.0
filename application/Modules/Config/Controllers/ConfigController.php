@@ -53,9 +53,6 @@ class ConfigController extends Controller
                 continue;
             }
             $hierarchy[$key] = array_values(array_intersect(array_keys($moduleOptions), array_map('strval', $saved)));
-            if (!$hierarchy[$key]) {
-                $hierarchy[$key] = $defaultHierarchy[$key];
-            }
         }
 
         $defaultTab = $_GET['tab'] ?? '';
@@ -863,10 +860,6 @@ class ConfigController extends Controller
             }
 
             $choices = array_values(array_intersect(array_keys($modules), array_map('strval', $selected)));
-            if (!$choices && isset($defaults[$key])) {
-                $choices = $defaults[$key];
-            }
-
             $result[$key] = $choices;
         }
 
