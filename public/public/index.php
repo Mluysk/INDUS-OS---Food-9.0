@@ -294,6 +294,7 @@ $menuHierarchyScript .= <<<'HTML'
                 return '';
             }
         };
+        const currentKey = keyFromHref(window.location.href);
         const existing = new Set();
 
         menu.querySelectorAll('li').forEach((item) => {
@@ -307,8 +308,20 @@ $menuHierarchyScript .= <<<'HTML'
             if (existing.has(key) || !modules[key]) return;
             const module = modules[key];
             const li = document.createElement('li');
-            li.innerHTML = `<a class="nav-item" href="${hrefFor(module.href)}"><span class="nav-icon" data-lucide="${module.icon}"></span><span class="item-label">${module.label}</span></a>`;
+            const active = key === currentKey ? ' active' : '';
+            li.innerHTML = `<a class="nav-item${active}" href="${hrefFor(module.href)}"><span class="nav-icon" data-lucide="${module.icon}"></span><span class="item-label">${module.label}</span></a>`;
             menu.appendChild(li);
+        });
+
+        menu.querySelectorAll('.nav-item').forEach((link) => {
+            const key = keyFromHref(link.getAttribute('href'));
+            const active = key !== '' && key === currentKey;
+            link.classList.toggle('active', active);
+            if (active) {
+                link.setAttribute('aria-current', 'page');
+            } else {
+                link.removeAttribute('aria-current');
+            }
         });
 
         if (window.lucide) {
