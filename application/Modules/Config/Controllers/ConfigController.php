@@ -867,6 +867,7 @@ class ConfigController extends Controller
         }
 
         $conn = $this->config->getConnection();
+        $this->ensureConfiguracoesValorSupportsJson($conn);
         $conn->beginTransaction();
         try {
             $delete = $conn->prepare('DELETE FROM configuracoes WHERE chave = :chave');
@@ -910,6 +911,15 @@ class ConfigController extends Controller
 
         $this->setFlash('success', 'Hierarquia salva com sucesso.');
         $this->redirect('/config?tab=users');
+    }
+
+    private function ensureConfiguracoesValorSupportsJson(\PDO $conn): void
+    {
+        try {
+            $conn->exec('ALTER TABLE configuracoes MODIFY valor TEXT NOT NULL');
+        } catch (\Throwable $exception) {
+            // Bancos ja atualizados ou hospedagens sem permissao de ALTER seguem com a verificacao abaixo.
+        }
     }
 
     public function deleteUser(): void
