@@ -157,59 +157,6 @@ if ($basePath !== '' && str_starts_with($requestUri, $basePath)) {
 $_SERVER['APP_BASE_PATH'] = $basePath;
 $normalizedRequest = strtok($requestUri ?: '/', '?') ?: '/';
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && rtrim($normalizedRequest, '/') === '/config/hierarchy/save') {
-    if (session_status() !== PHP_SESSION_ACTIVE) {
-        session_start();
-    }
-
-    $accept = $_SERVER['HTTP_ACCEPT'] ?? '';
-    $requestedWith = $_SERVER['HTTP_X_REQUESTED_WITH'] ?? '';
-    $wantsJson = stripos($accept, 'application/json') !== false || strcasecmp($requestedWith, 'XMLHttpRequest') === 0;
-
-    if (($_SESSION['user_role'] ?? '') !== 'admin') {
-        http_response_code(403);
-        if ($wantsJson) {
-            header('Content-Type: application/json');
-            echo json_encode(['message' => 'Acesso negado.']);
-        } else {
-            echo 'Acesso negado.';
-        }
-        return;
-    }
-
-    $hierarchyModules = ['dashboard', 'clientes', 'produtos', 'pedidos', 'producao', 'estoque', 'expedicao', 'financeiro', 'relatorios', 'mapa', 'desempenho', 'meta', 'receitas', 'config', 'portal'];
-    $roles = ['admin', 'gestor', 'producao', 'expedicao', 'financeiro', 'qualidade'];
-    $payload = $_POST['hierarquia'] ?? [];
-    $result = [];
-
-    foreach ($roles as $role) {
-        if ($role === 'admin') {
-            $result[$role] = $hierarchyModules;
-            continue;
-        }
-
-        $selected = $payload[$role] ?? [];
-        if (!is_array($selected)) {
-            $selected = [];
-        }
-
-        $result[$role] = array_values(array_intersect($hierarchyModules, array_map('strval', $selected)));
-    }
-
-    $configService = $bootstrap['container']->get(\App\Services\ConfigService::class);
-    $configService->set('RBAC_MODULES', json_encode($result, JSON_UNESCAPED_SLASHES));
-
-    if ($wantsJson) {
-        header('Content-Type: application/json');
-        echo json_encode(['message' => 'Hierarquia salva com sucesso.']);
-        return;
-    }
-
-    $_SESSION['flash_success'] = 'Hierarquia salva com sucesso.';
-    header('Location: '.(($basePath === '') ? '' : $basePath).'/config?tab=users');
-    return;
-}
-
 ob_start();
 $router->dispatch($_SERVER['REQUEST_METHOD'], $requestUri ?: '/');
 $response = ob_get_clean();
