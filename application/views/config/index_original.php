@@ -448,6 +448,7 @@ $previewMatrixDefault = app_logo_matrix_values($logoTintPreviewHex);
                                 <?php if ($roleKey === 'admin') { continue; } ?>
                                 <?php $allowed = $roleHierarchy[$roleKey] ?? []; ?>
                                 <div class="role-card">
+                                    <input type="hidden" name="hierarquia[<?= htmlspecialchars($roleKey, ENT_QUOTES, 'UTF-8'); ?>][]" value="__none">
                                     <header>
                                         <h3><?= htmlspecialchars($label, ENT_QUOTES, 'UTF-8'); ?></h3>
                                         <span class="role-tag"><?= htmlspecialchars($roleKey, ENT_QUOTES, 'UTF-8'); ?></span>

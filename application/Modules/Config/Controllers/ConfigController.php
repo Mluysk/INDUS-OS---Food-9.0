@@ -844,8 +844,6 @@ class ConfigController extends Controller
         $this->auth->ensureRole(['admin']);
         $roles = $this->roleLabels();
         $modules = $this->hierarchyModules();
-        $defaults = $this->defaultHierarchy($modules);
-
         $payload = $_POST['hierarquia'] ?? [];
         $result = [];
         foreach ($roles as $key => $_label) {
@@ -863,7 +861,47 @@ class ConfigController extends Controller
             $result[$key] = $choices;
         }
 
-        $this->config->set('RBAC_MODULES', json_encode($result, JSON_UNESCAPED_SLASHES));
+        $encoded = json_encode($result, JSON_UNESCAPED_SLASHES);
+        if (!is_string($encoded)) {
+            $encoded = '{}';
+        }
+
+        $conn = $this->config->getConnection();
+        $conn->beginTransaction();
+        try {
+            $delete = $conn->prepare('DELETE FROM configuracoes WHERE chave = :chave');
+            $delete->execute(['chave' => 'RBAC_MODULES']);
+
+            $insert = $conn->prepare('INSERT INTO configuracoes (chave, valor) VALUES (:chave, :valor)');
+            $insert->execute(['chave' => 'RBAC_MODULES', 'valor' => $encoded]);
+
+            $conn->commit();
+        } catch (\Throwable $exception) {
+            if ($conn->inTransaction()) {
+                $conn->rollBack();
+            }
+
+            if ($this->wantsJson()) {
+                $this->json(['message' => 'Nao foi possivel salvar a hierarquia.'], 500);
+                return;
+            }
+
+            $this->setFlash('error', 'Nao foi possivel salvar a hierarquia.');
+            $this->redirect('/config?tab=users');
+            return;
+        }
+
+        $saved = (string)$this->config->get('RBAC_MODULES', '');
+        if ($saved !== $encoded) {
+            if ($this->wantsJson()) {
+                $this->json(['message' => 'A hierarquia nao foi persistida no banco.'], 500);
+                return;
+            }
+
+            $this->setFlash('error', 'A hierarquia nao foi persistida no banco.');
+            $this->redirect('/config?tab=users');
+            return;
+        }
 
         if ($this->wantsJson()) {
             $this->json(['message' => 'Hierarquia atualizada.']);
