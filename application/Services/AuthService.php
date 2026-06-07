@@ -110,7 +110,7 @@ class AuthService
             if ($moduleAccess) {
                 return;
             }
-        } elseif (in_array($role, $roles, true)) {
+        } elseif ($this->defaultModuleAccessForCurrentRequest($role) === true || in_array($role, $roles, true)) {
             return;
         }
 
@@ -135,14 +135,24 @@ class AuthService
 
         try {
             $conn = $this->usuarios->getConnection();
-            try {
-                $stmt = $conn->prepare('SELECT valor FROM configuracoes WHERE chave = :chave ORDER BY updated_at DESC LIMIT 1');
-                $stmt->execute(['chave' => 'RBAC_MODULES']);
-            } catch (\Throwable $exception) {
-                $stmt = $conn->prepare('SELECT valor FROM configuracoes WHERE chave = :chave ORDER BY id DESC LIMIT 1');
-                $stmt->execute(['chave' => 'RBAC_MODULES']);
+            $raw = false;
+            $queries = [
+                'SELECT valor FROM configuracoes WHERE chave = :chave ORDER BY updated_at DESC LIMIT 1',
+                'SELECT valor FROM configuracoes WHERE chave = :chave ORDER BY id DESC LIMIT 1',
+                'SELECT valor FROM configuracoes WHERE chave = :chave LIMIT 1',
+            ];
+            foreach ($queries as $sql) {
+                try {
+                    $stmt = $conn->prepare($sql);
+                    $stmt->execute(['chave' => 'RBAC_MODULES']);
+                    $raw = $stmt->fetchColumn();
+                    if ($raw !== false) {
+                        break;
+                    }
+                } catch (\Throwable $exception) {
+                    continue;
+                }
             }
-            $raw = $stmt->fetchColumn();
         } catch (\Throwable $exception) {
             return null;
         }
@@ -157,6 +167,28 @@ class AuthService
         }
 
         return in_array($module, array_map('strval', $decoded[$role]), true);
+    }
+
+    private function defaultModuleAccessForCurrentRequest(string $role): ?bool
+    {
+        $module = $this->currentModuleKey();
+        if ($module === null) {
+            return null;
+        }
+
+        $defaults = [
+            'gestor' => ['dashboard', 'clientes', 'produtos', 'pedidos', 'receitas', 'producao', 'estoque', 'expedicao', 'financeiro', 'relatorios', 'mapa', 'desempenho', 'meta', 'config'],
+            'producao' => ['dashboard', 'receitas', 'producao', 'mapa'],
+            'expedicao' => ['dashboard', 'expedicao', 'pedidos', 'estoque'],
+            'financeiro' => ['dashboard', 'financeiro', 'relatorios'],
+            'qualidade' => ['dashboard', 'producao', 'estoque', 'mapa', 'desempenho', 'relatorios'],
+        ];
+
+        if (!array_key_exists($role, $defaults)) {
+            return null;
+        }
+
+        return in_array($module, $defaults[$role], true);
     }
 
     private function currentModuleKey(): ?string
