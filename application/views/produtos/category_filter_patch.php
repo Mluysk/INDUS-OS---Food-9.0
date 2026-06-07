@@ -180,17 +180,29 @@ $selectedCategorias = array_values(array_unique(array_filter(array_map('trim', $
 
     const renderRows = (items) => {
         if (!items || items.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="10">${escapeHtml(table.dataset.empty || 'Nenhum produto encontrado para os filtros selecionados.')}</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="9">${escapeHtml(table.dataset.empty || 'Nenhum produto encontrado para os filtros selecionados.')}</td></tr>`;
             return;
         }
 
         tbody.innerHTML = items.map((item) => {
             const badgeClass = item.tipo === 'PA' ? 'badge-success' : 'badge-warning';
             const active = Number(item.is_ativo ?? 1) === 1;
-            const actionPath = (suffix) => `${actionBase}/${Number(item.id || 0)}/${suffix}`;
+            const itemId = Number(item.id || 0);
+            const actionPath = (suffix) => `${actionBase}/${itemId}/${suffix}`;
+            window.productInfoMap = window.productInfoMap || {};
+            if (!window.productInfoMap[itemId]) {
+                window.productInfoMap[itemId] = {
+                    id: itemId,
+                    sku: item.sku || '',
+                    nome: item.nome || '',
+                    created_at: item.created_at || '',
+                    updated_at: '',
+                    prices: (window.historyPorProduto && window.historyPorProduto[itemId] ? window.historyPorProduto[itemId] : []).slice(0, 6),
+                };
+            }
             return `
                 <tr>
-                    <td>${Number(item.id || 0)}</td>
+                    <td>${itemId}</td>
                     <td>${escapeHtml(item.sku || '')}</td>
                     <td>${escapeHtml(item.nome || '')}<span class="product-status ${active ? 'is-active' : ''}">${active ? 'Ativo' : 'Inativo'}</span></td>
                     <td>${escapeHtml(item.categoria || '—')}</td>
@@ -198,17 +210,20 @@ $selectedCategorias = array_values(array_unique(array_filter(array_map('trim', $
                     <td>${escapeHtml(item.unidade || '')}</td>
                     <td>R$ ${formatPrice(item.preco)}</td>
                     <td>${Number(item.shelf_life_dias || 0)} dias</td>
-                    <td>${escapeHtml(item.created_at || '')}</td>
                     <td>
                         <div class="product-actions">
-                            <button type="button" class="button ghost small js-edit-product" data-product="${serializeProduct(item)}">Editar</button>
+                            <button type="button" class="product-icon-btn product-icon-btn--info js-product-info" data-product-id="${itemId}" data-tooltip="Informações" aria-label="Ver informações do produto"><span data-lucide="info" aria-hidden="true"></span></button>
+                            <button type="button" class="product-icon-btn js-edit-product" data-product="${serializeProduct(item)}" data-tooltip="Editar" aria-label="Editar produto"><span data-lucide="pencil" aria-hidden="true"></span></button>
                             ${active ? `<form method="post" action="${escapeHtml(actionPath('desativar'))}" onsubmit="return confirm('Desativar este produto? Ele deixara de aparecer em novos pedidos.');"><button type="submit" class="button ghost small">Desativar</button></form>` : ''}
-                            <form method="post" action="${escapeHtml(actionPath('excluir'))}" onsubmit="return confirm('Excluir este produto? Se houver historico, ele sera arquivado/desativado.');"><button type="submit" class="button ghost small danger">Excluir</button></form>
+                            <form method="post" action="${escapeHtml(actionPath('excluir'))}" onsubmit="return confirm('Excluir este produto? Se houver historico, ele sera arquivado/desativado.');"><button type="submit" class="product-icon-btn product-icon-btn--danger" data-tooltip="Excluir" aria-label="Excluir produto"><span data-lucide="trash-2" aria-hidden="true"></span></button></form>
                         </div>
                     </td>
                 </tr>
             `;
         }).join('');
+        if (window.lucide) {
+            window.lucide.createIcons({ elements: tbody.querySelectorAll('[data-lucide]') });
+        }
     };
 
     const updateResultsLabel = (count) => {

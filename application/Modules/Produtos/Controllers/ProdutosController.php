@@ -5,6 +5,7 @@ use App\Core\Controller;
 use App\Services\ConfigService;
 use App\Services\EstoqueService;
 use App\Services\ProdutosService;
+use App\Repositories\AuditLogsRepository;
 use App\Repositories\ProdutosLancamentosRepository;
 
 class ProdutosController extends Controller
@@ -47,8 +48,10 @@ class ProdutosController extends Controller
             'dir' => 'asc',
         ]);
         $lancamentos = $this->lancamentos->listarRecentes(13);
-        $historicoLancamentos = $this->lancamentos->listarPorProdutos(array_column($produtosLancamento, 'id'));
+        $produtoIdsVisiveis = array_values(array_unique(array_merge(array_column($produtos, 'id'), array_column($produtosLancamento, 'id'))));
+        $historicoLancamentos = $this->lancamentos->listarPorProdutos($produtoIdsVisiveis);
         $lancamentosPorProduto = $this->lancamentos->ultimosPorProduto(array_column($produtosLancamento, 'id'));
+        $produtoAtualizacoes = $this->container->get(AuditLogsRepository::class)->ultimasModificacoes('produtos', $produtoIdsVisiveis);
         $categorias = $this->produtos->categorias();
         $metricUnitsRaw = $this->config->get('METRIC_UNITS', 'kg, un, cx') ?: 'kg, un, cx';
         $unidades = array_values(array_filter(array_map('trim', explode(',', $metricUnitsRaw)), static fn($u) => $u !== ''));
@@ -78,6 +81,7 @@ class ProdutosController extends Controller
             'lancamentos' => $lancamentos,
             'historicoLancamentos' => $historicoLancamentos,
             'lancamentosPorProduto' => $lancamentosPorProduto,
+            'produtoAtualizacoes' => $produtoAtualizacoes,
             'categorias' => $categorias,
             'filters' => $filters,
             'unidades' => $unidades,

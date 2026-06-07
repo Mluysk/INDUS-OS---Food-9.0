@@ -307,6 +307,11 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
                 cursor: pointer;
             }
             .product-icon-btn svg { width: 18px; height: 18px; stroke-width: 2.25; }
+            .product-icon-btn--info {
+                color: var(--primary, #dc2626);
+                background: color-mix(in srgb, var(--primary, #dc2626) 10%, #fff);
+                border: 1px solid color-mix(in srgb, var(--primary, #dc2626) 28%, transparent);
+            }
             .product-icon-btn--danger { color: #dc2626; background: #fff1f2; }
             .product-icon-btn::after {
                 content: attr(data-tooltip);
@@ -335,6 +340,111 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
             .product-actions .danger { color: #dc2626; border-color: #fecdd3; background: #fff1f2; }
             .product-status { display: inline-flex; margin-top: 4px; padding: 3px 8px; border-radius: 999px; background: #f1f5f9; color: #64748b; font-size: 0.72rem; font-weight: 800; }
             .product-status.is-active { background: #ecfdf5; color: #047857; }
+            .product-info-modal.hidden { display: none !important; }
+            .product-info-modal {
+                position: fixed;
+                inset: 0;
+                z-index: 1200;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 24px;
+                background: rgba(15, 23, 42, 0.46);
+                backdrop-filter: blur(3px);
+            }
+            .product-info-modal__dialog {
+                width: min(560px, 100%);
+                border: 1px solid var(--border, #e5e7eb);
+                border-radius: 22px;
+                background: var(--surface, #fff);
+                box-shadow: 0 24px 70px rgba(15, 23, 42, 0.24);
+                overflow: hidden;
+            }
+            .product-info-modal__backdrop { position: absolute; inset: 0; }
+            .product-info-modal__head {
+                position: relative;
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                padding: 20px 22px 16px;
+                border-bottom: 1px solid var(--border, #e5e7eb);
+            }
+            .product-info-modal__head h3 { margin: 3px 0 0; color: var(--text, #0f172a); }
+            .product-info-modal__icon {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                width: 38px;
+                height: 38px;
+                border-radius: 13px;
+                color: var(--primary, #dc2626);
+                background: color-mix(in srgb, var(--primary, #dc2626) 10%, #fff);
+                flex: 0 0 38px;
+            }
+            .product-info-modal__icon svg { width: 18px; height: 18px; stroke-width: 2.4; }
+            .product-info-modal__close {
+                margin-left: auto;
+                width: 34px;
+                height: 34px;
+                border: 0;
+                border-radius: 11px;
+                background: var(--surface-muted, #f3f4f6);
+                color: var(--text, #0f172a);
+                font-size: 1.25rem;
+                font-weight: 800;
+                cursor: pointer;
+            }
+            .product-info-modal__body { position: relative; display: grid; gap: 16px; padding: 18px 22px 22px; }
+            .product-info-grid {
+                display: grid;
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 10px;
+            }
+            .product-info-grid div,
+            .product-price-row {
+                border: 1px solid var(--border, #e5e7eb);
+                border-radius: 14px;
+                padding: 11px 12px;
+                background: var(--surface-muted, #f8fafc);
+            }
+            .product-info-grid span,
+            .product-price-row span {
+                display: block;
+                color: var(--text-muted, #64748b);
+                font-size: 0.7rem;
+                font-weight: 850;
+                letter-spacing: 0.06em;
+                text-transform: uppercase;
+            }
+            .product-info-grid strong,
+            .product-price-row strong {
+                display: block;
+                margin-top: 5px;
+                color: var(--text, #0f172a);
+                font-size: 0.92rem;
+            }
+            .product-price-row small {
+                display: block;
+                margin-top: 4px;
+                color: var(--text-muted, #64748b);
+                font-size: 0.72rem;
+                font-weight: 700;
+            }
+            .product-info-modal__body h4 { margin: 0 0 9px; color: var(--text, #0f172a); }
+            .product-price-history { display: grid; gap: 8px; }
+            .product-price-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+            .product-price-empty {
+                border: 1px dashed var(--border, #e5e7eb);
+                border-radius: 14px;
+                padding: 14px;
+                color: var(--text-muted, #64748b);
+                font-weight: 750;
+                text-align: center;
+            }
+            @media (max-width: 620px) {
+                .product-info-grid { grid-template-columns: 1fr; }
+                .product-price-row { align-items: flex-start; flex-direction: column; }
+            }
         </style>
         <div style="overflow-x: auto;">
             <table class="data-table" id="catalog-table" data-empty="Nenhum produto encontrado para os filtros selecionados.">
@@ -348,7 +458,6 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
                         <th><?= $sortLink('unidade', 'Unidade'); ?></th>
                         <th><?= $sortLink('preco', 'Preço'); ?></th>
                         <th><?= $sortLink('shelf_life_dias', 'Validade ( dias )', 'Validade <span class="sort-label--stacked">( dias )</span>'); ?></th>
-                        <th><?= $sortLink('created_at', 'Criado em'); ?></th>
                         <th>Ações</th>
                     </tr>
                 </thead>
@@ -368,10 +477,12 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
                                 <td><?= htmlspecialchars($produto['unidade'], ENT_QUOTES, 'UTF-8'); ?></td>
                                 <td>R$ <?= number_format((float)($produto['preco'] ?? 0), 2, ',', '.'); ?></td>
                                 <td><?= (int)($produto['shelf_life_dias'] ?? 0); ?> dias</td>
-                                <td><?= htmlspecialchars($produto['created_at'] ?? '', ENT_QUOTES, 'UTF-8'); ?></td>
                                 <td>
                                     <?php $payload = json_encode($produto, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP); ?>
                                     <div class="product-actions">
+                                        <button type="button" class="product-icon-btn product-icon-btn--info js-product-info" data-product-id="<?= (int)$produto['id']; ?>" data-tooltip="Informações" aria-label="Ver informações do produto">
+                                            <span data-lucide="info" aria-hidden="true"></span>
+                                        </button>
                                         <button type="button" class="product-icon-btn js-edit-product" data-product="<?= htmlspecialchars($payload, ENT_QUOTES, 'UTF-8'); ?>" data-tooltip="Editar" aria-label="Editar produto">
                                             <span data-lucide="pencil" aria-hidden="true"></span>
                                         </button>
@@ -391,7 +502,7 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
                         <?php endforeach; ?>
                     <?php else: ?>
                         <tr>
-                            <td colspan="10">Nenhum produto encontrado para os filtros selecionados.</td>
+                            <td colspan="9">Nenhum produto encontrado para os filtros selecionados.</td>
                         </tr>
                     <?php endif; ?>
                 </tbody>
@@ -592,15 +703,61 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
                     'lote' => $item['lote'] ?? null,
                     'data_fabricacao' => $item['data_fabricacao'] ?? null,
                     'data_vencimento' => $item['data_vencimento'] ?? null,
+                    'created_at' => $item['created_at'] ?? null,
                     'nome' => $item['nome'] ?? null,
                 ];
             }, $items);
         }
+        $produtoInfoPayload = [];
+        foreach (($produtos ?? []) as $produto) {
+            $pid = (int)($produto['id'] ?? 0);
+            if ($pid <= 0) {
+                continue;
+            }
+            $produtoInfoPayload[$pid] = [
+                'id' => $pid,
+                'sku' => $produto['sku'] ?? '',
+                'nome' => $produto['nome'] ?? '',
+                'created_at' => $produto['created_at'] ?? '',
+                'updated_at' => $produtoAtualizacoes[$pid] ?? '',
+                'prices' => array_slice($historyPayload[$pid] ?? [], 0, 6),
+            ];
+        }
     ?>
     <script>
         window.historyPorProduto = <?= json_encode($historyPayload, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP); ?>;
+        window.productInfoMap = <?= json_encode($produtoInfoPayload, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP); ?>;
     </script>
 </section>
+<div id="product-info-modal" class="product-info-modal hidden" aria-hidden="true">
+    <div class="product-info-modal__backdrop" data-product-info-close></div>
+    <div class="product-info-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="product-info-title">
+        <div class="product-info-modal__head">
+            <span class="product-info-modal__icon"><span data-lucide="info" aria-hidden="true"></span></span>
+            <div>
+                <p class="muted" style="margin:0; font-size:0.78rem;">Informações do produto</p>
+                <h3 id="product-info-title">Produto</h3>
+            </div>
+            <button type="button" class="product-info-modal__close" data-product-info-close aria-label="Fechar">×</button>
+        </div>
+        <div class="product-info-modal__body">
+            <div class="product-info-grid">
+                <div>
+                    <span>Criação</span>
+                    <strong data-product-info-created>—</strong>
+                </div>
+                <div>
+                    <span>Última modificação</span>
+                    <strong data-product-info-updated>—</strong>
+                </div>
+            </div>
+            <div>
+                <h4>Últimas 6 atualizações de preço</h4>
+                <div class="product-price-history" data-product-info-prices></div>
+            </div>
+        </div>
+    </div>
+</div>
 <div id="product-edit-modal" class="modal hidden" aria-hidden="true">
     <div class="modal-backdrop"></div>
     <div class="modal-dialog">
@@ -735,6 +892,31 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
             const num = Number(val || 0);
             return num.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
         };
+        const escapeHtml = (value = '') => String(value ?? '')
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#039;');
+        const formatDateTime = (value) => {
+            if (!value) return 'Não registrado';
+            const normalized = String(value).replace(' ', 'T');
+            const date = new Date(normalized);
+            if (Number.isNaN(date.getTime())) return String(value);
+            return date.toLocaleString('pt-BR', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+            });
+        };
+        const formatDateOnly = (value) => {
+            if (!value) return 'Sem data';
+            const date = new Date(`${value}T00:00:00`);
+            if (Number.isNaN(date.getTime())) return String(value);
+            return date.toLocaleDateString('pt-BR');
+        };
 
         const parseProductData = (raw = '') => {
             try {
@@ -784,7 +966,7 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
 
         const renderRows = (items) => {
             if (!items || items.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="10">${table.dataset.empty}</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="9">${table.dataset.empty}</td></tr>`;
                 return;
             }
 
@@ -792,11 +974,21 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
                 const badgeClass = item.tipo === 'PA' ? 'badge-success' : 'badge-warning';
                 const shelf = Number(item.shelf_life_dias || 0);
                 const preco = formatPrice(item.preco);
-                const criado = item.created_at || '';
                 const categoria = item.categoria && item.categoria !== '' ? item.categoria : '—';
                 const encoded = serializeProduct(item);
                 const itemId = Number(item.id || 0);
                 const isActive = Number(item.is_ativo ?? 1) === 1;
+                window.productInfoMap = window.productInfoMap || {};
+                if (!window.productInfoMap[itemId]) {
+                    window.productInfoMap[itemId] = {
+                        id: itemId,
+                        sku: item.sku || '',
+                        nome: item.nome || '',
+                        created_at: item.created_at || '',
+                        updated_at: '',
+                        prices: (window.historyPorProduto && window.historyPorProduto[itemId] ? window.historyPorProduto[itemId] : []).slice(0, 6),
+                    };
+                }
 
                 return `
                     <tr>
@@ -808,9 +1000,11 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
                         <td>${item.unidade ?? ''}</td>
                         <td>R$ ${preco}</td>
                         <td>${shelf} dias</td>
-                        <td>${criado}</td>
                         <td>
                             <div class="product-actions">
+                                <button type="button" class="product-icon-btn product-icon-btn--info js-product-info" data-product-id="${itemId}" data-tooltip="Informações" aria-label="Ver informações do produto">
+                                    <span data-lucide="info" aria-hidden="true"></span>
+                                </button>
                                 <button type="button" class="product-icon-btn js-edit-product" data-product="${encoded}" data-tooltip="Editar" aria-label="Editar produto">
                                     <span data-lucide="pencil" aria-hidden="true"></span>
                                 </button>
@@ -1071,13 +1265,82 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
             editForm.querySelector('input[name="preco"]').value = product.preco || '';
         };
 
+        const infoModal = document.getElementById('product-info-modal');
+        const infoTitle = infoModal?.querySelector('#product-info-title');
+        const infoCreated = infoModal?.querySelector('[data-product-info-created]');
+        const infoUpdated = infoModal?.querySelector('[data-product-info-updated]');
+        const infoPrices = infoModal?.querySelector('[data-product-info-prices]');
+        const closeInfoModal = () => {
+            if (!infoModal) return;
+            infoModal.classList.add('hidden');
+            infoModal.setAttribute('aria-hidden', 'true');
+        };
+        const openInfoModal = (productId) => {
+            if (!infoModal) return;
+            const info = (window.productInfoMap || {})[productId] || {};
+            if (infoTitle) {
+                const sku = info.sku ? `${info.sku} - ` : '';
+                infoTitle.textContent = `${sku}${info.nome || 'Produto'}`;
+            }
+            if (infoCreated) {
+                infoCreated.textContent = formatDateTime(info.created_at);
+            }
+            if (infoUpdated) {
+                infoUpdated.textContent = info.updated_at ? formatDateTime(info.updated_at) : 'Sem alteração registrada';
+            }
+            const prices = Array.isArray(info.prices) ? info.prices.slice(0, 6) : [];
+            if (infoPrices) {
+                infoPrices.innerHTML = prices.length
+                    ? prices.map((item) => {
+                        const mainDate = item.created_at || item.data_entrega || item.data_fabricacao || item.data_vencimento || '';
+                        const detailDates = [
+                            item.data_entrega ? `Entrega: ${formatDateOnly(item.data_entrega)}` : '',
+                            item.data_fabricacao ? `Fabricação: ${formatDateOnly(item.data_fabricacao)}` : '',
+                            item.data_vencimento ? `Vencimento: ${formatDateOnly(item.data_vencimento)}` : '',
+                        ].filter(Boolean).join(' · ');
+                        return `<div class="product-price-row">
+                            <div>
+                                <span>${escapeHtml(formatDateTime(mainDate))}</span>
+                                <strong>R$ ${escapeHtml(formatPrice(item.preco))}</strong>
+                                ${detailDates ? `<small>${escapeHtml(detailDates)}</small>` : ''}
+                            </div>
+                            ${item.fornecedor ? `<strong>${escapeHtml(item.fornecedor)}</strong>` : ''}
+                        </div>`;
+                    }).join('')
+                    : '<div class="product-price-empty">Nenhuma atualização de preço registrada.</div>';
+            }
+            infoModal.classList.remove('hidden');
+            infoModal.setAttribute('aria-hidden', 'false');
+            if (window.lucide) {
+                window.lucide.createIcons({ elements: infoModal.querySelectorAll('[data-lucide]') });
+            }
+        };
+
         table.addEventListener('click', (e) => {
+            const infoBtn = e.target.closest('.js-product-info');
+            if (infoBtn) {
+                e.preventDefault();
+                openInfoModal(Number(infoBtn.dataset.productId || 0));
+                return;
+            }
             const btn = e.target.closest('.js-edit-product');
             if (!btn) return;
             e.preventDefault();
             const product = parseProductData(btn.dataset.product || '');
             fillEditForm(product);
             openModal();
+        });
+
+        infoModal?.querySelectorAll('[data-product-info-close]').forEach((el) => {
+            el.addEventListener('click', (ev) => {
+                ev.preventDefault();
+                closeInfoModal();
+            });
+        });
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') {
+                closeInfoModal();
+            }
         });
 
         [editClose, editCancel, editModal?.querySelector('.modal-backdrop')].forEach((el) => {
