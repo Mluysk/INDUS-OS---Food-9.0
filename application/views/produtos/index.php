@@ -27,18 +27,67 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
         color: var(--text, #111827);
     }
     .print-link {
+        position: relative;
         display: inline-flex;
         align-items: center;
-        gap: 8px;
-        padding: 8px 12px;
+        justify-content: center;
+        width: 42px;
+        height: 42px;
+        padding: 0;
         border-radius: 10px;
         border: 1px solid var(--border, #e5e7eb);
         background: #fff;
         color: var(--text, #111827);
+        font-size: 0;
         font-weight: 700;
         text-decoration: none;
+        transition: border-color 160ms ease, color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
     }
-    .print-link svg { width: 18px; height: 18px; }
+    .print-link:hover {
+        border-color: var(--primary, #4b5563);
+        color: var(--primary, #4b5563);
+        box-shadow: 0 8px 20px rgba(15, 23, 42, 0.10);
+        transform: translateY(-1px);
+    }
+    .print-actions { display: inline-flex; align-items: center; gap: 8px; }
+    .print-link svg { width: 19px; height: 19px; }
+    .print-link::after {
+        content: attr(data-tooltip);
+        position: absolute;
+        right: 0;
+        bottom: calc(100% + 8px);
+        z-index: 30;
+        width: max-content;
+        max-width: 220px;
+        padding: 7px 9px;
+        border-radius: 8px;
+        background: #111827;
+        color: #fff;
+        font-size: 0.76rem;
+        font-weight: 700;
+        line-height: 1.2;
+        pointer-events: none;
+        opacity: 0;
+        transform: translateY(4px);
+        transition: opacity 140ms ease, transform 140ms ease;
+    }
+    .print-link:hover::after,
+    .print-link:focus-visible::after { opacity: 1; transform: translateY(0); }
+    .print-link--simple .print-link__icon-wrap { position: relative; display: inline-flex; }
+    .print-link--simple .print-link__badge {
+        position: absolute;
+        right: -7px;
+        bottom: -6px;
+        display: grid;
+        place-items: center;
+        width: 13px;
+        height: 13px;
+        border-radius: 4px;
+        background: var(--primary, #4b5563);
+        color: #fff;
+        border: 2px solid #fff;
+    }
+    .print-link--simple .print-link__badge svg { width: 8px; height: 8px; stroke-width: 2.4; }
     .list-pagination { display: grid; grid-template-columns: minmax(120px, 1fr) auto minmax(220px, 1fr); align-items: center; gap: 12px; margin-top: 14px; color: var(--text-muted, #64748b); font-size: 0.85rem; font-weight: 800; }
     .list-pagination-pages, .list-pagination-size { display: inline-flex; align-items: center; gap: 8px; flex-wrap: wrap; }
     .list-pagination-pages { justify-content: center; }
@@ -189,8 +238,11 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
                     'tipo' => $filters['tipo'] ?? null,
                 ], fn($v) => $v !== null && $v !== '');
                 $printUrl = $url('produtos/print' . ($printFilters ? '?' . http_build_query($printFilters) : ''));
+                $simplifiedPrintFilters = array_merge($printFilters, ['modo' => 'simplificado']);
+                $simplifiedPrintUrl = $url('produtos/print?' . http_build_query($simplifiedPrintFilters));
             ?>
-            <a class="print-link" href="<?= htmlspecialchars($printUrl, ENT_QUOTES, 'UTF-8'); ?>" target="_blank" rel="noreferrer">
+            <div class="print-actions" aria-label="Opcoes de impressao">
+            <a class="print-link" data-print-mode="completo" data-tooltip="Imprimir relatorio completo" title="Imprimir relatorio completo" aria-label="Imprimir relatorio completo" href="<?= htmlspecialchars($printUrl, ENT_QUOTES, 'UTF-8'); ?>" target="_blank" rel="noreferrer">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                     <path d="M6 9V3h12v6" />
                     <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" />
@@ -198,6 +250,13 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
                 </svg>
                 Imprimir relatório
             </a>
+            <a class="print-link print-link--simple" data-print-mode="simplificado" data-tooltip="Imprimir relatorio simplificado" title="Imprimir relatorio simplificado" aria-label="Imprimir relatorio simplificado" href="<?= htmlspecialchars($simplifiedPrintUrl, ENT_QUOTES, 'UTF-8'); ?>" target="_blank" rel="noreferrer">
+                <span class="print-link__icon-wrap">
+                    <span data-lucide="printer" aria-hidden="true"></span>
+                    <span class="print-link__badge"><span data-lucide="list-checks" aria-hidden="true"></span></span>
+                </span>
+            </a>
+            </div>
         </div>
     </div>
 
@@ -834,7 +893,7 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
         const tbody = table?.querySelector('tbody');
         const resultMeta = document.querySelector('.catalog-meta');
         const sortLinks = Array.from(document.querySelectorAll('.sort-link'));
-        const printButton = document.querySelector('.panel-actions .button-primary.ghost');
+        const printButtons = Array.from(document.querySelectorAll('.panel-actions .print-link'));
         const createForm = document.getElementById('product-create-form');
         const editModal = document.getElementById('product-edit-modal');
         const editForm = document.getElementById('product-edit-form');
@@ -958,10 +1017,15 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
         }
 
         const updatePrintLink = () => {
-            if (!printButton) return;
-            const qs = buildQuery({ q: state.q, categoria: state.categoria, tipo: state.tipo });
-            const href = printBase + (qs ? '?' + qs : '');
-            printButton.setAttribute('href', href);
+            if (!printButtons.length) return;
+            printButtons.forEach((button) => {
+                const params = new URLSearchParams(buildQuery({ q: state.q, categoria: state.categoria, tipo: state.tipo }));
+                if (button.dataset.printMode === 'simplificado') {
+                    params.set('modo', 'simplificado');
+                }
+                const qs = params.toString();
+                button.setAttribute('href', printBase + (qs ? '?' + qs : ''));
+            });
         };
 
         const renderRows = (items) => {

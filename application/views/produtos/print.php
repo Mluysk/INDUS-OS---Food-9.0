@@ -2,6 +2,7 @@
 $formatPrice = function (?float $value): string {
     return 'R$ ' . number_format((float)($value ?? 0), 2, ',', '.');
 };
+$simplified = !empty($simplified);
 
 $now = (new DateTime('now', new DateTimeZone('America/Sao_Paulo')))->format('d/m/Y H:i');
 $logo = $asset($theme['mode'] === 'dark' ? ($theme['logo_dark'] ?? 'img/logodark.png') : ($theme['logo_light'] ?? 'img/logo.png'));
@@ -26,7 +27,7 @@ if (!empty($filters['tipo'])) {
     <div class="print-brand">
         <img src="<?= htmlspecialchars($logo, ENT_QUOTES, 'UTF-8'); ?>" alt="<?= htmlspecialchars($appName ?? 'IndusOS Food', ENT_QUOTES, 'UTF-8'); ?>">
         <div>
-            <h1>Catálogo de produtos</h1>
+            <h1><?= $simplified ? 'Catálogo simplificado de produtos' : 'Catálogo de produtos'; ?></h1>
             <p class="print-meta">Atualizado em <?= htmlspecialchars($now, ENT_QUOTES, 'UTF-8'); ?></p>
             <?php if ($filterPills): ?>
                 <p class="print-meta">Filtros: <?= implode(' · ', $filterPills); ?></p>
@@ -40,29 +41,41 @@ if (!empty($filters['tipo'])) {
     <table>
         <thead>
             <tr>
-                <th>ID</th>
+                <?php if (!$simplified): ?>
+                    <th>ID</th>
+                <?php endif; ?>
                 <th>SKU</th>
                 <th>Nome</th>
                 <th>Categoria</th>
-                <th>Tipo</th>
+                <?php if (!$simplified): ?>
+                    <th>Tipo</th>
+                <?php endif; ?>
                 <th>Unidade</th>
                 <th>Preço</th>
-                <th>Validade ( dias )</th>
-                <th>Criado em</th>
+                <?php if (!$simplified): ?>
+                    <th>Validade ( dias )</th>
+                    <th>Criado em</th>
+                <?php endif; ?>
             </tr>
         </thead>
         <tbody>
         <?php foreach ($produtos as $produto): ?>
             <tr>
-                <td><?= (int) $produto['id']; ?></td>
+                <?php if (!$simplified): ?>
+                    <td><?= (int) $produto['id']; ?></td>
+                <?php endif; ?>
                 <td><?= htmlspecialchars($produto['sku'], ENT_QUOTES, 'UTF-8'); ?></td>
                 <td><?= htmlspecialchars($produto['nome'], ENT_QUOTES, 'UTF-8'); ?></td>
                 <td><?= htmlspecialchars($produto['categoria'] ?? '—', ENT_QUOTES, 'UTF-8'); ?></td>
-                <td><?= $produto['tipo'] === 'MP' ? 'Matéria-prima' : 'Produto acabado'; ?></td>
+                <?php if (!$simplified): ?>
+                    <td><?= $produto['tipo'] === 'MP' ? 'Matéria-prima' : 'Produto acabado'; ?></td>
+                <?php endif; ?>
                 <td><?= htmlspecialchars($produto['unidade'] ?? '—', ENT_QUOTES, 'UTF-8'); ?></td>
                 <td><?= $formatPrice((float)($produto['preco'] ?? 0)); ?></td>
-                <td><?= (int)($produto['shelf_life_dias'] ?? 0); ?> dias</td>
-                <td><?= htmlspecialchars($produto['created_at'] ?? '-', ENT_QUOTES, 'UTF-8'); ?></td>
+                <?php if (!$simplified): ?>
+                    <td><?= (int)($produto['shelf_life_dias'] ?? 0); ?> dias</td>
+                    <td><?= htmlspecialchars($produto['created_at'] ?? '-', ENT_QUOTES, 'UTF-8'); ?></td>
+                <?php endif; ?>
             </tr>
         <?php endforeach; ?>
         </tbody>

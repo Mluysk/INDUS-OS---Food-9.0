@@ -113,7 +113,7 @@ $selectedCategorias = array_values(array_unique(array_filter(array_map('trim', $
     const table = document.getElementById('catalog-table');
     const tbody = table ? table.querySelector('tbody') : null;
     const resultMeta = document.querySelector('.catalog-meta');
-    const printLink = document.querySelector('.print-link');
+    const printLinks = Array.from(document.querySelectorAll('.print-link'));
     const nativeSelect = form ? form.querySelector('select[name="categoria"]') : null;
 
     if (!form || !tbody || !nativeSelect || nativeSelect.dataset.multiReady === '1') return;
@@ -170,9 +170,15 @@ $selectedCategorias = array_values(array_unique(array_filter(array_map('trim', $
     };
 
     const updatePrintLink = () => {
-        if (!printLink || !printBase) return;
-        const qs = buildQuery({});
-        printLink.href = printBase + (qs ? '?' + qs : '');
+        if (!printLinks.length || !printBase) return;
+        printLinks.forEach((printLink) => {
+            const params = new URLSearchParams(buildQuery({}));
+            if (printLink.dataset.printMode === 'simplificado') {
+                params.set('modo', 'simplificado');
+            }
+            const qs = params.toString();
+            printLink.href = printBase + (qs ? '?' + qs : '');
+        });
     };
 
     const formatPrice = (value) => Number(value || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });

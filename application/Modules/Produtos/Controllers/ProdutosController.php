@@ -280,6 +280,7 @@ class ProdutosController extends Controller
     public function printList(): void
     {
         $this->auth->ensureRole(['admin','gestor','producao']);
+        $simplified = strtolower(trim((string)($_GET['modo'] ?? ''))) === 'simplificado';
         $filters = [
             'term' => $_GET['q'] ?? null,
             'categoria' => $_GET['categoria'] ?? null,
@@ -287,14 +288,16 @@ class ProdutosController extends Controller
         ];
         $produtos = $this->produtos->all($filters);
         $this->audit->log((int)($this->auth->user()['id'] ?? 0), 'documento', 'produtos', null, [
-            'documento' => 'catalogo_produtos',
+            'documento' => $simplified ? 'catalogo_produtos_simplificado' : 'catalogo_produtos',
             'quantidade' => count($produtos),
             'filtros' => $filters,
+            'modo' => $simplified ? 'simplificado' : 'completo',
         ]);
 
         $this->render('produtos/print', [
             'produtos' => $produtos,
             'filters' => $filters,
+            'simplified' => $simplified,
         ], [
             'title' => 'Catálogo de produtos',
             'layout' => 'layouts/print',
