@@ -346,8 +346,8 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
             #catalog-table th { white-space: nowrap; font-size: calc(0.85rem - 3px); }
             #catalog-table td { font-size: calc(1rem - 3px); }
             #catalog-table .sort-label--stacked { display: block; margin-top: 1px; line-height: 1.05; }
-            .product-actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
-            .product-actions form { margin: 0; }
+            .product-actions { display: flex; flex-wrap: nowrap; gap: 5px; align-items: center; white-space: nowrap; }
+            .product-actions form { flex: 0 0 auto; margin: 0; }
             .product-actions .product-status-form { order: 1; }
             .product-actions .js-edit-product { order: 2; }
             .product-actions .product-delete-form { order: 3; }
@@ -394,9 +394,9 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
                 align-items: center;
                 justify-content: flex-start;
                 gap: 0;
-                width: 52px;
-                min-width: 52px;
-                height: 24px;
+                width: 42px;
+                min-width: 42px;
+                height: 20px;
                 padding: 2px;
                 border: 1px solid #cbd5e1;
                 border-radius: 999px;
@@ -410,13 +410,13 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
             .product-status-switch__icon {
                 display: grid;
                 place-items: center;
-                width: 18px;
-                height: 18px;
+                width: 14px;
+                height: 14px;
                 border-radius: 50%;
                 background: #fff;
                 box-shadow: 0 2px 7px rgba(15, 23, 42, 0.12);
             }
-            .product-status-switch__icon svg { width: 10px; height: 10px; stroke-width: 2.5; }
+            .product-status-switch__icon svg { width: 8px; height: 8px; stroke-width: 2.5; }
             .product-status-switch > span:last-child { display: none; }
             .product-status-switch.is-active {
                 justify-content: flex-end;
