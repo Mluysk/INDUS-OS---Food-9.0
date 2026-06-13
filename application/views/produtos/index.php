@@ -230,7 +230,6 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
             <p class="panel-description">Produtos acabados (PA) e matérias-primas (MP) disponíveis para pedidos e produção.</p>
         </div>
         <div class="panel-actions">
-            <div class="pill soft">Filtrando catálogo</div>
             <?php
                 $printFilters = array_filter([
                     'q' => $filters['term'] ?? null,
