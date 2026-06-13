@@ -348,6 +348,10 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
             #catalog-table .sort-label--stacked { display: block; margin-top: 1px; line-height: 1.05; }
             .product-actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
             .product-actions form { margin: 0; }
+            .product-actions .product-status-form { order: 1; }
+            .product-actions .js-edit-product { order: 2; }
+            .product-actions .product-delete-form { order: 3; }
+            .product-actions .js-product-info { order: 4; }
             .product-icon-btn {
                 box-sizing: border-box;
                 position: relative;
@@ -599,13 +603,13 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
                                         <button type="button" class="product-icon-btn js-edit-product" data-product="<?= htmlspecialchars($payload, ENT_QUOTES, 'UTF-8'); ?>" data-tooltip="Editar" aria-label="Editar produto">
                                             <span data-lucide="pencil" aria-hidden="true"></span>
                                         </button>
-                                        <form method="post" action="<?= htmlspecialchars($url('produtos/'.(int)$produto['id'].'/'.($isActive ? 'desativar' : 'ativar')), ENT_QUOTES, 'UTF-8'); ?>" <?= $isActive ? 'onsubmit="return confirm(\'Desativar este produto? Ele deixara de aparecer em novos pedidos e relatorios.\');"' : ''; ?>>
+                                        <form class="product-status-form" method="post" action="<?= htmlspecialchars($url('produtos/'.(int)$produto['id'].'/'.($isActive ? 'desativar' : 'ativar')), ENT_QUOTES, 'UTF-8'); ?>" <?= $isActive ? 'onsubmit="return confirm(\'Desativar este produto? Ele deixara de aparecer em novos pedidos e relatorios.\');"' : ''; ?>>
                                             <button type="submit" class="product-status-switch <?= $isActive ? 'is-active' : ''; ?>" title="<?= $isActive ? 'Desativar produto' : 'Ativar produto'; ?>" aria-label="<?= $isActive ? 'Desativar produto' : 'Ativar produto'; ?>">
                                                 <span class="product-status-switch__icon"><span data-lucide="<?= $isActive ? 'power' : 'power-off'; ?>" aria-hidden="true"></span></span>
                                                 <span><?= $isActive ? 'Ativo' : 'Inativo'; ?></span>
                                             </button>
                                         </form>
-                                        <form method="post" action="<?= htmlspecialchars($url('produtos/'.(int)$produto['id'].'/excluir'), ENT_QUOTES, 'UTF-8'); ?>" onsubmit="return confirm('Excluir este produto? Se houver historico, ele sera arquivado/desativado.');">
+                                        <form class="product-delete-form" method="post" action="<?= htmlspecialchars($url('produtos/'.(int)$produto['id'].'/excluir'), ENT_QUOTES, 'UTF-8'); ?>" onsubmit="return confirm('Excluir este produto? Se houver historico, ele sera arquivado/desativado.');">
                                             <button type="submit" class="product-icon-btn product-icon-btn--danger" data-tooltip="Excluir" aria-label="Excluir produto">
                                                 <span data-lucide="trash-2" aria-hidden="true"></span>
                                             </button>
@@ -1131,13 +1135,13 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
                                 <button type="button" class="product-icon-btn js-edit-product" data-product="${encoded}" data-tooltip="Editar" aria-label="Editar produto">
                                     <span data-lucide="pencil" aria-hidden="true"></span>
                                 </button>
-                                <form method="post" action="${endpoint.replace(/\/$/, '')}/${itemId}/${isActive ? 'desativar' : 'ativar'}" ${isActive ? `onsubmit="return confirm('Desativar este produto? Ele deixara de aparecer em novos pedidos e relatorios.');"` : ''}>
+                                <form class="product-status-form" method="post" action="${endpoint.replace(/\/$/, '')}/${itemId}/${isActive ? 'desativar' : 'ativar'}" ${isActive ? `onsubmit="return confirm('Desativar este produto? Ele deixara de aparecer em novos pedidos e relatorios.');"` : ''}>
                                     <button type="submit" class="product-status-switch ${isActive ? 'is-active' : ''}" title="${isActive ? 'Desativar produto' : 'Ativar produto'}" aria-label="${isActive ? 'Desativar produto' : 'Ativar produto'}">
                                         <span class="product-status-switch__icon"><span data-lucide="${isActive ? 'power' : 'power-off'}" aria-hidden="true"></span></span>
                                         <span>${isActive ? 'Ativo' : 'Inativo'}</span>
                                     </button>
                                 </form>
-                                <form method="post" action="${endpoint.replace(/\/$/, '')}/${itemId}/excluir" onsubmit="return confirm('Excluir este produto? Se houver historico, ele sera arquivado/desativado.');">
+                                <form class="product-delete-form" method="post" action="${endpoint.replace(/\/$/, '')}/${itemId}/excluir" onsubmit="return confirm('Excluir este produto? Se houver historico, ele sera arquivado/desativado.');">
                                     <button type="submit" class="product-icon-btn product-icon-btn--danger" data-tooltip="Excluir" aria-label="Excluir produto">
                                         <span data-lucide="trash-2" aria-hidden="true"></span>
                                     </button>

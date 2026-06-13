@@ -220,13 +220,13 @@ $selectedCategorias = array_values(array_unique(array_filter(array_map('trim', $
                         <div class="product-actions">
                             <button type="button" class="product-icon-btn product-icon-btn--info js-product-info" data-product-id="${itemId}" data-tooltip="Informações" aria-label="Ver informações do produto"><span data-lucide="info" aria-hidden="true"></span></button>
                             <button type="button" class="product-icon-btn js-edit-product" data-product="${serializeProduct(item)}" data-tooltip="Editar" aria-label="Editar produto"><span data-lucide="pencil" aria-hidden="true"></span></button>
-                            <form method="post" action="${escapeHtml(actionPath(active ? 'desativar' : 'ativar'))}" ${active ? `onsubmit="return confirm('Desativar este produto? Ele deixara de aparecer em novos pedidos e relatorios.');"` : ''}>
+                            <form class="product-status-form" method="post" action="${escapeHtml(actionPath(active ? 'desativar' : 'ativar'))}" ${active ? `onsubmit="return confirm('Desativar este produto? Ele deixara de aparecer em novos pedidos e relatorios.');"` : ''}>
                                 <button type="submit" class="product-status-switch ${active ? 'is-active' : ''}" title="${active ? 'Desativar produto' : 'Ativar produto'}" aria-label="${active ? 'Desativar produto' : 'Ativar produto'}">
                                     <span class="product-status-switch__icon"><span data-lucide="${active ? 'power' : 'power-off'}" aria-hidden="true"></span></span>
                                     <span>${active ? 'Ativo' : 'Inativo'}</span>
                                 </button>
                             </form>
-                            <form method="post" action="${escapeHtml(actionPath('excluir'))}" onsubmit="return confirm('Excluir este produto? Se houver historico, ele sera arquivado/desativado.');"><button type="submit" class="product-icon-btn product-icon-btn--danger" data-tooltip="Excluir" aria-label="Excluir produto"><span data-lucide="trash-2" aria-hidden="true"></span></button></form>
+                            <form class="product-delete-form" method="post" action="${escapeHtml(actionPath('excluir'))}" onsubmit="return confirm('Excluir este produto? Se houver historico, ele sera arquivado/desativado.');"><button type="submit" class="product-icon-btn product-icon-btn--danger" data-tooltip="Excluir" aria-label="Excluir produto"><span data-lucide="trash-2" aria-hidden="true"></span></button></form>
                         </div>
                     </td>
                 </tr>
