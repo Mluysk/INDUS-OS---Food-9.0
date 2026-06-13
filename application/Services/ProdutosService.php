@@ -105,6 +105,23 @@ class ProdutosService
         return $updated;
     }
 
+    public function activate(int $id, int $usuarioId): bool
+    {
+        $produto = $this->produtos->find($id);
+        if (!$produto) {
+            throw new \InvalidArgumentException('Produto nao encontrado.');
+        }
+
+        $updated = $this->produtos->activate($id);
+        $this->audit->log($usuarioId, 'status', 'produtos', $id, [
+            'sku' => $produto['sku'] ?? null,
+            'nome' => $produto['nome'] ?? null,
+            'is_ativo' => 1,
+            'status' => 'ativado',
+        ]);
+        return $updated;
+    }
+
     public function delete(int $id, int $usuarioId): string
     {
         $produto = $this->produtos->find($id);

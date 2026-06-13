@@ -62,6 +62,7 @@ $router->add('GET', '/metas', [MetaController::class, 'index']);
 $router->add('GET', '/produtos', [ProdutosController::class, 'index']);
 $router->add('POST', '/produtos', [ProdutosController::class, 'store']);
 $router->add('POST', '/produtos/{id}/update', [ProdutosController::class, 'update']);
+$router->add('POST', '/produtos/{id}/ativar', [ProdutosController::class, 'activate']);
 $router->add('POST', '/produtos/{id}/desativar', [ProdutosController::class, 'deactivate']);
 $router->add('POST', '/produtos/{id}/excluir', [ProdutosController::class, 'delete']);
 $router->add('GET', '/produtos/{id}/ficha', [ProdutosController::class, 'ficha']);

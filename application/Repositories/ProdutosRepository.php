@@ -128,6 +128,14 @@ class ProdutosRepository extends BaseRepository
         return $this->update($id, ['is_ativo' => 0]);
     }
 
+    public function activate(int $id): bool
+    {
+        if (!$this->ensureActiveColumn()) {
+            throw new \InvalidArgumentException('Atualize o banco para habilitar a opcao de ativar produtos.');
+        }
+        return $this->update($id, ['is_ativo' => 1]);
+    }
+
     public function deleteOrDeactivate(int $id): string
     {
         $this->ensureActiveColumn();

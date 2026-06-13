@@ -285,6 +285,7 @@ class ProdutosController extends Controller
             'term' => $_GET['q'] ?? null,
             'categoria' => $_GET['categoria'] ?? null,
             'tipo' => $_GET['tipo'] ?? null,
+            'include_inactive' => false,
         ];
         $produtos = $this->produtos->all($filters);
         $this->audit->log((int)($this->auth->user()['id'] ?? 0), 'documento', 'produtos', null, [
@@ -335,6 +336,18 @@ class ProdutosController extends Controller
         try {
             $this->produtos->deactivate((int)$id, (int)$this->auth->user()['id']);
             $this->setFlash('success', 'Produto desativado com sucesso.');
+        } catch (\InvalidArgumentException $e) {
+            $this->setFlash('error', $e->getMessage());
+        }
+        $this->redirect('/produtos?tab=lista');
+    }
+
+    public function activate($id): void
+    {
+        $this->auth->ensureRole(['admin','gestor']);
+        try {
+            $this->produtos->activate((int)$id, (int)$this->auth->user()['id']);
+            $this->setFlash('success', 'Produto ativado com sucesso.');
         } catch (\InvalidArgumentException $e) {
             $this->setFlash('error', $e->getMessage());
         }

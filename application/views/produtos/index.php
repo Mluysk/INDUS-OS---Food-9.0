@@ -371,6 +371,47 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
                 border: 1px solid color-mix(in srgb, var(--primary, #dc2626) 28%, transparent);
             }
             .product-icon-btn--danger { color: #dc2626; background: #fff1f2; }
+            .product-status-switch {
+                position: relative;
+                display: inline-flex;
+                align-items: center;
+                gap: 7px;
+                min-width: 86px;
+                height: 36px;
+                padding: 4px 10px 4px 5px;
+                border: 1px solid #cbd5e1;
+                border-radius: 999px;
+                background: #f1f5f9;
+                color: #64748b;
+                font-size: 0.76rem;
+                font-weight: 850;
+                cursor: pointer;
+                transition: background 160ms ease, border-color 160ms ease, color 160ms ease, box-shadow 160ms ease;
+            }
+            .product-status-switch__icon {
+                display: grid;
+                place-items: center;
+                width: 26px;
+                height: 26px;
+                border-radius: 50%;
+                background: #fff;
+                box-shadow: 0 2px 7px rgba(15, 23, 42, 0.12);
+            }
+            .product-status-switch__icon svg { width: 15px; height: 15px; stroke-width: 2.4; }
+            .product-status-switch.is-active {
+                flex-direction: row-reverse;
+                padding: 4px 5px 4px 10px;
+                border-color: #86efac;
+                background: #ecfdf5;
+                color: #15803d;
+            }
+            .product-status-switch.is-active .product-status-switch__icon {
+                background: #16a34a;
+                color: #fff;
+            }
+            .product-status-switch:hover {
+                box-shadow: 0 7px 18px rgba(15, 23, 42, 0.12);
+            }
             .product-icon-btn::after {
                 content: attr(data-tooltip);
                 position: absolute;
@@ -544,11 +585,12 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
                                         <button type="button" class="product-icon-btn js-edit-product" data-product="<?= htmlspecialchars($payload, ENT_QUOTES, 'UTF-8'); ?>" data-tooltip="Editar" aria-label="Editar produto">
                                             <span data-lucide="pencil" aria-hidden="true"></span>
                                         </button>
-                                        <?php if ($isActive): ?>
-                                            <form method="post" action="<?= htmlspecialchars($url('produtos/'.(int)$produto['id'].'/desativar'), ENT_QUOTES, 'UTF-8'); ?>" onsubmit="return confirm('Desativar este produto? Ele deixara de aparecer em novos pedidos.');">
-                                                <button type="submit" class="button ghost small">Desativar</button>
-                                            </form>
-                                        <?php endif; ?>
+                                        <form method="post" action="<?= htmlspecialchars($url('produtos/'.(int)$produto['id'].'/'.($isActive ? 'desativar' : 'ativar')), ENT_QUOTES, 'UTF-8'); ?>" <?= $isActive ? 'onsubmit="return confirm(\'Desativar este produto? Ele deixara de aparecer em novos pedidos e relatorios.\');"' : ''; ?>>
+                                            <button type="submit" class="product-status-switch <?= $isActive ? 'is-active' : ''; ?>" title="<?= $isActive ? 'Desativar produto' : 'Ativar produto'; ?>" aria-label="<?= $isActive ? 'Desativar produto' : 'Ativar produto'; ?>">
+                                                <span class="product-status-switch__icon"><span data-lucide="<?= $isActive ? 'power' : 'power-off'; ?>" aria-hidden="true"></span></span>
+                                                <span><?= $isActive ? 'Ativo' : 'Inativo'; ?></span>
+                                            </button>
+                                        </form>
                                         <form method="post" action="<?= htmlspecialchars($url('produtos/'.(int)$produto['id'].'/excluir'), ENT_QUOTES, 'UTF-8'); ?>" onsubmit="return confirm('Excluir este produto? Se houver historico, ele sera arquivado/desativado.');">
                                             <button type="submit" class="product-icon-btn product-icon-btn--danger" data-tooltip="Excluir" aria-label="Excluir produto">
                                                 <span data-lucide="trash-2" aria-hidden="true"></span>
@@ -1071,11 +1113,12 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
                                 <button type="button" class="product-icon-btn js-edit-product" data-product="${encoded}" data-tooltip="Editar" aria-label="Editar produto">
                                     <span data-lucide="pencil" aria-hidden="true"></span>
                                 </button>
-                                ${isActive ? `
-                                    <form method="post" action="${endpoint.replace(/\/$/, '')}/${itemId}/desativar" onsubmit="return confirm('Desativar este produto? Ele deixara de aparecer em novos pedidos.');">
-                                        <button type="submit" class="button ghost small">Desativar</button>
-                                    </form>
-                                ` : ''}
+                                <form method="post" action="${endpoint.replace(/\/$/, '')}/${itemId}/${isActive ? 'desativar' : 'ativar'}" ${isActive ? `onsubmit="return confirm('Desativar este produto? Ele deixara de aparecer em novos pedidos e relatorios.');"` : ''}>
+                                    <button type="submit" class="product-status-switch ${isActive ? 'is-active' : ''}" title="${isActive ? 'Desativar produto' : 'Ativar produto'}" aria-label="${isActive ? 'Desativar produto' : 'Ativar produto'}">
+                                        <span class="product-status-switch__icon"><span data-lucide="${isActive ? 'power' : 'power-off'}" aria-hidden="true"></span></span>
+                                        <span>${isActive ? 'Ativo' : 'Inativo'}</span>
+                                    </button>
+                                </form>
                                 <form method="post" action="${endpoint.replace(/\/$/, '')}/${itemId}/excluir" onsubmit="return confirm('Excluir este produto? Se houver historico, ele sera arquivado/desativado.');">
                                     <button type="submit" class="product-icon-btn product-icon-btn--danger" data-tooltip="Excluir" aria-label="Excluir produto">
                                         <span data-lucide="trash-2" aria-hidden="true"></span>
