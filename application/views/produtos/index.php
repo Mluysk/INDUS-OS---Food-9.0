@@ -349,25 +349,26 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
             .product-actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
             .product-actions form { margin: 0; }
             .product-icon-btn {
+                box-sizing: border-box;
                 position: relative;
                 display: inline-flex;
-                flex: 0 0 39px;
+                flex: 0 0 34px;
                 align-items: center;
                 justify-content: center;
-                width: 39px;
-                min-width: 39px;
-                max-width: 39px;
-                height: 39px;
-                min-height: 39px;
-                max-height: 39px;
+                width: 34px;
+                min-width: 34px;
+                max-width: 34px;
+                height: 34px;
+                min-height: 34px;
+                max-height: 34px;
                 padding: 0;
                 border: 0;
-                border-radius: 12px;
+                border-radius: 10px;
                 background: var(--surface-muted, #f3f4f6);
                 color: var(--text, #020617);
                 cursor: pointer;
             }
-            .product-icon-btn svg { width: 16px; height: 16px; stroke-width: 2.25; }
+            .product-icon-btn svg { width: 14px; height: 14px; stroke-width: 2.25; }
             .product-icon-btn--info {
                 color: var(--primary, #dc2626);
                 background: color-mix(in srgb, var(--primary, #dc2626) 10%, #fff);
