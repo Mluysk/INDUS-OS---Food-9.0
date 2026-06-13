@@ -375,15 +375,17 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
                 position: relative;
                 display: inline-flex;
                 align-items: center;
-                gap: 7px;
-                min-width: 86px;
-                height: 36px;
-                padding: 4px 10px 4px 5px;
+                justify-content: flex-start;
+                gap: 0;
+                width: 52px;
+                min-width: 52px;
+                height: 24px;
+                padding: 2px;
                 border: 1px solid #cbd5e1;
                 border-radius: 999px;
                 background: #f1f5f9;
                 color: #64748b;
-                font-size: 0.76rem;
+                font-size: 0;
                 font-weight: 850;
                 cursor: pointer;
                 transition: background 160ms ease, border-color 160ms ease, color 160ms ease, box-shadow 160ms ease;
@@ -391,16 +393,17 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
             .product-status-switch__icon {
                 display: grid;
                 place-items: center;
-                width: 26px;
-                height: 26px;
+                width: 18px;
+                height: 18px;
                 border-radius: 50%;
                 background: #fff;
                 box-shadow: 0 2px 7px rgba(15, 23, 42, 0.12);
             }
-            .product-status-switch__icon svg { width: 15px; height: 15px; stroke-width: 2.4; }
+            .product-status-switch__icon svg { width: 10px; height: 10px; stroke-width: 2.5; }
+            .product-status-switch > span:last-child { display: none; }
             .product-status-switch.is-active {
-                flex-direction: row-reverse;
-                padding: 4px 5px 4px 10px;
+                justify-content: flex-end;
+                padding: 2px;
                 border-color: #86efac;
                 background: #ecfdf5;
                 color: #15803d;
