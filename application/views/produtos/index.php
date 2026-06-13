@@ -572,7 +572,6 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
                         <th><?= $sortLink('tipo', 'Tipo'); ?></th>
                         <th><?= $sortLink('unidade', 'Unidade'); ?></th>
                         <th><?= $sortLink('preco', 'Preço'); ?></th>
-                        <th><?= $sortLink('shelf_life_dias', 'Validade ( dias )', 'Validade <span class="sort-label--stacked">( dias )</span>'); ?></th>
                         <th>Ações</th>
                     </tr>
                 </thead>
@@ -591,7 +590,6 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
                                 <td><span class="badge <?= $produto['tipo'] === 'PA' ? 'badge-success' : 'badge-warning'; ?>"><?= htmlspecialchars($produto['tipo'], ENT_QUOTES, 'UTF-8'); ?></span></td>
                                 <td><?= htmlspecialchars($produto['unidade'], ENT_QUOTES, 'UTF-8'); ?></td>
                                 <td>R$ <?= number_format((float)($produto['preco'] ?? 0), 2, ',', '.'); ?></td>
-                                <td><?= (int)($produto['shelf_life_dias'] ?? 0); ?> dias</td>
                                 <td>
                                     <?php $payload = json_encode($produto, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP); ?>
                                     <div class="product-actions">
@@ -618,7 +616,7 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
                         <?php endforeach; ?>
                     <?php else: ?>
                         <tr>
-                            <td colspan="9">Nenhum produto encontrado para os filtros selecionados.</td>
+                            <td colspan="8">Nenhum produto encontrado para os filtros selecionados.</td>
                         </tr>
                     <?php endif; ?>
                 </tbody>
@@ -834,6 +832,7 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
                 'id' => $pid,
                 'sku' => $produto['sku'] ?? '',
                 'nome' => $produto['nome'] ?? '',
+                'shelf_life_dias' => (int)($produto['shelf_life_dias'] ?? 0),
                 'created_at' => $produto['created_at'] ?? '',
                 'updated_at' => $produtoAtualizacoes[$pid] ?? '',
                 'prices' => array_slice($historyPayload[$pid] ?? [], 0, 6),
@@ -865,6 +864,10 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
                 <div>
                     <span>Última modificação</span>
                     <strong data-product-info-updated>—</strong>
+                </div>
+                <div>
+                    <span>Validade do produto</span>
+                    <strong data-product-info-validity>—</strong>
                 </div>
             </div>
             <div>
@@ -1087,13 +1090,12 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
 
         const renderRows = (items) => {
             if (!items || items.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="9">${table.dataset.empty}</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="8">${table.dataset.empty}</td></tr>`;
                 return;
             }
 
             tbody.innerHTML = items.map((item) => {
                 const badgeClass = item.tipo === 'PA' ? 'badge-success' : 'badge-warning';
-                const shelf = Number(item.shelf_life_dias || 0);
                 const preco = formatPrice(item.preco);
                 const categoria = item.categoria && item.categoria !== '' ? item.categoria : '—';
                 const encoded = serializeProduct(item);
@@ -1105,6 +1107,7 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
                         id: itemId,
                         sku: item.sku || '',
                         nome: item.nome || '',
+                        shelf_life_dias: Number(item.shelf_life_dias || 0),
                         created_at: item.created_at || '',
                         updated_at: '',
                         prices: (window.historyPorProduto && window.historyPorProduto[itemId] ? window.historyPorProduto[itemId] : []).slice(0, 6),
@@ -1120,7 +1123,6 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
                         <td><span class="badge ${badgeClass}">${item.tipo}</span></td>
                         <td>${item.unidade ?? ''}</td>
                         <td>R$ ${preco}</td>
-                        <td>${shelf} dias</td>
                         <td>
                             <div class="product-actions">
                                 <button type="button" class="product-icon-btn product-icon-btn--info js-product-info" data-product-id="${itemId}" data-tooltip="Informações" aria-label="Ver informações do produto">
@@ -1391,6 +1393,7 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
         const infoTitle = infoModal?.querySelector('#product-info-title');
         const infoCreated = infoModal?.querySelector('[data-product-info-created]');
         const infoUpdated = infoModal?.querySelector('[data-product-info-updated]');
+        const infoValidity = infoModal?.querySelector('[data-product-info-validity]');
         const infoPrices = infoModal?.querySelector('[data-product-info-prices]');
         const closeInfoModal = () => {
             if (!infoModal) return;
@@ -1409,6 +1412,10 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
             }
             if (infoUpdated) {
                 infoUpdated.textContent = info.updated_at ? formatDateTime(info.updated_at) : 'Sem alteração registrada';
+            }
+            if (infoValidity) {
+                const validityDays = Number(info.shelf_life_dias || 0);
+                infoValidity.textContent = `${validityDays} ${validityDays === 1 ? 'dia' : 'dias'}`;
             }
             const prices = Array.isArray(info.prices) ? info.prices.slice(0, 6) : [];
             if (infoPrices) {

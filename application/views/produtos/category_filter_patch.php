@@ -186,7 +186,7 @@ $selectedCategorias = array_values(array_unique(array_filter(array_map('trim', $
 
     const renderRows = (items) => {
         if (!items || items.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="9">${escapeHtml(table.dataset.empty || 'Nenhum produto encontrado para os filtros selecionados.')}</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="8">${escapeHtml(table.dataset.empty || 'Nenhum produto encontrado para os filtros selecionados.')}</td></tr>`;
             return;
         }
 
@@ -201,6 +201,7 @@ $selectedCategorias = array_values(array_unique(array_filter(array_map('trim', $
                     id: itemId,
                     sku: item.sku || '',
                     nome: item.nome || '',
+                    shelf_life_dias: Number(item.shelf_life_dias || 0),
                     created_at: item.created_at || '',
                     updated_at: '',
                     prices: (window.historyPorProduto && window.historyPorProduto[itemId] ? window.historyPorProduto[itemId] : []).slice(0, 6),
@@ -215,7 +216,6 @@ $selectedCategorias = array_values(array_unique(array_filter(array_map('trim', $
                     <td><span class="badge ${badgeClass}">${escapeHtml(item.tipo || '')}</span></td>
                     <td>${escapeHtml(item.unidade || '')}</td>
                     <td>R$ ${formatPrice(item.preco)}</td>
-                    <td>${Number(item.shelf_life_dias || 0)} dias</td>
                     <td>
                         <div class="product-actions">
                             <button type="button" class="product-icon-btn product-icon-btn--info js-product-info" data-product-id="${itemId}" data-tooltip="Informações" aria-label="Ver informações do produto"><span data-lucide="info" aria-hidden="true"></span></button>
