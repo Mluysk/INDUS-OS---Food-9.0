@@ -351,20 +351,23 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
             .product-icon-btn {
                 position: relative;
                 display: inline-flex;
+                flex: 0 0 39px;
                 align-items: center;
                 justify-content: center;
-                width: 40px;
-                min-width: 40px;
-                height: 40px;
-                min-height: 40px;
+                width: 39px;
+                min-width: 39px;
+                max-width: 39px;
+                height: 39px;
+                min-height: 39px;
+                max-height: 39px;
                 padding: 0;
                 border: 0;
-                border-radius: 13px;
+                border-radius: 12px;
                 background: var(--surface-muted, #f3f4f6);
                 color: var(--text, #020617);
                 cursor: pointer;
             }
-            .product-icon-btn svg { width: 18px; height: 18px; stroke-width: 2.25; }
+            .product-icon-btn svg { width: 16px; height: 16px; stroke-width: 2.25; }
             .product-icon-btn--info {
                 color: var(--primary, #dc2626);
                 background: color-mix(in srgb, var(--primary, #dc2626) 10%, #fff);
