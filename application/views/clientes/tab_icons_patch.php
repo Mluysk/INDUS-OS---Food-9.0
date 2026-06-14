@@ -25,7 +25,7 @@
     };
 
     const run = () => {
-        addIcon(document.querySelector('[data-cliente-tab="novo"]'), 'circle-plus');
+        addIcon(document.querySelector('[data-cliente-tab="novo"]'), 'user-plus');
         addIcon(document.querySelector('[data-cliente-tab="lista"]'), 'list');
         if (window.lucide) {
             window.lucide.createIcons({ elements: document.querySelectorAll('.cliente-tab-button [data-lucide]') });
