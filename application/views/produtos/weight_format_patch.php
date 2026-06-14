@@ -13,7 +13,8 @@
     .product-weight-preview {
         position: absolute;
         top: 50%;
-        right: 9px;
+        right: 0;
+        width: 42px;
         transform: translateY(-50%);
         display: inline-flex;
         align-items: center;
