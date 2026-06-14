@@ -258,11 +258,13 @@ $previewMatrixDefault = app_logo_matrix_values($logoTintPreviewHex);
                 </div>
 
                 <div class="field">
-                    <label for="reuse-deleted-product-sku">Reutilizar c&oacute;digo de produto exclu&iacute;do</label>
-                    <select id="reuse-deleted-product-sku" name="config[PRODUCT_REUSE_DELETED_SKU]">
-                        <option value="0" <?= ($reuseDeletedSku ?? '0') !== '1' ? 'selected' : ''; ?>>N&atilde;o, continuar a sequ&ecirc;ncia</option>
-                        <option value="1" <?= ($reuseDeletedSku ?? '0') === '1' ? 'selected' : ''; ?>>Sim, reutilizar o primeiro c&oacute;digo dispon&iacute;vel</option>
-                    </select>
+                    <span class="field-label">Reutilizar c&oacute;digo de produto exclu&iacute;do</span>
+                    <label class="switch" for="reuse-deleted-product-sku">
+                        <input type="hidden" name="config[PRODUCT_REUSE_DELETED_SKU]" value="0">
+                        <input type="checkbox" id="reuse-deleted-product-sku" name="config[PRODUCT_REUSE_DELETED_SKU]" value="1" <?= ($reuseDeletedSku ?? '0') === '1' ? 'checked' : ''; ?>>
+                        <span class="switch-track" aria-hidden="true"></span>
+                        <span class="switch-text" data-reuse-sku-status><?= ($reuseDeletedSku ?? '0') === '1' ? 'Ativado' : 'Desativado'; ?></span>
+                    </label>
                     <p class="field-hint">Quando ativado, um SKU liberado por exclus&atilde;o permanente pode ser usado no pr&oacute;ximo produto do mesmo tipo.</p>
                 </div>
 
@@ -2831,6 +2833,16 @@ $previewMatrixDefault = app_logo_matrix_values($logoTintPreviewHex);
         }
 
         installConfigAutosave();
+
+        const reuseSkuToggle = document.getElementById('reuse-deleted-product-sku');
+        const reuseSkuStatus = document.querySelector('[data-reuse-sku-status]');
+        if (reuseSkuToggle && reuseSkuStatus) {
+            const syncReuseSkuStatus = () => {
+                reuseSkuStatus.textContent = reuseSkuToggle.checked ? 'Ativado' : 'Desativado';
+            };
+            reuseSkuToggle.addEventListener('change', syncReuseSkuStatus);
+            syncReuseSkuStatus();
+        }
 
         const appearanceForm = document.querySelector('form[data-tab-panel="appearance"]');
         if (appearanceForm) {
