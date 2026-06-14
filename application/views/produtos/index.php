@@ -126,7 +126,7 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
     .mp-only.active {
         display: grid;
         grid-template-columns: 0.9fr 0.9fr 1.3fr 1fr;
-        column-gap: 40px;
+        column-gap: 16px;
         row-gap: 22px;
         align-items: start;
     }
@@ -147,7 +147,6 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
         border-radius: 12px;
         min-height: 42px;
         font-size: 0.95rem;
-        box-sizing: border-box;
     }
     .mp-only .span-4 { grid-column: 1 / -1; }
     @media (min-width: 901px) {
