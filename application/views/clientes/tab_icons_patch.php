@@ -7,9 +7,9 @@
     }
 
     .cliente-tab-button [data-lucide] {
-        width: 18px;
-        height: 18px;
-        flex: 0 0 auto;
+        width: 16px;
+        height: 16px;
+        flex: 0 0 16px;
     }
 </style>
 

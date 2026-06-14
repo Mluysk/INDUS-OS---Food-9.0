@@ -2,20 +2,21 @@
     .cliente-tabs {
         display: inline-flex;
         align-items: center;
-        gap: 0.6rem;
-        margin: 0.2rem 0 1.35rem;
+        gap: 8px;
+        margin: 0 0 16px;
+        flex-wrap: wrap;
     }
 
     .cliente-tab-button {
         appearance: none;
-        border: 1px solid var(--border-subtle, #e2e8f0);
-        background: var(--surface-elevated, #fff);
-        color: var(--text-strong, #0f172a);
+        border: 1px solid var(--border, #e5e7eb);
+        background: var(--surface-alt, #f8fafc);
+        color: var(--text, #111827);
         border-radius: 999px;
-        padding: 0.65rem 1.2rem;
+        padding: 8px 14px;
         font-weight: 700;
-        font-size: 0.92rem;
-        line-height: 1;
+        font-size: inherit;
+        line-height: normal;
         cursor: pointer;
         transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
     }
@@ -34,11 +35,10 @@
     @media (max-width: 720px) {
         .cliente-tabs {
             display: flex;
-            width: 100%;
         }
 
         .cliente-tab-button {
-            flex: 1 1 0;
+            flex: 0 0 auto;
             text-align: center;
         }
     }
