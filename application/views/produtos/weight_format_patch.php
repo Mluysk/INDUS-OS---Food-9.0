@@ -7,7 +7,7 @@
 
     .product-weight-field input[name="peso_liquido"] {
         width: 100%;
-        padding-right: 92px;
+        padding-right: 62px;
     }
 
     .product-weight-preview {
@@ -18,7 +18,7 @@
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        max-width: 58px;
+        min-width: 24px;
         padding: 0.2rem 0.45rem;
         border-radius: 999px;
         background: var(--surface-muted, #f8fafc);
@@ -45,9 +45,9 @@
             return '';
         }
         if (numeric < 1) {
-            return `${(numeric * 1000).toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 })} g`;
+            return 'g';
         }
-        return `${numeric.toLocaleString('pt-BR', { minimumFractionDigits: 3, maximumFractionDigits: 3 })} kg`;
+        return 'kg';
     };
 
     const applyWeightPreview = () => {
