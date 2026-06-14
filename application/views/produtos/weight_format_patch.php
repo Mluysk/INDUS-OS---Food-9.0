@@ -23,8 +23,8 @@
         border-radius: 999px;
         background: var(--surface-muted, #f8fafc);
         color: var(--text-muted, #64748b);
-        font-size: 0.72rem;
-        font-weight: 800;
+        font-size: calc(0.72rem + 2px);
+        font-weight: 900;
         font-variant-numeric: tabular-nums;
         line-height: 1;
         white-space: nowrap;
