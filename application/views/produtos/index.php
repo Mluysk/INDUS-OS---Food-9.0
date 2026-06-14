@@ -22,6 +22,9 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
         visibility: hidden;
         user-select: none;
     }
+    #product-create-form .product-sku-sequence-hint {
+        font-size: calc(1em - 2.3px);
+    }
     @media (max-width: 760px) {
         #product-create-form .product-primary-field__hint {
             min-height: 0;
@@ -168,7 +171,7 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
         <label class="product-primary-field">
             SKU <small class="muted product-primary-field__hint">Gerado automaticamente conforme o tipo</small>
             <input type="text" name="sku" readonly data-next-pa="<?= htmlspecialchars($nextSkuPa ?? 'A-001', ENT_QUOTES, 'UTF-8'); ?>" data-next-mp="<?= htmlspecialchars($nextSkuMp ?? 'MP-001', ENT_QUOTES, 'UTF-8'); ?>" value="<?= htmlspecialchars($nextSkuPa ?? 'A-001', ENT_QUOTES, 'UTF-8'); ?>" placeholder="A-001">
-            <small class="muted">Sequência com <?= (int)($skuDigits ?? 3); ?> dígitos (configurável em Configurações &gt; Regras).</small>
+            <small class="muted product-sku-sequence-hint">Sequência com <?= (int)($skuDigits ?? 3); ?> dígitos (configurável em Configurações &gt; Regras).</small>
         </label>
         <label class="product-primary-field">
             Nome
