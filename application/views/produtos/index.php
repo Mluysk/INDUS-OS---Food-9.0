@@ -13,6 +13,23 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
     .tab-button[data-tab="historico-preco"] { display: none; }
     .tab-panel { display: none; }
     .tab-panel.active { display: block; }
+    #product-create-form .product-primary-field__hint {
+        display: block;
+        min-height: 2.4em;
+        line-height: 1.2;
+    }
+    #product-create-form .product-primary-field__hint.is-placeholder {
+        visibility: hidden;
+        user-select: none;
+    }
+    @media (max-width: 760px) {
+        #product-create-form .product-primary-field__hint {
+            min-height: 0;
+        }
+        #product-create-form .product-primary-field__hint.is-placeholder {
+            display: none;
+        }
+    }
     .history-list { display: grid; gap: 10px; margin-top: 12px; }
     .history-item { border: 1px solid var(--border, #e5e7eb); border-radius: 16px; background: var(--surface, #fff); padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
     .history-title { font-weight: 700; }
@@ -148,24 +165,27 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
     <h2>Novo produto</h2>
     <p class="panel-description">Cadastre produtos acabados (PA) e matérias-primas (MP) com SKU único.</p>
     <form method="post" action="<?= htmlspecialchars($url('produtos'), ENT_QUOTES, 'UTF-8'); ?>" class="form-grid" id="product-create-form">
-        <label>
-            SKU <small class="muted">Gerado automaticamente conforme o tipo</small>
+        <label class="product-primary-field">
+            SKU <small class="muted product-primary-field__hint">Gerado automaticamente conforme o tipo</small>
             <input type="text" name="sku" readonly data-next-pa="<?= htmlspecialchars($nextSkuPa ?? 'A-001', ENT_QUOTES, 'UTF-8'); ?>" data-next-mp="<?= htmlspecialchars($nextSkuMp ?? 'MP-001', ENT_QUOTES, 'UTF-8'); ?>" value="<?= htmlspecialchars($nextSkuPa ?? 'A-001', ENT_QUOTES, 'UTF-8'); ?>" placeholder="A-001">
             <small class="muted">Sequência com <?= (int)($skuDigits ?? 3); ?> dígitos (configurável em Configurações &gt; Regras).</small>
         </label>
-        <label>
+        <label class="product-primary-field">
             Nome
+            <small class="muted product-primary-field__hint is-placeholder" aria-hidden="true">Alinhamento</small>
             <input type="text" name="nome" required>
         </label>
-        <label>
+        <label class="product-primary-field">
             Tipo
+            <small class="muted product-primary-field__hint is-placeholder" aria-hidden="true">Alinhamento</small>
             <select name="tipo">
                 <option value="PA">Produto acabado (PA)</option>
                 <option value="MP">Matéria-prima (MP)</option>
             </select>
         </label>
-        <label>
+        <label class="product-primary-field">
             Categoria
+            <small class="muted product-primary-field__hint is-placeholder" aria-hidden="true">Alinhamento</small>
             <input type="text" name="categoria">
         </label>
         <label>
