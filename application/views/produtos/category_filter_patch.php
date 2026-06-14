@@ -109,6 +109,7 @@ $selectedCategorias = array_values(array_unique(array_filter(array_map('trim', $
         flex-wrap: wrap;
         align-items: center;
         gap: 4px 7px;
+        padding-left: 1px;
         color: var(--text-muted, #64748b);
         font-size: 0.72rem;
         font-weight: 700;
