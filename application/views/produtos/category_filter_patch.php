@@ -105,10 +105,17 @@ $selectedCategorias = array_values(array_unique(array_filter(array_map('trim', $
     }
     .category-multi-count {
         min-width: 0;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 4px 7px;
         color: var(--text-muted, #64748b);
         font-size: 0.72rem;
         font-weight: 700;
         line-height: 1.2;
+    }
+    .category-multi-count__selected {
+        color: var(--primary, #dc2626);
     }
     .category-multi-actions button { border: 0; border-radius: 10px; padding: 9px 12px; font-weight: 800; cursor: pointer; }
     .category-multi-apply { background: var(--primary, #dc2626); color: #fff; }
@@ -171,6 +178,11 @@ $selectedCategorias = array_values(array_unique(array_filter(array_map('trim', $
     const syncButton = () => {
         button.textContent = labelText();
         nativeSelect.value = selectedList()[0] || '';
+        const selectedCount = menu.querySelector('[data-category-selected-count]');
+        if (selectedCount) {
+            const total = selectedList().length;
+            selectedCount.textContent = `${total} ${total === 1 ? 'filtrada' : 'filtradas'}`;
+        }
     };
 
     const buildQuery = (extra = {}) => {
@@ -319,7 +331,10 @@ $selectedCategorias = array_values(array_unique(array_filter(array_map('trim', $
                 ${options || '<div class="category-multi-option">Nenhuma categoria cadastrada</div>'}
             </div>
             <div class="category-multi-actions">
-                <span class="category-multi-count">${categorias.length} ${categorias.length === 1 ? 'categoria cadastrada' : 'categorias cadastradas'}</span>
+                <span class="category-multi-count">
+                    <span>${categorias.length} ${categorias.length === 1 ? 'cadastrada' : 'cadastradas'}</span>
+                    <span class="category-multi-count__selected" data-category-selected-count>${selectedList().length} ${selectedList().length === 1 ? 'filtrada' : 'filtradas'}</span>
+                </span>
                 <button type="button" class="category-multi-apply">Aplicar</button>
                 <button type="button" class="category-multi-clear">Limpar</button>
             </div>
