@@ -154,6 +154,9 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
         font-size: 0.95rem;
         box-sizing: border-box;
     }
+    .mp-only input[type="date"] {
+        width: min(100%, 190px);
+    }
     .mp-only .span-4 { grid-column: 1 / -1; }
     @media (max-width: 900px) {
         .mp-only.active { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -162,6 +165,7 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
     }
     @media (max-width: 560px) {
         .mp-only.active { grid-template-columns: 1fr; }
+        .mp-only input[type="date"] { width: 100%; }
     }
 </style>
 
