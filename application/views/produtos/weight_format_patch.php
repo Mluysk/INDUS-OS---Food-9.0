@@ -7,13 +7,13 @@
 
     .product-weight-field input[name="peso_liquido"] {
         width: 100%;
-        padding-right: 52px;
+        padding-right: 42px;
     }
 
     .product-weight-preview {
         position: absolute;
         top: 50%;
-        right: 13px;
+        right: 9px;
         transform: translateY(-50%);
         display: inline-flex;
         align-items: center;
