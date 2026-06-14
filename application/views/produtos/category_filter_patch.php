@@ -117,7 +117,14 @@ $selectedCategorias = array_values(array_unique(array_filter(array_map('trim', $
     .category-multi-count__selected {
         color: var(--primary, #dc2626);
     }
-    .category-multi-actions button { border: 0; border-radius: 10px; padding: 9px 12px; font-weight: 800; cursor: pointer; }
+    .category-multi-actions button {
+        border: 0;
+        border-radius: 8px;
+        padding: 7px 9px;
+        font-size: 0.74rem;
+        font-weight: 800;
+        cursor: pointer;
+    }
     .category-multi-apply { background: var(--primary, #dc2626); color: #fff; }
     .category-multi-clear { background: var(--surface-alt, #eef2f7); color: var(--text, #0f172a); }
 </style>
