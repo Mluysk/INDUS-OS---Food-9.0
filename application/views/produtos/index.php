@@ -23,7 +23,7 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
         user-select: none;
     }
     #product-create-form .product-sku-sequence-hint {
-        font-size: calc(1em - 2.3px);
+        font-size: calc(1em - 5.3px);
     }
     @media (max-width: 760px) {
         #product-create-form .product-primary-field__hint {
