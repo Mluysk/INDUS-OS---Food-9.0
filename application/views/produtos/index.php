@@ -7,7 +7,8 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
 
 <style>
     .tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
-    .tab-button { border: 1px solid var(--border, #e5e7eb); border-radius: 999px; padding: 8px 14px; font-weight: 700; background: var(--surface-alt, #f8fafc); cursor: pointer; }
+    .tab-button { display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: 1px solid var(--border, #e5e7eb); border-radius: 999px; padding: 8px 14px; font-weight: 700; background: var(--surface-alt, #f8fafc); cursor: pointer; }
+    .tab-button .icon { width: 16px; height: 16px; flex: 0 0 16px; }
     .tab-button.active { background: var(--primary, #4b5563); color: #fff; border-color: transparent; }
     .tab-button[data-tab="historico-preco"] { display: none; }
     .tab-panel { display: none; }
@@ -125,10 +126,22 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
 </style>
 
 <div class="tabs" role="tablist">
-    <button type="button" class="tab-button active" data-tab="cadastro" aria-selected="true">Cadastro</button>
-    <button type="button" class="tab-button" data-tab="lista" aria-selected="false">Lista</button>
-    <button type="button" class="tab-button" data-tab="lancamento" aria-selected="false">Lançamento</button>
-    <button type="button" class="tab-button" data-tab="historico-preco" aria-selected="false">Histórico de preço</button>
+    <button type="button" class="tab-button active" data-tab="cadastro" aria-selected="true">
+        <span class="icon" data-lucide="package-plus" aria-hidden="true"></span>
+        <span>Cadastro</span>
+    </button>
+    <button type="button" class="tab-button" data-tab="lista" aria-selected="false">
+        <span class="icon" data-lucide="list" aria-hidden="true"></span>
+        <span>Lista</span>
+    </button>
+    <button type="button" class="tab-button" data-tab="lancamento" aria-selected="false">
+        <span class="icon" data-lucide="package-open" aria-hidden="true"></span>
+        <span>Lançamento</span>
+    </button>
+    <button type="button" class="tab-button" data-tab="historico-preco" aria-selected="false">
+        <span class="icon" data-lucide="history" aria-hidden="true"></span>
+        <span>Histórico de preço</span>
+    </button>
 </div>
 
 <section class="panel tab-panel active" data-tab-panel="cadastro">
