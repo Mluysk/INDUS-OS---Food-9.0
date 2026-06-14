@@ -123,25 +123,42 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
         .list-pagination-pages, .list-pagination-size { justify-content: flex-start; }
     }
     .mp-only { display: none; }
-    .mp-only.active { display: grid; grid-template-columns: 0.9fr 0.9fr 1.3fr 1fr; gap: 16px; }
+    .mp-only.active {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        column-gap: 16px;
+        row-gap: 18px;
+        align-items: start;
+    }
     .mp-only .mp-only__header { grid-column: 1 / -1; margin-top: 8px; }
-    .mp-only label { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
-    .mp-only label { font-weight: 600; }
+    .mp-only label {
+        display: grid;
+        grid-template-rows: minmax(2.4em, auto) 42px;
+        gap: 6px;
+        min-width: 0;
+        margin: 0;
+        font-weight: 600;
+        line-height: 1.2;
+    }
     .mp-only input,
     .mp-only select {
         width: 100%;
+        min-width: 0;
+        height: 42px;
         padding: 10px 12px;
         border-radius: 12px;
-        min-height: 42px;
         font-size: 0.95rem;
+        box-sizing: border-box;
     }
     .mp-only .span-4 { grid-column: 1 / -1; }
-    .mp-only label.field-fornecedor input { min-width: calc(100% + 13px); }
-    .mp-only label.field-lote input { min-width: 125%; }
     @media (max-width: 900px) {
         .mp-only.active { grid-template-columns: repeat(2, minmax(0, 1fr)); }
         .mp-only .span-2,
         .mp-only .span-4 { grid-column: 1 / -1; }
+    }
+    @media (max-width: 560px) {
+        .mp-only.active { grid-template-columns: 1fr; }
+        .mp-only label { grid-template-rows: auto 42px; }
     }
 </style>
 
