@@ -1102,6 +1102,26 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
 
         window.addEventListener('app:live-saved', (event) => {
             const detail = event.detail || {};
+            if (detail.form === createForm) {
+                const skuField = createForm?.querySelector('input[name="sku"]');
+                createForm.reset();
+                if (skuField) {
+                    if (detail.payload?.next_sku_pa) {
+                        skuField.dataset.nextPa = detail.payload.next_sku_pa;
+                    }
+                    if (detail.payload?.next_sku_mp) {
+                        skuField.dataset.nextMp = detail.payload.next_sku_mp;
+                    }
+                }
+                applyAutoSku();
+                toggleMpRecebimento();
+                createForm.querySelectorAll('input, select, textarea').forEach((field) => {
+                    field.dispatchEvent(new Event('input', { bubbles: true }));
+                });
+                createForm.querySelector('input[name="nome"]')?.focus();
+                return;
+            }
+
             if (!/\/produtos\/\d+\/excluir(?:\/|$|\?)/i.test(String(detail.action || ''))) {
                 return;
             }

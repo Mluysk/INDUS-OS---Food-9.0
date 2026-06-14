@@ -132,7 +132,12 @@ class ProdutosController extends Controller
         }
 
         if ($this->wantsJson()) {
-            $this->json(['id' => $id], 201);
+            $this->json([
+                'id' => $id,
+                'message' => 'Produto cadastrado com sucesso.',
+                'next_sku_pa' => $this->produtos->nextSkuForTipo('PA'),
+                'next_sku_mp' => $this->produtos->nextSkuForTipo('MP'),
+            ], 201);
         } else {
             $this->setFlash('success', 'Produto cadastrado com sucesso.');
             $this->redirect('/produtos');
