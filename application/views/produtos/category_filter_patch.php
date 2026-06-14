@@ -120,6 +120,10 @@ $selectedCategorias = array_values(array_unique(array_filter(array_map('trim', $
     nativeSelect.dataset.multiReady = '1';
 
     const selected = new Set(selectedFromServer.length ? selectedFromServer : (nativeSelect.value ? [nativeSelect.value] : []));
+    let appliedCategorias = Array.from(selected).filter(Boolean);
+    let appliedTipo = form.querySelector('select[name="tipo"]')?.value || '';
+    let searchTimer = null;
+    let catalogRequest = null;
     const endpoint = form.dataset.endpoint || '';
     const printBase = form.dataset.print || '';
     const actionBase = endpoint.replace(/[?#].*$/, '').replace(/\/$/, '');
@@ -144,7 +148,10 @@ $selectedCategorias = array_values(array_unique(array_filter(array_map('trim', $
     shell.appendChild(menu);
 
     const escapeHtml = (value) => String(value ?? '').replace(/[&<>'"]/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#039;', '"': '&quot;' }[char]));
-    const selectedList = () => Array.from(selected).filter(Boolean);
+    function selectedListFrom(source) {
+        return Array.from(source).filter(Boolean);
+    }
+    const selectedList = () => selectedListFrom(selected);
     const labelText = () => {
         const items = selectedList();
         if (items.length === 0) return 'Todas';
@@ -160,10 +167,9 @@ $selectedCategorias = array_values(array_unique(array_filter(array_map('trim', $
     const buildQuery = (extra = {}) => {
         const params = new URLSearchParams();
         const q = form.querySelector('input[name="q"]')?.value.trim() || '';
-        const tipo = form.querySelector('select[name="tipo"]')?.value || '';
         if (q) params.set('q', q);
-        selectedList().forEach((categoria) => params.append('categoria[]', categoria));
-        if (tipo) params.set('tipo', tipo);
+        appliedCategorias.forEach((categoria) => params.append('categoria[]', categoria));
+        if (appliedTipo) params.set('tipo', appliedTipo);
         if (extra.sort) params.set('sort', extra.sort);
         if (extra.dir) params.set('dir', extra.dir);
         return params.toString();
@@ -260,8 +266,16 @@ $selectedCategorias = array_values(array_unique(array_filter(array_map('trim', $
     const fetchCatalog = () => {
         const qs = buildQuery({ sort: state.sort, dir: state.dir });
         const url = endpoint + (qs ? '?' + qs : '');
+        if (catalogRequest) {
+            catalogRequest.abort();
+        }
+        const request = new AbortController();
+        catalogRequest = request;
         form.classList.add('is-loading');
-        fetch(url, { headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' } })
+        fetch(url, {
+            headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+            signal: request.signal
+        })
             .then((res) => res.json())
             .then((payload) => {
                 const items = payload.data || [];
@@ -270,7 +284,17 @@ $selectedCategorias = array_values(array_unique(array_filter(array_map('trim', $
                 refreshSortIndicators();
                 updatePrintLink();
             })
-            .finally(() => form.classList.remove('is-loading'));
+            .catch((error) => {
+                if (error.name !== 'AbortError') {
+                    console.error('Falha ao filtrar o catalogo de produtos.', error);
+                }
+            })
+            .finally(() => {
+                if (catalogRequest === request) {
+                    catalogRequest = null;
+                    form.classList.remove('is-loading');
+                }
+            });
     };
 
     const renderMenu = () => {
@@ -316,12 +340,13 @@ $selectedCategorias = array_values(array_unique(array_filter(array_map('trim', $
             syncButton();
         }
         shell.classList.remove('is-open');
-        fetchCatalog();
     });
 
     form.addEventListener('submit', (event) => {
         event.preventDefault();
         event.stopImmediatePropagation();
+        appliedCategorias = selectedList();
+        appliedTipo = form.querySelector('select[name="tipo"]')?.value || '';
         fetchCatalog();
     }, true);
 
@@ -335,8 +360,10 @@ $selectedCategorias = array_values(array_unique(array_filter(array_map('trim', $
         }, true);
     });
 
-    form.querySelector('select[name="tipo"]')?.addEventListener('change', updatePrintLink);
-    form.querySelector('input[name="q"]')?.addEventListener('input', updatePrintLink);
+    form.querySelector('input[name="q"]')?.addEventListener('input', () => {
+        window.clearTimeout(searchTimer);
+        searchTimer = window.setTimeout(fetchCatalog, 250);
+    });
 
     renderMenu();
     syncButton();
