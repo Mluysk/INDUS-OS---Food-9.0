@@ -622,8 +622,8 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
                                                 <span><?= $isActive ? 'Ativo' : 'Inativo'; ?></span>
                                             </button>
                                         </form>
-                                        <form class="product-delete-form" method="post" action="<?= htmlspecialchars($url('produtos/'.(int)$produto['id'].'/excluir'), ENT_QUOTES, 'UTF-8'); ?>" onsubmit="return confirm('Excluir este produto? Se houver historico, ele sera arquivado/desativado.');">
-                                            <button type="submit" class="product-icon-btn product-icon-btn--danger" data-tooltip="Excluir" aria-label="Excluir produto">
+                                        <form class="product-delete-form" method="post" action="<?= htmlspecialchars($url('produtos/'.(int)$produto['id'].'/excluir'), ENT_QUOTES, 'UTF-8'); ?>" onsubmit="return confirm('Excluir permanentemente este produto? Todos os registros vinculados a ele tambem serao apagados. Esta acao nao pode ser desfeita.');">
+                                            <button type="submit" class="product-icon-btn product-icon-btn--danger" data-tooltip="Excluir permanentemente" aria-label="Excluir produto permanentemente">
                                                 <span data-lucide="trash-2" aria-hidden="true"></span>
                                             </button>
                                         </form>
@@ -1077,6 +1077,24 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
             skuField.value = tipoField.value === 'MP' ? nextMp : nextPa;
         };
 
+        window.addEventListener('app:live-saved', (event) => {
+            const detail = event.detail || {};
+            if (!/\/produtos\/\d+\/excluir(?:\/|$|\?)/i.test(String(detail.action || ''))) {
+                return;
+            }
+            const skuField = createForm?.querySelector('input[name="sku"]');
+            if (!skuField) {
+                return;
+            }
+            if (detail.payload?.next_sku_pa) {
+                skuField.dataset.nextPa = detail.payload.next_sku_pa;
+            }
+            if (detail.payload?.next_sku_mp) {
+                skuField.dataset.nextMp = detail.payload.next_sku_mp;
+            }
+            applyAutoSku();
+        });
+
         const toggleMpRecebimento = () => {
             const tipoField = createForm?.querySelector('select[name="tipo"]');
             if (!mpRecebimento || !tipoField) return;
@@ -1154,8 +1172,8 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
                                         <span>${isActive ? 'Ativo' : 'Inativo'}</span>
                                     </button>
                                 </form>
-                                <form class="product-delete-form" method="post" action="${endpoint.replace(/\/$/, '')}/${itemId}/excluir" onsubmit="return confirm('Excluir este produto? Se houver historico, ele sera arquivado/desativado.');">
-                                    <button type="submit" class="product-icon-btn product-icon-btn--danger" data-tooltip="Excluir" aria-label="Excluir produto">
+                                <form class="product-delete-form" method="post" action="${endpoint.replace(/\/$/, '')}/${itemId}/excluir" onsubmit="return confirm('Excluir permanentemente este produto? Todos os registros vinculados a ele tambem serao apagados. Esta acao nao pode ser desfeita.');">
+                                    <button type="submit" class="product-icon-btn product-icon-btn--danger" data-tooltip="Excluir permanentemente" aria-label="Excluir produto permanentemente">
                                         <span data-lucide="trash-2" aria-hidden="true"></span>
                                     </button>
                                 </form>

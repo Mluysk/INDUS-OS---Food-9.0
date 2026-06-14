@@ -358,14 +358,27 @@ class ProdutosController extends Controller
     {
         $this->auth->ensureRole(['admin','gestor']);
         try {
-            $result = $this->produtos->delete((int)$id, (int)$this->auth->user()['id']);
-            $message = $result === 'deleted'
-                ? 'Produto excluido com sucesso.'
-                : 'Produto possui historico e foi arquivado/desativado com seguranca.';
-            $this->setFlash('success', $message);
+            $this->produtos->delete((int)$id, (int)$this->auth->user()['id']);
+            $message = 'Produto e seus registros vinculados foram excluidos permanentemente.';
         } catch (\InvalidArgumentException $e) {
+            if ($this->wantsJson()) {
+                $this->json(['error' => $e->getMessage()], 422);
+                return;
+            }
             $this->setFlash('error', $e->getMessage());
+            $this->redirect('/produtos?tab=lista');
+            return;
         }
+
+        if ($this->wantsJson()) {
+            $this->json([
+                'message' => $message,
+                'next_sku_pa' => $this->produtos->nextSkuForTipo('PA'),
+                'next_sku_mp' => $this->produtos->nextSkuForTipo('MP'),
+            ]);
+            return;
+        }
+        $this->setFlash('success', $message);
         $this->redirect('/produtos?tab=lista');
     }
 }

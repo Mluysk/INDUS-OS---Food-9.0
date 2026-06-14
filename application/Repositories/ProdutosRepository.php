@@ -5,6 +5,7 @@ class ProdutosRepository extends BaseRepository
 {
     protected string $table = 'produtos';
     private ?bool $hasActiveColumn = null;
+    private bool $deletedSkuHistoryReady = false;
 
     public function find(int|string $id): ?array
     {
@@ -136,29 +137,135 @@ class ProdutosRepository extends BaseRepository
         return $this->update($id, ['is_ativo' => 1]);
     }
 
-    public function deleteOrDeactivate(int $id): string
+    public function deletePermanently(int $id): bool
     {
-        $this->ensureActiveColumn();
-        try {
-            if (parent::delete($id)) {
-                return 'deleted';
-            }
-        } catch (\Throwable $exception) {
-            // Produtos com historico em pedidos/estoque ficam arquivados para preservar os registros.
+        $produto = $this->find($id);
+        if (!$produto) {
+            return false;
         }
+        $this->ensureDeletedSkuHistoryTable();
 
-        $this->deactivate($id);
-        return 'deactivated';
+        $dependencies = [
+            ['table' => 'produto_componentes', 'column' => 'produto_id'],
+            ['table' => 'produto_componentes', 'column' => 'componente_id'],
+            ['table' => 'produtos_lancamentos', 'column' => 'produto_id'],
+            ['table' => 'recipe_items', 'column' => 'stock_product_id'],
+            ['table' => 'recipe_run_items', 'column' => 'stock_product_id'],
+            ['table' => 'estoques', 'column' => 'produto_id'],
+            ['table' => 'movimentos_estoque', 'column' => 'produto_id'],
+            ['table' => 'pedido_itens', 'column' => 'produto_id'],
+            ['table' => 'ordens_producao', 'column' => 'produto_id'],
+            ['table' => 'mapa_entradas', 'column' => 'produto_id'],
+        ];
+
+        $this->db->beginTransaction();
+        try {
+            $history = $this->db->prepare(
+                'INSERT INTO produtos_skus_excluidos (sku, produto_id_original, deleted_at)
+                 VALUES (:sku, :produto_id, CURRENT_TIMESTAMP)
+                 ON DUPLICATE KEY UPDATE produto_id_original = VALUES(produto_id_original), deleted_at = CURRENT_TIMESTAMP'
+            );
+            $history->execute([
+                'sku' => (string)($produto['sku'] ?? ''),
+                'produto_id' => $id,
+            ]);
+
+            if ($this->tableHasColumn('recipes', 'produto_pa_id')) {
+                $stmt = $this->db->prepare('UPDATE recipes SET produto_pa_id = NULL WHERE produto_pa_id = :id');
+                $stmt->execute(['id' => $id]);
+            }
+
+            foreach ($dependencies as $dependency) {
+                if (!$this->tableHasColumn($dependency['table'], $dependency['column'])) {
+                    continue;
+                }
+                $stmt = $this->db->prepare(
+                    sprintf('DELETE FROM `%s` WHERE `%s` = :id', $dependency['table'], $dependency['column'])
+                );
+                $stmt->execute(['id' => $id]);
+            }
+
+            $deleted = parent::delete($id);
+            $this->db->commit();
+            return $deleted;
+        } catch (\Throwable $exception) {
+            if ($this->db->inTransaction()) {
+                $this->db->rollBack();
+            }
+            throw new \InvalidArgumentException('Nao foi possivel excluir permanentemente o produto e seus vinculos.');
+        }
     }
 
-    public function nextSequence(string $prefix, int $digits): string
+    public function nextSequence(string $prefix, int $digits, bool $reuseAvailable = false): string
     {
         $start = strlen($prefix) + 1;
-        $stmt = $this->db->prepare("SELECT MAX(CAST(SUBSTRING(sku, {$start}) AS UNSIGNED)) AS max_num FROM {$this->table} WHERE sku LIKE :like");
-        $stmt->execute(['like' => $prefix.'%']);
+        if ($reuseAvailable) {
+            $stmt = $this->db->prepare(
+                "SELECT CAST(SUBSTRING(sku, {$start}) AS UNSIGNED) AS sequence_num
+                 FROM {$this->table}
+                 WHERE sku LIKE :like
+                 ORDER BY sequence_num ASC"
+            );
+            $stmt->execute(['like' => $prefix.'%']);
+            $expected = 1;
+            foreach ($stmt->fetchAll() as $row) {
+                $current = (int)($row['sequence_num'] ?? 0);
+                if ($current < $expected) {
+                    continue;
+                }
+                if ($current > $expected) {
+                    break;
+                }
+                $expected++;
+            }
+
+            return str_pad((string)$expected, $digits, '0', STR_PAD_LEFT);
+        }
+
+        $this->ensureDeletedSkuHistoryTable();
+        $stmt = $this->db->prepare(
+            "SELECT MAX(sequence_num) FROM (
+                SELECT CAST(SUBSTRING(sku, {$start}) AS UNSIGNED) AS sequence_num
+                FROM {$this->table} WHERE sku LIKE :active_like
+                UNION ALL
+                SELECT CAST(SUBSTRING(sku, {$start}) AS UNSIGNED) AS sequence_num
+                FROM produtos_skus_excluidos WHERE sku LIKE :deleted_like
+            ) sku_history"
+        );
+        $stmt->execute([
+            'active_like' => $prefix.'%',
+            'deleted_like' => $prefix.'%',
+        ]);
         $max = (int)($stmt->fetchColumn() ?: 0);
 
         return str_pad((string)($max + 1), $digits, '0', STR_PAD_LEFT);
+    }
+
+    private function tableHasColumn(string $table, string $column): bool
+    {
+        $stmt = $this->db->prepare(
+            'SELECT COUNT(*) FROM information_schema.COLUMNS
+             WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = :table AND COLUMN_NAME = :column'
+        );
+        $stmt->execute(['table' => $table, 'column' => $column]);
+        return (int)$stmt->fetchColumn() > 0;
+    }
+
+    private function ensureDeletedSkuHistoryTable(): void
+    {
+        if ($this->deletedSkuHistoryReady) {
+            return;
+        }
+
+        $this->db->exec(
+            'CREATE TABLE IF NOT EXISTS produtos_skus_excluidos (
+                id BIGINT AUTO_INCREMENT PRIMARY KEY,
+                sku VARCHAR(50) NOT NULL UNIQUE,
+                produto_id_original INT NULL,
+                deleted_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4'
+        );
+        $this->deletedSkuHistoryReady = true;
     }
 
     private function normalizarLinha(array $row): array

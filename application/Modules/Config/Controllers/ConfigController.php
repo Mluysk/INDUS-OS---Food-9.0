@@ -217,6 +217,7 @@ class ConfigController extends Controller
         } elseif ($skuDigits > 8) {
             $skuDigits = 8;
         }
+        $reuseDeletedSku = $this->config->get('PRODUCT_REUSE_DELETED_SKU', '0') === '1' ? '1' : '0';
 
         $estoqueBaixoMin = (int)($this->config->get('ESTOQUE_BAIXO_MIN', '4') ?: '4');
         $estoqueBaixoMax = (int)($this->config->get('ESTOQUE_BAIXO_MAX', '8') ?: '8');
@@ -272,6 +273,7 @@ class ConfigController extends Controller
             'metricUnitsRaw' => $metricUnitsRaw,
             'noteDefaults' => $notaDefaults,
             'skuDigits' => $skuDigits,
+            'reuseDeletedSku' => $reuseDeletedSku,
             'estoqueBaixoMin' => $estoqueBaixoMin,
             'estoqueBaixoMax' => $estoqueBaixoMax,
             'backupFull' => $backupFull,
@@ -565,6 +567,10 @@ class ConfigController extends Controller
                 $digits = 8;
             }
             $data['SKU_DIGITS'] = (string)$digits;
+        }
+        if ($activeTab === 'rules' || array_key_exists('PRODUCT_REUSE_DELETED_SKU', $data)) {
+            $data['PRODUCT_REUSE_DELETED_SKU'] = isset($data['PRODUCT_REUSE_DELETED_SKU'])
+                && (string)$data['PRODUCT_REUSE_DELETED_SKU'] === '1' ? '1' : '0';
         }
 
         if (isset($data['FINANCEIRO_ALERTA_VENCIMENTO_DIAS'])) {

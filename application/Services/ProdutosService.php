@@ -129,13 +129,16 @@ class ProdutosService
             throw new \InvalidArgumentException('Produto nao encontrado.');
         }
 
-        $result = $this->produtos->deleteOrDeactivate($id);
+        $deleted = $this->produtos->deletePermanently($id);
+        if (!$deleted) {
+            throw new \InvalidArgumentException('Nao foi possivel excluir permanentemente o produto.');
+        }
         $this->audit->log($usuarioId, 'delete', 'produtos', $id, [
             'sku' => $produto['sku'] ?? null,
             'nome' => $produto['nome'] ?? null,
-            'resultado' => $result === 'deleted' ? 'removido' : 'arquivado_por_vinculos',
+            'resultado' => 'removido_permanentemente',
         ]);
-        return $result;
+        return 'deleted';
     }
 
     public function categorias(): array
@@ -178,7 +181,7 @@ class ProdutosService
         $tipoNorm = strtoupper($tipo) === 'MP' ? 'MP' : 'PA';
         $digits = $this->skuDigits();
         $prefix = $tipoNorm === 'MP' ? 'MP-' : 'A-';
-        $sequence = $this->produtos->nextSequence($prefix, $digits);
+        $sequence = $this->produtos->nextSequence($prefix, $digits, $this->reuseDeletedSku());
 
         return $prefix.$sequence;
     }
@@ -224,7 +227,7 @@ class ProdutosService
             $skuRaw = $existing['sku'] ?? '';
         }
         if ($skuRaw === '') {
-            $sequence = $this->produtos->nextSequence($prefix, $digits);
+            $sequence = $this->produtos->nextSequence($prefix, $digits, $this->reuseDeletedSku());
             $skuRaw = $sequence;
         }
 
@@ -308,6 +311,11 @@ class ProdutosService
         }
 
         return $digits;
+    }
+
+    private function reuseDeletedSku(): bool
+    {
+        return $this->config->get('PRODUCT_REUSE_DELETED_SKU', '0') === '1';
     }
 
     private function normalizaJson(mixed $value): ?string

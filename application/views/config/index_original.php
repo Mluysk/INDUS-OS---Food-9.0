@@ -257,6 +257,15 @@ $previewMatrixDefault = app_logo_matrix_values($logoTintPreviewHex);
                     <p class="field-hint">Define quantos dígitos o sistema usa ao gerar SKUs automáticos (ex.: 3 → A-001, MP-001).</p>
                 </div>
 
+                <div class="field">
+                    <label for="reuse-deleted-product-sku">Reutilizar c&oacute;digo de produto exclu&iacute;do</label>
+                    <select id="reuse-deleted-product-sku" name="config[PRODUCT_REUSE_DELETED_SKU]">
+                        <option value="0" <?= ($reuseDeletedSku ?? '0') !== '1' ? 'selected' : ''; ?>>N&atilde;o, continuar a sequ&ecirc;ncia</option>
+                        <option value="1" <?= ($reuseDeletedSku ?? '0') === '1' ? 'selected' : ''; ?>>Sim, reutilizar o primeiro c&oacute;digo dispon&iacute;vel</option>
+                    </select>
+                    <p class="field-hint">Quando ativado, um SKU liberado por exclus&atilde;o permanente pode ser usado no pr&oacute;ximo produto do mesmo tipo.</p>
+                </div>
+
                 <div class="preview-card" aria-live="polite">
                     <div>
                         <p class="preview-label">Prévia de produção antes de salvar</p>

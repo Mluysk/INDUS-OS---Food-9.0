@@ -226,7 +226,7 @@ $selectedCategorias = array_values(array_unique(array_filter(array_map('trim', $
                                     <span>${active ? 'Ativo' : 'Inativo'}</span>
                                 </button>
                             </form>
-                            <form class="product-delete-form" method="post" action="${escapeHtml(actionPath('excluir'))}" onsubmit="return confirm('Excluir este produto? Se houver historico, ele sera arquivado/desativado.');"><button type="submit" class="product-icon-btn product-icon-btn--danger" data-tooltip="Excluir" aria-label="Excluir produto"><span data-lucide="trash-2" aria-hidden="true"></span></button></form>
+                            <form class="product-delete-form" method="post" action="${escapeHtml(actionPath('excluir'))}" onsubmit="return confirm('Excluir permanentemente este produto? Todos os registros vinculados a ele tambem serao apagados. Esta acao nao pode ser desfeita.');"><button type="submit" class="product-icon-btn product-icon-btn--danger" data-tooltip="Excluir permanentemente" aria-label="Excluir produto permanentemente"><span data-lucide="trash-2" aria-hidden="true"></span></button></form>
                         </div>
                     </td>
                 </tr>
