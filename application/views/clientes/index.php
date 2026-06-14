@@ -1565,7 +1565,9 @@
         })
             .then((response) => response.ok ? response.json() : Promise.reject(response))
             .then(() => {
-                window.location.reload();
+                window.appLiveSaved?.({ message: 'Cliente excluido com sucesso.', source: 'clientes' });
+                modal?.classList.add('hidden');
+                modal?.setAttribute('aria-hidden', 'true');
             })
             .catch(() => {
                 alert('Não foi possível excluir o cliente agora.');
@@ -1666,7 +1668,9 @@
         })
             .then((response) => response.ok ? response.json() : Promise.reject(response))
             .then(() => {
-                window.location.reload();
+                window.appLiveSaved?.({ message: 'Cliente atualizado com sucesso.', source: 'clientes' });
+                modal?.classList.add('hidden');
+                modal?.setAttribute('aria-hidden', 'true');
             })
             .catch(() => {
                 alert('Não foi possível atualizar o cliente agora.');

@@ -83,7 +83,11 @@
             body: JSON.stringify(payload),
         })
             .then((response) => response.ok ? response.json() : response.json().then((data) => Promise.reject(data)).catch(() => Promise.reject({})))
-            .then(() => window.location.reload())
+            .then(() => {
+                window.appLiveSaved?.({ message: 'Cliente atualizado com sucesso.', source: 'clientes' });
+                modal.classList.add('hidden');
+                modal.setAttribute('aria-hidden', 'true');
+            })
             .catch((error) => {
                 alert(error && error.message ? error.message : 'Não foi possível atualizar o cliente agora.');
             })

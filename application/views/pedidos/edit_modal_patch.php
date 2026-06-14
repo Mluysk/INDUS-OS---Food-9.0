@@ -282,7 +282,11 @@
                 body: new FormData(form)
             })
                 .then((response) => response.ok ? response.json() : response.json().then((body) => Promise.reject(body)))
-                .then(() => { setFeedback('Pedido atualizado com sucesso.', 'success'); window.setTimeout(() => window.location.reload(), 650); })
+                .then(() => {
+                    setFeedback('Pedido atualizado com sucesso.', 'success');
+                    window.appLiveSaved?.({ message: 'Pedido atualizado com sucesso.', source: 'pedidos' });
+                    closeModal();
+                })
                 .catch((error) => setFeedback(error?.message || 'Não foi possível salvar o pedido.', 'error'));
         });
     })();

@@ -2257,6 +2257,43 @@ $brandTitleOffsetY = (int)($theme['title_offset_y'] ?? 0);
         }, 240);
     };
 
+    const showAppToast = (message, type = 'success') => {
+        let stack = document.querySelector('.alerts');
+        if (!stack) {
+            stack = document.createElement('div');
+            stack.className = 'alerts';
+            stack.setAttribute('role', 'region');
+            stack.setAttribute('aria-label', 'Notificacoes');
+            document.body.appendChild(stack);
+        }
+
+        const toast = document.createElement('div');
+        toast.className = `alert ${type === 'error' ? 'alert-error' : 'alert-success'}`;
+        toast.setAttribute('role', 'alert');
+
+        const text = document.createElement('span');
+        text.className = 'alert-message';
+        text.textContent = message;
+
+        const closeButton = document.createElement('button');
+        closeButton.type = 'button';
+        closeButton.className = 'alert-close';
+        closeButton.setAttribute('aria-label', 'Fechar notificacao');
+        closeButton.textContent = 'x';
+        closeButton.addEventListener('click', () => closeToast(toast));
+
+        toast.append(text, closeButton);
+        stack.appendChild(toast);
+        window.setTimeout(() => closeToast(toast), <?= (int)$notificationPopupMs; ?>);
+    };
+
+    window.showAppToast = showAppToast;
+    window.appLiveSaved = (options = {}) => {
+        const message = options.message || 'Alteracao salva com sucesso.';
+        showAppToast(message, options.type || 'success');
+        window.dispatchEvent(new CustomEvent('app:live-saved', { detail: options }));
+    };
+
     document.querySelectorAll('.alerts .alert').forEach((toast) => {
         window.setTimeout(() => closeToast(toast), <?= (int)$notificationPopupMs; ?>);
         toast.querySelector('.alert-close')?.addEventListener('click', () => closeToast(toast));
@@ -2300,6 +2337,164 @@ $brandTitleOffsetY = (int)($theme['title_offset_y'] ?? 0);
     };
 
     bindConfirmations();
+
+    const liveSubmitExcluded = (form, action, method) => {
+        if (method === 'GET' || form.target || form.dataset.liveSubmit === 'off') {
+            return true;
+        }
+        if (form.classList.contains('logout-form')) {
+            return true;
+        }
+        return /\/(?:login|logout|print|imprimir)(?:\/|$|\?)/i.test(action);
+    };
+
+    const liveResponseFeedback = (html, fallback) => {
+        if (!html) {
+            return { message: fallback, isError: false };
+        }
+        const parsed = new DOMParser().parseFromString(html, 'text/html');
+        const alert = parsed.querySelector('.alert');
+        return {
+            message: alert?.querySelector('.alert-message')?.textContent?.trim() || fallback,
+            isError: Boolean(alert?.classList.contains('alert-error')),
+        };
+    };
+
+    const applyCommonLiveMutation = (form, action) => {
+        const row = form.closest('tr');
+        if (/\/(?:excluir|delete)(?:\/|$|\?)/i.test(action)) {
+            row?.remove();
+            return;
+        }
+
+        const deactivating = /\/desativar(?:\/|$|\?)/i.test(action);
+        const activating = /\/ativar(?:\/|$|\?)/i.test(action);
+        if (!deactivating && !activating) {
+            return;
+        }
+
+        const isActive = activating;
+        const nextAction = action.replace(
+            deactivating ? /\/desativar(?=\/|$|\?)/i : /\/ativar(?=\/|$|\?)/i,
+            isActive ? '/desativar' : '/ativar'
+        );
+        form.action = nextAction;
+        if (isActive) {
+            form.setAttribute('onsubmit', "return confirm('Desativar este produto? Ele deixara de aparecer em novos pedidos e relatorios.');");
+        } else {
+            form.removeAttribute('onsubmit');
+        }
+
+        const toggle = form.querySelector('.product-status-switch');
+        if (toggle) {
+            toggle.classList.toggle('is-active', isActive);
+            toggle.title = isActive ? 'Desativar produto' : 'Ativar produto';
+            toggle.setAttribute('aria-label', toggle.title);
+            const icon = toggle.querySelector('[data-lucide]');
+            if (icon) {
+                icon.setAttribute('data-lucide', isActive ? 'power' : 'power-off');
+            }
+        }
+
+        const badge = row?.querySelector('.product-status');
+        if (badge) {
+            badge.classList.toggle('is-active', isActive);
+            badge.textContent = isActive ? 'Ativo' : 'Inativo';
+        }
+        if (window.lucide) {
+            window.lucide.createIcons();
+        }
+    };
+
+    document.addEventListener('submit', async (event) => {
+        const form = event.target;
+        if (!(form instanceof HTMLFormElement) || event.defaultPrevented) {
+            return;
+        }
+
+        const submitter = event.submitter instanceof HTMLElement ? event.submitter : null;
+        const method = String(submitter?.getAttribute('formmethod') || form.method || 'GET').toUpperCase();
+        const action = submitter?.getAttribute('formaction') || form.action || window.location.href;
+        if (liveSubmitExcluded(form, action, method)) {
+            return;
+        }
+
+        event.preventDefault();
+        if (form.dataset.liveSubmitting === '1') {
+            return;
+        }
+        form.dataset.liveSubmitting = '1';
+
+        const data = new FormData(form);
+        if (submitter?.getAttribute('name')) {
+            data.set(submitter.getAttribute('name'), submitter.getAttribute('value') || '');
+        }
+
+        const submitButtons = Array.from(form.querySelectorAll('button[type="submit"], input[type="submit"]'));
+        if (submitter && !submitButtons.includes(submitter)) {
+            submitButtons.push(submitter);
+        }
+        submitButtons.forEach((button) => {
+            button.disabled = true;
+            button.setAttribute('aria-busy', 'true');
+        });
+        form.classList.add('is-saving-live');
+
+        try {
+            const response = await fetch(action, {
+                method,
+                body: data,
+                credentials: 'same-origin',
+                headers: {
+                    'Accept': 'application/json, text/html;q=0.9',
+                    'X-Requested-With': 'XMLHttpRequest',
+                },
+            });
+
+            if (response.redirected && /\/login(?:\/|$|\?)/i.test(response.url)) {
+                window.location.href = response.url;
+                return;
+            }
+
+            const contentType = response.headers.get('content-type') || '';
+            let payload = {};
+            let message = 'Alteracao salva com sucesso.';
+            let responseHasError = false;
+            if (contentType.includes('application/json')) {
+                payload = await response.json().catch(() => ({}));
+                message = payload.message || payload.error || message;
+                responseHasError = payload.success === false || Boolean(payload.error);
+            } else {
+                const html = await response.text();
+                const feedback = liveResponseFeedback(html, message);
+                message = feedback.message;
+                responseHasError = feedback.isError;
+            }
+
+            if (!response.ok || responseHasError) {
+                throw new Error(message || 'Nao foi possivel salvar a alteracao.');
+            }
+
+            applyCommonLiveMutation(form, action);
+            window.appLiveSaved({
+                message,
+                form,
+                action,
+                method,
+                payload,
+            });
+        } catch (error) {
+            showAppToast(error?.message || 'Nao foi possivel salvar a alteracao.', 'error');
+        } finally {
+            submitButtons.forEach((button) => {
+                button.disabled = false;
+                button.removeAttribute('aria-busy');
+            });
+            form.classList.remove('is-saving-live');
+            delete form.dataset.liveSubmitting;
+        }
+    });
+
     if (window.lucide) {
         lucide.createIcons();
     }
