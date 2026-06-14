@@ -94,12 +94,21 @@ $selectedCategorias = array_values(array_unique(array_filter(array_map('trim', $
     .category-multi-actions {
         position: sticky;
         bottom: 0;
-        display: flex;
+        display: grid;
+        grid-template-columns: 1fr auto auto;
+        align-items: center;
         gap: 8px;
         padding-top: 10px;
         border-top: 1px solid var(--border-muted, #e5e7eb);
         background: var(--surface-elevated, #fff);
         box-shadow: 0 -10px 18px rgba(255, 255, 255, 0.9);
+    }
+    .category-multi-count {
+        min-width: 0;
+        color: var(--text-muted, #64748b);
+        font-size: 0.72rem;
+        font-weight: 700;
+        line-height: 1.2;
     }
     .category-multi-actions button { border: 0; border-radius: 10px; padding: 9px 12px; font-weight: 800; cursor: pointer; }
     .category-multi-apply { background: var(--primary, #dc2626); color: #fff; }
@@ -310,6 +319,7 @@ $selectedCategorias = array_values(array_unique(array_filter(array_map('trim', $
                 ${options || '<div class="category-multi-option">Nenhuma categoria cadastrada</div>'}
             </div>
             <div class="category-multi-actions">
+                <span class="category-multi-count">${categorias.length} ${categorias.length === 1 ? 'categoria cadastrada' : 'categorias cadastradas'}</span>
                 <button type="button" class="category-multi-apply">Aplicar</button>
                 <button type="button" class="category-multi-clear">Limpar</button>
             </div>
