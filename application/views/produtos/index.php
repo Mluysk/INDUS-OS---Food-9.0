@@ -13,29 +13,23 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
     .tab-button[data-tab="historico-preco"] { display: none; }
     .tab-panel { display: none; }
     .tab-panel.active { display: block; }
-    .catalog-panel-header {
-        display: grid;
-        grid-template-columns: minmax(280px, 1fr) auto auto;
-        align-items: center;
-        gap: 18px;
-    }
     .product-status-filter {
         display: inline-flex;
         align-items: center;
-        gap: 3px;
-        padding: 4px;
+        gap: 2px;
+        padding: 3px;
         border: 1px solid var(--border, #e5e7eb);
-        border-radius: 12px;
+        border-radius: 9px;
         background: var(--surface-alt, #f8fafc);
     }
     .product-status-filter button {
-        min-height: 34px;
-        padding: 7px 12px;
+        min-height: 24px;
+        padding: 5px 8px;
         border: 0;
-        border-radius: 8px;
+        border-radius: 6px;
         background: transparent;
         color: var(--text-muted, #64748b);
-        font-size: 0.78rem;
+        font-size: 0.68rem;
         font-weight: 800;
         cursor: pointer;
     }
@@ -45,9 +39,21 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
         color: #fff;
         box-shadow: 0 5px 14px color-mix(in srgb, var(--primary, #4b5563) 22%, transparent);
     }
-    @media (max-width: 900px) {
-        .catalog-panel-header { grid-template-columns: 1fr auto; }
-        .product-status-filter { grid-column: 1 / -1; justify-self: start; }
+    .catalog-meta-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 14px;
+        margin-bottom: 8px;
+    }
+    .catalog-meta-row .catalog-meta {
+        margin: 0;
+    }
+    @media (max-width: 560px) {
+        .catalog-meta-row {
+            align-items: flex-start;
+            flex-direction: column;
+        }
     }
     #product-create-form .product-primary-field__hint {
         display: block;
@@ -348,16 +354,10 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
 </section>
 
 <section class="panel tab-panel" data-tab-panel="lista">
-    <div class="panel-header catalog-panel-header">
+    <div class="panel-header row-between">
         <div>
             <h2>Catálogo interno</h2>
             <p class="panel-description">Produtos acabados (PA) e matérias-primas (MP) disponíveis para pedidos e produção.</p>
-        </div>
-        <?php $productStatusFilter = strtolower((string)($filters['status'] ?? 'all')); ?>
-        <div class="product-status-filter" role="group" aria-label="Filtrar produtos por status">
-            <button type="button" class="<?= $productStatusFilter === 'all' ? 'is-active' : ''; ?>" data-product-status="all">Todos</button>
-            <button type="button" class="<?= $productStatusFilter === 'active' ? 'is-active' : ''; ?>" data-product-status="active">Ativos</button>
-            <button type="button" class="<?= $productStatusFilter === 'inactive' ? 'is-active' : ''; ?>" data-product-status="inactive">Inativos</button>
         </div>
         <div class="panel-actions">
             <?php
@@ -389,6 +389,7 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
         </div>
     </div>
 
+    <?php $productStatusFilter = strtolower((string)($filters['status'] ?? 'all')); ?>
     <form method="get" class="filter-grid" id="catalog-filters" data-endpoint="<?= htmlspecialchars($url('produtos'), ENT_QUOTES, 'UTF-8'); ?>" data-print="<?= htmlspecialchars($url('produtos/print'), ENT_QUOTES, 'UTF-8'); ?>">
         <input type="hidden" name="status" value="<?= htmlspecialchars($productStatusFilter, ENT_QUOTES, 'UTF-8'); ?>">
         <label>
@@ -419,7 +420,14 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
     </form>
 
     <div class="catalog-table">
-        <div class="catalog-meta">Resultados: <?= count($produtos); ?> itens</div>
+        <div class="catalog-meta-row">
+            <div class="catalog-meta">Resultados: <?= count($produtos); ?> itens</div>
+            <div class="product-status-filter" role="group" aria-label="Filtrar produtos por status">
+                <button type="button" class="<?= $productStatusFilter === 'all' ? 'is-active' : ''; ?>" data-product-status="all">Todos</button>
+                <button type="button" class="<?= $productStatusFilter === 'active' ? 'is-active' : ''; ?>" data-product-status="active">Ativos</button>
+                <button type="button" class="<?= $productStatusFilter === 'inactive' ? 'is-active' : ''; ?>" data-product-status="inactive">Inativos</button>
+            </div>
+        </div>
         <?php
             $activeSort = $filters['sort'] ?? 'created_at';
             $activeDir = strtolower($filters['dir'] ?? 'desc');
