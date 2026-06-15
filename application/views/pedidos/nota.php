@@ -228,16 +228,14 @@ $pixQrUrl = $pixPayload !== '' ? 'https://quickchart.io/qr?size=200&margin=2&tex
 
     <?php if ($pixEnabled): ?>
         <div class="pix-box">
-            <div class="pix-left">
-                <div class="pix-heading">
-                    <div class="pix-brand-title">
-                        <img class="pix-brand-logo" src="<?= htmlspecialchars($asset('uploads/branding/pix-logo.png'), ENT_QUOTES, 'UTF-8'); ?>" alt="PIX powered by Banco Central">
-                        <span class="pix-eyebrow">Pagamento via PIX</span>
-                    </div>
-                    <h3>Chave <?= $pixLabel ? '(' . htmlspecialchars($pixLabel, ENT_QUOTES, 'UTF-8') . ')' : ''; ?></h3>
-                    <p class="pix-key"><?= htmlspecialchars($pixKey !== '' ? $pixKey : 'Chave não informada', ENT_QUOTES, 'UTF-8'); ?></p>
-                    <p class="pix-note">Use o QR ou a chave para pagar <strong>R$ <?= number_format($totalFinal, 2, ',', '.'); ?></strong>.</p>
-                </div>
+            <div class="pix-brand-panel">
+                <img class="pix-brand-logo" src="<?= htmlspecialchars($asset('uploads/branding/pix-logo.png'), ENT_QUOTES, 'UTF-8'); ?>" alt="PIX powered by Banco Central">
+            </div>
+            <div class="pix-payment-info">
+                <span class="pix-eyebrow">Pagamento via PIX</span>
+                <h3>Chave <?= $pixLabel ? '(' . htmlspecialchars($pixLabel, ENT_QUOTES, 'UTF-8') . ')' : ''; ?></h3>
+                <p class="pix-key"><?= htmlspecialchars($pixKey !== '' ? $pixKey : 'Chave não informada', ENT_QUOTES, 'UTF-8'); ?></p>
+                <p class="pix-note">Use o QR ou a chave para pagar <strong>R$ <?= number_format($totalFinal, 2, ',', '.'); ?></strong>.</p>
             </div>
             <div class="pix-right">
                 <?php if ($pixQrUrl): ?>
@@ -287,15 +285,15 @@ $pixQrUrl = $pixPayload !== '' ? 'https://quickchart.io/qr?size=200&margin=2&tex
     .total-box { border:1px solid var(--nota-border); padding:8px; display:flex; flex-direction:column; gap:6px; }
     .total-row { display:flex; justify-content: space-between; gap: 16px; font-weight:600; }
     .total-row__grand { font-size:14px; border-top:1px solid var(--nota-border); padding-top:6px; }
-    .pix-box { border:2px solid var(--nota-border); border-top:none; padding:12px 10px; display:grid; grid-template-columns:minmax(0, 1fr) 150px; align-items:center; gap:12px; }
-    .pix-brand-title { display:flex; flex-direction:column; align-items:flex-start; gap:6px; margin-bottom:4px; }
-    .pix-brand-logo { width:133px; height:auto; flex:0 0 auto; transform:translateY(-3px); margin-bottom:0; }
-    .pix-brand-title .pix-eyebrow { margin-top:0; transform:translateY(0); }
-    .pix-left .pix-eyebrow { font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color: var(--nota-muted); margin:0; }
-    .pix-left h3 { margin:2px 0 4px; font-size:14px; }
-    .pix-key { font-weight:700; margin:2px 0; word-break:break-all; }
-    .pix-note { margin:0; color: var(--nota-muted); }
-    .pix-right { border:1px solid var(--nota-border); border-radius:8px; padding:6px; display:flex; align-items:center; justify-content:center; min-height:140px; }
+    .pix-box { border:2px solid var(--nota-border); border-top:none; min-height:176px; padding:10px 10px 10px 28px; display:grid; grid-template-columns:minmax(260px, 1fr) minmax(330px, 0.9fr) 150px; align-items:center; gap:18px; }
+    .pix-brand-panel { display:flex; align-items:center; justify-content:flex-start; min-width:0; }
+    .pix-brand-logo { display:block; width:260px; max-width:90%; height:auto; }
+    .pix-payment-info { align-self:stretch; display:flex; flex-direction:column; align-items:flex-end; justify-content:center; min-width:0; padding:8px 0 6px; text-align:right; }
+    .pix-payment-info .pix-eyebrow { font-size:14px; letter-spacing:0.06em; line-height:1.2; text-transform:uppercase; color:var(--nota-muted); margin:0 0 7px; }
+    .pix-payment-info h3 { margin:0 0 5px; font-size:18px; line-height:1.2; }
+    .pix-key { font-size:18px; line-height:1.2; font-weight:700; margin:0; word-break:break-all; }
+    .pix-note { width:100%; margin:auto 0 0; color:var(--nota-muted); font-size:16px; line-height:1.3; white-space:nowrap; }
+    .pix-right { width:150px; height:150px; box-sizing:border-box; border:1px solid var(--nota-border); border-radius:8px; padding:6px; display:flex; align-items:center; justify-content:center; }
     .pix-right img { width:100%; height:100%; object-fit:contain; }
     .pix-qr-placeholder { text-align:center; color: var(--nota-muted); font-size:11px; }
     .no-data { text-align:center; color: var(--nota-muted); }
@@ -305,8 +303,12 @@ $pixQrUrl = $pixPayload !== '' ? 'https://quickchart.io/qr?size=200&margin=2&tex
         .nota-shell { font-size:11px; }
         .nota-head, .nota-block, .nota-items, .nota-observacoes, .pix-box { border-width:1px; }
         .nota-table th, .nota-table td { padding:5px 6px; }
-        .pix-box { grid-template-columns:minmax(0, 1fr) 130px; }
-        .pix-brand-logo { width:116px; }
-        .pix-right { min-height:120px; }
+        .pix-box { min-height:142px; padding:8px 8px 8px 20px; grid-template-columns:minmax(200px, 1fr) minmax(270px, 0.9fr) 124px; gap:14px; }
+        .pix-brand-logo { width:230px; }
+        .pix-payment-info { padding:6px 0 4px; }
+        .pix-payment-info .pix-eyebrow { font-size:11px; margin-bottom:5px; }
+        .pix-payment-info h3, .pix-key { font-size:14px; }
+        .pix-note { font-size:11px; }
+        .pix-right { width:124px; height:124px; min-height:0; }
     }
 </style>

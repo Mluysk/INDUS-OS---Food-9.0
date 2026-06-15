@@ -199,24 +199,44 @@ $documentTitle = trim(($title ?? '') . ' · ' . ($appName ?? 'IndusOS Food'), ' 
         }
 
         .pix-box {
-            padding: 8px 7px !important;
-            gap: 8px !important;
-            grid-template-columns: minmax(0, 1fr) 124px !important;
+            min-height: 142px !important;
+            padding: 8px 8px 8px 20px !important;
+            gap: 14px !important;
+            grid-template-columns: minmax(200px, 1fr) minmax(270px, 0.9fr) 124px !important;
         }
 
-        .pix-left h3 {
-            font-size: 12px !important;
-            margin: 1px 0 2px !important;
+        .pix-brand-logo {
+            width: 230px !important;
+            max-width: 90% !important;
+            transform: none !important;
         }
 
-        .pix-left .pix-eyebrow,
-        .pix-qr-placeholder {
-            font-size: 9.4px !important;
+        .pix-payment-info {
+            padding: 6px 0 4px !important;
+            text-align: right !important;
+        }
+
+        .pix-payment-info .pix-eyebrow {
+            font-size: 11px !important;
+            margin: 0 0 5px !important;
+        }
+
+        .pix-payment-info h3,
+        .pix-payment-info .pix-key {
+            font-size: 14px !important;
+            margin-top: 0 !important;
+        }
+
+        .pix-payment-info .pix-note {
+            font-size: 11px !important;
+            margin-top: auto !important;
         }
 
         .pix-right {
-            min-height: 112px !important;
-            padding: 4px !important;
+            width: 124px !important;
+            height: 124px !important;
+            min-height: 0 !important;
+            padding: 5px !important;
         }
 
         @page {
