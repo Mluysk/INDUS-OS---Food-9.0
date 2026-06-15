@@ -1157,6 +1157,11 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
                 productStatusButtons.forEach((item) => {
                     item.classList.toggle('is-active', item === button);
                 });
+                if (typeof form.requestSubmit === 'function') {
+                    form.requestSubmit();
+                } else {
+                    form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+                }
             });
         });
 
