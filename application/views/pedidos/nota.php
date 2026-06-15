@@ -231,18 +231,7 @@ $pixQrUrl = $pixPayload !== '' ? 'https://quickchart.io/qr?size=200&margin=2&tex
             <div class="pix-left">
                 <div class="pix-heading">
                     <div class="pix-brand-title">
-                        <svg class="pix-brand-logo" viewBox="0 0 350 105" role="img" aria-label="PIX powered by Banco Central">
-                            <g transform="translate(2 8) scale(1.35)" fill="#32bcad">
-                                <path d="M47.8 37.1 37.1 47.8a7.2 7.2 0 0 1-10.2 0L16.2 37.1a7.2 7.2 0 0 0-10.2 0L1.8 41.3a23.4 23.4 0 0 0 3.5 5.1l12.3 12.3a20.3 20.3 0 0 0 28.8 0l12.3-12.3a23.4 23.4 0 0 0 3.5-5.1L58 37.1a7.2 7.2 0 0 0-10.2 0ZM16.2 26.9l10.7-10.7a7.2 7.2 0 0 1 10.2 0l10.7 10.7a7.2 7.2 0 0 0 10.2 0l4.2-4.2a23.4 23.4 0 0 0-3.5-5.1L46.4 5.3a20.3 20.3 0 0 0-28.8 0L5.3 17.6a23.4 23.4 0 0 0-3.5 5.1L1.8 22.7 6 26.9a7.2 7.2 0 0 0 10.2 0Z"/>
-                                <path d="m43.6 32-11.1-11.1a.8.8 0 0 0-1 0L20.4 32a.8.8 0 0 0 0 1l11.1 11.1a.8.8 0 0 0 1 0L43.6 33a.8.8 0 0 0 0-1Z"/>
-                            </g>
-                            <g fill="#8a8f94">
-                                <text x="100" y="68" font-family="Arial, Helvetica, sans-serif" font-size="66" font-weight="300" letter-spacing="-5">pix</text>
-                                <text x="105" y="94" font-family="Arial, Helvetica, sans-serif" font-size="15" letter-spacing=".5">powered by</text>
-                                <text x="192" y="94" font-family="Arial, Helvetica, sans-serif" font-size="16" font-weight="700">Banco Central</text>
-                            </g>
-                            <rect x="180" y="8" width="14" height="14" rx="3" transform="rotate(45 187 15)" fill="#32bcad"/>
-                        </svg>
+                        <img class="pix-brand-logo" src="<?= htmlspecialchars($asset('pix-logo.png'), ENT_QUOTES, 'UTF-8'); ?>" alt="PIX powered by Banco Central">
                         <span class="pix-eyebrow">Pagamento via PIX</span>
                     </div>
                     <h3>Chave <?= $pixLabel ? '(' . htmlspecialchars($pixLabel, ENT_QUOTES, 'UTF-8') . ')' : ''; ?></h3>
