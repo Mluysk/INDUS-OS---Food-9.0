@@ -1,22 +1,25 @@
 <style>
     #pedido-form .pedido-difference-charge {
         display: flex;
-        align-items: end;
-        gap: 0.75rem;
-        margin: 0.45rem 0 0.85rem;
-        padding: 0.65rem 0.8rem;
+        align-items: center;
+        gap: 0.55rem;
+        width: fit-content;
+        max-width: 100%;
+        margin: 0.35rem 0 0.7rem;
+        padding: 0.38rem 0.55rem;
         border: 1px solid color-mix(in srgb, var(--primary, #9f1239) 18%, var(--border, #dbe2ea));
-        border-radius: 12px;
+        border-radius: 9px;
         background: color-mix(in srgb, var(--primary, #9f1239) 4%, var(--surface, #fff));
     }
 
     #pedido-form .pedido-difference-toggle {
         display: inline-flex;
         align-items: center;
-        gap: 0.55rem;
-        min-height: 42px;
+        gap: 0.42rem;
+        min-height: 32px;
         color: #1f2937;
-        font-weight: 800;
+        font-size: 0.78rem;
+        font-weight: 750;
         white-space: nowrap;
         cursor: pointer;
     }
@@ -29,8 +32,8 @@
 
     #pedido-form .pedido-difference-track {
         position: relative;
-        width: 42px;
-        height: 23px;
+        width: 34px;
+        height: 19px;
         flex: 0 0 auto;
         border: 1px solid #cbd5e1;
         border-radius: 999px;
@@ -41,10 +44,10 @@
     #pedido-form .pedido-difference-track::after {
         content: "";
         position: absolute;
-        top: 3px;
-        left: 3px;
-        width: 15px;
-        height: 15px;
+        top: 2px;
+        left: 2px;
+        width: 13px;
+        height: 13px;
         border-radius: 50%;
         background: #fff;
         box-shadow: 0 1px 4px rgb(15 23 42 / 20%);
@@ -57,15 +60,15 @@
     }
 
     #pedido-form .pedido-difference-toggle input:checked + .pedido-difference-track::after {
-        transform: translateX(19px);
+        transform: translateX(15px);
     }
 
     #pedido-form .pedido-difference-fields {
         display: grid;
-        grid-template-columns: minmax(190px, 1fr) 132px;
-        gap: 0.65rem;
+        grid-template-columns: minmax(175px, 250px) 105px;
+        gap: 0.45rem;
         flex: 1 1 auto;
-        max-width: 520px;
+        max-width: 370px;
     }
 
     #pedido-form .pedido-difference-fields[hidden] {
@@ -74,22 +77,22 @@
 
     #pedido-form .pedido-difference-field {
         display: grid;
-        gap: 0.28rem;
+        gap: 0.16rem;
         color: #64748b;
-        font-size: 0.78rem;
+        font-size: 0.68rem;
         font-weight: 800;
     }
 
     #pedido-form .pedido-difference-field input {
         width: 100%;
-        min-height: 42px;
-        padding: 0.6rem 0.75rem;
+        min-height: 32px;
+        padding: 0.38rem 0.58rem;
         border: 1px solid #d8dee8;
-        border-radius: 10px;
+        border-radius: 8px;
         background: var(--surface, #fff);
         color: var(--text, #111827);
         font: inherit;
-        font-size: 0.92rem;
+        font-size: 0.78rem;
         outline: none;
     }
 
