@@ -4,8 +4,9 @@
         <p>Pedidos internos – emissão em <?= htmlspecialchars($emitidoEm ?? date('d/m/Y H:i'), ENT_QUOTES, 'UTF-8'); ?></p>
     </div>
     <div>
-        <?php if (!empty($theme['logo_light'])): ?>
-            <img src="<?= htmlspecialchars(($asset ?? fn($p) => $p)($theme['logo_light']), ENT_QUOTES, 'UTF-8'); ?>" alt="Logo" />
+        <?php $reportLogo = $nota['logo'] ?? ($theme['logo_light'] ?? 'img/logo.png'); ?>
+        <?php if ($reportLogo !== ''): ?>
+            <img src="<?= htmlspecialchars(($asset ?? fn($p) => $p)($reportLogo), ENT_QUOTES, 'UTF-8'); ?>" alt="Logo" />
         <?php endif; ?>
     </div>
 </div>

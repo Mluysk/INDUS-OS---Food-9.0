@@ -343,6 +343,7 @@
     (() => {
         const tabs = document.querySelectorAll('.pedidos-tab');
         const panels = document.querySelectorAll('.pedidos-tab-panel');
+        const reportLogo = <?= json_encode($asset($nota['logo'] ?? ($theme['logo_light'] ?? 'img/logo.png')), JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE); ?>;
 
         tabs.forEach((tab) => {
             tab.addEventListener('click', () => {
@@ -393,6 +394,25 @@
                             color: #0f172a;
                             background: #fff;
                             font-family: Arial, Helvetica, sans-serif;
+                        }
+                        .daily-output-print-brand {
+                            display: flex;
+                            align-items: center;
+                            gap: 14px;
+                            margin-bottom: 18px;
+                            padding-bottom: 12px;
+                            border-bottom: 1px solid #e2e8f0;
+                        }
+                        .daily-output-print-brand img {
+                            display: block;
+                            width: auto;
+                            max-width: 190px;
+                            height: 54px;
+                            object-fit: contain;
+                        }
+                        .daily-output-print-brand strong {
+                            color: #0f172a;
+                            font-size: 20px;
                         }
                         .daily-output-report {
                             display: block;
@@ -484,9 +504,15 @@
                         .daily-output-sort-head span {
                             display: none;
                         }
-                    ${lt}/style>
+                ${lt}/style>
                 ${lt}/head>
-                ${lt}body>${report.outerHTML}${lt}/body>
+                ${lt}body>
+                    ${lt}header class="daily-output-print-brand">
+                        ${lt}img src="${reportLogo}" alt="Logo">
+                        ${lt}strong>Relatório de saída${lt}/strong>
+                    ${lt}/header>
+                    ${report.outerHTML}
+                ${lt}/body>
                 ${lt}/html>`);
             printWindow.document.close();
             printWindow.focus();

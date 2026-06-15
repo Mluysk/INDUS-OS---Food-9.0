@@ -1,5 +1,5 @@
 <?php
-$logo = $asset($theme['mode'] === 'dark' ? ($theme['logo_dark'] ?? 'img/logodark.png') : ($theme['logo_light'] ?? 'img/logo.png'));
+$logo = $asset($nota['logo'] ?? ($theme['logo_light'] ?? 'img/logo.png'));
 $now = (new DateTime('now', new DateTimeZone('America/Sao_Paulo')))->format('d/m/Y H:i');
 $faixa = $faixaBaixa ?? ['min' => 4, 'max' => 8];
 
