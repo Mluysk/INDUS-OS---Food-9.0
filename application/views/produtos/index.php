@@ -132,7 +132,7 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
         display: grid;
         grid-template-columns: 0.9fr 0.9fr 1.3fr 1fr;
         column-gap: 20px;
-        row-gap: 22px;
+        row-gap: 20px;
         align-items: start;
     }
     .mp-only .mp-only__header { grid-column: 1 / -1; margin-top: 8px; }
@@ -156,6 +156,9 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
     }
     .mp-only input[type="date"] {
         width: min(100%, 190px);
+    }
+    .mp-only .field-unidade-compra select {
+        width: 64%;
     }
     .mp-only .span-4 { grid-column: 1 / -1; }
     @media (max-width: 900px) {
@@ -244,7 +247,7 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
                 Quantidade de compra
                 <input type="number" step="0.001" min="0" name="recebimento_quantidade" placeholder="0">
             </label>
-            <label>
+            <label class="field-unidade-compra">
                 Unidade da compra
                 <select name="recebimento_unidade">
                     <?php foreach ($unidades as $unidade): ?>
