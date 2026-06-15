@@ -23,19 +23,19 @@
             <label class="pedido-payment-field">
                 Opção de pagamento
                 <select name="forma_pagto">
-                    <option value="PIX">&#128179; PIX</option>
-                    <option value="Dinheiro">&#128181; Dinheiro</option>
-                    <option value="Cartão de crédito">&#128179; Cartão de crédito</option>
-                    <option value="Cartão de débito">&#128179; Cartão de débito</option>
-                    <option value="Boleto">&#128196; Boleto</option>
-                    <option value="TED">&#127974; TED</option>
-                    <option value="Transferência bancária">&#128257; Transferência bancária</option>
-                    <option value="Depósito bancário">&#127974; Depósito bancário</option>
-                    <option value="Cheque">&#128221; Cheque</option>
-                    <option value="Vale alimentação">&#127869; Vale alimentação</option>
-                    <option value="Vale refeição">&#127860; Vale refeição</option>
-                    <option value="A prazo">&#128197; A prazo</option>
-                    <option value="Outros">&#9679; Outros</option>
+                    <option value="PIX">PIX</option>
+                    <option value="Dinheiro">Dinheiro</option>
+                    <option value="Cartão de crédito">Cartão de crédito</option>
+                    <option value="Cartão de débito">Cartão de débito</option>
+                    <option value="Boleto">Boleto</option>
+                    <option value="TED">TED</option>
+                    <option value="Transferência bancária">Transferência bancária</option>
+                    <option value="Depósito bancário">Depósito bancário</option>
+                    <option value="Cheque">Cheque</option>
+                    <option value="Vale alimentação">Vale alimentação</option>
+                    <option value="Vale refeição">Vale refeição</option>
+                    <option value="A prazo">A prazo</option>
+                    <option value="Outros">Outros</option>
                 </select>
             </label>
             <label>
@@ -240,7 +240,9 @@
             form.querySelector('input[name="pedido_id"]').value = pedido.id || '';
             form.querySelector('select[name="cliente_id"]').value = pedido.cliente_id || '';
             const pagamento = pagamentosValidos.includes(pedido.forma_pagto) ? pedido.forma_pagto : 'PIX';
-            form.querySelector('select[name="forma_pagto"]').value = pagamento;
+            const pagamentoSelect = form.querySelector('select[name="forma_pagto"]');
+            pagamentoSelect.value = pagamento;
+            pagamentoSelect.dispatchEvent(new Event('change', { bubbles: true }));
             form.querySelector('textarea[name="observacoes"]').value = pedido.observacoes || '';
             freightToggle.checked = freteValor > 0;
             freightInput.value = freteValor.toFixed(2);
