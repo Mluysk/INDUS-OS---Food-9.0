@@ -63,6 +63,9 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
     #product-create-form .product-primary-field__hint.is-placeholder {
         display: none;
     }
+    #product-create-form .product-primary-field:not(:first-of-type) {
+        padding-top: calc(2.4em + 8px);
+    }
     #product-create-form .product-sku-sequence-hint {
         font-size: calc(1em - 5.3px);
     }
@@ -72,6 +75,9 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
         }
         #product-create-form .product-primary-field__hint.is-placeholder {
             display: none;
+        }
+        #product-create-form .product-primary-field:not(:first-of-type) {
+            padding-top: 0;
         }
     }
     .history-list { display: grid; gap: 10px; margin-top: 12px; }
