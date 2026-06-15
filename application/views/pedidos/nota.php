@@ -288,9 +288,9 @@ $pixQrUrl = $pixPayload !== '' ? 'https://quickchart.io/qr?size=200&margin=2&tex
     .pix-box { border:2px solid var(--nota-border); border-top:none; min-height:176px; padding:10px 10px 10px 28px; display:grid; grid-template-columns:minmax(260px, 1fr) minmax(330px, 0.9fr) 150px; align-items:center; gap:18px; }
     .pix-brand-panel { display:flex; align-items:center; justify-content:flex-start; min-width:0; }
     .pix-brand-logo { display:block; width:182px; max-width:90%; height:auto; }
-    .pix-payment-info { align-self:stretch; display:flex; flex-direction:column; align-items:flex-end; justify-content:center; min-width:0; padding:8px 0 6px; text-align:right; }
-    .pix-payment-info .pix-eyebrow { font-size:14px; letter-spacing:0.04em; line-height:1.2; text-transform:uppercase; color:var(--nota-muted); margin:0 0 10px; }
-    .pix-payment-info h3 { margin:0 0 6px; font-size:18px; line-height:1.2; }
+    .pix-payment-info { align-self:stretch; display:flex; flex-direction:column; align-items:flex-end; justify-content:flex-start; min-width:0; padding:15px 0 5px; text-align:right; }
+    .pix-payment-info .pix-eyebrow { font-size:14px; letter-spacing:0.04em; line-height:1.2; text-transform:uppercase; color:var(--nota-muted); margin:0 0 14px; }
+    .pix-payment-info h3 { margin:0 0 11px; font-size:18px; line-height:1.2; }
     .pix-key { font-size:18px; line-height:1.2; font-weight:700; margin:0; word-break:break-all; }
     .pix-note { width:100%; margin:auto 0 0; color:var(--nota-muted); font-size:16px; line-height:1.3; white-space:nowrap; }
     .pix-right { width:150px; height:150px; box-sizing:border-box; border:1px solid var(--nota-border); border-radius:8px; padding:6px; display:flex; align-items:center; justify-content:center; }
@@ -305,8 +305,9 @@ $pixQrUrl = $pixPayload !== '' ? 'https://quickchart.io/qr?size=200&margin=2&tex
         .nota-table th, .nota-table td { padding:5px 6px; }
         .pix-box { min-height:142px; padding:8px 8px 8px 20px; grid-template-columns:minmax(200px, 1fr) minmax(270px, 0.9fr) 124px; gap:14px; }
         .pix-brand-logo { width:161px; }
-        .pix-payment-info { padding:6px 0 4px; }
-        .pix-payment-info .pix-eyebrow { font-size:11px; margin-bottom:5px; }
+        .pix-payment-info { padding:8px 0 3px; }
+        .pix-payment-info .pix-eyebrow { font-size:11px; margin-bottom:9px; }
+        .pix-payment-info h3 { margin-bottom:7px; }
         .pix-payment-info h3, .pix-key { font-size:14px; }
         .pix-note { font-size:11px; }
         .pix-right { width:124px; height:124px; min-height:0; }

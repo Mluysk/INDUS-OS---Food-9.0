@@ -98,13 +98,17 @@
     }
 
     .pix-payment-info {
-        padding: 6px 0 4px !important;
+        padding: 8px 0 3px !important;
         text-align: right !important;
     }
 
     .pix-payment-info .pix-eyebrow {
         font-size: 11px !important;
-        margin: 0 0 8px !important;
+        margin: 0 0 9px !important;
+    }
+
+    .pix-payment-info h3 {
+        margin: 0 0 7px !important;
     }
 
     .pix-payment-info h3,
