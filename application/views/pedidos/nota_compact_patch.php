@@ -122,7 +122,7 @@
     .pix-payment-info .pix-note {
         font-size: 11px !important;
         margin-top: auto !important;
-        transform: translateY(-6px) !important;
+        transform: translateY(-12px) !important;
     }
 
     .pix-right {

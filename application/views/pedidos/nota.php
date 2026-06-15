@@ -292,7 +292,7 @@ $pixQrUrl = $pixPayload !== '' ? 'https://quickchart.io/qr?size=200&margin=2&tex
     .pix-payment-info .pix-eyebrow { font-size:14px; letter-spacing:0.04em; line-height:1.2; text-transform:uppercase; color:var(--nota-muted); margin:0 0 14px; transform:translateY(9px); }
     .pix-payment-info h3 { margin:0 0 11px; font-size:18px; line-height:1.2; transform:translateY(9px); }
     .pix-key { font-size:18px; line-height:1.2; font-weight:700; margin:0; word-break:break-all; transform:translateY(9px); }
-    .pix-note { width:100%; margin:auto 0 0; color:var(--nota-muted); font-size:16px; line-height:1.3; white-space:nowrap; transform:translateY(-6px); }
+    .pix-note { width:100%; margin:auto 0 0; color:var(--nota-muted); font-size:16px; line-height:1.3; white-space:nowrap; transform:translateY(-12px); }
     .pix-right { width:150px; height:150px; box-sizing:border-box; border:1px solid var(--nota-border); border-radius:8px; padding:6px; display:flex; align-items:center; justify-content:center; }
     .pix-right img { width:100%; height:100%; object-fit:contain; }
     .pix-qr-placeholder { text-align:center; color: var(--nota-muted); font-size:11px; }
@@ -309,7 +309,7 @@ $pixQrUrl = $pixPayload !== '' ? 'https://quickchart.io/qr?size=200&margin=2&tex
         .pix-payment-info .pix-eyebrow { font-size:11px; margin-bottom:9px; }
         .pix-payment-info h3 { margin-bottom:7px; }
         .pix-payment-info h3, .pix-key { font-size:14px; }
-        .pix-note { font-size:11px; transform:translateY(-6px); }
+        .pix-note { font-size:11px; transform:translateY(-12px); }
         .pix-right { width:124px; height:124px; min-height:0; }
     }
 </style>
