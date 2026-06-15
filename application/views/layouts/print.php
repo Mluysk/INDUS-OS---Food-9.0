@@ -219,6 +219,7 @@ $documentTitle = trim(($title ?? '') . ' · ' . ($appName ?? 'IndusOS Food'), ' 
         .pix-payment-info .pix-eyebrow {
             font-size: 11px !important;
             margin: 0 0 9px !important;
+            transform: translateY(9px) !important;
         }
 
         .pix-payment-info h3 {
@@ -229,7 +230,7 @@ $documentTitle = trim(($title ?? '') . ' · ' . ($appName ?? 'IndusOS Food'), ' 
         .pix-payment-info .pix-key {
             font-size: 14px !important;
             margin-top: 0 !important;
-            transform: none !important;
+            transform: translateY(9px) !important;
         }
 
         .pix-payment-info .pix-note {
