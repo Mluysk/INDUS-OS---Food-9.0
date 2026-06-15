@@ -137,20 +137,18 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
     .mp-only .mp-only__header { grid-column: 1 / -1; margin-top: 8px; }
     .mp-only__fields {
         display: grid;
-        grid-template-columns: 0.9fr 0.9fr 1.3fr 1fr;
+        grid-template-columns: 0.9fr 0.576fr 1.624fr 1fr;
         gap: 20px;
         align-items: start;
     }
-    .mp-only__fields--primary {
-        grid-template-columns: 0.9fr 0.576fr 1.624fr 1fr;
-    }
     .mp-only label {
-        display: flex;
-        flex-direction: column;
+        display: grid;
+        grid-template-rows: minmax(2.4em, auto) 52px;
         gap: 6px;
         min-width: 0;
         margin: 0;
         font-weight: 600;
+        line-height: 1.2;
     }
     .mp-only input,
     .mp-only select {
@@ -178,6 +176,7 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
     @media (max-width: 560px) {
         .mp-only__fields,
         .mp-only__fields--primary { grid-template-columns: 1fr; }
+        .mp-only label { grid-template-rows: auto 52px; }
         .mp-only input[type="date"] { width: 100%; }
     }
 </style>
