@@ -92,7 +92,7 @@
     }
 
     .pix-brand-logo {
-        width: 230px !important;
+        width: 161px !important;
         max-width: 90% !important;
         transform: none !important;
     }
@@ -104,18 +104,20 @@
 
     .pix-payment-info .pix-eyebrow {
         font-size: 11px !important;
-        margin: 0 0 5px !important;
+        margin: 0 0 8px !important;
     }
 
     .pix-payment-info h3,
     .pix-payment-info .pix-key {
         font-size: 14px !important;
         margin-top: 0 !important;
+        transform: none !important;
     }
 
     .pix-payment-info .pix-note {
         font-size: 11px !important;
         margin-top: auto !important;
+        transform: none !important;
     }
 
     .pix-right {
