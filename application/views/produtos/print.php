@@ -2,6 +2,16 @@
 $formatPrice = function (?float $value): string {
     return 'R$ ' . number_format((float)($value ?? 0), 2, ',', '.');
 };
+$formatWeight = static function ($value): string {
+    $numeric = (float)($value ?? 0);
+    if ($numeric <= 0) {
+        return '-';
+    }
+    if ($numeric < 1) {
+        return number_format($numeric * 1000, 0, ',', '.') . ' g';
+    }
+    return number_format($numeric, 3, ',', '.') . ' kg';
+};
 $simplified = !empty($simplified);
 
 $now = (new DateTime('now', new DateTimeZone('America/Sao_Paulo')))->format('d/m/Y H:i');
@@ -51,6 +61,9 @@ if (!empty($filters['tipo'])) {
                     <th>Tipo</th>
                 <?php endif; ?>
                 <th>Unidade</th>
+                <?php if ($simplified): ?>
+                    <th>Peso líquido</th>
+                <?php endif; ?>
                 <th>Preço</th>
                 <?php if (!$simplified): ?>
                     <th>Validade ( dias )</th>
@@ -71,6 +84,9 @@ if (!empty($filters['tipo'])) {
                     <td><?= $produto['tipo'] === 'MP' ? 'Matéria-prima' : 'Produto acabado'; ?></td>
                 <?php endif; ?>
                 <td><?= htmlspecialchars($produto['unidade'] ?? '—', ENT_QUOTES, 'UTF-8'); ?></td>
+                <?php if ($simplified): ?>
+                    <td><?= htmlspecialchars($formatWeight($produto['peso_liquido'] ?? 0), ENT_QUOTES, 'UTF-8'); ?></td>
+                <?php endif; ?>
                 <td><?= $formatPrice((float)($produto['preco'] ?? 0)); ?></td>
                 <?php if (!$simplified): ?>
                     <td><?= (int)($produto['shelf_life_dias'] ?? 0); ?> dias</td>
