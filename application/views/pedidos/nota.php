@@ -288,8 +288,9 @@ $pixQrUrl = $pixPayload !== '' ? 'https://quickchart.io/qr?size=200&margin=2&tex
     .total-row { display:flex; justify-content: space-between; gap: 16px; font-weight:600; }
     .total-row__grand { font-size:14px; border-top:1px solid var(--nota-border); padding-top:6px; }
     .pix-box { border:2px solid var(--nota-border); border-top:none; padding:12px 10px; display:grid; grid-template-columns:minmax(0, 1fr) 150px; align-items:center; gap:12px; }
-    .pix-brand-title { display:flex; flex-direction:column; align-items:flex-start; gap:3px; margin-bottom:4px; }
-    .pix-brand-logo { width:133px; height:auto; flex:0 0 auto; }
+    .pix-brand-title { display:flex; flex-direction:column; align-items:flex-start; gap:0; margin-bottom:4px; }
+    .pix-brand-logo { width:133px; height:auto; flex:0 0 auto; transform:translateY(-3px); margin-bottom:0; }
+    .pix-brand-title .pix-eyebrow { margin-top:0; transform:translateY(0); }
     .pix-left .pix-eyebrow { font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color: var(--nota-muted); margin:0; }
     .pix-left h3 { margin:2px 0 4px; font-size:14px; }
     .pix-key { font-weight:700; margin:2px 0; word-break:break-all; }
