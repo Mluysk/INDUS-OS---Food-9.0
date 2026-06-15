@@ -226,7 +226,7 @@
 
     .payment-select-ui {
         position: relative;
-        margin-top: 6px;
+        margin-top: 0;
     }
 
     .payment-select-button,
@@ -241,11 +241,11 @@
     }
 
     .payment-select-button {
-        min-height: 52px;
-        padding: 0 16px;
+        min-height: 45px;
+        padding: 12px 14px;
         border: 1px solid var(--border, #d8dee8);
-        border-radius: 14px;
-        background: var(--surface, #fff);
+        border-radius: 12px;
+        background: var(--surface-alt, #fff);
         justify-content: flex-start;
     }
 
