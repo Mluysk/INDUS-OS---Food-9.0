@@ -122,6 +122,14 @@
                                         <div class="pix-inline">
                                             <label class="pix-toggle">
                                                 <input type="checkbox" class="pix-checkbox" <?= $notePixEnabled ? 'checked' : ''; ?>>
+                                                <svg class="pix-brand-icon" viewBox="0 0 48 48" aria-hidden="true">
+                                                    <g fill="none" stroke="currentColor" stroke-width="5.2" stroke-linecap="round" stroke-linejoin="round">
+                                                        <path d="M16.5 8.5 8.7 16.3a5.5 5.5 0 0 0 0 7.8l7.8 7.8"/>
+                                                        <path d="m31.5 8.5 7.8 7.8a5.5 5.5 0 0 1 0 7.8l-7.8 7.8"/>
+                                                        <path d="m8.8 31.7 7.7 7.8a5.5 5.5 0 0 0 7.8 0l7.7-7.8"/>
+                                                        <path d="m8.8 16.3 7.7-7.8a5.5 5.5 0 0 1 7.8 0l7.7 7.8"/>
+                                                    </g>
+                                                </svg>
                                                 <span>PIX na nota</span>
                                             </label>
                                             <input type="text" class="pix-key" value="<?= htmlspecialchars($notePixKey, ENT_QUOTES, 'UTF-8'); ?>" placeholder="Chave PIX opcional">
@@ -1182,6 +1190,12 @@
         gap: 6px;
         align-items: center;
         font-size: 0.9rem;
+    }
+    .pix-brand-icon {
+        width: 18px;
+        height: 18px;
+        flex: 0 0 18px;
+        color: #32bcad;
     }
     .nota-print-btn {
         align-self: center;

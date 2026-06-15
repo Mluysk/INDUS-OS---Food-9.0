@@ -230,7 +230,17 @@ $pixQrUrl = $pixPayload !== '' ? 'https://quickchart.io/qr?size=200&margin=2&tex
         <div class="pix-box">
             <div class="pix-left">
                 <div class="pix-heading">
-                    <span class="pix-eyebrow">Pagamento via PIX</span>
+                    <div class="pix-brand-title">
+                        <svg class="pix-brand-logo" viewBox="0 0 48 48" role="img" aria-label="PIX">
+                            <g fill="none" stroke="currentColor" stroke-width="5.2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M16.5 8.5 8.7 16.3a5.5 5.5 0 0 0 0 7.8l7.8 7.8"/>
+                                <path d="m31.5 8.5 7.8 7.8a5.5 5.5 0 0 1 0 7.8l-7.8 7.8"/>
+                                <path d="m8.8 31.7 7.7 7.8a5.5 5.5 0 0 0 7.8 0l7.7-7.8"/>
+                                <path d="m8.8 16.3 7.7-7.8a5.5 5.5 0 0 1 7.8 0l7.7 7.8"/>
+                            </g>
+                        </svg>
+                        <span class="pix-eyebrow">Pagamento via PIX</span>
+                    </div>
                     <h3>Chave <?= $pixLabel ? '(' . htmlspecialchars($pixLabel, ENT_QUOTES, 'UTF-8') . ')' : ''; ?></h3>
                     <p class="pix-key"><?= htmlspecialchars($pixKey !== '' ? $pixKey : 'Chave não informada', ENT_QUOTES, 'UTF-8'); ?></p>
                     <p class="pix-note">Use o QR ou a chave para pagar <strong>R$ <?= number_format($totalFinal, 2, ',', '.'); ?></strong>.</p>
@@ -285,6 +295,8 @@ $pixQrUrl = $pixPayload !== '' ? 'https://quickchart.io/qr?size=200&margin=2&tex
     .total-row { display:flex; justify-content: space-between; gap: 16px; font-weight:600; }
     .total-row__grand { font-size:14px; border-top:1px solid var(--nota-border); padding-top:6px; }
     .pix-box { border:2px solid var(--nota-border); border-top:none; padding:12px 10px; display:grid; grid-template-columns:minmax(0, 1fr) 150px; align-items:center; gap:12px; }
+    .pix-brand-title { display:flex; align-items:center; gap:7px; margin-bottom:2px; }
+    .pix-brand-logo { width:25px; height:25px; flex:0 0 25px; color:#32bcad; }
     .pix-left .pix-eyebrow { font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color: var(--nota-muted); margin:0; }
     .pix-left h3 { margin:2px 0 4px; font-size:14px; }
     .pix-key { font-weight:700; margin:2px 0; word-break:break-all; }
