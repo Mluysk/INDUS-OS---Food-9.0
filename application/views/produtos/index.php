@@ -163,6 +163,9 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
     .mp-only input[type="date"] {
         width: min(100%, 190px);
     }
+    .mp-only input[name="recebimento_preco"] {
+        width: min(100%, 190px);
+    }
     .mp-only .field-unidade-compra select {
         width: 100%;
     }
@@ -177,7 +180,8 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
         .mp-only__fields,
         .mp-only__fields--primary { grid-template-columns: 1fr; }
         .mp-only label { grid-template-rows: auto 52px; }
-        .mp-only input[type="date"] { width: 100%; }
+        .mp-only input[type="date"],
+        .mp-only input[name="recebimento_preco"] { width: 100%; }
     }
 </style>
 
