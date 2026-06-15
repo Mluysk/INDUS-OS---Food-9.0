@@ -141,6 +141,10 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
         gap: 20px;
         align-items: start;
     }
+    .mp-only__fields:not(.mp-only__fields--primary) {
+        grid-template-columns: minmax(220px, 285px) repeat(3, 190px);
+        justify-content: start;
+    }
     .mp-only label {
         display: grid;
         grid-template-rows: minmax(2.4em, auto) 52px;
@@ -172,13 +176,17 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
     .mp-only .span-4 { grid-column: 1 / -1; }
     @media (max-width: 900px) {
         .mp-only__fields,
-        .mp-only__fields--primary { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        .mp-only__fields--primary,
+        .mp-only__fields:not(.mp-only__fields--primary) {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
         .mp-only .span-2,
         .mp-only .span-4 { grid-column: 1 / -1; }
     }
     @media (max-width: 560px) {
         .mp-only__fields,
-        .mp-only__fields--primary { grid-template-columns: 1fr; }
+        .mp-only__fields--primary,
+        .mp-only__fields:not(.mp-only__fields--primary) { grid-template-columns: 1fr; }
         .mp-only label { grid-template-rows: auto 52px; }
         .mp-only input[type="date"],
         .mp-only input[name="recebimento_preco"] { width: 100%; }
