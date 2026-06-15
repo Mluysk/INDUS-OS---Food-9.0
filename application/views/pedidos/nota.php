@@ -231,7 +231,7 @@ $pixQrUrl = $pixPayload !== '' ? 'https://quickchart.io/qr?size=200&margin=2&tex
             <div class="pix-left">
                 <div class="pix-heading">
                     <div class="pix-brand-title">
-                        <img class="pix-brand-logo" src="<?= htmlspecialchars($asset('pix-logo.png'), ENT_QUOTES, 'UTF-8'); ?>" alt="PIX powered by Banco Central">
+                        <img class="pix-brand-logo" src="<?= htmlspecialchars($asset('uploads/branding/pix-logo.png'), ENT_QUOTES, 'UTF-8'); ?>" alt="PIX powered by Banco Central">
                         <span class="pix-eyebrow">Pagamento via PIX</span>
                     </div>
                     <h3>Chave <?= $pixLabel ? '(' . htmlspecialchars($pixLabel, ENT_QUOTES, 'UTF-8') . ')' : ''; ?></h3>

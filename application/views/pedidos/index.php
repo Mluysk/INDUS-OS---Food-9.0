@@ -123,7 +123,7 @@
                                             <label class="pix-toggle">
                                                 <input type="checkbox" class="pix-checkbox" <?= $notePixEnabled ? 'checked' : ''; ?>>
                                                 <span class="pix-brand-icon" aria-hidden="true">
-                                                    <img src="<?= htmlspecialchars($asset('pix-logo.png'), ENT_QUOTES, 'UTF-8'); ?>" alt="">
+                                                    <img src="<?= htmlspecialchars($asset('uploads/branding/pix-logo.png'), ENT_QUOTES, 'UTF-8'); ?>" alt="" onerror="this.closest('.pix-brand-icon').style.display='none'">
                                                 </span>
                                                 <span>PIX na nota</span>
                                             </label>
