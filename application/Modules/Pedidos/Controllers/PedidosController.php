@@ -98,13 +98,26 @@ class PedidosController extends Controller
 
         $subtotal = $this->calcularTotal($itens);
         $freteValor = $this->normalizarFrete($data);
-        $desconto = $this->normalizarDesconto($data, $subtotal + $freteValor);
+        try {
+            $cobrancaDiferenca = $this->normalizarCobrancaDiferenca($data);
+        } catch (InvalidArgumentException $exception) {
+            if ($this->wantsJson()) {
+                $this->json(['message' => $exception->getMessage()], 422);
+            } else {
+                $this->setFlash('error', $exception->getMessage());
+                $this->redirect('/pedidos');
+            }
+            return;
+        }
+        $desconto = $this->normalizarDesconto($data, $subtotal + $freteValor + $cobrancaDiferenca['valor']);
         $pedido = [
             'observacoes' => $data['observacoes'] ?? null,
             'forma_pagto' => $this->normalizarPagamento($data['forma_pagto'] ?? 'PIX'),
             'frete_valor' => $freteValor,
             'desconto' => $desconto,
-            'total' => $subtotal + $freteValor,
+            'cobranca_diferenca_valor' => $cobrancaDiferenca['valor'],
+            'cobranca_diferenca_descricao' => $cobrancaDiferenca['descricao'],
+            'total' => $subtotal + $freteValor + $cobrancaDiferenca['valor'],
         ];
         $baixaNoCriar = filter_var($this->config->get('PEDIDO_BAIXA_NO_CRIAR', 'false'), FILTER_VALIDATE_BOOLEAN);
         $resultado = $this->pedidos->criarPedidoCliente($pedido, $itens, $clienteId, $this->auth->user()['id'], $baixaNoCriar);
@@ -321,6 +334,25 @@ class PedidosController extends Controller
 
         $valor = str_replace(',', '.', (string)($data['frete_valor'] ?? '0'));
         return max(0.0, (float)$valor);
+    }
+
+    private function normalizarCobrancaDiferenca(array $data): array
+    {
+        $ativo = filter_var($data['cobranca_diferenca_ativa'] ?? false, FILTER_VALIDATE_BOOLEAN);
+        if (!$ativo) {
+            return ['valor' => 0.0, 'descricao' => null];
+        }
+
+        $valor = max(0.0, (float)str_replace(',', '.', (string)($data['cobranca_diferenca_valor'] ?? '0')));
+        $descricao = trim((string)($data['cobranca_diferenca_descricao'] ?? ''));
+        if ($valor <= 0 || $descricao === '') {
+            throw new InvalidArgumentException('Informe a descrição e o valor da cobrança de diferença.');
+        }
+
+        return [
+            'valor' => $valor,
+            'descricao' => mb_substr($descricao, 0, 160),
+        ];
     }
 
     private function normalizarDesconto(array $data, float $base): float

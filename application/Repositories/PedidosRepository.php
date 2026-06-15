@@ -7,6 +7,7 @@ class PedidosRepository extends BaseRepository
     private bool $formaPagamentoChecked = false;
     private bool $freteValorChecked = false;
     private bool $descontoChecked = false;
+    private bool $cobrancaDiferencaChecked = false;
 
     public function find(int|string $id): ?array
     {
@@ -158,6 +159,7 @@ class PedidosRepository extends BaseRepository
         $this->ensureFormaPagamentoColumn();
         $this->ensureFreteValorColumn();
         $this->ensureDescontoColumn();
+        $this->ensureCobrancaDiferencaColumns();
     }
 
     private function ensureFormaPagamentoColumn(): void
@@ -212,5 +214,25 @@ class PedidosRepository extends BaseRepository
         }
 
         $this->descontoChecked = true;
+    }
+
+    private function ensureCobrancaDiferencaColumns(): void
+    {
+        if ($this->cobrancaDiferencaChecked) {
+            return;
+        }
+
+        try {
+            $this->db->query("SELECT cobranca_diferenca_valor FROM {$this->table} LIMIT 1");
+        } catch (\PDOException $exception) {
+            if ($exception->getCode() !== '42S22') {
+                throw $exception;
+            }
+            $this->db->exec("ALTER TABLE {$this->table}
+                ADD COLUMN cobranca_diferenca_valor DECIMAL(14,2) NOT NULL DEFAULT 0 AFTER desconto,
+                ADD COLUMN cobranca_diferenca_descricao VARCHAR(160) NULL AFTER cobranca_diferenca_valor");
+        }
+
+        $this->cobrancaDiferencaChecked = true;
     }
 }

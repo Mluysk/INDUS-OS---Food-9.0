@@ -400,8 +400,14 @@
             const subtotal = qty * price;
             row.dataset.subtotal = String(subtotal);
             row.querySelector('.pedido-line-subtotal').textContent = money(subtotal);
-            row.querySelector('input[name="item_quantidade[]"]').value = String(qty);
-            row.querySelector('input[name="item_preco[]"]').value = String(price);
+            const hiddenQuantity = row.querySelector('input[name="item_quantidade[]"]');
+            const hiddenPrice = row.querySelector('input[name="item_preco[]"]');
+            if (hiddenQuantity) {
+                hiddenQuantity.value = String(qty);
+            }
+            if (hiddenPrice) {
+                hiddenPrice.value = String(price);
+            }
         };
 
         const updateTotal = () => {
@@ -549,7 +555,7 @@
 
         form.addEventListener('submit', (event) => {
             updateTotal();
-            if (!body.querySelector('.pedido-products-row')) {
+            if (!body.querySelector('.pedido-products-row:not([data-difference-charge])')) {
                 event.preventDefault();
                 search.focus();
                 renderSuggestions();

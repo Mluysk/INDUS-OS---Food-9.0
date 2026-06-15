@@ -71,9 +71,12 @@ $itensSubtotal = array_reduce($itens, static function($carry, $item){
     return $carry + ($q * $p);
 }, 0.0);
 $freteValor = max(0.0, (float)($pedido['frete_valor'] ?? 0));
-$total = isset($pedido['total']) ? (float)$pedido['total'] : ($itensSubtotal + $freteValor);
-if ($freteValor > 0 && $total < ($itensSubtotal + $freteValor)) {
-    $total = $itensSubtotal + $freteValor;
+$cobrancaDiferencaValor = max(0.0, (float)($pedido['cobranca_diferenca_valor'] ?? 0));
+$cobrancaDiferencaDescricao = trim((string)($pedido['cobranca_diferenca_descricao'] ?? '')) ?: 'Cobrança de diferença';
+$totalBase = $itensSubtotal + $freteValor + $cobrancaDiferencaValor;
+$total = isset($pedido['total']) ? (float)$pedido['total'] : $totalBase;
+if ($total < $totalBase) {
+    $total = $totalBase;
 }
 $desconto = max(0.0, (float)($pedido['desconto'] ?? 0));
 $totalFinal = max(0.0, $total - $desconto);
@@ -168,6 +171,16 @@ $pixQrUrl = $pixPayload !== '' ? 'https://quickchart.io/qr?size=200&margin=2&tex
                         <td class="money-col">R$ <?= number_format($q * $p, 2, ',', '.'); ?></td>
                     </tr>
                 <?php endforeach; ?>
+                <?php if ($cobrancaDiferencaValor > 0): ?>
+                    <tr class="nota-cobranca-row">
+                        <td class="code-col"><strong>00</strong></td>
+                        <td class="left product-col"><strong><?= htmlspecialchars($cobrancaDiferencaDescricao, ENT_QUOTES, 'UTF-8'); ?></strong></td>
+                        <td class="qty-col">1,00</td>
+                        <td class="weight-col">-</td>
+                        <td class="money-col">R$ <?= number_format($cobrancaDiferencaValor, 2, ',', '.'); ?></td>
+                        <td class="money-col">R$ <?= number_format($cobrancaDiferencaValor, 2, ',', '.'); ?></td>
+                    </tr>
+                <?php endif; ?>
                 <?php if ($freteValor > 0): ?>
                     <tr class="nota-frete-row">
                         <td class="code-col"><strong>FRETE</strong></td>
@@ -182,6 +195,9 @@ $pixQrUrl = $pixPayload !== '' ? 'https://quickchart.io/qr?size=200&margin=2&tex
                 <tr><td colspan="6" class="no-data">Nenhum item informado.</td></tr>
                 <?php if ($freteValor > 0): ?>
                     <tr class="nota-frete-row"><td class="code-col"><strong>FRETE</strong></td><td class="left product-col"><strong>Frete</strong></td><td class="qty-col">1,00</td><td class="weight-col">-</td><td class="money-col">R$ <?= number_format($freteValor, 2, ',', '.'); ?></td><td class="money-col">R$ <?= number_format($freteValor, 2, ',', '.'); ?></td></tr>
+                <?php endif; ?>
+                <?php if ($cobrancaDiferencaValor > 0): ?>
+                    <tr class="nota-cobranca-row"><td class="code-col"><strong>00</strong></td><td class="left product-col"><strong><?= htmlspecialchars($cobrancaDiferencaDescricao, ENT_QUOTES, 'UTF-8'); ?></strong></td><td class="qty-col">1,00</td><td class="weight-col">-</td><td class="money-col">R$ <?= number_format($cobrancaDiferencaValor, 2, ',', '.'); ?></td><td class="money-col">R$ <?= number_format($cobrancaDiferencaValor, 2, ',', '.'); ?></td></tr>
                 <?php endif; ?>
             <?php endif; ?>
             </tbody>
@@ -199,6 +215,9 @@ $pixQrUrl = $pixPayload !== '' ? 'https://quickchart.io/qr?size=200&margin=2&tex
             <div class="total-row"><span>Subtotal produtos</span><span>R$ <?= number_format($itensSubtotal, 2, ',', '.'); ?></span></div>
             <?php if ($freteValor > 0): ?>
                 <div class="total-row"><span>Frete</span><span>R$ <?= number_format($freteValor, 2, ',', '.'); ?></span></div>
+            <?php endif; ?>
+            <?php if ($cobrancaDiferencaValor > 0): ?>
+                <div class="total-row"><span><?= htmlspecialchars($cobrancaDiferencaDescricao, ENT_QUOTES, 'UTF-8'); ?></span><span>R$ <?= number_format($cobrancaDiferencaValor, 2, ',', '.'); ?></span></div>
             <?php endif; ?>
             <?php if ($desconto > 0): ?>
                 <div class="total-row"><span>Desconto</span><span>- R$ <?= number_format($desconto, 2, ',', '.'); ?></span></div>
@@ -253,6 +272,7 @@ $pixQrUrl = $pixPayload !== '' ? 'https://quickchart.io/qr?size=200&margin=2&tex
     .nota-table td.left, .nota-table th.left { text-align:left; }
     .nota-table .muted { color: var(--nota-muted); font-size:11px; }
     .nota-frete-row td { background:#fff7ed; font-weight:800; }
+    .nota-cobranca-row td { background:#fef2f2; font-weight:800; }
     .code-col { width: 12%; }
     .product-col { width: 36%; }
     .qty-col { width: 12%; }

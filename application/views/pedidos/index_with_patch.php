@@ -6,6 +6,7 @@ include __DIR__.'/tabs_location_patch.php';
 include __DIR__.'/tab_icons_patch.php';
 include __DIR__.'/edit_modal_patch.php';
 include __DIR__.'/items_search_patch.php';
+include __DIR__.'/difference_charge_patch.php';
 include __DIR__.'/freight_patch.php';
 include __DIR__.'/freight_switch_pill_patch.php';
 include __DIR__.'/freight_number_ui_fix_patch.php';

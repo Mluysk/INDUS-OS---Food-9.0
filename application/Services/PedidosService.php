@@ -121,7 +121,8 @@ class PedidosService
         }
 
         $freteFinal = $freteValor ?? (float)($pedidoAtual['frete_valor'] ?? 0);
-        $total = $this->calcularTotal($itens) + $freteFinal;
+        $cobrancaDiferenca = max(0.0, (float)($pedidoAtual['cobranca_diferenca_valor'] ?? 0));
+        $total = $this->calcularTotal($itens) + $freteFinal + $cobrancaDiferenca;
         $descontoFinal = $desconto ?? (float)($pedidoAtual['desconto'] ?? 0);
         $descontoFinal = min(max(0.0, $descontoFinal), $total);
         $db = $this->pedidos->getConnection();
@@ -276,8 +277,9 @@ class PedidosService
         if ($pedido) {
             $pedido['status_label'] = $this->statusLabel($pedido['status'] ?? null);
             $freteValor = (float)($pedido['frete_valor'] ?? 0);
+            $cobrancaDiferenca = (float)($pedido['cobranca_diferenca_valor'] ?? 0);
             if (!isset($pedido['total']) || $pedido['total'] === null) {
-                $pedido['total'] = $this->calcularTotal($itens) + $freteValor;
+                $pedido['total'] = $this->calcularTotal($itens) + $freteValor + $cobrancaDiferenca;
             }
             if (!isset($pedido['desconto'])) {
                 $pedido['desconto'] = 0;
@@ -322,7 +324,9 @@ class PedidosService
             $pedido['itens'] = $itens;
             $pedido['status_label'] = $this->statusLabel($pedido['status'] ?? null);
             if (!isset($pedido['total']) || $pedido['total'] === null) {
-                $pedido['total'] = $this->calcularTotal($itens) + (float)($pedido['frete_valor'] ?? 0);
+                $pedido['total'] = $this->calcularTotal($itens)
+                    + (float)($pedido['frete_valor'] ?? 0)
+                    + (float)($pedido['cobranca_diferenca_valor'] ?? 0);
             }
             if (!isset($pedido['desconto'])) {
                 $pedido['desconto'] = 0;
