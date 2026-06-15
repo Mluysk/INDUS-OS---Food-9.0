@@ -288,8 +288,8 @@ $pixQrUrl = $pixPayload !== '' ? 'https://quickchart.io/qr?size=200&margin=2&tex
     .total-row { display:flex; justify-content: space-between; gap: 16px; font-weight:600; }
     .total-row__grand { font-size:14px; border-top:1px solid var(--nota-border); padding-top:6px; }
     .pix-box { border:2px solid var(--nota-border); border-top:none; padding:12px 10px; display:grid; grid-template-columns:minmax(0, 1fr) 150px; align-items:center; gap:12px; }
-    .pix-brand-title { display:flex; align-items:center; gap:10px; margin-bottom:4px; }
-    .pix-brand-logo { width:190px; height:auto; flex:0 0 190px; }
+    .pix-brand-title { display:flex; flex-direction:column; align-items:flex-start; gap:3px; margin-bottom:4px; }
+    .pix-brand-logo { width:133px; height:auto; flex:0 0 auto; }
     .pix-left .pix-eyebrow { font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color: var(--nota-muted); margin:0; }
     .pix-left h3 { margin:2px 0 4px; font-size:14px; }
     .pix-key { font-weight:700; margin:2px 0; word-break:break-all; }
@@ -305,7 +305,7 @@ $pixQrUrl = $pixPayload !== '' ? 'https://quickchart.io/qr?size=200&margin=2&tex
         .nota-head, .nota-block, .nota-items, .nota-observacoes, .pix-box { border-width:1px; }
         .nota-table th, .nota-table td { padding:5px 6px; }
         .pix-box { grid-template-columns:minmax(0, 1fr) 130px; }
-        .pix-brand-logo { width:165px; flex-basis:165px; }
+        .pix-brand-logo { width:116px; }
         .pix-right { min-height:120px; }
     }
 </style>
