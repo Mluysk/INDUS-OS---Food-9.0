@@ -290,9 +290,9 @@ $pixQrUrl = $pixPayload !== '' ? 'https://quickchart.io/qr?size=200&margin=2&tex
     .pix-brand-logo { display:block; width:260px; max-width:90%; height:auto; }
     .pix-payment-info { align-self:stretch; display:flex; flex-direction:column; align-items:flex-end; justify-content:center; min-width:0; padding:8px 0 6px; text-align:right; }
     .pix-payment-info .pix-eyebrow { font-size:14px; letter-spacing:0.06em; line-height:1.2; text-transform:uppercase; color:var(--nota-muted); margin:0 0 7px; }
-    .pix-payment-info h3 { margin:0 0 5px; font-size:18px; line-height:1.2; }
-    .pix-key { font-size:18px; line-height:1.2; font-weight:700; margin:0; word-break:break-all; }
-    .pix-note { width:100%; margin:auto 0 0; color:var(--nota-muted); font-size:16px; line-height:1.3; white-space:nowrap; }
+    .pix-payment-info h3 { margin:0 0 5px; font-size:18px; line-height:1.2; transform:translateY(3.6px); }
+    .pix-key { font-size:18px; line-height:1.2; font-weight:700; margin:0; word-break:break-all; transform:translateY(3.6px); }
+    .pix-note { width:100%; margin:auto 0 0; color:var(--nota-muted); font-size:16px; line-height:1.3; white-space:nowrap; transform:translateY(-4.9px); }
     .pix-right { width:150px; height:150px; box-sizing:border-box; border:1px solid var(--nota-border); border-radius:8px; padding:6px; display:flex; align-items:center; justify-content:center; }
     .pix-right img { width:100%; height:100%; object-fit:contain; }
     .pix-qr-placeholder { text-align:center; color: var(--nota-muted); font-size:11px; }
