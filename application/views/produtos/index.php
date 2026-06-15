@@ -13,6 +13,42 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
     .tab-button[data-tab="historico-preco"] { display: none; }
     .tab-panel { display: none; }
     .tab-panel.active { display: block; }
+    .catalog-panel-header {
+        display: grid;
+        grid-template-columns: minmax(280px, 1fr) auto auto;
+        align-items: center;
+        gap: 18px;
+    }
+    .product-status-filter {
+        display: inline-flex;
+        align-items: center;
+        gap: 3px;
+        padding: 4px;
+        border: 1px solid var(--border, #e5e7eb);
+        border-radius: 12px;
+        background: var(--surface-alt, #f8fafc);
+    }
+    .product-status-filter button {
+        min-height: 34px;
+        padding: 7px 12px;
+        border: 0;
+        border-radius: 8px;
+        background: transparent;
+        color: var(--text-muted, #64748b);
+        font-size: 0.78rem;
+        font-weight: 800;
+        cursor: pointer;
+    }
+    .product-status-filter button:hover { color: var(--primary, #4b5563); }
+    .product-status-filter button.is-active {
+        background: var(--primary, #4b5563);
+        color: #fff;
+        box-shadow: 0 5px 14px color-mix(in srgb, var(--primary, #4b5563) 22%, transparent);
+    }
+    @media (max-width: 900px) {
+        .catalog-panel-header { grid-template-columns: 1fr auto; }
+        .product-status-filter { grid-column: 1 / -1; justify-self: start; }
+    }
     #product-create-form .product-primary-field__hint {
         display: block;
         min-height: 2.4em;
@@ -312,10 +348,16 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
 </section>
 
 <section class="panel tab-panel" data-tab-panel="lista">
-    <div class="panel-header row-between">
+    <div class="panel-header catalog-panel-header">
         <div>
             <h2>Catálogo interno</h2>
             <p class="panel-description">Produtos acabados (PA) e matérias-primas (MP) disponíveis para pedidos e produção.</p>
+        </div>
+        <?php $productStatusFilter = strtolower((string)($filters['status'] ?? 'all')); ?>
+        <div class="product-status-filter" role="group" aria-label="Filtrar produtos por status">
+            <button type="button" class="<?= $productStatusFilter === 'all' ? 'is-active' : ''; ?>" data-product-status="all">Todos</button>
+            <button type="button" class="<?= $productStatusFilter === 'active' ? 'is-active' : ''; ?>" data-product-status="active">Ativos</button>
+            <button type="button" class="<?= $productStatusFilter === 'inactive' ? 'is-active' : ''; ?>" data-product-status="inactive">Inativos</button>
         </div>
         <div class="panel-actions">
             <?php
@@ -348,6 +390,7 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
     </div>
 
     <form method="get" class="filter-grid" id="catalog-filters" data-endpoint="<?= htmlspecialchars($url('produtos'), ENT_QUOTES, 'UTF-8'); ?>" data-print="<?= htmlspecialchars($url('produtos/print'), ENT_QUOTES, 'UTF-8'); ?>">
+        <input type="hidden" name="status" value="<?= htmlspecialchars($productStatusFilter, ENT_QUOTES, 'UTF-8'); ?>">
         <label>
             Busca geral
             <input type="text" name="q" value="<?= htmlspecialchars($filters['term'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="SKU, nome ou categoria">
@@ -1063,6 +1106,8 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
         const historyBack = document.getElementById('history-back');
         const historyButtons = Array.from(document.querySelectorAll('.js-history-open'));
         const paginationTarget = document.querySelector('[data-list-pagination="produtos"]');
+        const productStatusButtons = Array.from(document.querySelectorAll('[data-product-status]'));
+        const productStatusInput = form?.querySelector('input[name="status"]');
         const pageSizeOptions = <?= json_encode($listPageSizeOptions); ?>;
         const pageSizeDefault = <?= json_encode($listPageSizeDefault); ?>;
         const lancamentoFields = {
@@ -1084,6 +1129,7 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
             q: form.querySelector('input[name="q"]').value,
             categoria: form.querySelector('select[name="categoria"]').value,
             tipo: form.querySelector('select[name="tipo"]').value,
+            status: form.querySelector('input[name="status"]')?.value || 'all',
         };
         const paginationState = {
             page: 1,
@@ -1093,6 +1139,18 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
 
         const endpoint = form.dataset.endpoint;
         const printBase = form.dataset.print;
+
+        productStatusButtons.forEach((button) => {
+            button.addEventListener('click', () => {
+                const status = button.dataset.productStatus || 'all';
+                if (productStatusInput) {
+                    productStatusInput.value = status;
+                }
+                productStatusButtons.forEach((item) => {
+                    item.classList.toggle('is-active', item === button);
+                });
+            });
+        });
 
         const buildQuery = (params) => {
             const entries = Object.entries(params).filter(([, v]) => v !== null && v !== '' && v !== undefined);
@@ -1375,6 +1433,7 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
                 q: state.q,
                 categoria: state.categoria,
                 tipo: state.tipo,
+                status: state.status,
                 sort: state.sort,
                 dir: state.dir,
             });
@@ -1407,6 +1466,7 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
             state.q = form.querySelector('input[name="q"]').value.trim();
             state.categoria = form.querySelector('select[name="categoria"]').value;
             state.tipo = form.querySelector('select[name="tipo"]').value;
+            state.status = form.querySelector('input[name="status"]')?.value || 'all';
             paginationState.page = 1;
             fetchCatalog();
         });
@@ -1416,6 +1476,7 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
                 state.q = form.querySelector('input[name="q"]').value.trim();
                 state.categoria = form.querySelector('select[name="categoria"]').value;
                 state.tipo = form.querySelector('select[name="tipo"]').value;
+                state.status = form.querySelector('input[name="status"]')?.value || 'all';
             });
         });
 

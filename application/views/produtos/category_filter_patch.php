@@ -146,6 +146,7 @@ $selectedCategorias = array_values(array_unique(array_filter(array_map('trim', $
     const selected = new Set(selectedFromServer.length ? selectedFromServer : (nativeSelect.value ? [nativeSelect.value] : []));
     let appliedCategorias = Array.from(selected).filter(Boolean);
     let appliedTipo = form.querySelector('select[name="tipo"]')?.value || '';
+    let appliedStatus = form.querySelector('input[name="status"]')?.value || 'all';
     let searchTimer = null;
     let catalogRequest = null;
     const endpoint = form.dataset.endpoint || '';
@@ -199,6 +200,7 @@ $selectedCategorias = array_values(array_unique(array_filter(array_map('trim', $
         if (q) params.set('q', q);
         appliedCategorias.forEach((categoria) => params.append('categoria[]', categoria));
         if (appliedTipo) params.set('tipo', appliedTipo);
+        if (appliedStatus && appliedStatus !== 'all') params.set('status', appliedStatus);
         if (extra.sort) params.set('sort', extra.sort);
         if (extra.dir) params.set('dir', extra.dir);
         return params.toString();
@@ -380,6 +382,7 @@ $selectedCategorias = array_values(array_unique(array_filter(array_map('trim', $
         event.stopImmediatePropagation();
         appliedCategorias = selectedList();
         appliedTipo = form.querySelector('select[name="tipo"]')?.value || '';
+        appliedStatus = form.querySelector('input[name="status"]')?.value || 'all';
         fetchCatalog();
     }, true);
 

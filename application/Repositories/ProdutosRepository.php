@@ -56,7 +56,10 @@ class ProdutosRepository extends BaseRepository
         $sql = "SELECT * FROM {$this->table} WHERE 1=1";
         $params = [];
 
-        if ($hasActiveColumn && empty($filters['include_inactive'])) {
+        $status = strtolower(trim((string)($filters['status'] ?? '')));
+        if ($hasActiveColumn && $status === 'inactive') {
+            $sql .= " AND COALESCE(is_ativo, 1) = 0";
+        } elseif ($hasActiveColumn && ($status === 'active' || empty($filters['include_inactive']))) {
             $sql .= " AND COALESCE(is_ativo, 1) = 1";
         }
 

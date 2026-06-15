@@ -38,6 +38,7 @@ class ProdutosController extends Controller
             'term' => $_GET['q'] ?? null,
             'categoria' => $_GET['categoria'] ?? null,
             'tipo' => $_GET['tipo'] ?? null,
+            'status' => $_GET['status'] ?? 'all',
             'sort' => $_GET['sort'] ?? null,
             'dir' => $_GET['dir'] ?? null,
             'include_inactive' => true,

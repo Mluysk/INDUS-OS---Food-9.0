@@ -75,6 +75,7 @@ class ProdutosService
             'tipo' => isset($filters['tipo']) ? trim((string)$filters['tipo']) : null,
             'sort' => isset($filters['sort']) ? trim((string)$filters['sort']) : null,
             'dir' => isset($filters['dir']) ? strtolower(trim((string)$filters['dir'])) : null,
+            'status' => isset($filters['status']) ? strtolower(trim((string)$filters['status'])) : null,
             'include_inactive' => !empty($filters['include_inactive']),
         ];
 
