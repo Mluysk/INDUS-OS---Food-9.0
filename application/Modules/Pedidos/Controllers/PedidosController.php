@@ -121,16 +121,17 @@ class PedidosController extends Controller
         ];
         $baixaNoCriar = filter_var($this->config->get('PEDIDO_BAIXA_NO_CRIAR', 'false'), FILTER_VALIDATE_BOOLEAN);
         $resultado = $this->pedidos->criarPedidoCliente($pedido, $itens, $clienteId, $this->auth->user()['id'], $baixaNoCriar);
-
-        if ($this->wantsJson()) {
-            $this->json($resultado, 201);
-            return;
-        }
-
         $mensagem = 'Pedido criado com ID '.$resultado['pedido_id'];
         if (!empty($resultado['backorder'])) {
             $mensagem .= ' (backorder gerado)';
         }
+
+        if ($this->wantsJson()) {
+            $resultado['message'] = $mensagem;
+            $this->json($resultado, 201);
+            return;
+        }
+
         $this->setFlash('success', $mensagem);
         $this->redirect('/pedidos');
     }

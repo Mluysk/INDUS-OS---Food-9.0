@@ -562,6 +562,46 @@
             }
         });
 
+        window.addEventListener('app:live-saved', (event) => {
+            if (event.detail?.form !== form) {
+                return;
+            }
+
+            form.reset();
+            selectedProduct = null;
+            body.innerHTML = '';
+            search.value = '';
+            qtyInput.value = '1';
+            priceInput.value = '0';
+
+            const clientSearch = form.querySelector('#pedido-cliente-search');
+            if (clientSearch) {
+                clientSearch.value = '';
+                delete clientSearch.dataset.selectedCliente;
+            }
+
+            const clientSelect = form.querySelector('select[name="cliente_id"]');
+            if (clientSelect) {
+                clientSelect.value = '';
+            }
+
+            const payment = form.querySelector('select[name="forma_pagto"]');
+            if (payment) {
+                payment.value = 'PIX';
+            }
+
+            clearProductInfo();
+            closeSuggestions();
+            updateEntrySubtotal();
+            updateTotal();
+
+            form.querySelectorAll('input, select, textarea').forEach((field) => {
+                field.dispatchEvent(new Event('input', { bubbles: true }));
+                field.dispatchEvent(new Event('change', { bubbles: true }));
+            });
+            form.dispatchEvent(new CustomEvent('pedido:reset-after-create', { bubbles: true }));
+        });
+
         clearProductInfo();
         updateEntrySubtotal();
         updateTotal();
