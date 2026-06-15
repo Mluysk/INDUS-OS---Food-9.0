@@ -365,6 +365,8 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
                     'q' => $filters['term'] ?? null,
                     'categoria' => $filters['categoria'] ?? null,
                     'tipo' => $filters['tipo'] ?? null,
+                    'sort' => $filters['sort'] ?? 'created_at',
+                    'dir' => $filters['dir'] ?? 'desc',
                 ], fn($v) => $v !== null && $v !== '');
                 $printUrl = $url('produtos/print' . ($printFilters ? '?' . http_build_query($printFilters) : ''));
                 $simplifiedPrintFilters = array_merge($printFilters, ['modo' => 'simplificado']);
@@ -1280,7 +1282,13 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
         const updatePrintLink = () => {
             if (!printButtons.length) return;
             printButtons.forEach((button) => {
-                const params = new URLSearchParams(buildQuery({ q: state.q, categoria: state.categoria, tipo: state.tipo }));
+                const params = new URLSearchParams(buildQuery({
+                    q: state.q,
+                    categoria: state.categoria,
+                    tipo: state.tipo,
+                    sort: state.sort,
+                    dir: state.dir,
+                }));
                 if (button.dataset.printMode === 'simplificado') {
                     params.set('modo', 'simplificado');
                 }

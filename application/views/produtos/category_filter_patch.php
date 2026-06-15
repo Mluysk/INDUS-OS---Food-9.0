@@ -209,7 +209,7 @@ $selectedCategorias = array_values(array_unique(array_filter(array_map('trim', $
     const updatePrintLink = () => {
         if (!printLinks.length || !printBase) return;
         printLinks.forEach((printLink) => {
-            const params = new URLSearchParams(buildQuery({}));
+            const params = new URLSearchParams(buildQuery({ sort: state.sort, dir: state.dir }));
             if (printLink.dataset.printMode === 'simplificado') {
                 params.set('modo', 'simplificado');
             }

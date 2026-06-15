@@ -291,6 +291,8 @@ class ProdutosController extends Controller
             'term' => $_GET['q'] ?? null,
             'categoria' => $_GET['categoria'] ?? null,
             'tipo' => $_GET['tipo'] ?? null,
+            'sort' => $_GET['sort'] ?? null,
+            'dir' => $_GET['dir'] ?? null,
             'include_inactive' => false,
         ];
         $produtos = $this->produtos->all($filters);
