@@ -130,12 +130,20 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
     }
     .mp-only.active {
         display: grid;
-        grid-template-columns: 0.9fr 0.9fr 1.3fr 1fr;
-        column-gap: 20px;
+        grid-template-columns: 1fr;
         row-gap: 20px;
         align-items: start;
     }
     .mp-only .mp-only__header { grid-column: 1 / -1; margin-top: 8px; }
+    .mp-only__fields {
+        display: grid;
+        grid-template-columns: 0.9fr 0.9fr 1.3fr 1fr;
+        gap: 20px;
+        align-items: start;
+    }
+    .mp-only__fields--primary {
+        grid-template-columns: 0.9fr 0.576fr 1.624fr 1fr;
+    }
     .mp-only label {
         display: flex;
         flex-direction: column;
@@ -158,16 +166,18 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
         width: min(100%, 190px);
     }
     .mp-only .field-unidade-compra select {
-        width: 64%;
+        width: 100%;
     }
     .mp-only .span-4 { grid-column: 1 / -1; }
     @media (max-width: 900px) {
-        .mp-only.active { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        .mp-only__fields,
+        .mp-only__fields--primary { grid-template-columns: repeat(2, minmax(0, 1fr)); }
         .mp-only .span-2,
         .mp-only .span-4 { grid-column: 1 / -1; }
     }
     @media (max-width: 560px) {
-        .mp-only.active { grid-template-columns: 1fr; }
+        .mp-only__fields,
+        .mp-only__fields--primary { grid-template-columns: 1fr; }
         .mp-only input[type="date"] { width: 100%; }
     }
 </style>
@@ -243,6 +253,7 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
                 <strong>Recebimento inicial</strong>
                 <p class="panel-description" style="margin: 4px 0 0;">Registre o primeiro recebimento do produto no fornecedor para já aparecer no lançamento.</p>
             </div>
+            <div class="mp-only__fields mp-only__fields--primary">
             <label>
                 Quantidade de compra
                 <input type="number" step="0.001" min="0" name="recebimento_quantidade" placeholder="0">
@@ -263,6 +274,8 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
                 Data de entrega
                 <input type="date" name="recebimento_data_entrega">
             </label>
+            </div>
+            <div class="mp-only__fields">
             <label class="field-lote">
                 Lote
                 <input type="text" name="recebimento_lote" placeholder="Lote">
@@ -279,6 +292,7 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
                 Preço de compra
                 <input type="number" step="0.01" name="recebimento_preco" placeholder="0,00">
             </label>
+            </div>
         </div>
         <div class="form-actions" style="grid-column: 1 / -1; justify-content: flex-end;">
             <button class="button button-primary" type="submit">Salvar produto</button>
