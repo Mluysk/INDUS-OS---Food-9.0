@@ -302,11 +302,11 @@
     }
 
     .payment-option-pix {
-        width: 22px;
-        height: 18px;
-        object-fit: contain;
+        width: 19px;
+        height: 19px;
+        object-fit: cover;
         object-position: left center;
-        flex: 0 0 22px;
+        flex: 0 0 19px;
     }
 
     #pedido-form label:has(textarea[name="observacoes"]) {
