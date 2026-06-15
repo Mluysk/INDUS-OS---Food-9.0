@@ -1,19 +1,19 @@
 <script>
 (function () {
     const paymentOptions = [
-        ['PIX', 'PIX'],
-        ['Dinheiro', 'Dinheiro'],
-        ['Cartão de crédito', 'Cartão de crédito'],
-        ['Cartão de débito', 'Cartão de débito'],
-        ['Boleto', 'Boleto'],
-        ['TED', 'TED'],
-        ['Transferência bancária', 'Transferência bancária'],
-        ['Depósito bancário', 'Depósito bancário'],
-        ['Cheque', 'Cheque'],
-        ['Vale alimentação', 'Vale alimentação'],
-        ['Vale refeição', 'Vale refeição'],
-        ['A prazo', 'A prazo'],
-        ['Outros', 'Outros'],
+        ['PIX', 'PIX', '&#128179;'],
+        ['Dinheiro', 'Dinheiro', '&#128181;'],
+        ['Cartão de crédito', 'Cartão de crédito', '&#128179;'],
+        ['Cartão de débito', 'Cartão de débito', '&#128179;'],
+        ['Boleto', 'Boleto', '&#128196;'],
+        ['TED', 'TED', '&#127974;'],
+        ['Transferência bancária', 'Transferência bancária', '&#128257;'],
+        ['Depósito bancário', 'Depósito bancário', '&#127974;'],
+        ['Cheque', 'Cheque', '&#128221;'],
+        ['Vale alimentação', 'Vale alimentação', '&#127869;'],
+        ['Vale refeição', 'Vale refeição', '&#127860;'],
+        ['A prazo', 'A prazo', '&#128197;'],
+        ['Outros', 'Outros', '&#9679;'],
     ];
 
     const buildPaymentLabel = (id) => {
@@ -22,7 +22,7 @@
         label.innerHTML = `
             Opção de pagamento
             <select name="forma_pagto" id="${id}">
-                ${paymentOptions.map(([value, text]) => `<option value="${value}">${text}</option>`).join('')}
+                ${paymentOptions.map(([value, text, icon]) => `<option value="${value}">${icon} ${text}</option>`).join('')}
             </select>
         `;
         return label;
