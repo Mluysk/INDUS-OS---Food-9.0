@@ -61,8 +61,7 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
         line-height: 1.2;
     }
     #product-create-form .product-primary-field__hint.is-placeholder {
-        visibility: hidden;
-        user-select: none;
+        display: none;
     }
     #product-create-form .product-sku-sequence-hint {
         font-size: calc(1em - 5.3px);
