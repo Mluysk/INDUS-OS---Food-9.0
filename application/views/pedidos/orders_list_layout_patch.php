@@ -522,7 +522,7 @@ foreach (($pedidos ?? []) as $pedido) {
         return;
     }
 
-    const pedidoInfo = <?= json_encode($pedidoInfoMap, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP); ?> || {};
+    const pedidoInfo = window.pedidoInfoMap = <?= json_encode($pedidoInfoMap, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP); ?> || {};
     const tbody = panel.querySelector('.data-table tbody');
     if (!tbody) {
         return;
@@ -627,7 +627,7 @@ foreach (($pedidos ?? []) as $pedido) {
 
     const openInfoModal = (pedidoId) => {
         const modal = ensureInfoModal();
-        const info = pedidoInfo[String(pedidoId)] || pedidoInfo[pedidoId] || {};
+        const info = window.pedidoInfoMap?.[String(pedidoId)] || window.pedidoInfoMap?.[pedidoId] || pedidoInfo[String(pedidoId)] || pedidoInfo[pedidoId] || {};
         const subtitle = modal.querySelector('[data-info-subtitle]');
         if (subtitle) {
             subtitle.textContent = `Pedido #${pedidoId}`;
@@ -640,6 +640,7 @@ foreach (($pedidos ?? []) as $pedido) {
         });
         modal.hidden = false;
     };
+    window.openPedidoInfoModal = openInfoModal;
 
     const addInfoButton = (row) => {
         const group = row.querySelector('.pedido-action-buttons');

@@ -33,6 +33,51 @@
 
     const getRowId = (row) => Number(row?.getAttribute('data-sort-id') || row?.children?.[0]?.textContent || 0);
 
+    const iconButton = (button, icon, tooltip, extraClass = '') => {
+        if (!button || button.dataset.iconified === '1') {
+            return;
+        }
+        button.dataset.iconified = '1';
+        button.classList.add('pedido-icon-btn');
+        if (extraClass) {
+            button.classList.add(extraClass);
+        }
+        button.dataset.tooltip = tooltip;
+        button.setAttribute('aria-label', tooltip);
+        button.setAttribute('title', tooltip);
+        button.innerHTML = `<span data-lucide="${icon}" aria-hidden="true"></span>`;
+    };
+
+    const addInfoButton = (row) => {
+        const group = row.querySelector('.pedido-action-buttons');
+        if (!group || group.querySelector('.pedido-info-btn')) {
+            return;
+        }
+
+        const pedidoId = getRowId(row);
+        if (pedidoId <= 0) {
+            return;
+        }
+
+        window.pedidoInfoMap = window.pedidoInfoMap || {};
+        window.pedidoInfoMap[String(pedidoId)] = window.pedidoInfoMap[String(pedidoId)] || {
+            usuario: 'Não registrado',
+            horario: row.getAttribute('data-sort-created') || row.children?.[5]?.textContent?.trim() || '',
+            dispositivo: 'Web',
+            localidade: 'Não registrada',
+        };
+
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'pedido-info-btn';
+        button.dataset.tooltip = 'Informações';
+        button.setAttribute('aria-label', 'Informações');
+        button.setAttribute('title', 'Informações');
+        button.innerHTML = '<span data-lucide="info" aria-hidden="true"></span>';
+        button.addEventListener('click', () => window.openPedidoInfoModal?.(pedidoId));
+        group.appendChild(button);
+    };
+
     const addDeleteButton = (row) => {
         const group = row.querySelector('.pedido-action-buttons');
         const edit = row.querySelector('.pedido-edit-btn');
@@ -64,7 +109,10 @@
     };
 
     const enhancePedidoRow = (row) => {
+        iconButton(row.querySelector('.pedido-edit-btn'), 'pencil', 'Editar');
+        iconButton(row.querySelector('.nota-print-btn'), 'printer', 'Imprimir');
         addDeleteButton(row);
+        addInfoButton(row);
         if (window.lucide) {
             window.lucide.createIcons({ elements: row.querySelectorAll('[data-lucide]') });
         }
