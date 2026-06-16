@@ -88,6 +88,15 @@
                             <?php
                             $status = $pedido['status'] ?? 'novo';
                             $statusClass = $status === 'faturado' ? 'badge-success' : ($status === 'cancelado' ? 'badge-danger' : 'badge-warning');
+                            $statusMeta = [
+                                'aprovacao' => ['icon' => 'circle-check', 'label' => 'aprovação'],
+                                'producao' => ['icon' => 'factory', 'label' => 'produção'],
+                                'separacao' => ['icon' => 'package-check', 'label' => 'separação'],
+                                'expedicao' => ['icon' => 'truck', 'label' => 'expedição'],
+                                'faturado' => ['icon' => 'badge-check', 'label' => 'faturado'],
+                                'cancelado' => ['icon' => 'circle-x', 'label' => 'cancelado'],
+                            ];
+                            $statusInfo = $statusMeta[$status] ?? ['icon' => 'circle-dot', 'label' => $status];
                             $clienteLabel = $clienteMap[(int)($pedido['cliente_id'] ?? 0)]['nome_fantasia']
                                 ?? ($clienteMap[(int)($pedido['cliente_id'] ?? 0)]['razao_social'] ?? ($pedido['cliente_id'] ?? '-'));
                             $pedidoCodigo = (string)($pedido['codigo'] ?? '-');
@@ -107,7 +116,12 @@
                                 <td><?= (int)$pedido['id']; ?></td>
                                 <td><?= htmlspecialchars($pedidoCodigo, ENT_QUOTES, 'UTF-8'); ?></td>
                                 <td><?= htmlspecialchars($clienteLabel, ENT_QUOTES, 'UTF-8'); ?></td>
-                                <td><span class="badge <?= $statusClass; ?>"><?= htmlspecialchars($status, ENT_QUOTES, 'UTF-8'); ?></span></td>
+                                <td>
+                                    <span class="badge pedido-status-badge <?= $statusClass; ?>" data-status="<?= htmlspecialchars($status, ENT_QUOTES, 'UTF-8'); ?>">
+                                        <span class="pedido-status-icon" data-lucide="<?= htmlspecialchars($statusInfo['icon'], ENT_QUOTES, 'UTF-8'); ?>" aria-hidden="true"></span>
+                                        <span class="pedido-status-text"><?= htmlspecialchars($statusInfo['label'], ENT_QUOTES, 'UTF-8'); ?></span>
+                                    </span>
+                                </td>
                                 <td>R$ <?= number_format($pedidoTotal, 2, ',', '.'); ?></td>
                                 <td><?= htmlspecialchars($pedidoCreated, ENT_QUOTES, 'UTF-8'); ?></td>
                                 <td class="action-cell">

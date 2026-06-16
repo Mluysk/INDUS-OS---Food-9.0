@@ -48,6 +48,33 @@
         button.innerHTML = `<span data-lucide="${icon}" aria-hidden="true"></span>`;
     };
 
+    const statusMeta = {
+        aprovacao: { icon: 'circle-check', label: 'aprovação' },
+        producao: { icon: 'factory', label: 'produção' },
+        separacao: { icon: 'package-check', label: 'separação' },
+        expedicao: { icon: 'truck', label: 'expedição' },
+        faturado: { icon: 'badge-check', label: 'faturado' },
+        cancelado: { icon: 'circle-x', label: 'cancelado' },
+    };
+
+    const renderStatusBadge = (badge, status) => {
+        if (!badge) {
+            return;
+        }
+
+        const key = String(status || '').trim().toLocaleLowerCase('pt-BR');
+        const meta = statusMeta[key] || { icon: 'circle-dot', label: key || 'novo' };
+        badge.dataset.status = key;
+        badge.classList.add('pedido-status-badge');
+        badge.innerHTML = `
+            <span class="pedido-status-icon" data-lucide="${meta.icon}" aria-hidden="true"></span>
+            <span class="pedido-status-text">${meta.label}</span>
+        `;
+        if (window.lucide) {
+            window.lucide.createIcons({ elements: badge.querySelectorAll('[data-lucide]') });
+        }
+    };
+
     const addInfoButton = (row) => {
         const group = row.querySelector('.pedido-action-buttons');
         if (!group || group.querySelector('.pedido-info-btn')) {
@@ -125,6 +152,8 @@
 
     const enhancePedidoRow = (row) => {
         formatPedidoCreatedCell(row);
+        const badge = row.querySelector('.badge');
+        renderStatusBadge(badge, badge?.dataset.status || badge?.textContent);
         iconButton(row.querySelector('.pedido-edit-btn'), 'pencil', 'Editar');
         iconButton(row.querySelector('.nota-print-btn'), 'printer', 'Imprimir');
         addDeleteButton(row);
@@ -193,7 +222,7 @@
         if (badge) {
             badge.classList.remove('badge-danger', 'badge-warning', 'badge-success');
             badge.classList.add('badge-warning');
-            badge.textContent = 'producao';
+            renderStatusBadge(badge, 'producao');
         }
 
         form.remove();

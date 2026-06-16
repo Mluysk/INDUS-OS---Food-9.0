@@ -214,6 +214,62 @@ foreach (($pedidos ?? []) as $pedido) {
         letter-spacing: 0;
     }
 
+    #panel-lista-pedidos .pedido-status-badge {
+        display: inline-flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+        min-width: 74px;
+        color: var(--text, #020617) !important;
+        text-align: center;
+        line-height: 1.05;
+    }
+
+    #panel-lista-pedidos .pedido-status-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 24px;
+        height: 24px;
+        border-radius: 999px;
+        color: var(--primary, #dc2626);
+        background: color-mix(in srgb, var(--primary, #dc2626) 12%, #fff);
+    }
+
+    #panel-lista-pedidos .pedido-status-icon svg,
+    #panel-lista-pedidos .pedido-status-icon[data-lucide] {
+        width: 15px;
+        height: 15px;
+        stroke-width: 2.4;
+    }
+
+    #panel-lista-pedidos .pedido-status-badge[data-status="producao"] .pedido-status-icon,
+    #panel-lista-pedidos .pedido-status-badge[data-status="separacao"] .pedido-status-icon,
+    #panel-lista-pedidos .pedido-status-badge[data-status="expedicao"] .pedido-status-icon {
+        color: #2563eb;
+        background: #dbeafe;
+    }
+
+    #panel-lista-pedidos .pedido-status-badge[data-status="faturado"] .pedido-status-icon {
+        color: #059669;
+        background: #d1fae5;
+    }
+
+    #panel-lista-pedidos .pedido-status-badge[data-status="cancelado"] .pedido-status-icon {
+        color: #dc2626;
+        background: #fee2e2;
+    }
+
+    #panel-lista-pedidos .pedido-status-text {
+        display: block;
+        color: var(--text, #020617);
+        font-size: 0.82rem;
+        font-weight: 500;
+        text-transform: none;
+        letter-spacing: 0;
+    }
+
     #panel-lista-pedidos .pedido-actions {
         display: flex;
         flex-direction: column;
