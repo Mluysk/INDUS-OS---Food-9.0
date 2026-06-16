@@ -63,7 +63,10 @@
         <div class="pedido-list-toolbar">
             <label class="pedido-list-search">
                 <span>Buscar pedidos</span>
-                <input type="search" data-pedido-list-search placeholder="Buscar por loja, codigo, data ou valor">
+                <span class="pedido-list-search-box">
+                    <span data-lucide="search" aria-hidden="true"></span>
+                    <input type="search" data-pedido-list-search placeholder="Buscar por loja, codigo, data ou valor">
+                </span>
             </label>
         </div>
         <div style="overflow-x: auto;">
@@ -809,13 +812,43 @@
         font-weight: 800;
     }
 
-    .pedido-list-search input {
+    .pedido-list-search > span:first-child {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+    }
+
+    .pedido-list-search-box {
+        display: flex;
+        align-items: center;
+        gap: 0.62rem;
         min-height: 42px;
         border: 1px solid var(--border, #e5e7eb);
         border-radius: 999px;
-        padding: 0.55rem 1rem;
-        color: var(--text, #111827);
+        padding: 0.55rem 1.05rem;
         background: var(--surface, #fff);
+        box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+    }
+
+    .pedido-list-search-box [data-lucide] {
+        width: 19px;
+        height: 19px;
+        flex: 0 0 auto;
+        color: var(--text-muted, #64748b);
+        stroke-width: 2.2;
+    }
+
+    .pedido-list-search input {
+        width: 100%;
+        min-width: 0;
+        border: 0;
+        padding: 0;
+        color: var(--text, #111827);
+        background: transparent;
+        outline: 0;
         font-weight: 800;
     }
 
