@@ -113,9 +113,6 @@
         iconButton(row.querySelector('.nota-print-btn'), 'printer', 'Imprimir');
         addDeleteButton(row);
         addInfoButton(row);
-        if (window.lucide) {
-            window.lucide.createIcons({ elements: row.querySelectorAll('[data-lucide]') });
-        }
     };
 
     const refreshPedidoList = async () => {
@@ -152,12 +149,20 @@
             const imported = document.importNode(freshRow, true);
             enhancePedidoRow(imported);
             tableBody.insertBefore(imported, firstCurrentRow);
+            if (window.lucide) {
+                window.lucide.createIcons({ elements: imported.querySelectorAll('[data-lucide]') });
+            }
             knownIds.add(id);
             inserted += 1;
         });
 
         if (inserted > 0) {
             tableBody.querySelector('[data-pedido-empty]')?.remove();
+            window.setTimeout(() => {
+                if (window.lucide) {
+                    window.lucide.createIcons({ elements: tableBody.querySelectorAll('tr[data-pedido-row] [data-lucide]') });
+                }
+            }, 0);
         }
         applyPedidoSearch();
     };
