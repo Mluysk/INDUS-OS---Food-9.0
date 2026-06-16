@@ -18,3 +18,4 @@ include __DIR__.'/orders_delete_fix_patch.php';
 include __DIR__.'/orders_list_layout_patch.php';
 include __DIR__.'/orders_list_compact_fix_patch.php';
 include __DIR__.'/pix_list_config_patch.php';
+include __DIR__.'/orders_live_refresh_patch.php';
