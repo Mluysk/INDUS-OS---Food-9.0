@@ -108,7 +108,23 @@
         group.appendChild(link);
     };
 
+    const formatPedidoCreatedCell = (row) => {
+        const cell = row.children?.[5];
+        if (!cell || cell.querySelector('.pedido-created-at')) {
+            return;
+        }
+
+        const text = (cell.textContent || '').trim();
+        const match = text.match(/^(\d{4}-\d{2}-\d{2})\s+(\d{2}:\d{2}(?::\d{2})?)$/);
+        if (!match) {
+            return;
+        }
+
+        cell.innerHTML = `<span class="pedido-created-at"><span class="pedido-created-date">${match[1]}</span><span class="pedido-created-time">${match[2]}</span></span>`;
+    };
+
     const enhancePedidoRow = (row) => {
+        formatPedidoCreatedCell(row);
         iconButton(row.querySelector('.pedido-edit-btn'), 'pencil', 'Editar');
         iconButton(row.querySelector('.nota-print-btn'), 'printer', 'Imprimir');
         addDeleteButton(row);
