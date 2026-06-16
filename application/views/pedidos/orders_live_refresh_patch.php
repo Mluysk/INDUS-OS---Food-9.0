@@ -185,6 +185,50 @@
         applyPedidoSearch();
     };
 
+    const liveDeletePedido = async (link) => {
+        const row = link.closest('tr[data-pedido-row]');
+        if (!row || link.dataset.deleting === '1') {
+            return;
+        }
+
+        link.dataset.deleting = '1';
+        link.setAttribute('aria-busy', 'true');
+        link.classList.add('is-saving-live');
+
+        try {
+            const response = await fetch(link.href, {
+                method: 'GET',
+                credentials: 'same-origin',
+                headers: {
+                    'Accept': 'text/html',
+                    'X-Requested-With': 'XMLHttpRequest',
+                },
+            });
+
+            if (response.redirected && /\/login(?:\/|$|\?)/i.test(response.url)) {
+                window.location.href = response.url;
+                return;
+            }
+
+            const html = await response.text().catch(() => '');
+            const parsed = html ? new DOMParser().parseFromString(html, 'text/html') : null;
+            const error = parsed?.querySelector('.alert-error .alert-message')?.textContent?.trim();
+            if (!response.ok || error) {
+                throw new Error(error || 'Nao foi possivel excluir o pedido.');
+            }
+
+            row.remove();
+            applyPedidoSearch();
+            window.showAppToast?.('Pedido excluido com sucesso.', 'success');
+        } catch (error) {
+            window.showAppToast?.(error?.message || 'Nao foi possivel excluir o pedido.', 'error');
+        } finally {
+            link.classList.remove('is-saving-live');
+            link.removeAttribute('aria-busy');
+            delete link.dataset.deleting;
+        }
+    };
+
     document.addEventListener('submit', async (event) => {
         const form = event.target;
         if (!(form instanceof HTMLFormElement)) {
@@ -274,6 +318,22 @@
         }
 
         window.open(`${basePedidos}/${pedidoId}/nota?${params.toString()}`, '_blank', 'noopener');
+    }, true);
+
+    document.addEventListener('click', (event) => {
+        const link = event.target instanceof Element ? event.target.closest('.pedido-delete-link') : null;
+        if (!link) {
+            return;
+        }
+
+        event.preventDefault();
+        event.stopImmediatePropagation();
+
+        if (!window.confirm('Tem certeza que deseja excluir este pedido?')) {
+            return;
+        }
+
+        liveDeletePedido(link);
     }, true);
 
     window.addEventListener('app:live-saved', (event) => {
