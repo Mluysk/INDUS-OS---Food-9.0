@@ -1154,6 +1154,31 @@ $brandTitleOffsetY = (int)($theme['title_offset_y'] ?? 0);
             color: var(--text);
             font-size: 0.95rem;
         }
+        input[type="search"]:focus {
+            outline: 0 !important;
+            border-color: var(--primary) !important;
+            box-shadow: var(--primary-glow), 0 12px 26px -22px rgba(var(--primary-rgb), 0.74) !important;
+        }
+        .sidebar-search:focus-within,
+        .pedido-list-search-box:focus-within,
+        .history-search-box:focus-within,
+        .cliente-search-wrap:focus-within,
+        .produto-search-wrap:focus-within,
+        .finance-list-search:focus-within input,
+        .filter-grid label:focus-within input[type="search"],
+        .stock-filters .search-group:focus-within input[type="search"] {
+            border-color: var(--primary) !important;
+            box-shadow: var(--primary-glow), 0 12px 26px -22px rgba(var(--primary-rgb), 0.74) !important;
+        }
+        .sidebar-search:focus-within .icon,
+        .pedido-list-search-box:focus-within [data-lucide],
+        .history-search-box:focus-within [data-lucide],
+        .cliente-search-wrap:focus-within [data-lucide],
+        .produto-search-wrap:focus-within [data-lucide],
+        .finance-list-search:focus-within .icon {
+            color: var(--primary) !important;
+            stroke: currentColor !important;
+        }
         textarea {
             resize: vertical;
         }
