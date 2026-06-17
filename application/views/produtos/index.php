@@ -128,6 +128,43 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
         outline: 0;
         font-weight: 800;
     }
+    [data-tab-panel="historico-preco"] > .panel-header {
+        position: relative;
+    }
+    #history-product-title {
+        position: absolute;
+        left: 50%;
+        top: 24px;
+        transform: translateX(-50%);
+        max-width: 34%;
+        color: var(--text, #111827);
+        font-size: 0.98rem;
+        font-weight: 900;
+        line-height: 1.15;
+        text-align: center;
+        overflow-wrap: anywhere;
+    }
+    #history-back {
+        gap: 8px;
+    }
+    #history-back .icon {
+        width: 17px;
+        height: 17px;
+        flex: 0 0 17px;
+    }
+    @media (max-width: 900px) {
+        [data-tab-panel="historico-preco"] > .panel-header {
+            gap: 14px;
+        }
+        #history-product-title {
+            position: static;
+            transform: none;
+            max-width: 100%;
+            order: 2;
+            width: 100%;
+            text-align: left;
+        }
+    }
     .history-filter select {
         border: 1px solid var(--border-muted, #e5e7eb);
         border-radius: 10px;
@@ -1180,6 +1217,15 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
 
         if (!form || !tbody || !table) {
             return;
+        }
+
+        if (historyBack) {
+            historyBack.innerHTML = '<span class="icon" data-lucide="arrow-left" aria-hidden="true"></span><span>Voltar</span>';
+            historyBack.setAttribute('aria-label', 'Voltar');
+            historyBack.setAttribute('title', 'Voltar');
+            if (window.lucide) {
+                window.lucide.createIcons({ elements: historyBack.querySelectorAll('[data-lucide]') });
+            }
         }
 
         const state = {
