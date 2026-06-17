@@ -97,8 +97,37 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
     .history-title { font-weight: 700; }
     .history-meta { font-size: 0.82rem; color: var(--text-muted, #64748b); font-weight: 600; }
     .history-actions { display: inline-flex; gap: 8px; }
-    .history-filter { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 12px; }
-    .history-filter input,
+    .history-filter { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 12px; align-items: center; }
+    .history-search-box {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.62rem;
+        width: min(100%, 320px);
+        min-height: 42px;
+        border: 1px solid var(--border-muted, #e5e7eb);
+        border-radius: 999px;
+        padding: 0.55rem 1.05rem;
+        background: var(--surface, #fff);
+        color: var(--text-muted, #64748b);
+        box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+    }
+    .history-search-box [data-lucide] {
+        width: 19px;
+        height: 19px;
+        flex: 0 0 auto;
+        color: currentColor;
+        stroke-width: 2.2;
+    }
+    .history-search-box input {
+        width: 100%;
+        min-width: 0;
+        border: 0;
+        padding: 0;
+        background: transparent;
+        color: var(--text, #111827);
+        outline: 0;
+        font-weight: 800;
+    }
     .history-filter select {
         border: 1px solid var(--border-muted, #e5e7eb);
         border-radius: 10px;
@@ -903,7 +932,10 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
             }
         ?>
         <div class="history-filter">
-            <input type="search" id="history-search" placeholder="Buscar produto">
+            <span class="history-search-box">
+                <span data-lucide="search" aria-hidden="true"></span>
+                <input type="search" id="history-search" placeholder="Buscar produto">
+            </span>
             <select id="history-filter">
                 <option value="ALL">Todos</option>
                 <option value="COM">Com histórico</option>
