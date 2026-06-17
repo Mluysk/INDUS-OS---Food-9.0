@@ -1182,6 +1182,42 @@ $brandTitleOffsetY = (int)($theme['title_offset_y'] ?? 0);
             border-color: var(--primary);
             color: var(--primary);
         }
+        body.theme-dark .tab-button:not(.active),
+        body.theme-dark .button-outline,
+        body.theme-dark .btn-outline,
+        body.theme-dark .print-link {
+            background: rgba(15, 23, 42, 0.74) !important;
+            border-color: rgba(148, 163, 184, 0.24) !important;
+            color: var(--text) !important;
+            box-shadow: none;
+        }
+        body.theme-dark .tab-button:not(.active) .icon,
+        body.theme-dark .tab-button:not(.active) [data-lucide],
+        body.theme-dark .button-outline [data-lucide],
+        body.theme-dark .btn-outline [data-lucide],
+        body.theme-dark .print-link [data-lucide],
+        body.theme-dark .print-link svg {
+            color: currentColor !important;
+            stroke: currentColor !important;
+        }
+        body.theme-dark .tab-button:not(.active):hover,
+        body.theme-dark .button-outline:hover,
+        body.theme-dark .btn-outline:hover,
+        body.theme-dark .print-link:hover {
+            background: rgba(30, 41, 59, 0.92) !important;
+            border-color: rgba(var(--primary-rgb), 0.6) !important;
+            color: #fff !important;
+        }
+        body.theme-dark .tab-button.active,
+        body.theme-dark .tab-button.active .icon,
+        body.theme-dark .tab-button.active [data-lucide] {
+            color: #fff !important;
+            stroke: currentColor !important;
+        }
+        body.theme-dark .print-link--simple .print-link__badge {
+            border-color: rgba(15, 23, 42, 0.9) !important;
+            color: #fff !important;
+        }
         .data-table {
             width: 100%;
             border-collapse: collapse;
