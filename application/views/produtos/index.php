@@ -134,7 +134,7 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
     #history-product-title {
         position: absolute;
         left: 50%;
-        top: 24px;
+        top: 6px;
         transform: translateX(-50%);
         max-width: 34%;
         color: var(--text, #111827);
