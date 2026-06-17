@@ -17,9 +17,9 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
         gap: 9px;
     }
     .product-section-title .icon {
-        width: 22px;
-        height: 22px;
-        flex: 0 0 22px;
+        width: 29px;
+        height: 29px;
+        flex: 0 0 29px;
         color: var(--primary, #4b5563);
         stroke-width: 2.2;
     }

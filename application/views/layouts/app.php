@@ -1078,6 +1078,28 @@ $brandTitleOffsetY = (int)($theme['title_offset_y'] ?? 0);
             margin-bottom: 6px;
             font-size: 1.4rem;
         }
+        .module-section-title {
+            display: inline-flex !important;
+            align-items: center;
+            gap: 9px;
+        }
+        .module-section-title .module-section-title-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 29px;
+            height: 29px;
+            flex: 0 0 29px;
+            color: var(--primary);
+            background: transparent;
+            line-height: 1;
+        }
+        .module-section-title .module-section-title-icon [data-lucide],
+        .module-section-title .module-section-title-icon svg {
+            width: 29px;
+            height: 29px;
+            stroke-width: 2.15;
+        }
         .panel-description {
             margin: 0 0 18px;
             color: var(--text-muted);
@@ -2531,6 +2553,91 @@ $brandTitleOffsetY = (int)($theme['title_offset_y'] ?? 0);
         }
     });
 
+    const applyModuleTitleIcons = () => {
+        const iconMap = new Map([
+            ['acoes rapidas', 'zap'],
+            ['alertas criticos', 'alert-triangle'],
+            ['visao geral do sci', 'layout-dashboard'],
+            ['pedidos ativos', 'shopping-cart'],
+            ['produtos', 'package'],
+            ['clientes', 'users'],
+            ['proximos passos', 'list-checks'],
+            ['entrada', 'arrow-down-circle'],
+            ['saida', 'arrow-up-circle'],
+            ['resumo', 'pie-chart'],
+            ['comparativo', 'activity'],
+            ['participacao', 'pie-chart'],
+            ['comparacao dos periodos', 'activity'],
+            ['exportacao', 'download'],
+            ['demonstracao simplificada', 'bar-chart-3'],
+            ['receitas', 'trending-up'],
+            ['despesas', 'trending-down'],
+            ['resultado', 'circle-dollar-sign'],
+            ['picking do pedido', 'clipboard-list'],
+            ['alertas de validade', 'calendar'],
+            ['posicao atual', 'boxes'],
+            ['estoque avancada', 'boxes'],
+            ['mapa diario de producao, saidas e metas', 'map'],
+            ['mapa completo de producao, saidas e estoque', 'map'],
+            ['novo cliente', 'user-plus'],
+            ['clientes cadastrados', 'users'],
+            ['nova receita', 'book-open'],
+            ['editar receita', 'book-open'],
+            ['ingredientes', 'utensils'],
+            ['executar receita', 'play-circle'],
+            ['execucoes da receita', 'history'],
+            ['receitas (bom)', 'book-open'],
+            ['gerar romaneio', 'clipboard-list'],
+            ['pedidos em fila', 'list-checks'],
+            ['pedidos', 'shopping-cart'],
+            ['novo pedido interno', 'shopping-cart'],
+            ['lista de pedidos', 'list-checks'],
+            ['gerar saida do dia', 'calendar'],
+            ['ficha tecnica', 'clipboard-list'],
+            ['componentes', 'boxes'],
+            ['ordem de producao', 'factory'],
+            ['producao do dia', 'calendar'],
+        ]);
+
+        const normalizeTitle = (value) => String(value || '')
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '')
+            .replace(/\s+#\d+.*$/i, '')
+            .replace(/\s+/g, ' ')
+            .trim()
+            .toLocaleLowerCase('pt-BR');
+
+        document.querySelectorAll('.page-content h2, .page-content h3').forEach((title) => {
+            if (title.dataset.autoTitleIcon === '1' || title.querySelector('[data-lucide], svg, img, .icon, .module-section-title-icon')) {
+                return;
+            }
+
+            const rawText = title.textContent || '';
+            const normalized = normalizeTitle(rawText);
+            const directIcon = iconMap.get(normalized);
+            const fallbackIcon = Array.from(iconMap.entries()).find(([key]) => normalized.startsWith(key))?.[1];
+            const icon = directIcon || fallbackIcon;
+            if (!icon) {
+                return;
+            }
+
+            title.dataset.autoTitleIcon = '1';
+            title.classList.add('module-section-title');
+            title.textContent = '';
+
+            const iconWrap = document.createElement('span');
+            iconWrap.className = 'module-section-title-icon';
+            iconWrap.setAttribute('aria-hidden', 'true');
+            iconWrap.innerHTML = `<span data-lucide="${icon}"></span>`;
+
+            const text = document.createElement('span');
+            text.textContent = rawText.trim();
+
+            title.append(iconWrap, text);
+        });
+    };
+
+    applyModuleTitleIcons();
     if (window.lucide) {
         lucide.createIcons();
     }
