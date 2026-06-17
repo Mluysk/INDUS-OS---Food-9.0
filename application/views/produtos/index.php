@@ -11,6 +11,18 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
     .tab-button .icon { width: 16px; height: 16px; flex: 0 0 16px; }
     .tab-button.active { background: var(--primary, #4b5563); color: #fff; border-color: transparent; }
     .tab-button[data-tab="historico-preco"] { display: none; }
+    .product-section-title {
+        display: inline-flex;
+        align-items: center;
+        gap: 9px;
+    }
+    .product-section-title .icon {
+        width: 22px;
+        height: 22px;
+        flex: 0 0 22px;
+        color: var(--primary, #4b5563);
+        stroke-width: 2.2;
+    }
     .tab-panel { display: none; }
     .tab-panel.active { display: block; }
     .product-status-filter {
@@ -260,7 +272,7 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
 </div>
 
 <section class="panel tab-panel active" data-tab-panel="cadastro">
-    <h2>Novo produto</h2>
+    <h2 class="product-section-title"><span class="icon" data-lucide="package-plus" aria-hidden="true"></span><span>Novo produto</span></h2>
     <p class="panel-description">Cadastre produtos acabados (PA) e matérias-primas (MP) com SKU único.</p>
     <form method="post" action="<?= htmlspecialchars($url('produtos'), ENT_QUOTES, 'UTF-8'); ?>" class="form-grid" id="product-create-form">
         <label class="product-primary-field">
@@ -361,7 +373,7 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
 <section class="panel tab-panel" data-tab-panel="lista">
     <div class="panel-header row-between">
         <div>
-            <h2>Catálogo interno</h2>
+            <h2 class="product-section-title"><span class="icon" data-lucide="list" aria-hidden="true"></span><span>Catálogo interno</span></h2>
             <p class="panel-description">Produtos acabados (PA) e matérias-primas (MP) disponíveis para pedidos e produção.</p>
         </div>
         <div class="panel-actions">
@@ -779,7 +791,7 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
 <section class="panel tab-panel" data-tab-panel="lancamento">
     <div class="panel-header row-between">
         <div>
-            <h2>Lançamento</h2>
+            <h2 class="product-section-title"><span class="icon" data-lucide="package-open" aria-hidden="true"></span><span>Lançamento</span></h2>
             <p class="panel-description">Selecione um produto cadastrado e atualize fornecedor, lote e datas quando novas entregas chegarem.</p>
         </div>
         <div class="panel-actions">
@@ -929,7 +941,7 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
     <div class="panel-header row-between">
         <div>
             <div class="history-title" id="history-product-title">Produto</div>
-            <h2>Histórico de preço</h2>
+            <h2 class="product-section-title"><span class="icon" data-lucide="history" aria-hidden="true"></span><span>Histórico de preço</span></h2>
             <p class="panel-description">Selecione um produto na lista para ver o histórico completo.</p>
         </div>
         <div class="panel-actions">
