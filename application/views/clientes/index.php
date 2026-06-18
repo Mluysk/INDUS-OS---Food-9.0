@@ -124,10 +124,36 @@
     </div>
     <?php
         $clienteCidades = [];
+        $normalizarCidadeFiltro = static function (string $cidade): string {
+            $cidade = trim($cidade);
+            $cidade = strtr($cidade, [
+                'Á' => 'A', 'À' => 'A', 'Â' => 'A', 'Ã' => 'A', 'Ä' => 'A',
+                'á' => 'a', 'à' => 'a', 'â' => 'a', 'ã' => 'a', 'ä' => 'a',
+                'É' => 'E', 'È' => 'E', 'Ê' => 'E', 'Ë' => 'E',
+                'é' => 'e', 'è' => 'e', 'ê' => 'e', 'ë' => 'e',
+                'Í' => 'I', 'Ì' => 'I', 'Î' => 'I', 'Ï' => 'I',
+                'í' => 'i', 'ì' => 'i', 'î' => 'i', 'ï' => 'i',
+                'Ó' => 'O', 'Ò' => 'O', 'Ô' => 'O', 'Õ' => 'O', 'Ö' => 'O',
+                'ó' => 'o', 'ò' => 'o', 'ô' => 'o', 'õ' => 'o', 'ö' => 'o',
+                'Ú' => 'U', 'Ù' => 'U', 'Û' => 'U', 'Ü' => 'U',
+                'ú' => 'u', 'ù' => 'u', 'û' => 'u', 'ü' => 'u',
+                'Ç' => 'C', 'ç' => 'c',
+            ]);
+            $cidade = strtolower($cidade);
+            $cidade = preg_replace('/[^a-z0-9]+/', ' ', $cidade) ?? $cidade;
+            return trim($cidade);
+        };
         foreach (($clientes ?? []) as $clienteCidadeItem) {
             $cidadeOption = trim((string)($clienteCidadeItem['cidade'] ?? ''));
             if ($cidadeOption !== '') {
-                $clienteCidades[$cidadeOption] = $cidadeOption;
+                $cidadeKey = $normalizarCidadeFiltro($cidadeOption);
+                if ($cidadeKey === '') {
+                    continue;
+                }
+                $cidadeAtual = $clienteCidades[$cidadeKey] ?? '';
+                if ($cidadeAtual === '' || ($cidadeAtual === strtoupper($cidadeAtual) && $cidadeOption !== strtoupper($cidadeOption))) {
+                    $clienteCidades[$cidadeKey] = $cidadeOption;
+                }
             }
         }
         natcasesort($clienteCidades);
@@ -145,8 +171,8 @@
             <span>Cidade</span>
             <select data-clientes-city-filter>
                 <option value="">Todas as cidades</option>
-                <?php foreach ($clienteCidades as $cidadeOption): ?>
-                    <option value="<?= htmlspecialchars($cidadeOption, ENT_QUOTES, 'UTF-8'); ?>"><?= htmlspecialchars($cidadeOption, ENT_QUOTES, 'UTF-8'); ?></option>
+                <?php foreach ($clienteCidades as $cidadeKey => $cidadeOption): ?>
+                    <option value="<?= htmlspecialchars($cidadeKey, ENT_QUOTES, 'UTF-8'); ?>"><?= htmlspecialchars($cidadeOption, ENT_QUOTES, 'UTF-8'); ?></option>
                 <?php endforeach; ?>
             </select>
         </label>
