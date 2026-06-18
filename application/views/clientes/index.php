@@ -660,6 +660,11 @@
         font-weight: 800;
     }
 
+    .clientes-search-box input:focus {
+        border: 0 !important;
+        box-shadow: none !important;
+    }
+
     .clientes-filter-field {
         display: grid;
         gap: 5px;
