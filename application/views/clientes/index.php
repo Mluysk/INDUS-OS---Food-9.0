@@ -122,6 +122,35 @@
             </a>
         </div>
     </div>
+    <?php
+        $clienteCidades = [];
+        foreach (($clientes ?? []) as $clienteCidadeItem) {
+            $cidadeOption = trim((string)($clienteCidadeItem['cidade'] ?? ''));
+            if ($cidadeOption !== '') {
+                $clienteCidades[$cidadeOption] = $cidadeOption;
+            }
+        }
+        natcasesort($clienteCidades);
+    ?>
+    <div class="clientes-filter-bar" aria-label="Filtros da lista de clientes">
+        <label class="clientes-search-box">
+            <span class="icon" data-lucide="search" aria-hidden="true"></span>
+            <input type="search" data-clientes-search placeholder="Buscar por nome, CPF/CNPJ, contato ou cidade" aria-label="Buscar clientes">
+        </label>
+        <label class="clientes-filter-field">
+            <span>Nome</span>
+            <input type="search" data-clientes-name-filter placeholder="Filtrar nome">
+        </label>
+        <label class="clientes-filter-field clientes-filter-field--city">
+            <span>Cidade</span>
+            <select data-clientes-city-filter>
+                <option value="">Todas as cidades</option>
+                <?php foreach ($clienteCidades as $cidadeOption): ?>
+                    <option value="<?= htmlspecialchars($cidadeOption, ENT_QUOTES, 'UTF-8'); ?>"><?= htmlspecialchars($cidadeOption, ENT_QUOTES, 'UTF-8'); ?></option>
+                <?php endforeach; ?>
+            </select>
+        </label>
+    </div>
     <div style="overflow-x: auto;">
         <table class="data-table clientes-table">
             <thead>
@@ -138,7 +167,19 @@
             <tbody data-clientes-tbody>
                 <?php if ($clientes): ?>
                     <?php foreach ($clientes as $cliente): ?>
-                        <tr>
+                        <?php
+                            $clienteNomeBusca = trim((string)(($cliente['razao_social'] ?? '').' '.($cliente['nome_fantasia'] ?? '')));
+                            $clienteDocBusca = trim((string)(($cliente['cnpj'] ?? '').' '.($cliente['cpf'] ?? '')));
+                            $clienteContatoBusca = trim((string)(($cliente['telefone'] ?? '').' '.($cliente['whatsapp'] ?? '').' '.($cliente['email'] ?? '')));
+                            $clienteCidadeBusca = trim((string)(($cliente['cidade'] ?? '').' '.($cliente['estado'] ?? '')));
+                            $clienteBuscaGeral = trim($clienteNomeBusca.' '.$clienteDocBusca.' '.$clienteContatoBusca.' '.$clienteCidadeBusca);
+                        ?>
+                        <tr
+                            data-cliente-row
+                            data-cliente-search="<?= htmlspecialchars($clienteBuscaGeral, ENT_QUOTES, 'UTF-8'); ?>"
+                            data-cliente-name="<?= htmlspecialchars($clienteNomeBusca, ENT_QUOTES, 'UTF-8'); ?>"
+                            data-cliente-city="<?= htmlspecialchars((string)($cliente['cidade'] ?? ''), ENT_QUOTES, 'UTF-8'); ?>"
+                        >
                             <td><?= (int)$cliente['id']; ?></td>
                             <td><?= htmlspecialchars($cliente['razao_social'] ?? $cliente['nome_fantasia'] ?? '', ENT_QUOTES, 'UTF-8'); ?></td>
                             <td><?= htmlspecialchars($cliente['cnpj'] ?? '-', ENT_QUOTES, 'UTF-8'); ?></td>
@@ -552,6 +593,83 @@
         gap: 0.45rem;
     }
 
+    .clientes-filter-bar {
+        display: flex;
+        align-items: flex-end;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin: 4px 0 16px;
+    }
+
+    .clientes-search-box {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.62rem;
+        width: min(100%, 420px);
+        min-height: 42px;
+        border: 1px solid var(--border, #e5e7eb);
+        border-radius: 999px;
+        padding: 0.55rem 1.05rem;
+        background: var(--surface, #fff);
+        color: var(--text-muted, #64748b);
+        box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+    }
+
+    .clientes-search-box .icon {
+        width: 19px;
+        height: 19px;
+        flex: 0 0 19px;
+        color: currentColor;
+        stroke-width: 2.2;
+    }
+
+    .clientes-search-box input {
+        width: 100%;
+        min-width: 0;
+        border: 0;
+        padding: 0;
+        background: transparent;
+        color: var(--text, #111827);
+        outline: 0;
+        font-weight: 800;
+    }
+
+    .clientes-filter-field {
+        display: grid;
+        gap: 5px;
+        min-width: 190px;
+        color: var(--text-muted, #64748b);
+        font-size: 0.78rem;
+        font-weight: 800;
+    }
+
+    .clientes-filter-field input,
+    .clientes-filter-field select {
+        min-height: 42px;
+        border: 1px solid var(--border, #e5e7eb);
+        border-radius: 14px;
+        padding: 0.55rem 0.85rem;
+        background: var(--surface, #fff);
+        color: var(--text, #111827);
+        font-weight: 800;
+        outline: 0;
+    }
+
+    .clientes-filter-field--city {
+        min-width: 220px;
+    }
+
+    .clientes-filter-field input:focus,
+    .clientes-filter-field select:focus,
+    .clientes-search-box:focus-within {
+        border-color: var(--primary, #4f46e5);
+        box-shadow: var(--primary-glow, 0 0 0 3px rgba(79, 70, 229, 0.20)), 0 12px 26px -22px rgba(var(--primary-rgb, 79, 70, 229), 0.74);
+    }
+
+    .clientes-search-box:focus-within .icon {
+        color: var(--primary, #4f46e5);
+    }
+
     .clientes-table .table-actions {
         text-align: right;
         white-space: nowrap;
@@ -905,9 +1023,32 @@
     const pageSizeDefault = <?= json_encode((int)($listPageSizeDefault ?? 15)); ?>;
     const paginationTarget = document.querySelector('[data-list-pagination="clientes"]');
     const clientesTbody = document.querySelector('[data-clientes-tbody]');
+    const clientesSearch = document.querySelector('[data-clientes-search]');
+    const clientesNameFilter = document.querySelector('[data-clientes-name-filter]');
+    const clientesCityFilter = document.querySelector('[data-clientes-city-filter]');
     const paginationState = {
         page: 1,
         perPage: pageSizeOptions.includes(pageSizeDefault) ? pageSizeDefault : (pageSizeOptions[0] || 15)
+    };
+    const normalizeClienteFilter = (value) => String(value || '')
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .toLocaleLowerCase('pt-BR')
+        .trim();
+    const applyClientesFilters = () => {
+        if (!clientesTbody) {
+            return;
+        }
+
+        const general = normalizeClienteFilter(clientesSearch?.value || '');
+        const name = normalizeClienteFilter(clientesNameFilter?.value || '');
+        const city = normalizeClienteFilter(clientesCityFilter?.value || '');
+        Array.from(clientesTbody.querySelectorAll('tr[data-cliente-row]')).forEach((row) => {
+            const matchesGeneral = !general || normalizeClienteFilter(row.dataset.clienteSearch || '').includes(general);
+            const matchesName = !name || normalizeClienteFilter(row.dataset.clienteName || '').includes(name);
+            const matchesCity = !city || normalizeClienteFilter(row.dataset.clienteCity || '') === city;
+            row.dataset.clientMatches = matchesGeneral && matchesName && matchesCity ? '1' : '0';
+        });
     };
     const pageWindow = (currentPage, totalPages) => {
         const pages = [];
@@ -934,14 +1075,17 @@
         if (!paginationTarget || !clientesTbody) {
             return;
         }
-        const rows = Array.from(clientesTbody.querySelectorAll('tr'));
-        const totalRows = rows.length && !rows[0].querySelector('td[colspan]') ? rows.length : 0;
+        applyClientesFilters();
+        const rows = Array.from(clientesTbody.querySelectorAll('tr[data-cliente-row]'));
+        const matchedRows = rows.filter((row) => row.dataset.clientMatches !== '0');
+        const totalRows = matchedRows.length;
         const totalPages = Math.max(1, Math.ceil(totalRows / paginationState.perPage));
         paginationState.page = Math.min(Math.max(1, paginationState.page), totalPages);
         const startIndex = (paginationState.page - 1) * paginationState.perPage;
         const endIndex = startIndex + paginationState.perPage;
-        rows.forEach((row, index) => {
-            row.hidden = totalRows > 0 && (index < startIndex || index >= endIndex);
+        rows.forEach((row) => {
+            const matchedIndex = matchedRows.indexOf(row);
+            row.hidden = matchedIndex < startIndex || matchedIndex >= endIndex;
         });
         const start = totalRows ? startIndex + 1 : 0;
         const end = Math.min(totalRows, endIndex);
@@ -999,6 +1143,16 @@
             return;
         }
         paginationState.page = Number(target.value) || 1;
+        renderClientesPagination();
+    });
+    [clientesSearch, clientesNameFilter].forEach((input) => {
+        input?.addEventListener('input', () => {
+            paginationState.page = 1;
+            renderClientesPagination();
+        });
+    });
+    clientesCityFilter?.addEventListener('change', () => {
+        paginationState.page = 1;
         renderClientesPagination();
     });
     renderClientesPagination();
