@@ -1159,6 +1159,14 @@ $brandTitleOffsetY = (int)($theme['title_offset_y'] ?? 0);
             border-color: var(--primary) !important;
             box-shadow: var(--primary-glow), 0 12px 26px -22px rgba(var(--primary-rgb), 0.74) !important;
         }
+        .sidebar-search input[type="search"]:focus,
+        .pedido-list-search-box input[type="search"]:focus,
+        .history-search-box input[type="search"]:focus,
+        .cliente-search-wrap input[type="search"]:focus,
+        .produto-search-wrap input[type="search"]:focus {
+            border-color: transparent !important;
+            box-shadow: none !important;
+        }
         .sidebar-search:focus-within,
         .pedido-list-search-box:focus-within,
         .history-search-box:focus-within,
