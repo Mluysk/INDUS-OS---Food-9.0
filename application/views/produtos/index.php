@@ -1908,13 +1908,20 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
                     headers: { 'Accept': 'application/json' },
                     body: formData
                 })
-                    .then((res) => res.json())
-                    .then(() => {
+                    .then(async (res) => {
+                        const payload = await res.json().catch(() => ({}));
+                        if (!res.ok) {
+                            throw new Error(payload.error || 'Nao foi possivel atualizar o produto.');
+                        }
+                        return payload;
+                    })
+                    .then((payload) => {
                         closeModal();
+                        window.showAppToast?.(payload.message || 'Produto atualizado com sucesso.');
                         fetchCatalog();
                     })
-                    .catch(() => {
-                        closeModal();
+                    .catch((error) => {
+                        window.showAppToast?.(error.message || 'Nao foi possivel atualizar o produto.', 'error');
                     });
             });
         }

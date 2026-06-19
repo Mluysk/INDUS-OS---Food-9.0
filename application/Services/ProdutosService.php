@@ -222,9 +222,12 @@ class ProdutosService
         $digits = $this->skuDigits();
         $prefix = $tipo === 'MP' ? 'MP-' : 'A-';
 
+        $existing = $id !== null ? $this->produtos->find($id) : null;
         $skuRaw = trim((string)($data['sku'] ?? ''));
-        if ($skuRaw === '' && $id !== null) {
-            $existing = $this->produtos->find($id);
+        $tipoAnterior = strtoupper(trim((string)($existing['tipo'] ?? '')));
+        if ($existing && $tipoAnterior !== '' && $tipoAnterior !== $tipo) {
+            $skuRaw = $this->produtos->nextSequence($prefix, $digits, $this->reuseDeletedSku());
+        } elseif ($skuRaw === '' && $existing) {
             $skuRaw = $existing['sku'] ?? '';
         }
         if ($skuRaw === '') {
