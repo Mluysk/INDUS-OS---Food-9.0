@@ -181,12 +181,12 @@
         <table class="data-table clientes-table">
             <thead>
                 <tr>
-                    <th>ID</th>
-                    <th>Nome</th>
-                    <th>CNPJ</th>
-                    <th>CPF</th>
-                    <th>Contato</th>
-                    <th>Cidade/UF</th>
+                    <th><button type="button" class="clientes-sort-head" data-clientes-sort-field="id" data-clientes-sort-type="number">ID <span>⇅</span></button></th>
+                    <th><button type="button" class="clientes-sort-head" data-clientes-sort-field="nome" data-clientes-sort-type="text">Nome <span>⇅</span></button></th>
+                    <th><button type="button" class="clientes-sort-head" data-clientes-sort-field="cnpj" data-clientes-sort-type="text">CNPJ <span>⇅</span></button></th>
+                    <th><button type="button" class="clientes-sort-head" data-clientes-sort-field="cpf" data-clientes-sort-type="text">CPF <span>⇅</span></button></th>
+                    <th><button type="button" class="clientes-sort-head" data-clientes-sort-field="contato" data-clientes-sort-type="text">Contato <span>⇅</span></button></th>
+                    <th><button type="button" class="clientes-sort-head" data-clientes-sort-field="cidade" data-clientes-sort-type="text">Cidade/UF <span>⇅</span></button></th>
                     <th></th>
                 </tr>
             </thead>
@@ -199,12 +199,19 @@
                             $clienteContatoBusca = trim((string)(($cliente['telefone'] ?? '').' '.($cliente['whatsapp'] ?? '').' '.($cliente['email'] ?? '')));
                             $clienteCidadeBusca = trim((string)(($cliente['cidade'] ?? '').' '.($cliente['estado'] ?? '')));
                             $clienteBuscaGeral = trim($clienteNomeBusca.' '.$clienteDocBusca.' '.$clienteContatoBusca.' '.$clienteCidadeBusca);
+                            $clienteCidadeNormalizada = $normalizarCidadeFiltro((string)($cliente['cidade'] ?? ''));
                         ?>
                         <tr
                             data-cliente-row
                             data-cliente-search="<?= htmlspecialchars($clienteBuscaGeral, ENT_QUOTES, 'UTF-8'); ?>"
                             data-cliente-name="<?= htmlspecialchars($clienteNomeBusca, ENT_QUOTES, 'UTF-8'); ?>"
-                            data-cliente-city="<?= htmlspecialchars((string)($cliente['cidade'] ?? ''), ENT_QUOTES, 'UTF-8'); ?>"
+                            data-cliente-city="<?= htmlspecialchars($clienteCidadeNormalizada, ENT_QUOTES, 'UTF-8'); ?>"
+                            data-sort-id="<?= (int)$cliente['id']; ?>"
+                            data-sort-nome="<?= htmlspecialchars($clienteNomeBusca, ENT_QUOTES, 'UTF-8'); ?>"
+                            data-sort-cnpj="<?= htmlspecialchars((string)($cliente['cnpj'] ?? ''), ENT_QUOTES, 'UTF-8'); ?>"
+                            data-sort-cpf="<?= htmlspecialchars((string)($cliente['cpf'] ?? ''), ENT_QUOTES, 'UTF-8'); ?>"
+                            data-sort-contato="<?= htmlspecialchars($clienteContatoBusca, ENT_QUOTES, 'UTF-8'); ?>"
+                            data-sort-cidade="<?= htmlspecialchars($clienteCidadeBusca, ENT_QUOTES, 'UTF-8'); ?>"
                         >
                             <td><?= (int)$cliente['id']; ?></td>
                             <td><?= htmlspecialchars($cliente['razao_social'] ?? $cliente['nome_fantasia'] ?? '', ENT_QUOTES, 'UTF-8'); ?></td>
@@ -706,6 +713,40 @@
         white-space: nowrap;
     }
 
+    .clientes-sort-head {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.38rem;
+        border: 0;
+        padding: 0;
+        color: inherit;
+        background: transparent;
+        font: inherit;
+        font-weight: 800;
+        text-transform: inherit;
+        letter-spacing: inherit;
+        cursor: pointer;
+    }
+
+    .clientes-sort-head > span {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 21px;
+        height: 21px;
+        border-radius: 999px;
+        background: var(--surface-muted, #eef2f7);
+        color: var(--text-muted, #64748b);
+        font-size: 0.78rem;
+        line-height: 1;
+    }
+
+    .clientes-sort-head:hover > span,
+    .clientes-sort-head > span.active {
+        color: var(--primary, #4f46e5);
+        background: color-mix(in srgb, var(--primary, #4f46e5) 12%, #fff);
+    }
+
     .list-pagination {
         display: grid;
         grid-template-columns: minmax(120px, 1fr) auto minmax(220px, 1fr);
@@ -1057,15 +1098,58 @@
     const clientesSearch = document.querySelector('[data-clientes-search]');
     const clientesNameFilter = document.querySelector('[data-clientes-name-filter]');
     const clientesCityFilter = document.querySelector('[data-clientes-city-filter]');
+    const clientesSortButtons = document.querySelectorAll('[data-clientes-sort-field]');
     const paginationState = {
         page: 1,
         perPage: pageSizeOptions.includes(pageSizeDefault) ? pageSizeDefault : (pageSizeOptions[0] || 15)
+    };
+    const clientesSortState = {
+        field: '',
+        direction: ''
     };
     const normalizeClienteFilter = (value) => String(value || '')
         .normalize('NFD')
         .replace(/[\u0300-\u036f]/g, '')
         .toLocaleLowerCase('pt-BR')
         .trim();
+    const updateClientesSortButtons = () => {
+        clientesSortButtons.forEach((button) => {
+            const isActive = clientesSortState.field === button.dataset.clientesSortField && clientesSortState.direction;
+            const indicator = button.querySelector('span');
+            button.dataset.direction = isActive ? clientesSortState.direction : '';
+            button.setAttribute('aria-sort', isActive ? (clientesSortState.direction === 'asc' ? 'ascending' : 'descending') : 'none');
+            if (indicator) {
+                indicator.textContent = isActive ? (clientesSortState.direction === 'asc' ? '▲' : '▼') : '⇅';
+                indicator.classList.toggle('active', Boolean(isActive));
+            }
+        });
+    };
+    const clienteSortValue = (row, field, type) => {
+        const value = row.getAttribute(`data-sort-${field}`) || '';
+        if (type === 'number') {
+            return Number.parseFloat(value) || 0;
+        }
+        return normalizeClienteFilter(value);
+    };
+    const applyClientesSort = (rows) => {
+        if (!clientesTbody || !clientesSortState.field || !clientesSortState.direction) {
+            return rows;
+        }
+
+        const field = clientesSortState.field;
+        const button = Array.from(clientesSortButtons).find((item) => item.dataset.clientesSortField === field);
+        const type = button?.dataset.clientesSortType || 'text';
+        const sorted = [...rows].sort((left, right) => {
+            const leftValue = clienteSortValue(left, field, type);
+            const rightValue = clienteSortValue(right, field, type);
+            const result = type === 'number'
+                ? leftValue - rightValue
+                : String(leftValue).localeCompare(String(rightValue), 'pt-BR', { numeric: true, sensitivity: 'base' });
+            return clientesSortState.direction === 'desc' ? -result : result;
+        });
+        sorted.forEach((row) => clientesTbody.appendChild(row));
+        return sorted;
+    };
     const applyClientesFilters = () => {
         if (!clientesTbody) {
             return;
@@ -1107,7 +1191,7 @@
             return;
         }
         applyClientesFilters();
-        const rows = Array.from(clientesTbody.querySelectorAll('tr[data-cliente-row]'));
+        const rows = applyClientesSort(Array.from(clientesTbody.querySelectorAll('tr[data-cliente-row]')));
         const matchedRows = rows.filter((row) => row.dataset.clientMatches !== '0');
         const totalRows = matchedRows.length;
         const totalPages = Math.max(1, Math.ceil(totalRows / paginationState.perPage));
@@ -1186,6 +1270,21 @@
         paginationState.page = 1;
         renderClientesPagination();
     });
+    clientesSortButtons.forEach((button) => {
+        button.addEventListener('click', () => {
+            const field = button.dataset.clientesSortField || '';
+            if (!field) {
+                return;
+            }
+
+            clientesSortState.direction = clientesSortState.field === field && clientesSortState.direction === 'asc' ? 'desc' : 'asc';
+            clientesSortState.field = field;
+            paginationState.page = 1;
+            updateClientesSortButtons();
+            renderClientesPagination();
+        });
+    });
+    updateClientesSortButtons();
     renderClientesPagination();
     const hiddenField = form.querySelector('input[name="documento_tipo"]');
     const cnpjButton = form.querySelector('#btn-cnpj');
