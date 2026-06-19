@@ -123,6 +123,14 @@ class ProdutosController extends Controller
             if ($imagemPath !== null) {
                 $data['imagem_path'] = $imagemPath;
             }
+            $imagemEmbalagemPath = $this->salvarImagemProduto('imagem_embalagem');
+            if ($imagemEmbalagemPath !== null) {
+                $data['imagem_embalagem_path'] = $imagemEmbalagemPath;
+            }
+            $imagemProntoPath = $this->salvarImagemProduto('imagem_pronto');
+            if ($imagemProntoPath !== null) {
+                $data['imagem_pronto_path'] = $imagemProntoPath;
+            }
             $id = $this->produtos->create($data, $componentes, $this->auth->user()['id']);
             $this->salvarRecebimentoInicial($data, $id);
             $this->registrarRecebimentoMpNoEstoque($data, $id);
@@ -339,6 +347,14 @@ class ProdutosController extends Controller
             $imagemPath = $this->salvarImagemProduto('imagem_produto');
             if ($imagemPath !== null) {
                 $data['imagem_path'] = $imagemPath;
+            }
+            $imagemEmbalagemPath = $this->salvarImagemProduto('imagem_embalagem');
+            if ($imagemEmbalagemPath !== null) {
+                $data['imagem_embalagem_path'] = $imagemEmbalagemPath;
+            }
+            $imagemProntoPath = $this->salvarImagemProduto('imagem_pronto');
+            if ($imagemProntoPath !== null) {
+                $data['imagem_pronto_path'] = $imagemProntoPath;
             }
             $this->produtos->update((int)$id, $data, $this->auth->user()['id']);
         } catch (\InvalidArgumentException $e) {

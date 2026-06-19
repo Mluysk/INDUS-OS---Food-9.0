@@ -141,6 +141,22 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
         color: var(--text-muted, #64748b);
         font-weight: 700;
     }
+    .product-image-gallery-upload {
+        grid-column: 1 / -1;
+        display: grid;
+        grid-template-columns: repeat(3, minmax(180px, 1fr));
+        gap: 12px;
+    }
+    .product-image-gallery-upload .product-image-upload {
+        grid-column: auto;
+        align-content: start;
+        min-height: 148px;
+    }
+    @media (max-width: 900px) {
+        .product-image-gallery-upload {
+            grid-template-columns: 1fr;
+        }
+    }
     @media (max-width: 560px) {
         .catalog-meta-row {
             align-items: flex-start;
@@ -470,11 +486,23 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
             Preço padrão
             <input type="number" step="0.01" name="preco">
         </label>
-        <label class="product-image-upload">
-            <span class="product-image-upload__title"><span class="icon" data-lucide="image-plus" aria-hidden="true"></span><span>Imagem do produto</span></span>
-            <input type="file" name="imagem_produto" accept="image/png,image/jpeg,image/webp,image/gif">
-            <small>Use uma foto limpa do produto. Ela aparece no portal e no catalogo visual.</small>
-        </label>
+        <div class="product-image-gallery-upload">
+            <label class="product-image-upload">
+                <span class="product-image-upload__title"><span class="icon" data-lucide="image-plus" aria-hidden="true"></span><span>Foto principal</span></span>
+                <input type="file" name="imagem_produto" accept="image/png,image/jpeg,image/webp,image/gif">
+                <small>Foto base do produto no portal e catalogo visual.</small>
+            </label>
+            <label class="product-image-upload">
+                <span class="product-image-upload__title"><span class="icon" data-lucide="package-check" aria-hidden="true"></span><span>Foto embalagem / capa</span></span>
+                <input type="file" name="imagem_embalagem" accept="image/png,image/jpeg,image/webp,image/gif">
+                <small>Mostra como o produto fica embalado ou com capa.</small>
+            </label>
+            <label class="product-image-upload">
+                <span class="product-image-upload__title"><span class="icon" data-lucide="chef-hat" aria-hidden="true"></span><span>Foto pronto / frito</span></span>
+                <input type="file" name="imagem_pronto" accept="image/png,image/jpeg,image/webp,image/gif">
+                <small>Mostra o produto solto, pronto ou frito.</small>
+            </label>
+        </div>
         <div class="mp-only" id="mp-recebimento">
             <div class="mp-only__header">
                 <strong>Recebimento inicial</strong>
@@ -1260,11 +1288,23 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
                 Preço padrão
                 <input type="number" step="0.01" name="preco">
             </label>
-            <label class="product-image-upload">
-                <span class="product-image-upload__title"><span class="icon" data-lucide="image" aria-hidden="true"></span><span>Trocar imagem do produto</span></span>
-                <input type="file" name="imagem_produto" accept="image/png,image/jpeg,image/webp,image/gif">
-                <small>Envie apenas se quiser substituir a imagem atual.</small>
-            </label>
+            <div class="product-image-gallery-upload">
+                <label class="product-image-upload">
+                    <span class="product-image-upload__title"><span class="icon" data-lucide="image" aria-hidden="true"></span><span>Trocar foto principal</span></span>
+                    <input type="file" name="imagem_produto" accept="image/png,image/jpeg,image/webp,image/gif">
+                    <small>Envie apenas se quiser substituir a imagem atual.</small>
+                </label>
+                <label class="product-image-upload">
+                    <span class="product-image-upload__title"><span class="icon" data-lucide="package-check" aria-hidden="true"></span><span>Trocar embalagem / capa</span></span>
+                    <input type="file" name="imagem_embalagem" accept="image/png,image/jpeg,image/webp,image/gif">
+                    <small>Imagem opcional para produto embalado.</small>
+                </label>
+                <label class="product-image-upload">
+                    <span class="product-image-upload__title"><span class="icon" data-lucide="chef-hat" aria-hidden="true"></span><span>Trocar pronto / frito</span></span>
+                    <input type="file" name="imagem_pronto" accept="image/png,image/jpeg,image/webp,image/gif">
+                    <small>Imagem opcional do produto pronto.</small>
+                </label>
+            </div>
             <div class="form-actions" style="grid-column: 1 / -1;">
                 <button type="submit" class="button button-primary">Salvar alterações</button>
                 <button type="button" class="button ghost" id="edit-cancel">Cancelar</button>

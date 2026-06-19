@@ -257,6 +257,12 @@ class ProdutosService
             $imagemPath = trim((string)($data['imagem_path'] ?? ''));
             $payload['imagem_path'] = $imagemPath !== '' ? $imagemPath : null;
         }
+        foreach (['imagem_embalagem_path', 'imagem_pronto_path'] as $imageField) {
+            if (array_key_exists($imageField, $data)) {
+                $imagePath = trim((string)($data[$imageField] ?? ''));
+                $payload[$imageField] = $imagePath !== '' ? $imagePath : null;
+            }
+        }
 
         if ($payload['unidade'] === '') {
             throw new \InvalidArgumentException('Informe a unidade de medida.');

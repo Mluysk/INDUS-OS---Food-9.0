@@ -1302,6 +1302,7 @@ if ($supportWhatsapp !== '') {
     }
 
     .portal-product__media {
+        position: relative;
         display: grid;
         place-items: center;
         overflow: hidden;
@@ -1333,6 +1334,39 @@ if ($supportWhatsapp !== '') {
         width: 30px;
         height: 30px;
         stroke: currentColor;
+    }
+    .portal-product__media-toggle {
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        display: inline-grid;
+        place-items: center;
+        width: 34px;
+        height: 34px;
+        border: 1px solid rgba(255, 255, 255, 0.72);
+        border-radius: 50%;
+        background: color-mix(in srgb, var(--primary, #2563eb) 86%, #fff);
+        color: #fff;
+        cursor: pointer;
+        box-shadow: 0 16px 34px -20px rgba(15, 23, 42, 0.82);
+    }
+    .portal-product__media-toggle svg {
+        width: 18px;
+        height: 18px;
+        stroke: currentColor;
+    }
+    .portal-product__media-caption {
+        position: absolute;
+        left: 10px;
+        bottom: 10px;
+        max-width: calc(100% - 20px);
+        padding: 5px 9px;
+        border-radius: 999px;
+        background: rgba(15, 23, 42, 0.68);
+        color: #fff;
+        font-size: 0.68rem;
+        font-weight: 850;
     }
 
     [data-theme="dark"] .portal-product {
@@ -2439,6 +2473,8 @@ $catalogoPayload = json_encode(array_map(static function ($produto) use ($asset)
         'categoria' => $produto['categoria'] ?? '',
         'tipo' => $produto['tipo'] ?? 'PA',
         'imagem_url' => !empty($produto['imagem_path']) ? $asset((string)$produto['imagem_path']) : '',
+        'imagem_embalagem_url' => !empty($produto['imagem_embalagem_path']) ? $asset((string)$produto['imagem_embalagem_path']) : '',
+        'imagem_pronto_url' => !empty($produto['imagem_pronto_path']) ? $asset((string)$produto['imagem_pronto_path']) : '',
     ];
 }, $catalogo ?? []), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
 ?>
@@ -3358,8 +3394,17 @@ $catalogoPayload = json_encode(array_map(static function ($produto) use ($asset)
             card.dataset.price = String(Number(produto.preco || 0));
             card.dataset.validity = String(Number(produto.shelf_life_dias || 0));
             const pesoFormatado = formatWeight(produto.peso_liquido);
-            const imageMarkup = produto.imagem_url
-                ? `<div class="portal-product__media"><img src="${produto.imagem_url}" alt="${produto.nome || 'Produto'}"></div>`
+            const productImages = [
+                { url: produto.imagem_url, label: 'Produto' },
+                { url: produto.imagem_embalagem_url, label: 'Embalagem' },
+                { url: produto.imagem_pronto_url, label: 'Pronto / frito' },
+            ].filter((image) => image.url);
+            const imageMarkup = productImages.length
+                ? `<div class="portal-product__media" data-product-gallery='${JSON.stringify(productImages).replace(/'/g, '&apos;')}' data-gallery-index="0">
+                    <img src="${productImages[0].url}" alt="${produto.nome || 'Produto'} - ${productImages[0].label}">
+                    <span class="portal-product__media-caption">${productImages[0].label}</span>
+                    ${productImages.length > 1 ? `<button type="button" class="portal-product__media-toggle" data-gallery-next aria-label="Ver outra foto do produto"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="2.35" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg></button>` : ''}
+                </div>`
                 : `<div class="portal-product__media"><span class="portal-product__media-placeholder"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2"></rect><circle cx="9" cy="9" r="2"></circle><path d="m21 15-3.1-3.1a2 2 0 0 0-2.8 0L6 21"></path></svg></span></div>`;
             card.innerHTML = `
                 ${imageMarkup}
@@ -3400,6 +3445,27 @@ $catalogoPayload = json_encode(array_map(static function ($produto) use ($asset)
                     cart.push({ ...produto, quantidade });
                 }
                 atualizarCarrinho();
+            });
+        });
+        catalogContainer.querySelectorAll('[data-gallery-next]').forEach((button) => {
+            button.addEventListener('click', (event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                const media = event.currentTarget.closest('.portal-product__media');
+                if (!media) return;
+                const images = JSON.parse(media.dataset.productGallery || '[]');
+                if (images.length < 2) return;
+                const nextIndex = (Number(media.dataset.galleryIndex || 0) + 1) % images.length;
+                media.dataset.galleryIndex = String(nextIndex);
+                const img = media.querySelector('img');
+                const caption = media.querySelector('.portal-product__media-caption');
+                if (img) {
+                    img.src = images[nextIndex].url;
+                    img.alt = images[nextIndex].label;
+                }
+                if (caption) {
+                    caption.textContent = images[nextIndex].label;
+                }
             });
         });
     };
