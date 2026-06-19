@@ -1277,7 +1277,7 @@ if ($supportWhatsapp !== '') {
     .portal-catalog {
         display: grid;
         gap: 1.4rem;
-        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        grid-template-columns: repeat(6, minmax(0, 1fr));
     }
 
     .portal-catalog[data-view="list"] {
@@ -2383,6 +2383,24 @@ if ($supportWhatsapp !== '') {
 
         body[data-portal-state="app"] .portal-floating-support {
             display: inline-flex;
+        }
+    }
+
+    @media (max-width: 1500px) {
+        .portal-catalog {
+            grid-template-columns: repeat(5, minmax(0, 1fr));
+        }
+    }
+
+    @media (max-width: 1240px) {
+        .portal-catalog {
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+        }
+    }
+
+    @media (max-width: 980px) {
+        .portal-catalog {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
         }
     }
 
