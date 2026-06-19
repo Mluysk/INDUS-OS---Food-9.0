@@ -9,6 +9,28 @@ include __DIR__.'/index_whatsapp_beside_contact_type_patch.php';
         overflow-x: hidden;
     }
 
+    html body #portal-catalog.portal-catalog[data-view="grid"] {
+        grid-template-columns: repeat(6, minmax(0, 1fr)) !important;
+    }
+
+    @media (max-width: 1500px) {
+        html body #portal-catalog.portal-catalog[data-view="grid"] {
+            grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+        }
+    }
+
+    @media (max-width: 1240px) {
+        html body #portal-catalog.portal-catalog[data-view="grid"] {
+            grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+        }
+    }
+
+    @media (max-width: 980px) {
+        html body #portal-catalog.portal-catalog[data-view="grid"] {
+            grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+        }
+    }
+
     @media (max-width: 820px) {
         html body {
             min-width: 0 !important;
