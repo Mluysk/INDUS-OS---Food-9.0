@@ -251,6 +251,19 @@ if ($supportWhatsapp !== '') {
             </div>
         </section>
 
+        <div class="portal-image-lightbox" id="portal-image-lightbox" aria-hidden="true" role="dialog" aria-label="Imagem ampliada do produto">
+            <div class="portal-image-lightbox__dialog">
+                <button type="button" class="portal-image-lightbox__close" data-lightbox-close aria-label="Fechar imagem ampliada">
+                    <svg viewBox="0 0 24 24" fill="none" stroke-width="2.35" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M18 6 6 18"></path>
+                        <path d="m6 6 12 12"></path>
+                    </svg>
+                </button>
+                <img src="" alt="">
+                <span class="portal-image-lightbox__caption"></span>
+            </div>
+        </div>
+
         <section class="portal-panel" id="portal-tab-suporte" data-portal-tab-panel="suporte" hidden>
             <div class="portal-support-card">
                 <div class="portal-support-card__head">
@@ -1319,6 +1332,39 @@ if ($supportWhatsapp !== '') {
         object-fit: cover;
         display: block;
     }
+    .portal-product__media-zoom {
+        position: absolute;
+        inset: 0;
+        display: grid;
+        place-items: center;
+        border: 0;
+        background: rgba(15, 23, 42, 0.12);
+        color: #fff;
+        cursor: zoom-in;
+        opacity: 0;
+        transition: opacity 0.18s ease, background 0.18s ease;
+    }
+    .portal-product__media:hover .portal-product__media-zoom,
+    .portal-product__media:focus-within .portal-product__media-zoom,
+    .portal-product__media-zoom:focus-visible {
+        opacity: 1;
+        background: rgba(15, 23, 42, 0.28);
+    }
+    .portal-product__media-zoom-mark {
+        display: inline-grid;
+        place-items: center;
+        width: 52px;
+        height: 52px;
+        border: 1px solid rgba(255, 255, 255, 0.78);
+        border-radius: 50%;
+        background: color-mix(in srgb, var(--primary, #2563eb) 88%, #fff);
+        box-shadow: 0 20px 38px -22px rgba(15, 23, 42, 0.88);
+    }
+    .portal-product__media-zoom svg {
+        width: 27px;
+        height: 27px;
+        stroke: currentColor;
+    }
 
     .portal-product__media-placeholder {
         display: grid;
@@ -1350,6 +1396,7 @@ if ($supportWhatsapp !== '') {
         color: #fff;
         cursor: pointer;
         box-shadow: 0 16px 34px -20px rgba(15, 23, 42, 0.82);
+        z-index: 2;
     }
     .portal-product__media-toggle svg {
         width: 18px;
@@ -1367,6 +1414,81 @@ if ($supportWhatsapp !== '') {
         color: #fff;
         font-size: 0.68rem;
         font-weight: 850;
+        z-index: 2;
+    }
+    .portal-image-lightbox {
+        position: fixed;
+        inset: 0;
+        z-index: 1600;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: clamp(18px, 4vw, 46px);
+        background: rgba(15, 23, 42, 0.78);
+        backdrop-filter: blur(8px);
+    }
+    .portal-image-lightbox.is-open {
+        display: flex;
+    }
+    .portal-image-lightbox__dialog {
+        position: relative;
+        display: grid;
+        gap: 12px;
+        width: min(980px, 100%);
+    }
+    .portal-image-lightbox img {
+        width: 100%;
+        max-height: min(76vh, 760px);
+        object-fit: contain;
+        border-radius: 18px;
+        background: #fff;
+        box-shadow: 0 28px 70px -24px rgba(0, 0, 0, 0.78);
+    }
+    .portal-image-lightbox__caption {
+        justify-self: center;
+        padding: 7px 13px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.92);
+        color: #0f172a;
+        font-weight: 850;
+    }
+    .portal-image-lightbox__close {
+        position: absolute;
+        right: -10px;
+        top: -10px;
+        display: inline-grid;
+        place-items: center;
+        width: 42px;
+        height: 42px;
+        border: 0;
+        border-radius: 50%;
+        background: var(--primary, #2563eb);
+        color: #fff;
+        cursor: pointer;
+        box-shadow: 0 18px 34px -20px rgba(15, 23, 42, 0.9);
+    }
+    .portal-image-lightbox__close svg {
+        width: 22px;
+        height: 22px;
+        stroke: currentColor;
+    }
+    @media (hover: none) {
+        .portal-product__media-zoom {
+            opacity: 1;
+            inset: auto 10px 10px auto;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: transparent;
+        }
+        .portal-product__media-zoom-mark {
+            width: 40px;
+            height: 40px;
+        }
+        .portal-product__media-zoom svg {
+            width: 21px;
+            height: 21px;
+        }
     }
 
     [data-theme="dark"] .portal-product {
@@ -2516,6 +2638,10 @@ $catalogoPayload = json_encode(array_map(static function ($produto) use ($asset)
     const ordersFeedback = document.getElementById('portal-orders-feedback');
     const ordersRefreshButton = document.getElementById('portal-orders-refresh');
     const productsListContainer = document.getElementById('portal-products-list');
+    const imageLightbox = document.getElementById('portal-image-lightbox');
+    const imageLightboxImg = imageLightbox?.querySelector('img');
+    const imageLightboxCaption = imageLightbox?.querySelector('.portal-image-lightbox__caption');
+    const imageLightboxClose = imageLightbox?.querySelector('[data-lightbox-close]');
     const cart = [];
     let catalogView = localStorage.getItem('portal-catalog-view') === 'list' ? 'list' : 'grid';
     const welcomeModal = document.getElementById('portal-welcome-modal');
@@ -3381,6 +3507,25 @@ $catalogoPayload = json_encode(array_map(static function ($produto) use ($asset)
         });
     };
 
+    const openImageLightbox = (src, caption = '') => {
+        if (!imageLightbox || !imageLightboxImg) return;
+        imageLightboxImg.src = src || '';
+        imageLightboxImg.alt = caption || 'Imagem ampliada do produto';
+        if (imageLightboxCaption) {
+            imageLightboxCaption.textContent = caption || 'Imagem do produto';
+        }
+        imageLightbox.classList.add('is-open');
+        imageLightbox.setAttribute('aria-hidden', 'false');
+        imageLightboxClose?.focus();
+    };
+
+    const closeImageLightbox = () => {
+        if (!imageLightbox || !imageLightboxImg) return;
+        imageLightbox.classList.remove('is-open');
+        imageLightbox.setAttribute('aria-hidden', 'true');
+        imageLightboxImg.src = '';
+    };
+
     const desenharCatalogo = () => {
         if (!catalogContainer) return;
         syncCatalogView();
@@ -3402,6 +3547,7 @@ $catalogoPayload = json_encode(array_map(static function ($produto) use ($asset)
             const imageMarkup = productImages.length
                 ? `<div class="portal-product__media" data-product-gallery='${JSON.stringify(productImages).replace(/'/g, '&apos;')}' data-gallery-index="0">
                     <img src="${productImages[0].url}" alt="${produto.nome || 'Produto'} - ${productImages[0].label}">
+                    <button type="button" class="portal-product__media-zoom" data-gallery-zoom aria-label="Expandir imagem do produto"><span class="portal-product__media-zoom-mark"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"></circle><path d="m16 16 4.5 4.5"></path><path d="M10.5 7.6v5.8"></path><path d="M7.6 10.5h5.8"></path></svg></span></button>
                     <span class="portal-product__media-caption">${productImages[0].label}</span>
                     ${productImages.length > 1 ? `<button type="button" class="portal-product__media-toggle" data-gallery-next aria-label="Ver outra foto do produto"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="2.35" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg></button>` : ''}
                 </div>`
@@ -3468,7 +3614,31 @@ $catalogoPayload = json_encode(array_map(static function ($produto) use ($asset)
                 }
             });
         });
+        catalogContainer.querySelectorAll('[data-gallery-zoom]').forEach((button) => {
+            button.addEventListener('click', (event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                const media = event.currentTarget.closest('.portal-product__media');
+                const img = media?.querySelector('img');
+                const caption = media?.querySelector('.portal-product__media-caption')?.textContent || 'Imagem do produto';
+                if (img?.src) {
+                    openImageLightbox(img.src, caption);
+                }
+            });
+        });
     };
+
+    imageLightboxClose?.addEventListener('click', closeImageLightbox);
+    imageLightbox?.addEventListener('click', (event) => {
+        if (event.target === imageLightbox) {
+            closeImageLightbox();
+        }
+    });
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && imageLightbox?.classList.contains('is-open')) {
+            closeImageLightbox();
+        }
+    });
 
     const notifyPortalStorage = (key) => {
         try {
