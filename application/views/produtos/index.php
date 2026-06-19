@@ -51,6 +51,52 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
         color: #fff;
         box-shadow: 0 5px 14px color-mix(in srgb, var(--primary, #4b5563) 22%, transparent);
     }
+    .product-catalog-search {
+        display: grid;
+        gap: 8px;
+    }
+    .product-catalog-search__control {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.62rem;
+        min-height: 42px;
+        border: 1px solid var(--border-muted, #e5e7eb);
+        border-radius: 999px;
+        padding: 0.55rem 1.05rem;
+        background: var(--surface, #fff);
+        color: var(--text-muted, #64748b);
+        box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+        transition: border-color 0.18s ease, box-shadow 0.18s ease, color 0.18s ease;
+    }
+    .product-catalog-search__control:focus-within {
+        border-color: var(--primary, #4b5563);
+        color: var(--primary, #4b5563);
+        box-shadow:
+            0 0 0 3px color-mix(in srgb, var(--primary, #4b5563) 16%, transparent),
+            0 12px 26px -22px rgba(15, 23, 42, 0.72);
+    }
+    .product-catalog-search__control [data-lucide] {
+        width: 19px;
+        height: 19px;
+        flex: 0 0 auto;
+        color: currentColor;
+        stroke-width: 2.2;
+    }
+    .product-catalog-search__control input {
+        width: 100%;
+        min-width: 0;
+        min-height: 0;
+        border: 0;
+        padding: 0;
+        background: transparent;
+        color: var(--text, #111827);
+        outline: 0;
+        font-weight: 800;
+    }
+    .product-catalog-search__control input::placeholder {
+        color: var(--text-muted, #64748b);
+        opacity: 0.9;
+    }
     .catalog-meta-row {
         display: flex;
         align-items: center;
@@ -529,9 +575,12 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
     <?php $productStatusFilter = strtolower((string)($filters['status'] ?? 'all')); ?>
     <form method="get" class="filter-grid" id="catalog-filters" data-endpoint="<?= htmlspecialchars($url('produtos'), ENT_QUOTES, 'UTF-8'); ?>" data-print="<?= htmlspecialchars($url('produtos/print'), ENT_QUOTES, 'UTF-8'); ?>">
         <input type="hidden" name="status" value="<?= htmlspecialchars($productStatusFilter, ENT_QUOTES, 'UTF-8'); ?>">
-        <label>
-            Busca geral
-            <input type="text" name="q" value="<?= htmlspecialchars($filters['term'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="SKU, nome ou categoria">
+        <label class="product-catalog-search">
+            <span>Busca geral</span>
+            <span class="product-catalog-search__control">
+                <span data-lucide="search" aria-hidden="true"></span>
+                <input type="text" name="q" value="<?= htmlspecialchars($filters['term'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="Buscar por ID, SKU, nome ou categoria">
+            </span>
         </label>
         <label>
             Categoria

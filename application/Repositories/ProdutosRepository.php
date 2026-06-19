@@ -82,7 +82,7 @@ class ProdutosRepository extends BaseRepository
         }
 
         if (!empty($filters['term'])) {
-            $sql .= " AND (sku LIKE :term OR nome LIKE :term OR categoria LIKE :term)";
+            $sql .= " AND (CAST(id AS CHAR) LIKE :term OR sku LIKE :term OR nome LIKE :term OR categoria LIKE :term)";
             $params['term'] = '%' . $filters['term'] . '%';
         }
 
