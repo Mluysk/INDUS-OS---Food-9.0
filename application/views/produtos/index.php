@@ -545,7 +545,7 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
                 $printUrl = $url('produtos/print' . ($printFilters ? '?' . http_build_query($printFilters) : ''));
                 $simplifiedPrintFilters = array_merge($printFilters, ['modo' => 'simplificado']);
                 $simplifiedPrintUrl = $url('produtos/print?' . http_build_query($simplifiedPrintFilters));
-                $visualPrintFilters = array_merge($printFilters, ['modo' => 'visual']);
+                $visualPrintFilters = array_merge($printFilters, ['modo' => 'visual', 'compartilhar' => '1']);
                 $visualPrintUrl = $url('produtos/print?' . http_build_query($visualPrintFilters));
             ?>
             <div class="print-actions" aria-label="Opcoes de impressao">
@@ -1495,6 +1495,7 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
                 }
                 if (button.dataset.printMode === 'visual') {
                     params.set('modo', 'visual');
+                    params.set('compartilhar', '1');
                 }
                 const qs = params.toString();
                 button.setAttribute('href', printBase + (qs ? '?' + qs : ''));

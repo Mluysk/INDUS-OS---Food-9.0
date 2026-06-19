@@ -289,10 +289,15 @@ class ProdutosController extends Controller
 
     public function printList(): void
     {
-        $this->auth->ensureRole(['admin','gestor','producao']);
         $printMode = strtolower(trim((string)($_GET['modo'] ?? '')));
         $simplified = $printMode === 'simplificado';
         $visual = $printMode === 'visual';
+        $sharedVisual = $visual && in_array(strtolower(trim((string)($_GET['compartilhar'] ?? $_GET['share'] ?? ''))), ['1', 'sim', 'true'], true);
+
+        if (!$sharedVisual) {
+            $this->auth->ensureRole(['admin','gestor','producao']);
+        }
+
         $filters = [
             'term' => $_GET['q'] ?? null,
             'categoria' => $_GET['categoria'] ?? null,
@@ -302,18 +307,23 @@ class ProdutosController extends Controller
             'include_inactive' => false,
         ];
         $produtos = $this->produtos->all($filters);
-        $this->audit->log((int)($this->auth->user()['id'] ?? 0), 'documento', 'produtos', null, [
-            'documento' => $visual ? 'catalogo_produtos_visual' : ($simplified ? 'catalogo_produtos_simplificado' : 'catalogo_produtos'),
-            'quantidade' => count($produtos),
-            'filtros' => $filters,
-            'modo' => $visual ? 'visual' : ($simplified ? 'simplificado' : 'completo'),
-        ]);
+        $usuarioId = (int)($this->auth->user()['id'] ?? 0);
+        if ($usuarioId > 0) {
+            $this->audit->log($usuarioId, 'documento', 'produtos', null, [
+                'documento' => $visual ? 'catalogo_produtos_visual' : ($simplified ? 'catalogo_produtos_simplificado' : 'catalogo_produtos'),
+                'quantidade' => count($produtos),
+                'filtros' => $filters,
+                'modo' => $visual ? 'visual' : ($simplified ? 'simplificado' : 'completo'),
+                'compartilhado' => $sharedVisual,
+            ]);
+        }
 
         $this->render('produtos/print', [
             'produtos' => $produtos,
             'filters' => $filters,
             'simplified' => $simplified,
             'visual' => $visual,
+            'sharedVisual' => $sharedVisual,
         ], [
             'title' => 'Catálogo de produtos',
             'layout' => 'layouts/print',

@@ -14,6 +14,18 @@ $formatWeight = static function ($value): string {
 };
 $simplified = !empty($simplified);
 $visual = !empty($visual);
+$sharedVisual = !empty($sharedVisual);
+$shareUrl = '';
+if ($visual) {
+    $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
+    $host = $_SERVER['HTTP_HOST'] ?? '';
+    $path = parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH) ?: '';
+    $query = $_GET;
+    $query['modo'] = 'visual';
+    $query['compartilhar'] = '1';
+    unset($query['share']);
+    $shareUrl = ($host !== '' ? $scheme . '://' . $host : '') . $path . '?' . http_build_query($query);
+}
 
 $now = (new DateTime('now', new DateTimeZone('America/Sao_Paulo')))->format('d/m/Y H:i');
 $logo = $asset($nota['logo'] ?? ($theme['logo_light'] ?? 'img/logo.png'));
@@ -64,7 +76,74 @@ if (!empty($filters['tipo'])) {
             .visual-product__meta span { min-width: 0; padding: 8px; border-radius: 10px; background: rgba(15, 23, 42, 0.035); color: #475569; font-size: 0.78rem; font-weight: 750; }
             .visual-product__price { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 2px; padding-top: 10px; border-top: 1px solid rgba(15, 23, 42, 0.08); color: #0f172a; font-weight: 900; }
             .visual-product__price strong { color: var(--brand); font-size: 1.12rem; }
+            .visual-share-button {
+                position: fixed;
+                right: 22px;
+                bottom: 22px;
+                z-index: 40;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                gap: 9px;
+                min-height: 50px;
+                padding: 0 18px;
+                border: 0;
+                border-radius: 999px;
+                background: var(--brand);
+                color: #fff;
+                font-weight: 900;
+                cursor: pointer;
+                box-shadow: 0 20px 42px -22px rgba(15, 23, 42, 0.65);
+            }
+            .visual-share-button svg {
+                width: 20px;
+                height: 20px;
+                stroke: currentColor;
+            }
+            .visual-share-button__status {
+                position: fixed;
+                right: 22px;
+                bottom: 82px;
+                z-index: 39;
+                display: none;
+                max-width: min(320px, calc(100vw - 44px));
+                padding: 10px 14px;
+                border-radius: 14px;
+                background: #0f172a;
+                color: #fff;
+                font-size: 0.86rem;
+                font-weight: 800;
+                box-shadow: 0 20px 42px -28px rgba(15, 23, 42, 0.72);
+            }
+            .visual-share-button__status.is-visible { display: block; }
+            @media (max-width: 720px) {
+                .visual-catalog { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+                .visual-product { border-radius: 14px; }
+                .visual-product__body { padding: 10px; gap: 8px; }
+                .visual-product h2 { font-size: 0.88rem; }
+                .visual-product__meta { grid-template-columns: 1fr; gap: 6px; }
+                .visual-product__meta span { font-size: 0.68rem; padding: 6px; }
+                .visual-share-button {
+                    right: 14px;
+                    bottom: 14px;
+                    width: 54px;
+                    height: 54px;
+                    min-height: 54px;
+                    padding: 0;
+                    border-radius: 50%;
+                }
+                .visual-share-button span { display: none; }
+                .visual-share-button svg { width: 24px; height: 24px; }
+                .visual-share-button__status {
+                    right: 14px;
+                    bottom: 76px;
+                }
+            }
             @media print {
+                .visual-share-button,
+                .visual-share-button__status {
+                    display: none !important;
+                }
                 .visual-catalog { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
                 .visual-product { box-shadow: none; border-radius: 12px; }
                 .visual-product__body { padding: 10px; gap: 8px; }
@@ -105,6 +184,62 @@ if (!empty($filters['tipo'])) {
                 </article>
             <?php endforeach; ?>
         </section>
+        <button type="button" class="visual-share-button" data-share-url="<?= htmlspecialchars($shareUrl, ENT_QUOTES, 'UTF-8'); ?>" aria-label="Compartilhar catálogo visual">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <circle cx="18" cy="5" r="3"></circle>
+                <circle cx="6" cy="12" r="3"></circle>
+                <circle cx="18" cy="19" r="3"></circle>
+                <path d="m8.59 13.51 6.83 3.98"></path>
+                <path d="m15.41 6.51-6.82 3.98"></path>
+            </svg>
+            <span>Compartilhar link</span>
+        </button>
+        <div class="visual-share-button__status" role="status" aria-live="polite"></div>
+        <script>
+            (() => {
+                const button = document.querySelector('.visual-share-button');
+                const status = document.querySelector('.visual-share-button__status');
+                if (!button) return;
+                const showStatus = (message) => {
+                    if (!status) return;
+                    status.textContent = message;
+                    status.classList.add('is-visible');
+                    window.clearTimeout(status._timer);
+                    status._timer = window.setTimeout(() => status.classList.remove('is-visible'), 2600);
+                };
+                const copyLink = async (url) => {
+                    if (navigator.clipboard && window.isSecureContext) {
+                        await navigator.clipboard.writeText(url);
+                        return true;
+                    }
+                    const input = document.createElement('input');
+                    input.value = url;
+                    input.setAttribute('readonly', 'readonly');
+                    input.style.position = 'fixed';
+                    input.style.left = '-9999px';
+                    document.body.appendChild(input);
+                    input.select();
+                    const ok = document.execCommand('copy');
+                    input.remove();
+                    return ok;
+                };
+                button.addEventListener('click', async () => {
+                    const url = button.dataset.shareUrl || window.location.href;
+                    const title = document.title || 'Catálogo visual de produtos';
+                    try {
+                        if (navigator.share) {
+                            await navigator.share({ title, text: 'Confira o catálogo visual de produtos.', url });
+                            return;
+                        }
+                        await copyLink(url);
+                        showStatus('Link do catálogo copiado.');
+                    } catch (error) {
+                        if (error && error.name === 'AbortError') return;
+                        showStatus('Nao foi possivel compartilhar. Copie o link da pagina.');
+                    }
+                });
+            })();
+        </script>
     <?php else: ?>
     <table>
         <thead>
