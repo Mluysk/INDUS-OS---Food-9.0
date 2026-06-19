@@ -2427,7 +2427,7 @@ if ($supportWhatsapp !== '') {
     }
 </style>
 <?php
-$catalogoPayload = json_encode(array_map(static function ($produto) {
+$catalogoPayload = json_encode(array_map(static function ($produto) use ($asset) {
     return [
         'id' => (int) ($produto['id'] ?? 0),
         'nome' => $produto['nome'] ?? '',
