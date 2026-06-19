@@ -61,6 +61,40 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
     .catalog-meta-row .catalog-meta {
         margin: 0;
     }
+    .product-image-upload {
+        grid-column: 1 / -1;
+        display: grid;
+        gap: 10px;
+        padding: 14px;
+        border: 1px dashed color-mix(in srgb, var(--primary, #4b5563) 38%, var(--border, #e5e7eb));
+        border-radius: 16px;
+        background: color-mix(in srgb, var(--primary, #4b5563) 5%, var(--surface, #fff));
+    }
+    .product-image-upload__title {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--text, #0f172a);
+        font-weight: 850;
+    }
+    .product-image-upload__title .icon {
+        width: 19px;
+        height: 19px;
+        color: var(--primary, #4b5563);
+    }
+    .product-image-upload input[type="file"] {
+        width: 100%;
+        border: 1px solid var(--border, #e5e7eb);
+        border-radius: 12px;
+        padding: 10px 12px;
+        background: var(--surface, #fff);
+        color: var(--text, #111827);
+        font-weight: 700;
+    }
+    .product-image-upload small {
+        color: var(--text-muted, #64748b);
+        font-weight: 700;
+    }
     @media (max-width: 560px) {
         .catalog-meta-row {
             align-items: flex-start;
@@ -346,7 +380,7 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
 <section class="panel tab-panel active" data-tab-panel="cadastro">
     <h2 class="product-section-title"><span class="icon" data-lucide="package-plus" aria-hidden="true"></span><span>Novo produto</span></h2>
     <p class="panel-description">Cadastre produtos acabados (PA) e matérias-primas (MP) com SKU único.</p>
-    <form method="post" action="<?= htmlspecialchars($url('produtos'), ENT_QUOTES, 'UTF-8'); ?>" class="form-grid" id="product-create-form">
+    <form method="post" action="<?= htmlspecialchars($url('produtos'), ENT_QUOTES, 'UTF-8'); ?>" class="form-grid" id="product-create-form" enctype="multipart/form-data">
         <label class="product-primary-field">
             SKU <small class="muted product-primary-field__hint">Gerado automaticamente conforme o tipo</small>
             <input type="text" name="sku" readonly data-next-pa="<?= htmlspecialchars($nextSkuPa ?? 'A-001', ENT_QUOTES, 'UTF-8'); ?>" data-next-mp="<?= htmlspecialchars($nextSkuMp ?? 'MP-001', ENT_QUOTES, 'UTF-8'); ?>" value="<?= htmlspecialchars($nextSkuPa ?? 'A-001', ENT_QUOTES, 'UTF-8'); ?>" placeholder="A-001">
@@ -389,6 +423,11 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
         <label>
             Preço padrão
             <input type="number" step="0.01" name="preco">
+        </label>
+        <label class="product-image-upload">
+            <span class="product-image-upload__title"><span class="icon" data-lucide="image-plus" aria-hidden="true"></span><span>Imagem do produto</span></span>
+            <input type="file" name="imagem_produto" accept="image/png,image/jpeg,image/webp,image/gif">
+            <small>Use uma foto limpa do produto. Ela aparece no portal e no catalogo visual.</small>
         </label>
         <div class="mp-only" id="mp-recebimento">
             <div class="mp-only__header">
@@ -460,6 +499,8 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
                 $printUrl = $url('produtos/print' . ($printFilters ? '?' . http_build_query($printFilters) : ''));
                 $simplifiedPrintFilters = array_merge($printFilters, ['modo' => 'simplificado']);
                 $simplifiedPrintUrl = $url('produtos/print?' . http_build_query($simplifiedPrintFilters));
+                $visualPrintFilters = array_merge($printFilters, ['modo' => 'visual']);
+                $visualPrintUrl = $url('produtos/print?' . http_build_query($visualPrintFilters));
             ?>
             <div class="print-actions" aria-label="Opcoes de impressao">
             <a class="print-link" data-print-mode="completo" data-tooltip="Imprimir relatorio completo" title="Imprimir relatorio completo" aria-label="Imprimir relatorio completo" href="<?= htmlspecialchars($printUrl, ENT_QUOTES, 'UTF-8'); ?>" target="_blank" rel="noreferrer">
@@ -474,6 +515,11 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
                 <span class="print-link__icon-wrap">
                     <span data-lucide="printer" aria-hidden="true"></span>
                     <span class="print-link__badge"><span data-lucide="list-checks" aria-hidden="true"></span></span>
+                </span>
+            </a>
+            <a class="print-link print-link--visual" data-print-mode="visual" data-tooltip="Imprimir catalogo visual" title="Imprimir catalogo visual" aria-label="Imprimir catalogo visual" href="<?= htmlspecialchars($visualPrintUrl, ENT_QUOTES, 'UTF-8'); ?>" target="_blank" rel="noreferrer">
+                <span class="print-link__icon-wrap">
+                    <span data-lucide="image" aria-hidden="true"></span>
                 </span>
             </a>
             </div>
@@ -1124,7 +1170,7 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
             </div>
             <button type="button" class="button ghost" id="edit-close">×</button>
         </div>
-        <form id="product-edit-form" class="form-grid" data-endpoint="<?= htmlspecialchars($url('produtos'), ENT_QUOTES, 'UTF-8'); ?>">
+        <form id="product-edit-form" class="form-grid" data-endpoint="<?= htmlspecialchars($url('produtos'), ENT_QUOTES, 'UTF-8'); ?>" enctype="multipart/form-data">
             <input type="hidden" name="id" value="">
             <label>
                 SKU <small class="muted">Gerado automaticamente</small>
@@ -1164,6 +1210,11 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
             <label>
                 Preço padrão
                 <input type="number" step="0.01" name="preco">
+            </label>
+            <label class="product-image-upload">
+                <span class="product-image-upload__title"><span class="icon" data-lucide="image" aria-hidden="true"></span><span>Trocar imagem do produto</span></span>
+                <input type="file" name="imagem_produto" accept="image/png,image/jpeg,image/webp,image/gif">
+                <small>Envie apenas se quiser substituir a imagem atual.</small>
             </label>
             <div class="form-actions" style="grid-column: 1 / -1;">
                 <button type="submit" class="button button-primary">Salvar alterações</button>
@@ -1392,6 +1443,9 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
                 }));
                 if (button.dataset.printMode === 'simplificado') {
                     params.set('modo', 'simplificado');
+                }
+                if (button.dataset.printMode === 'visual') {
+                    params.set('modo', 'visual');
                 }
                 const qs = params.toString();
                 button.setAttribute('href', printBase + (qs ? '?' + qs : ''));

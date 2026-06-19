@@ -66,6 +66,7 @@ CREATE TABLE IF NOT EXISTS produtos (
   preco DECIMAL(12,2) DEFAULT 0,
   alergicos TEXT,
   tabela_nutricional JSON,
+  imagem_path VARCHAR(255),
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (recipe_id) REFERENCES recipes(id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

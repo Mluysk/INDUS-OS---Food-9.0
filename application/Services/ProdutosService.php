@@ -250,6 +250,11 @@ class ProdutosService
             'alergicos' => isset($data['alergicos']) ? trim((string)$data['alergicos']) : null,
         ];
 
+        if (array_key_exists('imagem_path', $data)) {
+            $imagemPath = trim((string)($data['imagem_path'] ?? ''));
+            $payload['imagem_path'] = $imagemPath !== '' ? $imagemPath : null;
+        }
+
         if ($payload['unidade'] === '') {
             throw new \InvalidArgumentException('Informe a unidade de medida.');
         }

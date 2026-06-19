@@ -1301,10 +1301,48 @@ if ($supportWhatsapp !== '') {
         box-shadow: 0 16px 30px -26px rgba(15, 23, 42, 0.45);
     }
 
+    .portal-product__media {
+        display: grid;
+        place-items: center;
+        overflow: hidden;
+        aspect-ratio: 4 / 3;
+        margin: -0.45rem -0.65rem 0;
+        border-radius: 14px;
+        background: color-mix(in srgb, var(--primary, #2563eb) 9%, #fff);
+        border: 1px solid color-mix(in srgb, var(--primary, #2563eb) 15%, transparent);
+    }
+
+    .portal-product__media img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+
+    .portal-product__media-placeholder {
+        display: grid;
+        place-items: center;
+        width: 62px;
+        height: 62px;
+        border-radius: 18px;
+        background: rgba(255, 255, 255, 0.78);
+        color: var(--primary, #2563eb);
+    }
+
+    .portal-product__media-placeholder svg {
+        width: 30px;
+        height: 30px;
+        stroke: currentColor;
+    }
+
     [data-theme="dark"] .portal-product {
         background: rgba(30, 41, 59, 0.78);
         border-color: rgba(71, 85, 105, 0.35);
         box-shadow: 0 16px 36px -28px rgba(15, 23, 42, 0.85);
+    }
+
+    [data-theme="dark"] .portal-product__media {
+        background: color-mix(in srgb, var(--primary, #2563eb) 16%, rgba(15, 23, 42, 0.8));
     }
 
     .portal-product__header {
@@ -2382,6 +2420,7 @@ $catalogoPayload = json_encode(array_map(static function ($produto) {
         'shelf_life_dias' => (int) ($produto['shelf_life_dias'] ?? 0),
         'categoria' => $produto['categoria'] ?? '',
         'tipo' => $produto['tipo'] ?? 'PA',
+        'imagem_url' => !empty($produto['imagem_path']) ? $asset((string)$produto['imagem_path']) : '',
     ];
 }, $catalogo ?? []), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
 ?>
@@ -3301,7 +3340,11 @@ $catalogoPayload = json_encode(array_map(static function ($produto) {
             card.dataset.price = String(Number(produto.preco || 0));
             card.dataset.validity = String(Number(produto.shelf_life_dias || 0));
             const pesoFormatado = formatWeight(produto.peso_liquido);
+            const imageMarkup = produto.imagem_url
+                ? `<div class="portal-product__media"><img src="${produto.imagem_url}" alt="${produto.nome || 'Produto'}"></div>`
+                : `<div class="portal-product__media"><span class="portal-product__media-placeholder"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2"></rect><circle cx="9" cy="9" r="2"></circle><path d="m21 15-3.1-3.1a2 2 0 0 0-2.8 0L6 21"></path></svg></span></div>`;
             card.innerHTML = `
+                ${imageMarkup}
                 <div class="portal-product__header">
                     <div>
                         <h3>${produto.nome}</h3>

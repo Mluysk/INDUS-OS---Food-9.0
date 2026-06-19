@@ -119,6 +119,10 @@ class ProdutosController extends Controller
         }
         unset($data['componentes']);
         try {
+            $imagemPath = $this->salvarImagemProduto('imagem_produto');
+            if ($imagemPath !== null) {
+                $data['imagem_path'] = $imagemPath;
+            }
             $id = $this->produtos->create($data, $componentes, $this->auth->user()['id']);
             $this->salvarRecebimentoInicial($data, $id);
             $this->registrarRecebimentoMpNoEstoque($data, $id);
@@ -286,7 +290,9 @@ class ProdutosController extends Controller
     public function printList(): void
     {
         $this->auth->ensureRole(['admin','gestor','producao']);
-        $simplified = strtolower(trim((string)($_GET['modo'] ?? ''))) === 'simplificado';
+        $printMode = strtolower(trim((string)($_GET['modo'] ?? '')));
+        $simplified = $printMode === 'simplificado';
+        $visual = $printMode === 'visual';
         $filters = [
             'term' => $_GET['q'] ?? null,
             'categoria' => $_GET['categoria'] ?? null,
@@ -297,16 +303,17 @@ class ProdutosController extends Controller
         ];
         $produtos = $this->produtos->all($filters);
         $this->audit->log((int)($this->auth->user()['id'] ?? 0), 'documento', 'produtos', null, [
-            'documento' => $simplified ? 'catalogo_produtos_simplificado' : 'catalogo_produtos',
+            'documento' => $visual ? 'catalogo_produtos_visual' : ($simplified ? 'catalogo_produtos_simplificado' : 'catalogo_produtos'),
             'quantidade' => count($produtos),
             'filtros' => $filters,
-            'modo' => $simplified ? 'simplificado' : 'completo',
+            'modo' => $visual ? 'visual' : ($simplified ? 'simplificado' : 'completo'),
         ]);
 
         $this->render('produtos/print', [
             'produtos' => $produtos,
             'filters' => $filters,
             'simplified' => $simplified,
+            'visual' => $visual,
         ], [
             'title' => 'Catálogo de produtos',
             'layout' => 'layouts/print',
@@ -319,6 +326,10 @@ class ProdutosController extends Controller
         $data = json_decode(file_get_contents('php://input'), true) ?: $_POST;
 
         try {
+            $imagemPath = $this->salvarImagemProduto('imagem_produto');
+            if ($imagemPath !== null) {
+                $data['imagem_path'] = $imagemPath;
+            }
             $this->produtos->update((int)$id, $data, $this->auth->user()['id']);
         } catch (\InvalidArgumentException $e) {
             if ($this->wantsJson()) {
@@ -388,5 +399,54 @@ class ProdutosController extends Controller
         }
         $this->setFlash('success', $message);
         $this->redirect('/produtos?tab=lista');
+    }
+
+    private function salvarImagemProduto(string $field): ?string
+    {
+        if (!isset($_FILES[$field]) || !is_array($_FILES[$field])) {
+            return null;
+        }
+
+        $file = $_FILES[$field];
+        $error = (int)($file['error'] ?? UPLOAD_ERR_NO_FILE);
+        if ($error === UPLOAD_ERR_NO_FILE) {
+            return null;
+        }
+        if ($error !== UPLOAD_ERR_OK) {
+            throw new \InvalidArgumentException('Nao foi possivel enviar a imagem do produto.');
+        }
+
+        $tmpName = (string)($file['tmp_name'] ?? '');
+        if ($tmpName === '' || !is_uploaded_file($tmpName)) {
+            throw new \InvalidArgumentException('Imagem do produto invalida.');
+        }
+
+        if ((int)($file['size'] ?? 0) > 4 * 1024 * 1024) {
+            throw new \InvalidArgumentException('A imagem do produto deve ter no maximo 4 MB.');
+        }
+
+        $mime = mime_content_type($tmpName) ?: '';
+        $extensions = [
+            'image/jpeg' => 'jpg',
+            'image/png' => 'png',
+            'image/webp' => 'webp',
+            'image/gif' => 'gif',
+        ];
+        if (!isset($extensions[$mime])) {
+            throw new \InvalidArgumentException('Envie uma imagem JPG, PNG, WEBP ou GIF.');
+        }
+
+        $uploadDir = dirname(__DIR__, 4) . '/public/uploads/produtos';
+        if (!is_dir($uploadDir) && !mkdir($uploadDir, 0775, true) && !is_dir($uploadDir)) {
+            throw new \InvalidArgumentException('Nao foi possivel preparar a pasta de imagens dos produtos.');
+        }
+
+        $filename = 'produto-' . date('YmdHis') . '-' . bin2hex(random_bytes(5)) . '.' . $extensions[$mime];
+        $destination = $uploadDir . '/' . $filename;
+        if (!move_uploaded_file($tmpName, $destination)) {
+            throw new \InvalidArgumentException('Nao foi possivel salvar a imagem do produto.');
+        }
+
+        return 'uploads/produtos/' . $filename;
     }
 }

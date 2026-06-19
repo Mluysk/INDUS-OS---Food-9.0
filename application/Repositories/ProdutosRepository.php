@@ -5,7 +5,24 @@ class ProdutosRepository extends BaseRepository
 {
     protected string $table = 'produtos';
     private ?bool $hasActiveColumn = null;
+    private ?bool $hasImageColumn = null;
     private bool $deletedSkuHistoryReady = false;
+
+    public function create(array $data): int
+    {
+        if (!$this->ensureImageColumn()) {
+            unset($data['imagem_path']);
+        }
+        return parent::create($data);
+    }
+
+    public function update(int|string $id, array $data): bool
+    {
+        if (!$this->ensureImageColumn()) {
+            unset($data['imagem_path']);
+        }
+        return parent::update($id, $data);
+    }
 
     public function find(int|string $id): ?array
     {
@@ -51,6 +68,7 @@ class ProdutosRepository extends BaseRepository
     public function search(array $filters = []): array
     {
         $hasActiveColumn = $this->ensureActiveColumn();
+        $this->ensureImageColumn();
         $this->normalizarCategoriasExistentes();
 
         $sql = "SELECT * FROM {$this->table} WHERE 1=1";
@@ -273,6 +291,8 @@ class ProdutosRepository extends BaseRepository
 
     private function normalizarLinha(array $row): array
     {
+        $this->ensureImageColumn();
+
         if (isset($row['sku'])) {
             $row['sku'] = $this->normalizarSku((string)$row['sku']);
         }
@@ -282,6 +302,25 @@ class ProdutosRepository extends BaseRepository
         }
 
         return $row;
+    }
+
+    private function ensureImageColumn(): bool
+    {
+        if ($this->hasImageColumn !== null) {
+            return $this->hasImageColumn;
+        }
+
+        try {
+            $stmt = $this->db->query("SHOW COLUMNS FROM {$this->table} LIKE 'imagem_path'");
+            if (!$stmt || !$stmt->fetch()) {
+                $this->db->exec("ALTER TABLE {$this->table} ADD COLUMN imagem_path VARCHAR(255) NULL AFTER tabela_nutricional");
+            }
+            $this->hasImageColumn = true;
+        } catch (\Throwable $exception) {
+            $this->hasImageColumn = false;
+        }
+
+        return $this->hasImageColumn;
     }
 
     private function ensureActiveColumn(): bool
