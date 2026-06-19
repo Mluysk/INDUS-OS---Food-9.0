@@ -9,3 +9,4 @@ include __DIR__.'/doc_toggle_patch.php';
 include __DIR__.'/modal_actions_fix_patch.php';
 include __DIR__.'/update_submit_fix_patch.php';
 include __DIR__.'/list_font_patch.php';
+include __DIR__.'/client_list_filters_patch.php';
