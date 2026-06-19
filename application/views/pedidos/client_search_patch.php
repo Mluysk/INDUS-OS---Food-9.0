@@ -86,8 +86,8 @@
     }
 
     #pedido-form .pedido-cliente-search-field.is-invalid #pedido-cliente-search {
-        border-color: var(--danger, #dc2626);
-        box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+        border-color: var(--border-subtle, #e2e8f0);
+        box-shadow: none;
     }
 </style>
 
@@ -126,7 +126,7 @@
         const wrap = document.createElement('span');
         wrap.className = 'cliente-search-wrap';
         wrap.innerHTML = `
-            <input type="text" id="pedido-cliente-search" autocomplete="off" placeholder="${placeholder}" aria-autocomplete="list" required>
+            <input type="text" id="pedido-cliente-search" autocomplete="off" placeholder="${placeholder}" aria-autocomplete="list">
             <ul class="cliente-suggestions" id="pedido-cliente-suggestions" hidden></ul>
             <span class="pedido-cliente-error">Selecione um cliente cadastrado.</span>
         `;

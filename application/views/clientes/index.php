@@ -161,7 +161,7 @@
     <div class="clientes-filter-bar" aria-label="Filtros da lista de clientes">
         <label class="clientes-search-box">
             <span class="icon" data-lucide="search" aria-hidden="true"></span>
-            <input type="search" data-clientes-search placeholder="Buscar por nome, CPF/CNPJ, contato ou cidade" aria-label="Buscar clientes">
+            <input type="search" data-clientes-search placeholder="Buscar por ID, nome, CPF/CNPJ, contato ou cidade" aria-label="Buscar clientes">
         </label>
         <label class="clientes-filter-field">
             <span>Nome</span>
@@ -198,7 +198,8 @@
                             $clienteDocBusca = trim((string)(($cliente['cnpj'] ?? '').' '.($cliente['cpf'] ?? '')));
                             $clienteContatoBusca = trim((string)(($cliente['telefone'] ?? '').' '.($cliente['whatsapp'] ?? '').' '.($cliente['email'] ?? '')));
                             $clienteCidadeBusca = trim((string)(($cliente['cidade'] ?? '').' '.($cliente['estado'] ?? '')));
-                            $clienteBuscaGeral = trim($clienteNomeBusca.' '.$clienteDocBusca.' '.$clienteContatoBusca.' '.$clienteCidadeBusca);
+                            $clienteIdBusca = (string)($cliente['id'] ?? '');
+                            $clienteBuscaGeral = trim($clienteIdBusca.' '.$clienteNomeBusca.' '.$clienteDocBusca.' '.$clienteContatoBusca.' '.$clienteCidadeBusca);
                             $clienteCidadeNormalizada = $normalizarCidadeFiltro((string)($cliente['cidade'] ?? ''));
                         ?>
                         <tr
