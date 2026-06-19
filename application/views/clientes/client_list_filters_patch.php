@@ -4,7 +4,6 @@
         const tbody = document.querySelector('[data-clientes-tbody]');
         const paginationTarget = document.querySelector('[data-list-pagination="clientes"]');
         const searchInput = document.querySelector('[data-clientes-search]');
-        const nameInput = document.querySelector('[data-clientes-name-filter]');
         const citySelect = document.querySelector('[data-clientes-city-filter]');
         const sortButtons = Array.from(document.querySelectorAll('[data-clientes-sort-field]'));
 
@@ -73,14 +72,11 @@
 
         const rowMatchesFilters = (row) => {
             const general = normalize(searchInput?.value || '');
-            const name = normalize(nameInput?.value || '');
             const city = normalize(citySelect?.value || '');
             const rowSearch = normalize(row.dataset.clienteSearch || row.textContent || '');
-            const rowName = normalize(row.dataset.clienteName || getCellText(row, 'nome'));
             const rowCity = normalize(row.dataset.clienteCity || getCellText(row, 'cidade'));
 
             return (!general || rowSearch.includes(general))
-                && (!name || rowName.includes(name))
                 && (!city || rowCity === city || rowCity.includes(city));
         };
 
@@ -167,7 +163,7 @@
             window.setTimeout(renderPagination, 0);
         };
 
-        [searchInput, nameInput].forEach((input) => {
+        [searchInput].forEach((input) => {
             input?.addEventListener('input', () => {
                 state.page = 1;
                 queueRender();

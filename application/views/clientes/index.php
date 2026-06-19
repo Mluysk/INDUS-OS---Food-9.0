@@ -163,10 +163,6 @@
             <span class="icon" data-lucide="search" aria-hidden="true"></span>
             <input type="search" data-clientes-search placeholder="Buscar por ID, nome, CPF/CNPJ, contato ou cidade" aria-label="Buscar clientes">
         </label>
-        <label class="clientes-filter-field">
-            <span>Nome</span>
-            <input type="search" data-clientes-name-filter placeholder="Filtrar nome">
-        </label>
         <label class="clientes-filter-field clientes-filter-field--city">
             <span>Cidade</span>
             <select data-clientes-city-filter>
@@ -1097,7 +1093,6 @@
     const paginationTarget = document.querySelector('[data-list-pagination="clientes"]');
     const clientesTbody = document.querySelector('[data-clientes-tbody]');
     const clientesSearch = document.querySelector('[data-clientes-search]');
-    const clientesNameFilter = document.querySelector('[data-clientes-name-filter]');
     const clientesCityFilter = document.querySelector('[data-clientes-city-filter]');
     const clientesSortButtons = document.querySelectorAll('[data-clientes-sort-field]');
     const paginationState = {
@@ -1157,13 +1152,11 @@
         }
 
         const general = normalizeClienteFilter(clientesSearch?.value || '');
-        const name = normalizeClienteFilter(clientesNameFilter?.value || '');
         const city = normalizeClienteFilter(clientesCityFilter?.value || '');
         Array.from(clientesTbody.querySelectorAll('tr[data-cliente-row]')).forEach((row) => {
             const matchesGeneral = !general || normalizeClienteFilter(row.dataset.clienteSearch || '').includes(general);
-            const matchesName = !name || normalizeClienteFilter(row.dataset.clienteName || '').includes(name);
             const matchesCity = !city || normalizeClienteFilter(row.dataset.clienteCity || '') === city;
-            row.dataset.clientMatches = matchesGeneral && matchesName && matchesCity ? '1' : '0';
+            row.dataset.clientMatches = matchesGeneral && matchesCity ? '1' : '0';
         });
     };
     const pageWindow = (currentPage, totalPages) => {
@@ -1261,7 +1254,7 @@
         paginationState.page = Number(target.value) || 1;
         renderClientesPagination();
     });
-    [clientesSearch, clientesNameFilter].forEach((input) => {
+    [clientesSearch].forEach((input) => {
         input?.addEventListener('input', () => {
             paginationState.page = 1;
             renderClientesPagination();
