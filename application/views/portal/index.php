@@ -1338,7 +1338,7 @@ if ($supportWhatsapp !== '') {
         display: grid;
         place-items: center;
         border: 0;
-        background: rgba(15, 23, 42, 0.12);
+        background: rgba(15, 23, 42, 0.04);
         color: #fff;
         cursor: zoom-in;
         opacity: 0;
@@ -1348,21 +1348,22 @@ if ($supportWhatsapp !== '') {
     .portal-product__media:focus-within .portal-product__media-zoom,
     .portal-product__media-zoom:focus-visible {
         opacity: 1;
-        background: rgba(15, 23, 42, 0.28);
+        background: rgba(15, 23, 42, 0.12);
     }
     .portal-product__media-zoom-mark {
         display: inline-grid;
         place-items: center;
-        width: 52px;
-        height: 52px;
-        border: 1px solid rgba(255, 255, 255, 0.78);
+        width: 48px;
+        height: 48px;
+        border: 1px solid rgba(255, 255, 255, 0.62);
         border-radius: 50%;
-        background: color-mix(in srgb, var(--primary, #2563eb) 88%, #fff);
-        box-shadow: 0 20px 38px -22px rgba(15, 23, 42, 0.88);
+        background: color-mix(in srgb, var(--primary, #2563eb) 68%, transparent);
+        backdrop-filter: blur(3px);
+        box-shadow: 0 16px 32px -22px rgba(15, 23, 42, 0.72);
     }
     .portal-product__media-zoom svg {
-        width: 27px;
-        height: 27px;
+        width: 25px;
+        height: 25px;
         stroke: currentColor;
     }
 
@@ -1388,8 +1389,12 @@ if ($supportWhatsapp !== '') {
         transform: translateY(-50%);
         display: inline-grid;
         place-items: center;
-        width: 28px;
-        height: 28px;
+        width: 30px;
+        height: 30px;
+        min-width: 30px;
+        min-height: 30px;
+        aspect-ratio: 1 / 1;
+        padding: 0;
         border: 1px solid rgba(255, 255, 255, 0.8);
         border-radius: 50%;
         background: color-mix(in srgb, var(--primary, #2563eb) 86%, #fff);
@@ -1399,8 +1404,8 @@ if ($supportWhatsapp !== '') {
         z-index: 2;
     }
     .portal-product__media-toggle svg {
-        width: 15px;
-        height: 15px;
+        width: 14px;
+        height: 14px;
         stroke: currentColor;
     }
     .portal-product__media-caption {
@@ -1476,18 +1481,18 @@ if ($supportWhatsapp !== '') {
         .portal-product__media-zoom {
             opacity: 1;
             inset: auto 10px 10px auto;
-            width: 40px;
-            height: 40px;
+            width: 36px;
+            height: 36px;
             border-radius: 50%;
             background: transparent;
         }
         .portal-product__media-zoom-mark {
-            width: 40px;
-            height: 40px;
+            width: 36px;
+            height: 36px;
         }
         .portal-product__media-zoom svg {
-            width: 21px;
-            height: 21px;
+            width: 19px;
+            height: 19px;
         }
     }
 
