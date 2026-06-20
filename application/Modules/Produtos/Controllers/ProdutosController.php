@@ -124,10 +124,6 @@ class ProdutosController extends Controller
             if ($imagemPath !== null) {
                 $data['imagem_path'] = $imagemPath;
             }
-            $imagemEmbalagemPath = $this->salvarImagemProduto('imagem_embalagem');
-            if ($imagemEmbalagemPath !== null) {
-                $data['imagem_embalagem_path'] = $imagemEmbalagemPath;
-            }
             $imagemProntoPath = $this->salvarImagemProduto('imagem_pronto');
             if ($imagemProntoPath !== null) {
                 $data['imagem_pronto_path'] = $imagemProntoPath;
@@ -350,10 +346,6 @@ class ProdutosController extends Controller
             if ($imagemPath !== null) {
                 $data['imagem_path'] = $imagemPath;
             }
-            $imagemEmbalagemPath = $this->salvarImagemProduto('imagem_embalagem');
-            if ($imagemEmbalagemPath !== null) {
-                $data['imagem_embalagem_path'] = $imagemEmbalagemPath;
-            }
             $imagemProntoPath = $this->salvarImagemProduto('imagem_pronto');
             if ($imagemProntoPath !== null) {
                 $data['imagem_pronto_path'] = $imagemProntoPath;
@@ -482,7 +474,6 @@ class ProdutosController extends Controller
     {
         $map = [
             'remove_imagem_path' => 'imagem_path',
-            'remove_imagem_embalagem_path' => 'imagem_embalagem_path',
             'remove_imagem_pronto_path' => 'imagem_pronto_path',
         ];
 

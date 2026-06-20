@@ -156,9 +156,6 @@ if (!empty($filters['tipo'])) {
                 <?php
                     $imagePath = trim((string)($produto['imagem_path'] ?? ''));
                     if ($imagePath === '') {
-                        $imagePath = trim((string)($produto['imagem_embalagem_path'] ?? ''));
-                    }
-                    if ($imagePath === '') {
                         $imagePath = trim((string)($produto['imagem_pronto_path'] ?? ''));
                     }
                     $imageUrl = $imagePath !== '' ? $asset($imagePath) : '';

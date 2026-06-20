@@ -562,17 +562,6 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
                 <button type="button" class="product-image-upload__remove" data-image-clear aria-label="Remover foto principal"><span class="icon" data-lucide="trash-2" aria-hidden="true"></span></button>
                 <small>Foto base do produto no portal e catalogo visual.</small>
             </label>
-            <label class="product-image-upload" data-image-upload data-image-field="imagem_embalagem_path">
-                <span class="product-image-upload__title"><span class="icon" data-lucide="package-check" aria-hidden="true"></span><span>Foto embalagem / capa</span></span>
-                <input type="file" name="imagem_embalagem" accept="image/png,image/jpeg,image/webp,image/gif" data-image-input>
-                <input type="hidden" name="remove_imagem_embalagem_path" value="0" data-image-remove>
-                <span class="product-image-upload__drop">
-                    <span class="product-image-upload__placeholder"><span class="icon" data-lucide="upload-cloud" aria-hidden="true"></span><span>Fazer upload ou arrastar a imagem aqui</span></span>
-                    <span class="product-image-upload__preview"><img alt="Preview foto embalagem"></span>
-                </span>
-                <button type="button" class="product-image-upload__remove" data-image-clear aria-label="Remover foto embalagem"><span class="icon" data-lucide="trash-2" aria-hidden="true"></span></button>
-                <small>Mostra como o produto fica embalado ou com capa.</small>
-            </label>
             <label class="product-image-upload" data-image-upload data-image-field="imagem_pronto_path">
                 <span class="product-image-upload__title"><span class="icon" data-lucide="chef-hat" aria-hidden="true"></span><span>Foto pronto / frito</span></span>
                 <input type="file" name="imagem_pronto" accept="image/png,image/jpeg,image/webp,image/gif" data-image-input>
@@ -1381,17 +1370,6 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
                     </span>
                     <button type="button" class="product-image-upload__remove" data-image-clear aria-label="Remover foto principal"><span class="icon" data-lucide="trash-2" aria-hidden="true"></span></button>
                     <small>Envie apenas se quiser substituir a imagem atual.</small>
-                </label>
-                <label class="product-image-upload" data-image-upload data-image-field="imagem_embalagem_path">
-                    <span class="product-image-upload__title"><span class="icon" data-lucide="package-check" aria-hidden="true"></span><span>Trocar embalagem / capa</span></span>
-                    <input type="file" name="imagem_embalagem" accept="image/png,image/jpeg,image/webp,image/gif" data-image-input>
-                    <input type="hidden" name="remove_imagem_embalagem_path" value="0" data-image-remove>
-                    <span class="product-image-upload__drop">
-                        <span class="product-image-upload__placeholder"><span class="icon" data-lucide="upload-cloud" aria-hidden="true"></span><span>Fazer upload ou arrastar a imagem aqui</span></span>
-                        <span class="product-image-upload__preview"><img alt="Preview foto embalagem"></span>
-                    </span>
-                    <button type="button" class="product-image-upload__remove" data-image-clear aria-label="Remover foto embalagem"><span class="icon" data-lucide="trash-2" aria-hidden="true"></span></button>
-                    <small>Imagem opcional para produto embalado.</small>
                 </label>
                 <label class="product-image-upload" data-image-upload data-image-field="imagem_pronto_path">
                     <span class="product-image-upload__title"><span class="icon" data-lucide="chef-hat" aria-hidden="true"></span><span>Trocar pronto / frito</span></span>

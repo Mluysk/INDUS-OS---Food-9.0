@@ -12,7 +12,6 @@ class ProdutosRepository extends BaseRepository
     {
         if (!$this->ensureImageColumn()) {
             unset($data['imagem_path']);
-            unset($data['imagem_embalagem_path']);
             unset($data['imagem_pronto_path']);
         }
         return parent::create($data);
@@ -22,7 +21,6 @@ class ProdutosRepository extends BaseRepository
     {
         if (!$this->ensureImageColumn()) {
             unset($data['imagem_path']);
-            unset($data['imagem_embalagem_path']);
             unset($data['imagem_pronto_path']);
         }
         return parent::update($id, $data);
@@ -319,13 +317,9 @@ class ProdutosRepository extends BaseRepository
             if (!$stmt || !$stmt->fetch()) {
                 $this->db->exec("ALTER TABLE {$this->table} ADD COLUMN imagem_path VARCHAR(255) NULL AFTER tabela_nutricional");
             }
-            $stmt = $this->db->query("SHOW COLUMNS FROM {$this->table} LIKE 'imagem_embalagem_path'");
-            if (!$stmt || !$stmt->fetch()) {
-                $this->db->exec("ALTER TABLE {$this->table} ADD COLUMN imagem_embalagem_path VARCHAR(255) NULL AFTER imagem_path");
-            }
             $stmt = $this->db->query("SHOW COLUMNS FROM {$this->table} LIKE 'imagem_pronto_path'");
             if (!$stmt || !$stmt->fetch()) {
-                $this->db->exec("ALTER TABLE {$this->table} ADD COLUMN imagem_pronto_path VARCHAR(255) NULL AFTER imagem_embalagem_path");
+                $this->db->exec("ALTER TABLE {$this->table} ADD COLUMN imagem_pronto_path VARCHAR(255) NULL AFTER imagem_path");
             }
             $this->hasImageColumn = true;
         } catch (\Throwable $exception) {

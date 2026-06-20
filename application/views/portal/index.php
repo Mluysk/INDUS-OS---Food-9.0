@@ -2595,7 +2595,6 @@ $catalogoPayload = json_encode(array_map(static function ($produto) use ($asset)
         'categoria' => $produto['categoria'] ?? '',
         'tipo' => $produto['tipo'] ?? 'PA',
         'imagem_url' => !empty($produto['imagem_path']) ? $asset((string)$produto['imagem_path']) : '',
-        'imagem_embalagem_url' => !empty($produto['imagem_embalagem_path']) ? $asset((string)$produto['imagem_embalagem_path']) : '',
         'imagem_pronto_url' => !empty($produto['imagem_pronto_path']) ? $asset((string)$produto['imagem_pronto_path']) : '',
     ];
 }, $catalogo ?? []), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
@@ -3540,7 +3539,7 @@ $catalogoPayload = json_encode(array_map(static function ($produto) use ($asset)
             card.dataset.validity = String(Number(produto.shelf_life_dias || 0));
             const pesoFormatado = formatWeight(produto.peso_liquido);
             const productImages = [
-                { url: produto.imagem_url || produto.imagem_embalagem_url, label: 'Principal' },
+                { url: produto.imagem_url, label: 'Principal' },
                 { url: produto.imagem_pronto_url, label: 'Pronto / frito' },
             ].filter((image) => image.url);
             const imageMarkup = productImages.length
