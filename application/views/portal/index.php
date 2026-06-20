@@ -1383,24 +1383,24 @@ if ($supportWhatsapp !== '') {
     }
     .portal-product__media-toggle {
         position: absolute;
-        right: 10px;
+        right: 8px;
         top: 50%;
         transform: translateY(-50%);
         display: inline-grid;
         place-items: center;
-        width: 34px;
-        height: 34px;
-        border: 1px solid rgba(255, 255, 255, 0.72);
+        width: 28px;
+        height: 28px;
+        border: 1px solid rgba(255, 255, 255, 0.8);
         border-radius: 50%;
         background: color-mix(in srgb, var(--primary, #2563eb) 86%, #fff);
         color: #fff;
         cursor: pointer;
-        box-shadow: 0 16px 34px -20px rgba(15, 23, 42, 0.82);
+        box-shadow: 0 12px 26px -16px rgba(15, 23, 42, 0.84);
         z-index: 2;
     }
     .portal-product__media-toggle svg {
-        width: 18px;
-        height: 18px;
+        width: 15px;
+        height: 15px;
         stroke: currentColor;
     }
     .portal-product__media-caption {
@@ -3540,8 +3540,7 @@ $catalogoPayload = json_encode(array_map(static function ($produto) use ($asset)
             card.dataset.validity = String(Number(produto.shelf_life_dias || 0));
             const pesoFormatado = formatWeight(produto.peso_liquido);
             const productImages = [
-                { url: produto.imagem_url, label: 'Produto' },
-                { url: produto.imagem_embalagem_url, label: 'Embalagem' },
+                { url: produto.imagem_url || produto.imagem_embalagem_url, label: 'Principal' },
                 { url: produto.imagem_pronto_url, label: 'Pronto / frito' },
             ].filter((image) => image.url);
             const imageMarkup = productImages.length
