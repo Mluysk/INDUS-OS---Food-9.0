@@ -1393,12 +1393,13 @@ if ($supportWhatsapp !== '') {
         min-height: 30px;
         aspect-ratio: 1 / 1;
         padding: 0;
-        border: 1px solid rgba(255, 255, 255, 0.8);
+        border: 1px solid rgba(255, 255, 255, 0.52);
         border-radius: 50%;
-        background: color-mix(in srgb, var(--primary, #2563eb) 86%, #fff);
+        background: color-mix(in srgb, var(--primary, #2563eb) 48%, transparent);
+        backdrop-filter: blur(3px);
         color: #fff;
         cursor: pointer;
-        box-shadow: 0 12px 26px -16px rgba(15, 23, 42, 0.84);
+        box-shadow: 0 14px 28px -22px rgba(15, 23, 42, 0.58);
         z-index: 2;
         transition: none;
     }
@@ -1407,7 +1408,7 @@ if ($supportWhatsapp !== '') {
         transform: translateY(-50%);
         width: 30px;
         height: 30px;
-        background: color-mix(in srgb, var(--primary, #2563eb) 86%, #fff);
+        background: color-mix(in srgb, var(--primary, #2563eb) 48%, transparent);
     }
     .portal-product__media-toggle svg {
         width: 14px;
