@@ -1382,17 +1382,17 @@ if ($supportWhatsapp !== '') {
     }
     .portal-product__media-toggle {
         position: absolute;
-        right: 8px;
+        right: -18px;
         top: 50%;
         transform: translateY(-50%);
         display: inline-grid;
-        place-items: center;
-        width: 30px;
-        height: 30px;
-        min-width: 30px;
-        min-height: 30px;
+        place-items: center start;
+        width: 48px;
+        height: 48px;
+        min-width: 48px;
+        min-height: 48px;
         aspect-ratio: 1 / 1;
-        padding: 0;
+        padding: 0 0 0 12px;
         border: 1px solid rgba(255, 255, 255, 0.52);
         border-radius: 50%;
         background: color-mix(in srgb, var(--primary, #2563eb) 48%, transparent);
@@ -1406,8 +1406,8 @@ if ($supportWhatsapp !== '') {
     .portal-product__media-toggle:hover,
     .portal-product__media-toggle:focus-visible {
         transform: translateY(-50%);
-        width: 30px;
-        height: 30px;
+        width: 48px;
+        height: 48px;
         background: color-mix(in srgb, var(--primary, #2563eb) 48%, transparent);
     }
     .portal-product__media-toggle svg {
