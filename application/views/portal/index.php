@@ -259,7 +259,17 @@ if ($supportWhatsapp !== '') {
                         <path d="m6 6 12 12"></path>
                     </svg>
                 </button>
+                <button type="button" class="portal-image-lightbox__nav portal-image-lightbox__nav--prev" data-lightbox-prev aria-label="Ver imagem anterior">
+                    <svg viewBox="0 0 24 24" fill="none" stroke-width="2.35" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="m15 18-6-6 6-6"></path>
+                    </svg>
+                </button>
                 <img src="" alt="">
+                <button type="button" class="portal-image-lightbox__nav portal-image-lightbox__nav--next" data-lightbox-next aria-label="Ver proxima imagem">
+                    <svg viewBox="0 0 24 24" fill="none" stroke-width="2.35" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="m9 18 6-6-6-6"></path>
+                    </svg>
+                </button>
                 <span class="portal-image-lightbox__caption"></span>
             </div>
         </div>
@@ -1447,6 +1457,7 @@ if ($supportWhatsapp !== '') {
         display: grid;
         gap: 12px;
         width: min(980px, 100%);
+        overflow: visible;
     }
     .portal-image-lightbox img {
         width: 100%;
@@ -1466,23 +1477,75 @@ if ($supportWhatsapp !== '') {
     }
     .portal-image-lightbox__close {
         position: absolute;
-        right: -10px;
-        top: -10px;
+        right: 14px;
+        top: 14px;
         display: inline-grid;
         place-items: center;
-        width: 42px;
-        height: 42px;
-        border: 0;
+        width: 38px;
+        height: 38px;
+        border: 1px solid rgba(255, 255, 255, 0.58);
         border-radius: 50%;
-        background: var(--primary, #2563eb);
+        background: rgba(15, 23, 42, 0.44);
+        backdrop-filter: blur(6px);
         color: #fff;
         cursor: pointer;
-        box-shadow: 0 18px 34px -20px rgba(15, 23, 42, 0.9);
+        box-shadow: 0 18px 34px -24px rgba(15, 23, 42, 0.86);
+        z-index: 3;
     }
     .portal-image-lightbox__close svg {
-        width: 22px;
-        height: 22px;
+        width: 20px;
+        height: 20px;
         stroke: currentColor;
+    }
+    .portal-image-lightbox__nav {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        display: inline-grid;
+        place-items: center;
+        width: 56px;
+        height: 56px;
+        padding: 0;
+        border: 1px solid rgba(255, 255, 255, 0.52);
+        border-radius: 50%;
+        background: color-mix(in srgb, var(--primary, #2563eb) 48%, transparent);
+        backdrop-filter: blur(3px);
+        color: #fff;
+        cursor: pointer;
+        box-shadow: 0 18px 34px -24px rgba(15, 23, 42, 0.62);
+        z-index: 3;
+    }
+    .portal-image-lightbox__nav--prev {
+        left: -28px;
+        place-items: center end;
+        padding-right: 13px;
+    }
+    .portal-image-lightbox__nav--next {
+        right: -28px;
+        place-items: center start;
+        padding-left: 13px;
+    }
+    .portal-image-lightbox__nav[hidden] {
+        display: none;
+    }
+    .portal-image-lightbox__nav svg {
+        width: 17px;
+        height: 17px;
+        stroke: currentColor;
+    }
+    @media (max-width: 640px) {
+        .portal-image-lightbox__nav {
+            width: 48px;
+            height: 48px;
+        }
+        .portal-image-lightbox__nav--prev {
+            left: -22px;
+            padding-right: 11px;
+        }
+        .portal-image-lightbox__nav--next {
+            right: -22px;
+            padding-left: 11px;
+        }
     }
     @media (hover: none) {
         .portal-product__media-zoom {
@@ -2653,6 +2716,10 @@ $catalogoPayload = json_encode(array_map(static function ($produto) use ($asset)
     const imageLightboxImg = imageLightbox?.querySelector('img');
     const imageLightboxCaption = imageLightbox?.querySelector('.portal-image-lightbox__caption');
     const imageLightboxClose = imageLightbox?.querySelector('[data-lightbox-close]');
+    const imageLightboxPrev = imageLightbox?.querySelector('[data-lightbox-prev]');
+    const imageLightboxNext = imageLightbox?.querySelector('[data-lightbox-next]');
+    let imageLightboxGallery = [];
+    let imageLightboxIndex = 0;
     const cart = [];
     let catalogView = localStorage.getItem('portal-catalog-view') === 'list' ? 'list' : 'grid';
     const welcomeModal = document.getElementById('portal-welcome-modal');
@@ -3518,13 +3585,32 @@ $catalogoPayload = json_encode(array_map(static function ($produto) use ($asset)
         });
     };
 
-    const openImageLightbox = (src, caption = '') => {
+    const updateImageLightbox = () => {
         if (!imageLightbox || !imageLightboxImg) return;
-        imageLightboxImg.src = src || '';
+        const currentImage = imageLightboxGallery[imageLightboxIndex] || {};
+        const caption = currentImage.label || 'Imagem do produto';
+        imageLightboxImg.src = currentImage.url || '';
         imageLightboxImg.alt = caption || 'Imagem ampliada do produto';
         if (imageLightboxCaption) {
-            imageLightboxCaption.textContent = caption || 'Imagem do produto';
+            imageLightboxCaption.textContent = caption;
         }
+        const hasNavigation = imageLightboxGallery.length > 1;
+        imageLightboxPrev?.toggleAttribute('hidden', !hasNavigation);
+        imageLightboxNext?.toggleAttribute('hidden', !hasNavigation);
+    };
+
+    const moveImageLightbox = (direction) => {
+        if (imageLightboxGallery.length < 2) return;
+        imageLightboxIndex = (imageLightboxIndex + direction + imageLightboxGallery.length) % imageLightboxGallery.length;
+        updateImageLightbox();
+    };
+
+    const openImageLightbox = (images, index = 0) => {
+        if (!imageLightbox || !imageLightboxImg) return;
+        imageLightboxGallery = Array.isArray(images) ? images.filter((image) => image?.url) : [];
+        if (!imageLightboxGallery.length) return;
+        imageLightboxIndex = Math.min(Math.max(Number(index) || 0, 0), imageLightboxGallery.length - 1);
+        updateImageLightbox();
         imageLightbox.classList.add('is-open');
         imageLightbox.setAttribute('aria-hidden', 'false');
         imageLightboxClose?.focus();
@@ -3535,6 +3621,8 @@ $catalogoPayload = json_encode(array_map(static function ($produto) use ($asset)
         imageLightbox.classList.remove('is-open');
         imageLightbox.setAttribute('aria-hidden', 'true');
         imageLightboxImg.src = '';
+        imageLightboxGallery = [];
+        imageLightboxIndex = 0;
     };
 
     const desenharCatalogo = () => {
@@ -3629,24 +3717,34 @@ $catalogoPayload = json_encode(array_map(static function ($produto) use ($asset)
                 event.preventDefault();
                 event.stopPropagation();
                 const media = event.currentTarget.closest('.portal-product__media');
-                const img = media?.querySelector('img');
-                const caption = media?.querySelector('.portal-product__media-caption')?.textContent || 'Imagem do produto';
-                if (img?.src) {
-                    openImageLightbox(img.src, caption);
+                if (!media) return;
+                const images = JSON.parse(media.dataset.productGallery || '[]');
+                const currentIndex = Number(media.dataset.galleryIndex || 0);
+                if (images.length) {
+                    openImageLightbox(images, currentIndex);
                 }
             });
         });
     };
 
     imageLightboxClose?.addEventListener('click', closeImageLightbox);
+    imageLightboxPrev?.addEventListener('click', () => moveImageLightbox(-1));
+    imageLightboxNext?.addEventListener('click', () => moveImageLightbox(1));
     imageLightbox?.addEventListener('click', (event) => {
         if (event.target === imageLightbox) {
             closeImageLightbox();
         }
     });
     document.addEventListener('keydown', (event) => {
-        if (event.key === 'Escape' && imageLightbox?.classList.contains('is-open')) {
+        if (!imageLightbox?.classList.contains('is-open')) return;
+        if (event.key === 'Escape') {
             closeImageLightbox();
+        }
+        if (event.key === 'ArrowLeft') {
+            moveImageLightbox(-1);
+        }
+        if (event.key === 'ArrowRight') {
+            moveImageLightbox(1);
         }
     });
 
