@@ -1483,13 +1483,13 @@ if ($supportWhatsapp !== '') {
         place-items: center;
         width: 38px;
         height: 38px;
-        border: 1px solid rgba(255, 255, 255, 0.58);
+        border: 1px solid rgba(255, 255, 255, 0.72);
         border-radius: 50%;
-        background: rgba(15, 23, 42, 0.44);
-        backdrop-filter: blur(6px);
+        background: #dc2626;
+        backdrop-filter: blur(4px);
         color: #fff;
         cursor: pointer;
-        box-shadow: 0 18px 34px -24px rgba(15, 23, 42, 0.86);
+        box-shadow: 0 16px 30px -20px rgba(127, 29, 29, 0.82);
         z-index: 3;
     }
     .portal-image-lightbox__close svg {
@@ -1503,48 +1503,48 @@ if ($supportWhatsapp !== '') {
         transform: translateY(-50%);
         display: inline-grid;
         place-items: center;
-        width: 56px;
-        height: 56px;
+        width: 62px;
+        height: 62px;
         padding: 0;
-        border: 1px solid rgba(255, 255, 255, 0.52);
+        border: 1px solid rgba(255, 255, 255, 0.62);
         border-radius: 50%;
-        background: color-mix(in srgb, var(--primary, #2563eb) 48%, transparent);
-        backdrop-filter: blur(3px);
+        background: color-mix(in srgb, var(--primary, #2563eb) 58%, transparent);
+        backdrop-filter: blur(6px);
         color: #fff;
         cursor: pointer;
-        box-shadow: 0 18px 34px -24px rgba(15, 23, 42, 0.62);
+        box-shadow: 0 18px 36px -24px rgba(15, 23, 42, 0.72);
         z-index: 3;
     }
     .portal-image-lightbox__nav--prev {
-        left: -28px;
+        left: -31px;
         place-items: center end;
-        padding-right: 13px;
+        padding-right: 15px;
     }
     .portal-image-lightbox__nav--next {
-        right: -28px;
+        right: -31px;
         place-items: center start;
-        padding-left: 13px;
+        padding-left: 15px;
     }
     .portal-image-lightbox__nav[hidden] {
         display: none;
     }
     .portal-image-lightbox__nav svg {
-        width: 17px;
-        height: 17px;
+        width: 19px;
+        height: 19px;
         stroke: currentColor;
     }
     @media (max-width: 640px) {
         .portal-image-lightbox__nav {
-            width: 48px;
-            height: 48px;
+            width: 52px;
+            height: 52px;
         }
         .portal-image-lightbox__nav--prev {
-            left: -22px;
-            padding-right: 11px;
+            left: -26px;
+            padding-right: 13px;
         }
         .portal-image-lightbox__nav--next {
-            right: -22px;
-            padding-left: 11px;
+            right: -26px;
+            padding-left: 13px;
         }
     }
     @media (hover: none) {
