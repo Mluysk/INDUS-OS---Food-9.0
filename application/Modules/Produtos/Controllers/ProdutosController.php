@@ -119,6 +119,7 @@ class ProdutosController extends Controller
         }
         unset($data['componentes']);
         try {
+            $this->aplicarRemocaoImagens($data);
             $imagemPath = $this->salvarImagemProduto('imagem_produto');
             if ($imagemPath !== null) {
                 $data['imagem_path'] = $imagemPath;
@@ -344,6 +345,7 @@ class ProdutosController extends Controller
         $data = json_decode(file_get_contents('php://input'), true) ?: $_POST;
 
         try {
+            $this->aplicarRemocaoImagens($data);
             $imagemPath = $this->salvarImagemProduto('imagem_produto');
             if ($imagemPath !== null) {
                 $data['imagem_path'] = $imagemPath;
@@ -474,5 +476,21 @@ class ProdutosController extends Controller
         }
 
         return 'uploads/produtos/' . $filename;
+    }
+
+    private function aplicarRemocaoImagens(array &$data): void
+    {
+        $map = [
+            'remove_imagem_path' => 'imagem_path',
+            'remove_imagem_embalagem_path' => 'imagem_embalagem_path',
+            'remove_imagem_pronto_path' => 'imagem_pronto_path',
+        ];
+
+        foreach ($map as $flag => $field) {
+            if (($data[$flag] ?? '0') === '1') {
+                $data[$field] = '';
+            }
+            unset($data[$flag]);
+        }
     }
 }

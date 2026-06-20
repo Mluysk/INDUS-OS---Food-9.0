@@ -115,6 +115,12 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
         border: 1px dashed color-mix(in srgb, var(--primary, #4b5563) 38%, var(--border, #e5e7eb));
         border-radius: 16px;
         background: color-mix(in srgb, var(--primary, #4b5563) 5%, var(--surface, #fff));
+        cursor: pointer;
+        position: relative;
+    }
+    .product-image-upload.is-dragging {
+        border-color: var(--primary, #4b5563);
+        background: color-mix(in srgb, var(--primary, #4b5563) 10%, var(--surface, #fff));
     }
     .product-image-upload__title {
         display: inline-flex;
@@ -129,17 +135,75 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
         color: var(--primary, #4b5563);
     }
     .product-image-upload input[type="file"] {
-        width: 100%;
-        border: 1px solid var(--border, #e5e7eb);
-        border-radius: 12px;
-        padding: 10px 12px;
-        background: var(--surface, #fff);
-        color: var(--text, #111827);
-        font-weight: 700;
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        opacity: 0;
+        pointer-events: none;
     }
     .product-image-upload small {
         color: var(--text-muted, #64748b);
         font-weight: 700;
+    }
+    .product-image-upload__drop {
+        display: grid;
+        place-items: center;
+        gap: 7px;
+        min-height: 108px;
+        border: 1px solid color-mix(in srgb, var(--primary, #4b5563) 18%, var(--border, #e5e7eb));
+        border-radius: 14px;
+        background: color-mix(in srgb, var(--surface, #fff) 88%, var(--primary, #4b5563));
+        color: var(--text-muted, #64748b);
+        font-weight: 850;
+        text-align: center;
+        overflow: hidden;
+    }
+    .product-image-upload__drop .icon {
+        width: 28px;
+        height: 28px;
+        color: var(--primary, #4b5563);
+    }
+    .product-image-upload__preview {
+        display: none;
+        width: 100%;
+        aspect-ratio: 4 / 3;
+        border-radius: 12px;
+        overflow: hidden;
+        background: #fff;
+    }
+    .product-image-upload.has-preview .product-image-upload__placeholder {
+        display: none;
+    }
+    .product-image-upload.has-preview .product-image-upload__preview {
+        display: block;
+    }
+    .product-image-upload__preview img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+    .product-image-upload__remove {
+        position: absolute;
+        right: 24px;
+        top: 58px;
+        display: none;
+        place-items: center;
+        width: 32px;
+        height: 32px;
+        border: 0;
+        border-radius: 999px;
+        background: #fee2e2;
+        color: #dc2626;
+        cursor: pointer;
+        box-shadow: 0 14px 28px -20px rgba(15, 23, 42, 0.72);
+    }
+    .product-image-upload.has-preview .product-image-upload__remove {
+        display: inline-grid;
+    }
+    .product-image-upload__remove .icon {
+        width: 16px;
+        height: 16px;
     }
     .product-image-gallery-upload {
         grid-column: 1 / -1;
@@ -487,19 +551,37 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
             <input type="number" step="0.01" name="preco">
         </label>
         <div class="product-image-gallery-upload">
-            <label class="product-image-upload">
+            <label class="product-image-upload" data-image-upload data-image-field="imagem_path">
                 <span class="product-image-upload__title"><span class="icon" data-lucide="image-plus" aria-hidden="true"></span><span>Foto principal</span></span>
-                <input type="file" name="imagem_produto" accept="image/png,image/jpeg,image/webp,image/gif">
+                <input type="file" name="imagem_produto" accept="image/png,image/jpeg,image/webp,image/gif" data-image-input>
+                <input type="hidden" name="remove_imagem_path" value="0" data-image-remove>
+                <span class="product-image-upload__drop">
+                    <span class="product-image-upload__placeholder"><span class="icon" data-lucide="upload-cloud" aria-hidden="true"></span><span>Fazer upload ou arrastar a imagem aqui</span></span>
+                    <span class="product-image-upload__preview"><img alt="Preview foto principal"></span>
+                </span>
+                <button type="button" class="product-image-upload__remove" data-image-clear aria-label="Remover foto principal"><span class="icon" data-lucide="trash-2" aria-hidden="true"></span></button>
                 <small>Foto base do produto no portal e catalogo visual.</small>
             </label>
-            <label class="product-image-upload">
+            <label class="product-image-upload" data-image-upload data-image-field="imagem_embalagem_path">
                 <span class="product-image-upload__title"><span class="icon" data-lucide="package-check" aria-hidden="true"></span><span>Foto embalagem / capa</span></span>
-                <input type="file" name="imagem_embalagem" accept="image/png,image/jpeg,image/webp,image/gif">
+                <input type="file" name="imagem_embalagem" accept="image/png,image/jpeg,image/webp,image/gif" data-image-input>
+                <input type="hidden" name="remove_imagem_embalagem_path" value="0" data-image-remove>
+                <span class="product-image-upload__drop">
+                    <span class="product-image-upload__placeholder"><span class="icon" data-lucide="upload-cloud" aria-hidden="true"></span><span>Fazer upload ou arrastar a imagem aqui</span></span>
+                    <span class="product-image-upload__preview"><img alt="Preview foto embalagem"></span>
+                </span>
+                <button type="button" class="product-image-upload__remove" data-image-clear aria-label="Remover foto embalagem"><span class="icon" data-lucide="trash-2" aria-hidden="true"></span></button>
                 <small>Mostra como o produto fica embalado ou com capa.</small>
             </label>
-            <label class="product-image-upload">
+            <label class="product-image-upload" data-image-upload data-image-field="imagem_pronto_path">
                 <span class="product-image-upload__title"><span class="icon" data-lucide="chef-hat" aria-hidden="true"></span><span>Foto pronto / frito</span></span>
-                <input type="file" name="imagem_pronto" accept="image/png,image/jpeg,image/webp,image/gif">
+                <input type="file" name="imagem_pronto" accept="image/png,image/jpeg,image/webp,image/gif" data-image-input>
+                <input type="hidden" name="remove_imagem_pronto_path" value="0" data-image-remove>
+                <span class="product-image-upload__drop">
+                    <span class="product-image-upload__placeholder"><span class="icon" data-lucide="upload-cloud" aria-hidden="true"></span><span>Fazer upload ou arrastar a imagem aqui</span></span>
+                    <span class="product-image-upload__preview"><img alt="Preview foto pronta"></span>
+                </span>
+                <button type="button" class="product-image-upload__remove" data-image-clear aria-label="Remover foto pronta"><span class="icon" data-lucide="trash-2" aria-hidden="true"></span></button>
                 <small>Mostra o produto solto, pronto ou frito.</small>
             </label>
         </div>
@@ -1289,19 +1371,37 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
                 <input type="number" step="0.01" name="preco">
             </label>
             <div class="product-image-gallery-upload">
-                <label class="product-image-upload">
+                <label class="product-image-upload" data-image-upload data-image-field="imagem_path">
                     <span class="product-image-upload__title"><span class="icon" data-lucide="image" aria-hidden="true"></span><span>Trocar foto principal</span></span>
-                    <input type="file" name="imagem_produto" accept="image/png,image/jpeg,image/webp,image/gif">
+                    <input type="file" name="imagem_produto" accept="image/png,image/jpeg,image/webp,image/gif" data-image-input>
+                    <input type="hidden" name="remove_imagem_path" value="0" data-image-remove>
+                    <span class="product-image-upload__drop">
+                        <span class="product-image-upload__placeholder"><span class="icon" data-lucide="upload-cloud" aria-hidden="true"></span><span>Fazer upload ou arrastar a imagem aqui</span></span>
+                        <span class="product-image-upload__preview"><img alt="Preview foto principal"></span>
+                    </span>
+                    <button type="button" class="product-image-upload__remove" data-image-clear aria-label="Remover foto principal"><span class="icon" data-lucide="trash-2" aria-hidden="true"></span></button>
                     <small>Envie apenas se quiser substituir a imagem atual.</small>
                 </label>
-                <label class="product-image-upload">
+                <label class="product-image-upload" data-image-upload data-image-field="imagem_embalagem_path">
                     <span class="product-image-upload__title"><span class="icon" data-lucide="package-check" aria-hidden="true"></span><span>Trocar embalagem / capa</span></span>
-                    <input type="file" name="imagem_embalagem" accept="image/png,image/jpeg,image/webp,image/gif">
+                    <input type="file" name="imagem_embalagem" accept="image/png,image/jpeg,image/webp,image/gif" data-image-input>
+                    <input type="hidden" name="remove_imagem_embalagem_path" value="0" data-image-remove>
+                    <span class="product-image-upload__drop">
+                        <span class="product-image-upload__placeholder"><span class="icon" data-lucide="upload-cloud" aria-hidden="true"></span><span>Fazer upload ou arrastar a imagem aqui</span></span>
+                        <span class="product-image-upload__preview"><img alt="Preview foto embalagem"></span>
+                    </span>
+                    <button type="button" class="product-image-upload__remove" data-image-clear aria-label="Remover foto embalagem"><span class="icon" data-lucide="trash-2" aria-hidden="true"></span></button>
                     <small>Imagem opcional para produto embalado.</small>
                 </label>
-                <label class="product-image-upload">
+                <label class="product-image-upload" data-image-upload data-image-field="imagem_pronto_path">
                     <span class="product-image-upload__title"><span class="icon" data-lucide="chef-hat" aria-hidden="true"></span><span>Trocar pronto / frito</span></span>
-                    <input type="file" name="imagem_pronto" accept="image/png,image/jpeg,image/webp,image/gif">
+                    <input type="file" name="imagem_pronto" accept="image/png,image/jpeg,image/webp,image/gif" data-image-input>
+                    <input type="hidden" name="remove_imagem_pronto_path" value="0" data-image-remove>
+                    <span class="product-image-upload__drop">
+                        <span class="product-image-upload__placeholder"><span class="icon" data-lucide="upload-cloud" aria-hidden="true"></span><span>Fazer upload ou arrastar a imagem aqui</span></span>
+                        <span class="product-image-upload__preview"><img alt="Preview foto pronta"></span>
+                    </span>
+                    <button type="button" class="product-image-upload__remove" data-image-clear aria-label="Remover foto pronta"><span class="icon" data-lucide="trash-2" aria-hidden="true"></span></button>
                     <small>Imagem opcional do produto pronto.</small>
                 </label>
             </div>
@@ -1352,6 +1452,7 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
         const productStatusInput = form?.querySelector('input[name="status"]');
         const pageSizeOptions = <?= json_encode($listPageSizeOptions); ?>;
         const pageSizeDefault = <?= json_encode($listPageSizeDefault); ?>;
+        const productAssetBasePath = <?= json_encode(rtrim($basePath ?? '', '/')); ?>;
         const lancamentoFields = {
             preco: document.querySelector('input[name="lancamento_preco"]'),
             fornecedor: document.querySelector('input[name="lancamento_fornecedor"]'),
@@ -1364,6 +1465,81 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
         if (!form || !tbody || !table) {
             return;
         }
+
+        const productAssetUrl = (path) => {
+            const value = String(path || '').trim();
+            if (!value) return '';
+            if (/^https?:\/\//i.test(value)) return value;
+            const normalized = value.replace(/^\/+/, '').replace(/^public\//i, '');
+            return `${productAssetBasePath}/${normalized}`.replace(/([^:]\/)\/+/g, '$1');
+        };
+
+        const setImagePreview = (box, src = '') => {
+            const img = box.querySelector('.product-image-upload__preview img');
+            if (!img) return;
+            if (src) {
+                img.src = src;
+                box.classList.add('has-preview');
+            } else {
+                img.removeAttribute('src');
+                box.classList.remove('has-preview');
+            }
+        };
+
+        const resetImageUpload = (box, markRemove = false) => {
+            const input = box.querySelector('[data-image-input]');
+            const remove = box.querySelector('[data-image-remove]');
+            if (input) input.value = '';
+            if (remove) remove.value = markRemove ? '1' : '0';
+            setImagePreview(box, '');
+        };
+
+        const setupImageUploads = (root = document) => {
+            root.querySelectorAll('[data-image-upload]').forEach((box) => {
+                if (box.dataset.imageReady === '1') return;
+                box.dataset.imageReady = '1';
+                const input = box.querySelector('[data-image-input]');
+                const clear = box.querySelector('[data-image-clear]');
+                const remove = box.querySelector('[data-image-remove]');
+                const previewFile = (file) => {
+                    if (!file || !file.type?.startsWith('image/')) return;
+                    if (remove) remove.value = '0';
+                    const reader = new FileReader();
+                    reader.onload = () => setImagePreview(box, String(reader.result || ''));
+                    reader.readAsDataURL(file);
+                };
+                input?.addEventListener('change', () => previewFile(input.files?.[0]));
+                clear?.addEventListener('click', (event) => {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    resetImageUpload(box, true);
+                });
+                ['dragenter', 'dragover'].forEach((type) => {
+                    box.addEventListener(type, (event) => {
+                        event.preventDefault();
+                        box.classList.add('is-dragging');
+                    });
+                });
+                ['dragleave', 'drop'].forEach((type) => {
+                    box.addEventListener(type, (event) => {
+                        event.preventDefault();
+                        box.classList.remove('is-dragging');
+                    });
+                });
+                box.addEventListener('drop', (event) => {
+                    const file = event.dataTransfer?.files?.[0];
+                    if (!file || !input) return;
+                    const transfer = new DataTransfer();
+                    transfer.items.add(file);
+                    input.files = transfer.files;
+                    previewFile(file);
+                });
+            });
+        };
+
+        const resetFormImageUploads = (root = document) => {
+            root.querySelectorAll('[data-image-upload]').forEach((box) => resetImageUpload(box, false));
+        };
 
         if (historyBack) {
             historyBack.innerHTML = '<span class="icon" data-lucide="arrow-left" aria-hidden="true"></span><span>Voltar</span>';
@@ -1471,6 +1647,7 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
             if (detail.form === createForm) {
                 const skuField = createForm?.querySelector('input[name="sku"]');
                 createForm.reset();
+                resetFormImageUploads(createForm);
                 if (skuField) {
                     if (detail.payload?.next_sku_pa) {
                         skuField.dataset.nextPa = detail.payload.next_sku_pa;
@@ -1503,6 +1680,8 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
             }
             applyAutoSku();
         });
+
+        setupImageUploads(document);
 
         const toggleMpRecebimento = () => {
             const tipoField = createForm?.querySelector('select[name="tipo"]');
@@ -1844,6 +2023,14 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
             editForm.querySelector('input[name="peso_liquido"]').value = product.peso_liquido || '';
             editForm.querySelector('input[name="shelf_life_dias"]').value = product.shelf_life_dias || '';
             editForm.querySelector('input[name="preco"]').value = product.preco || '';
+            editForm.querySelectorAll('[data-image-upload]').forEach((box) => {
+                const field = box.dataset.imageField || '';
+                const remove = box.querySelector('[data-image-remove]');
+                const input = box.querySelector('[data-image-input]');
+                if (remove) remove.value = '0';
+                if (input) input.value = '';
+                setImagePreview(box, productAssetUrl(product[field] || ''));
+            });
         };
 
         const infoModal = document.getElementById('product-info-modal');
