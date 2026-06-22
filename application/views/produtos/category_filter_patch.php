@@ -213,6 +213,10 @@ $selectedCategorias = array_values(array_unique(array_filter(array_map('trim', $
             if (printLink.dataset.printMode === 'simplificado') {
                 params.set('modo', 'simplificado');
             }
+            if (printLink.dataset.printMode === 'visual') {
+                params.set('modo', 'visual');
+                params.set('compartilhar', '1');
+            }
             const qs = params.toString();
             printLink.href = printBase + (qs ? '?' + qs : '');
         });
