@@ -74,6 +74,15 @@ $currentYear = date('Y');
         .portal-catalog-tools__control-icon { position: absolute; left: 0.86rem; top: 50%; width: 18px; height: 18px; transform: translateY(-50%); color: var(--primary); pointer-events: none; }
         .portal-catalog-tools__control-icon svg { width: 18px; height: 18px; stroke: currentColor; }
         .portal-catalog-tools input, .portal-catalog-tools select { min-height: 48px; padding: 0.72rem 0.9rem 0.72rem 2.75rem; font-size: 0.94rem; font-weight: 750; border-radius: 16px; border: 1px solid color-mix(in srgb, var(--primary, #2563eb) 32%, var(--border, rgba(15,23,42,0.08))); background: linear-gradient(135deg, color-mix(in srgb, var(--primary, #2563eb) 8%, #fff), rgba(255,255,255,0.96)); box-shadow: 0 18px 34px -30px color-mix(in srgb, var(--primary, #2563eb) 55%, transparent); }
+        input[type="search"]::-webkit-search-decoration, input[type="search"]::-webkit-search-cancel-button, input[type="search"]::-webkit-search-results-button, input[type="search"]::-webkit-search-results-decoration { -webkit-appearance: none; appearance: none; display: none; }
+        .portal-catalog-tools .search-clear-host input,
+        .search-clear-host input[type="search"],
+        .search-clear-host input.has-search-clear-button { padding-right: 42px !important; }
+        .search-clear-host { position: relative !important; }
+        .search-clear-button { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); display: inline-grid; place-items: center; width: 24px; height: 24px; min-width: 24px; min-height: 24px; padding: 0; border: 0; border-radius: 50%; background: color-mix(in srgb, var(--primary, #2563eb) 10%, transparent); color: var(--primary, #2563eb); cursor: pointer; opacity: 0; pointer-events: none; transition: opacity 0.15s ease, background 0.15s ease, color 0.15s ease; z-index: 5; box-shadow: none; }
+        .search-clear-button.is-visible { opacity: 1; pointer-events: auto; }
+        .search-clear-button:hover, .search-clear-button:focus-visible { background: var(--primary, #2563eb); color: #fff; outline: 0; transform: translateY(-50%); box-shadow: none; }
+        .search-clear-button svg { width: 13px; height: 13px; stroke: currentColor; }
         .portal-catalog-tools select { appearance: none; padding-right: 2.35rem; cursor: pointer; }
         .portal-catalog-tools__select::after { content: ''; position: absolute; right: 0.92rem; top: 50%; width: 9px; height: 9px; border-right: 2px solid var(--primary); border-bottom: 2px solid var(--primary); transform: translateY(-64%) rotate(45deg); pointer-events: none; }
         .portal-catalog-tools input:focus, .portal-catalog-tools select:focus { outline: 3px solid color-mix(in srgb, var(--primary, #2563eb) 18%, transparent); border-color: var(--primary); box-shadow: 0 20px 42px -28px color-mix(in srgb, var(--primary, #2563eb) 70%, transparent); }
@@ -126,6 +135,54 @@ $currentYear = date('Y');
         applyGlobalZoom();
         window.addEventListener('resize', applyGlobalZoom);
         toggle?.addEventListener('change', () => { const mode = toggle.checked ? 'dark' : 'light'; root.setAttribute('data-theme', mode); localStorage.setItem('portal-theme', mode); });
+
+        const installSearchClearButtons = (rootNode = document) => {
+            const selector = 'input[type="search"], input[id*="search" i], input[name="q"], .portal-catalog-tools input';
+            rootNode.querySelectorAll?.(selector).forEach((input) => {
+                if (!(input instanceof HTMLInputElement) || input.dataset.searchClearReady === '1') return;
+                if (input.type === 'hidden' || input.type === 'password' || input.readOnly || input.disabled) return;
+                const placeholder = String(input.getAttribute('placeholder') || '').toLowerCase();
+                const id = String(input.id || '').toLowerCase();
+                const name = String(input.name || '').toLowerCase();
+                const isSearch = input.type === 'search'
+                    || id.includes('search')
+                    || id.includes('busca')
+                    || name === 'q'
+                    || placeholder.includes('buscar')
+                    || placeholder.includes('produto');
+                if (!isSearch || !input.parentElement) return;
+                input.dataset.searchClearReady = '1';
+                input.classList.add('has-search-clear-button');
+                const host = input.parentElement;
+                host.classList.add('search-clear-host');
+                const button = document.createElement('button');
+                button.type = 'button';
+                button.className = 'search-clear-button';
+                button.setAttribute('aria-label', 'Limpar busca');
+                button.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg>';
+                const sync = () => button.classList.toggle('is-visible', input.value.trim() !== '');
+                button.addEventListener('click', () => {
+                    input.value = '';
+                    input.dispatchEvent(new Event('input', { bubbles: true }));
+                    input.dispatchEvent(new Event('change', { bubbles: true }));
+                    input.focus();
+                    sync();
+                });
+                input.addEventListener('input', sync);
+                input.addEventListener('change', sync);
+                host.appendChild(button);
+                sync();
+            });
+        };
+
+        installSearchClearButtons();
+        new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+                mutation.addedNodes.forEach((node) => {
+                    if (node instanceof Element) installSearchClearButtons(node);
+                });
+            });
+        }).observe(document.body, { childList: true, subtree: true });
 
         (() => {
             const style = document.createElement('style');
