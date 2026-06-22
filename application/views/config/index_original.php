@@ -1014,7 +1014,6 @@ $previewMatrixDefault = app_logo_matrix_values($logoTintPreviewHex);
                     <span>Enviar novo arquivo</span>
                     <input type="file" id="note-logo-file" name="note_logo_file" accept="image/*">
                 </label>
-                <p class="field-hint">Uploads vão para <code>public/uploads/branding/</code>; utilize caminhos relativos como <code>uploads/branding/sua-logo.png</code> na nota.</p>
             </div>
 
             <div class="field">

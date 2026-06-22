@@ -45,7 +45,7 @@ abstract class Controller
             'contato' => '(11) 3000-0000',
             'email' => 'contato@indusos.com.br',
             'site' => 'indusos.com.br',
-            'logo' => 'img/logo.png',
+            'logo' => 'uploads/branding/logodark.png',
             'pix_enabled' => false,
             'pix_key' => '',
         ];
@@ -252,7 +252,7 @@ abstract class Controller
             $nota['contato'] = $configService->get('NOTE_FABRICA_CONTATO', $nota['contato']) ?: $nota['contato'];
             $nota['email'] = $configService->get('NOTE_FABRICA_EMAIL', $nota['email']) ?: $nota['email'];
             $nota['site'] = $configService->get('NOTE_FABRICA_SITE', $nota['site']) ?: $nota['site'];
-            $notaLogo = $configService->get('NOTE_LOGO', $nota['logo']) ?: $nota['logo'];
+            $notaLogo = $configService->get('NOTE_LOGO', $theme['logo_light'] ?? $nota['logo']) ?: ($theme['logo_light'] ?? $nota['logo']);
             $nota['logo'] = $notaLogo;
             $pixEnabled = $configService->get('NOTE_PIX_ENABLED', '0') === '1';
             $pixKey = trim((string)$configService->get('NOTE_PIX_KEY', ''));
@@ -289,7 +289,13 @@ abstract class Controller
                 return $path;
             }
 
-            $normalized = ltrim($path, '/');
+            $normalized = str_replace('\\', '/', trim($path));
+            if (preg_match('#(?:^|/)public/(.+)$#i', $normalized, $matches)) {
+                $normalized = $matches[1];
+            } elseif (preg_match('#(?:^|/)(uploads/.+)$#i', $normalized, $matches)) {
+                $normalized = $matches[1];
+            }
+            $normalized = ltrim($normalized, '/');
             if (stripos($normalized, 'public/') === 0) {
                 $normalized = substr($normalized, 7);
             }
