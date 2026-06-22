@@ -271,6 +271,15 @@
         padding: 0;
         justify-self: center;
         border-radius: 10px;
+        transition: background 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    #pedido-form .pedido-products-row .remove-item:hover,
+    #pedido-form .pedido-products-row .remove-item:focus-visible {
+        background: color-mix(in srgb, var(--danger, #dc2626) 12%, #fff);
+        color: var(--danger, #dc2626);
+        box-shadow: 0 8px 18px rgba(220, 38, 38, 0.14);
+        outline: 0;
     }
 
     #pedido-form .pedido-empty-list {
