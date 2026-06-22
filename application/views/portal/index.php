@@ -1701,7 +1701,70 @@ if ($supportWhatsapp !== '') {
     }
 
     .portal-product--list {
+        display: grid;
+        grid-template-columns: 132px minmax(0, 1fr);
+        align-items: center;
         gap: 1rem;
+        padding: 1rem 1.15rem;
+    }
+
+    .portal-product--list .portal-product__media {
+        grid-row: 1 / span 4;
+        width: 132px;
+        height: 96px;
+        aspect-ratio: auto;
+        margin: 0;
+        border-radius: 12px;
+    }
+
+    .portal-product--list .portal-product__media-placeholder {
+        width: 46px;
+        height: 46px;
+        border-radius: 14px;
+    }
+
+    .portal-product--list .portal-product__media-placeholder svg {
+        width: 23px;
+        height: 23px;
+    }
+
+    .portal-product--list .portal-product__media-zoom-mark {
+        width: 38px;
+        height: 38px;
+    }
+
+    .portal-product--list .portal-product__media-zoom svg {
+        width: 20px;
+        height: 20px;
+    }
+
+    .portal-product--list .portal-product__media-toggle {
+        right: -14px;
+        width: 40px;
+        height: 40px;
+        min-width: 40px;
+        min-height: 40px;
+        padding-left: 10px;
+    }
+
+    .portal-product--list .portal-product__media-toggle:hover,
+    .portal-product--list .portal-product__media-toggle:focus-visible {
+        width: 40px;
+        height: 40px;
+    }
+
+    .portal-product--list .portal-product__media-caption {
+        left: 7px;
+        bottom: 7px;
+        padding: 4px 7px;
+        font-size: 0.62rem;
+    }
+
+    .portal-product--list .portal-product__header,
+    .portal-product--list .portal-product__weight-pill,
+    .portal-product--list .portal-product__meta,
+    .portal-product--list .portal-product__footer {
+        min-width: 0;
     }
 
     .portal-product--list .portal-product__footer {
@@ -1724,6 +1787,18 @@ if ($supportWhatsapp !== '') {
 
     .portal-product--list .portal-product__price {
         font-size: 1.05rem;
+    }
+
+    @media (max-width: 640px) {
+        .portal-product--list {
+            grid-template-columns: 104px minmax(0, 1fr);
+            padding: 0.9rem;
+        }
+
+        .portal-product--list .portal-product__media {
+            width: 104px;
+            height: 82px;
+        }
     }
 
     .portal-orders-card__head {
