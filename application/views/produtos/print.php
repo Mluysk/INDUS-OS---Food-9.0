@@ -65,11 +65,11 @@ if (!empty($filters['tipo'])) {
         <style>
             .visual-catalog { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
             .visual-product { overflow: hidden; border: 1px solid rgba(15, 23, 42, 0.10); border-radius: 18px; background: #fff; box-shadow: 0 18px 44px -34px rgba(15, 23, 42, 0.45); break-inside: avoid; }
-            .visual-product__photo { display: grid; place-items: center; aspect-ratio: 4 / 3; background: linear-gradient(135deg, color-mix(in srgb, var(--brand) 8%, #fff), rgba(15, 23, 42, 0.018)); border-bottom: 1px solid rgba(15, 23, 42, 0.08); }
+            .visual-product__photo { display: grid; place-items: center; aspect-ratio: 4 / 3; background: color-mix(in srgb, var(--brand) 8%, #fff); border-bottom: 1px solid rgba(15, 23, 42, 0.08); }
             .visual-product__photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
-            .visual-product__empty { width: 100%; height: 100%; display: grid; place-items: center; background: radial-gradient(circle at center, color-mix(in srgb, var(--brand) 15%, #fff) 0 30%, color-mix(in srgb, var(--brand) 5%, #fff) 31% 100%); color: var(--brand); }
-            .visual-product__empty-mark { width: 74px; height: 74px; border-radius: 22px; display: grid; place-items: center; background: rgba(255, 255, 255, 0.82); border: 1px solid color-mix(in srgb, var(--brand) 18%, transparent); box-shadow: 0 18px 34px -28px color-mix(in srgb, var(--brand) 55%, transparent); }
-            .visual-product__empty-mark svg { width: 34px; height: 34px; stroke: currentColor; }
+            .visual-product__empty { width: 100%; height: 100%; display: grid; place-items: center; background: color-mix(in srgb, var(--brand) 8%, #fff); color: var(--brand); }
+            .visual-product__empty-mark { width: 62px; height: 62px; border-radius: 18px; display: grid; place-items: center; background: rgba(255, 255, 255, 0.82); }
+            .visual-product__empty-mark svg { width: 30px; height: 30px; stroke: currentColor; }
             .visual-product__body { display: grid; gap: 10px; padding: 14px; }
             .visual-product__top { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
             .visual-product h2 { margin: 0; color: #0f172a; font-size: 1rem; line-height: 1.2; }

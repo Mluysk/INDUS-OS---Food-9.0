@@ -295,9 +295,10 @@ class ProdutosController extends Controller
     public function printList(): void
     {
         $printMode = strtolower(trim((string)($_GET['modo'] ?? '')));
+        $sharedFlag = in_array(strtolower(trim((string)($_GET['compartilhar'] ?? $_GET['share'] ?? ''))), ['1', 'sim', 'true'], true);
         $simplified = $printMode === 'simplificado';
-        $visual = $printMode === 'visual';
-        $sharedVisual = $visual && in_array(strtolower(trim((string)($_GET['compartilhar'] ?? $_GET['share'] ?? ''))), ['1', 'sim', 'true'], true);
+        $visual = $printMode === 'visual' || $sharedFlag;
+        $sharedVisual = $visual && $sharedFlag;
 
         if (!$sharedVisual) {
             $this->auth->ensureRole(['admin','gestor','producao']);
