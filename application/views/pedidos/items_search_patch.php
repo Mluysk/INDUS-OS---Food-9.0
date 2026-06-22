@@ -104,7 +104,7 @@
     }
 
     #pedido-form .produto-search-wrap .search-clear-button {
-        top: 23px;
+        top: calc(1.2em + 0.35rem + 23px);
         right: 12px;
         width: 24px;
         height: 24px;
@@ -490,8 +490,7 @@
             }
             const term = normalize(search.value);
             const matches = produtos
-                .filter((product) => normalize(`${product.nome || ''} ${product.sku || ''}`).includes(term))
-                .slice(0, 12);
+                .filter((product) => normalize(`${product.nome || ''} ${product.sku || ''}`).includes(term));
 
             suggestions.innerHTML = '';
             if (!matches.length) {
