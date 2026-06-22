@@ -331,11 +331,28 @@
         if (!item || typeof item !== 'object') {
             return '';
         }
-        return firstValue(item.inscricao_estadual, item.inscricao, item.numero, item.ie);
+        return firstValue(
+            item.inscricao_estadual,
+            item.inscricaoEstadual,
+            item.inscricao_estadual_numero,
+            item.inscricao,
+            item.numero,
+            item.number,
+            item.ie
+        );
     };
 
     const findStateRegistration = (data) => {
-        const direct = firstValue(data.inscricao_estadual, data.inscricao_estadual_numero, data.ie);
+        const direct = firstValue(
+            data.inscricao_estadual,
+            data.inscricaoEstadual,
+            data.inscricao_estadual_numero,
+            data.inscricao,
+            data.ie,
+            data.estabelecimento && data.estabelecimento.inscricao_estadual,
+            data.estabelecimento && data.estabelecimento.inscricaoEstadual,
+            data.estabelecimento && data.estabelecimento.ie
+        );
         if (direct) {
             return direct;
         }
@@ -363,6 +380,43 @@
         return '';
     };
 
+    const findEmail = (data) => {
+        const direct = firstValue(
+            data.email,
+            data.correio_eletronico,
+            data.correioEletronico,
+            data.email_principal,
+            data.emailPrincipal,
+            data.estabelecimento && data.estabelecimento.email,
+            data.estabelecimento && data.estabelecimento.correio_eletronico,
+            data.estabelecimento && data.estabelecimento.correioEletronico
+        );
+        if (direct) {
+            return direct;
+        }
+
+        const lists = [
+            data.emails,
+            data.email_list,
+            data.emailList,
+            data.estabelecimento && data.estabelecimento.emails,
+        ].filter(Array.isArray);
+
+        for (const list of lists) {
+            const value = firstValue(...list.map((item) => {
+                if (item && typeof item === 'object') {
+                    return firstValue(item.email, item.valor, item.value, item.endereco);
+                }
+                return item;
+            }));
+            if (value) {
+                return value;
+            }
+        }
+
+        return '';
+    };
+
     const formatCep = (cep) => {
         const digits = onlyDigits(cep).slice(0, 8);
         return digits.length === 8 ? `${digits.slice(0, 5)}-${digits.slice(5)}` : digits;
@@ -372,7 +426,7 @@
         const primaryPhone = firstValue(data.ddd_telefone_1, data.telefone, data.phone);
         const secondaryPhone = firstValue(data.whatsapp, data.celular, data.ddd_telefone_2, data.phone2);
         const phone = formatPhone(primaryPhone || secondaryPhone);
-        const email = data.email || '';
+        const email = findEmail(data);
         const fantasy = data.nome_fantasia || data.razao_social || '';
 
         fillIfEmpty('razao_social', data.razao_social);
