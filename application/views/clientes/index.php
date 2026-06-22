@@ -794,6 +794,10 @@
         padding: 7px 10px;
     }
 
+    .list-page-input[data-client-page-input] {
+        width: calc(5ch + 32px);
+    }
+
     .list-page-size-select {
         min-height: 38px;
         border: 1px solid var(--border, #e5e7eb);

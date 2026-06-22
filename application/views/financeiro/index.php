@@ -76,6 +76,7 @@ if (!function_exists('financeiro_format_date')) {
     .finance-list-page-buttons { display: inline-flex; align-items: center; gap: 6px; flex-wrap: wrap; }
     .finance-list-page-button { min-width: 34px; min-height: 34px; border: 1px solid var(--border, #e5e7eb); border-radius: 999px; padding: 6px 10px; background: var(--surface, #fff); color: var(--text, #111827); font-weight: 850; cursor: pointer; }
     .finance-list-page-input { width: 58px; min-height: 34px; border: 1px solid var(--border, #e5e7eb); border-radius: 999px; padding: 6px 10px; background: var(--surface, #fff); color: var(--text, #111827); font-weight: 850; text-align: center; }
+    .finance-list-page-input[data-finance-page-input] { width: calc(5ch + 32px); }
     .finance-list-page-button:hover { border-color: var(--primary, #4f46e5); color: var(--primary, #4f46e5); }
     .finance-list-page-button.active { border-color: var(--primary, #4f46e5); background: var(--primary, #4f46e5); color: #fff; }
     .finance-list-page-ellipsis { min-width: 22px; text-align: center; color: var(--muted, #64748b); }

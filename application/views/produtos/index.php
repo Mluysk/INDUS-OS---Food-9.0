@@ -433,6 +433,7 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
     .list-page-button { padding: 7px 12px; cursor: pointer; }
     .list-page-button.active { border-color: var(--primary, #4f46e5); background: var(--primary, #4f46e5); color: #fff; }
     .list-page-input { width: 58px; padding: 7px 10px; }
+    .list-page-input[data-product-page-input] { width: calc(5ch + 32px); }
     .list-page-size-select { min-height: 38px; border: 1px solid var(--border, #e5e7eb); border-radius: 999px; padding: 7px 34px 7px 14px; background: var(--surface, #fff); color: var(--text, #111827); font-weight: 850; }
     @media (max-width: 760px) {
         .list-pagination { grid-template-columns: 1fr; }
