@@ -109,12 +109,14 @@ class PedidosController extends Controller
             }
             return;
         }
-        $desconto = $this->normalizarDesconto($data, $subtotal + $freteValor + $cobrancaDiferenca['valor']);
+        $descontoDados = $this->normalizarDadosDesconto($data, $subtotal + $freteValor + $cobrancaDiferenca['valor']);
         $pedido = [
             'observacoes' => $data['observacoes'] ?? null,
             'forma_pagto' => $this->normalizarPagamento($data['forma_pagto'] ?? 'PIX'),
             'frete_valor' => $freteValor,
-            'desconto' => $desconto,
+            'desconto' => $descontoDados['valor_calculado'],
+            'desconto_tipo' => $descontoDados['tipo'],
+            'desconto_valor_original' => $descontoDados['valor_original'],
             'cobranca_diferenca_valor' => $cobrancaDiferenca['valor'],
             'cobranca_diferenca_descricao' => $cobrancaDiferenca['descricao'],
             'total' => $subtotal + $freteValor + $cobrancaDiferenca['valor'],
@@ -162,8 +164,8 @@ class PedidosController extends Controller
         $freteValor = array_key_exists('frete_ativo', $data) || array_key_exists('frete_valor', $data)
             ? $this->normalizarFrete($data)
             : null;
-        $desconto = array_key_exists('desconto_valor', $data) || array_key_exists('desconto_tipo', $data)
-            ? $this->normalizarDesconto($data, $this->calcularTotal($itens) + (float)($freteValor ?? 0))
+        $descontoDados = array_key_exists('desconto_valor', $data) || array_key_exists('desconto_tipo', $data)
+            ? $this->normalizarDadosDesconto($data, $this->calcularTotal($itens) + (float)($freteValor ?? 0))
             : null;
 
         try {
@@ -175,7 +177,9 @@ class PedidosController extends Controller
                 $this->auth->user()['id'],
                 $this->normalizarPagamento($data['forma_pagto'] ?? 'PIX'),
                 $freteValor,
-                $desconto
+                $descontoDados['valor_calculado'] ?? null,
+                $descontoDados['tipo'] ?? null,
+                $descontoDados['valor_original'] ?? null
             );
         } catch (InvalidArgumentException $exception) {
             if ($this->wantsJson()) {
@@ -355,13 +359,28 @@ class PedidosController extends Controller
 
     private function normalizarDesconto(array $data, float $base): float
     {
+        return $this->normalizarDadosDesconto($data, $base)['valor_calculado'];
+    }
+
+    private function normalizarDadosDesconto(array $data, float $base): array
+    {
         $tipo = (string)($data['desconto_tipo'] ?? 'valor');
+        $tipo = $tipo === 'percentual' ? 'percentual' : 'valor';
         $valor = max(0.0, (float)str_replace(',', '.', (string)($data['desconto_valor'] ?? '0')));
         if ($valor <= 0 || $base <= 0) {
-            return 0.0;
+            return [
+                'tipo' => $tipo,
+                'valor_original' => 0.0,
+                'valor_calculado' => 0.0,
+            ];
         }
-        $desconto = $tipo === 'percentual' ? ($base * min($valor, 100.0) / 100.0) : $valor;
-        return min($base, $desconto);
+        $valorOriginal = $tipo === 'percentual' ? min($valor, 100.0) : $valor;
+        $desconto = $tipo === 'percentual' ? ($base * $valorOriginal / 100.0) : $valorOriginal;
+        return [
+            'tipo' => $tipo,
+            'valor_original' => $valorOriginal,
+            'valor_calculado' => min($base, $desconto),
+        ];
     }
 
     private function normalizarPagamento(?string $pagamento): string

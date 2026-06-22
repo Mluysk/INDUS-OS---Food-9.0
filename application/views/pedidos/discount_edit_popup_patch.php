@@ -193,9 +193,13 @@
             .then((response) => response.ok ? response.json() : Promise.reject(response))
             .then((payload) => {
                 const input = document.querySelector('#pedido-edit-desconto-valor');
-                const radio = document.querySelector('#pedido-edit-modal input[name="desconto_tipo"][value="valor"]');
+                const tipo = payload?.pedido?.desconto_tipo === 'percentual' ? 'percentual' : 'valor';
+                const valor = tipo === 'percentual'
+                    ? Number(payload?.pedido?.desconto_valor_original || 0)
+                    : Number(payload?.pedido?.desconto || 0);
+                const radio = document.querySelector(`#pedido-edit-modal input[name="desconto_tipo"][value="${tipo}"]`);
                 if (radio) radio.checked = true;
-                if (input) input.value = Number(payload?.pedido?.desconto || 0).toFixed(2);
+                if (input) input.value = valor.toFixed(2);
                 updateEditDiscountTotal();
             })
             .catch(() => updateEditDiscountTotal());

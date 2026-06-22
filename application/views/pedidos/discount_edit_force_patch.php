@@ -210,10 +210,14 @@
             .then(function (payload) {
                 var card = ensureCard();
                 if (!card) return;
-                var valorRadio = card.querySelector('input[name="desconto_tipo"][value="valor"]');
+                var tipo = payload && payload.pedido && payload.pedido.desconto_tipo === 'percentual' ? 'percentual' : 'valor';
+                var valorRadio = card.querySelector('input[name="desconto_tipo"][value="' + tipo + '"]');
                 var input = card.querySelector('#pedido-edit-desconto-valor');
+                var valor = tipo === 'percentual'
+                    ? Number(payload && payload.pedido && payload.pedido.desconto_valor_original ? payload.pedido.desconto_valor_original : 0)
+                    : Number(payload && payload.pedido && payload.pedido.desconto ? payload.pedido.desconto : 0);
                 if (valorRadio) valorRadio.checked = true;
-                if (input) input.value = Number(payload && payload.pedido && payload.pedido.desconto ? payload.pedido.desconto : 0).toFixed(2);
+                if (input) input.value = valor.toFixed(2);
                 syncMode(card);
                 updateTotal();
             })

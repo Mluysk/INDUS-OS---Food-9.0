@@ -107,7 +107,7 @@ class PedidosService
         ];
     }
 
-    public function atualizarPedido(int $pedidoId, int $clienteId, array $itens, ?string $observacoes, int $usuarioId, ?string $formaPagto = null, ?float $freteValor = null, ?float $desconto = null): array
+    public function atualizarPedido(int $pedidoId, int $clienteId, array $itens, ?string $observacoes, int $usuarioId, ?string $formaPagto = null, ?float $freteValor = null, ?float $desconto = null, ?string $descontoTipo = null, ?float $descontoValorOriginal = null): array
     {
         $pedidoAtual = $this->pedidos->find($pedidoId);
         if ($pedidoId <= 0 || !$pedidoAtual) {
@@ -125,6 +125,8 @@ class PedidosService
         $total = $this->calcularTotal($itens) + $freteFinal + $cobrancaDiferenca;
         $descontoFinal = $desconto ?? (float)($pedidoAtual['desconto'] ?? 0);
         $descontoFinal = min(max(0.0, $descontoFinal), $total);
+        $descontoTipoFinal = $descontoTipo ?? (string)($pedidoAtual['desconto_tipo'] ?? 'valor');
+        $descontoValorOriginalFinal = $descontoValorOriginal ?? (float)($pedidoAtual['desconto_valor_original'] ?? $descontoFinal);
         $db = $this->pedidos->getConnection();
         $db->beginTransaction();
 
@@ -134,6 +136,8 @@ class PedidosService
                 'observacoes' => $observacoes,
                 'frete_valor' => $freteFinal,
                 'desconto' => $descontoFinal,
+                'desconto_tipo' => $descontoTipoFinal === 'percentual' ? 'percentual' : 'valor',
+                'desconto_valor_original' => max(0.0, $descontoValorOriginalFinal),
                 'total' => $total,
             ];
             if ($formaPagto !== null) {
@@ -163,6 +167,8 @@ class PedidosService
             'forma_pagto' => $formaPagto,
             'frete_valor' => $freteFinal,
             'desconto' => $descontoFinal,
+            'desconto_tipo' => $descontoTipoFinal,
+            'desconto_valor_original' => $descontoValorOriginalFinal,
             'total' => $total,
             'itens' => $itens,
         ]);

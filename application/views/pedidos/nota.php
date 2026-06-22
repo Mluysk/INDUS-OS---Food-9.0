@@ -123,6 +123,15 @@ if ($total < $totalBase) {
     $total = $totalBase;
 }
 $desconto = max(0.0, (float)($pedido['desconto'] ?? 0));
+$descontoTipo = (string)($pedido['desconto_tipo'] ?? 'valor');
+$descontoValorOriginal = max(0.0, (float)($pedido['desconto_valor_original'] ?? 0));
+$formatPercent = static function (float $value): string {
+    $decimals = abs($value - round($value)) < 0.0001 ? 0 : 2;
+    return number_format($value, $decimals, ',', '.');
+};
+$descontoLabel = $descontoTipo === 'percentual' && $descontoValorOriginal > 0
+    ? 'Desconto (' . $formatPercent($descontoValorOriginal) . '%)'
+    : 'Desconto';
 $totalFinal = max(0.0, $total - $desconto);
 $notaCidade = 'SAO PAULO';
 if (!empty($notaDados['cidade'])) {
@@ -264,7 +273,7 @@ $pixQrUrl = $pixPayload !== '' ? 'https://quickchart.io/qr?size=200&margin=2&tex
                 <div class="total-row"><span><?= htmlspecialchars($cobrancaDiferencaDescricao, ENT_QUOTES, 'UTF-8'); ?></span><span>R$ <?= number_format($cobrancaDiferencaValor, 2, ',', '.'); ?></span></div>
             <?php endif; ?>
             <?php if ($desconto > 0): ?>
-                <div class="total-row"><span>Desconto</span><span>- R$ <?= number_format($desconto, 2, ',', '.'); ?></span></div>
+                <div class="total-row"><span><?= htmlspecialchars($descontoLabel, ENT_QUOTES, 'UTF-8'); ?></span><span>- R$ <?= number_format($desconto, 2, ',', '.'); ?></span></div>
             <?php endif; ?>
             <div class="total-row total-row__grand"><span>Total</span><span>R$ <?= number_format($totalFinal, 2, ',', '.'); ?></span></div>
         </div>

@@ -213,6 +213,24 @@ class PedidosRepository extends BaseRepository
             $this->db->exec("ALTER TABLE {$this->table} ADD COLUMN desconto DECIMAL(14,2) DEFAULT 0 AFTER frete_valor");
         }
 
+        try {
+            $this->db->query("SELECT desconto_tipo FROM {$this->table} LIMIT 1");
+        } catch (\PDOException $exception) {
+            if ($exception->getCode() !== '42S22') {
+                throw $exception;
+            }
+            $this->db->exec("ALTER TABLE {$this->table} ADD COLUMN desconto_tipo VARCHAR(20) NOT NULL DEFAULT 'valor' AFTER desconto");
+        }
+
+        try {
+            $this->db->query("SELECT desconto_valor_original FROM {$this->table} LIMIT 1");
+        } catch (\PDOException $exception) {
+            if ($exception->getCode() !== '42S22') {
+                throw $exception;
+            }
+            $this->db->exec("ALTER TABLE {$this->table} ADD COLUMN desconto_valor_original DECIMAL(14,4) NOT NULL DEFAULT 0 AFTER desconto_tipo");
+        }
+
         $this->descontoChecked = true;
     }
 
