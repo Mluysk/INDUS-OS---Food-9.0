@@ -79,6 +79,28 @@
 
     #pedido-form .produto-search-wrap {
         position: relative;
+        outline: 0 !important;
+        box-shadow: none !important;
+        border-color: transparent;
+    }
+
+    #pedido-form .pedido-field:has(.produto-search-wrap):focus,
+    #pedido-form .pedido-field:has(.produto-search-wrap):focus-within,
+    #pedido-form .produto-search-wrap:focus,
+    #pedido-form .produto-search-wrap:focus-within {
+        outline: 0 !important;
+        box-shadow: none !important;
+        border-color: transparent !important;
+    }
+
+    #pedido-form #pedido-produto-search {
+        outline: 0;
+    }
+
+    #pedido-form #pedido-produto-search:focus {
+        outline: 0 !important;
+        border-color: var(--primary, #dc2626);
+        box-shadow: 0 0 0 3px rgba(var(--primary-rgb, 220, 38, 38), 0.14);
     }
 
     #pedido-form .produto-suggestions {

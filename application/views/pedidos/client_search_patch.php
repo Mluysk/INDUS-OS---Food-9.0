@@ -5,6 +5,18 @@
         flex-direction: column;
         gap: 0.35rem;
         min-width: 0;
+        outline: 0 !important;
+        box-shadow: none !important;
+        border-color: transparent;
+    }
+
+    #pedido-form .pedido-cliente-search-field:focus,
+    #pedido-form .pedido-cliente-search-field:focus-within,
+    #pedido-form .cliente-search-wrap:focus,
+    #pedido-form .cliente-search-wrap:focus-within {
+        outline: 0 !important;
+        box-shadow: none !important;
+        border-color: transparent !important;
     }
 
     #pedido-form .pedido-cliente-search-field select[name="cliente_id"] {
@@ -25,6 +37,13 @@
         width: 100%;
         min-height: 46px;
         font-weight: 700;
+        outline: 0;
+    }
+
+    #pedido-form #pedido-cliente-search:focus {
+        outline: 0 !important;
+        border-color: var(--primary, #dc2626);
+        box-shadow: 0 0 0 3px rgba(var(--primary-rgb, 220, 38, 38), 0.14);
     }
 
     #pedido-form .cliente-suggestions {
