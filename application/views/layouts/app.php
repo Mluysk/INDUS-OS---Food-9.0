@@ -1124,32 +1124,55 @@ $brandTitleOffsetY = (int)($theme['title_offset_y'] ?? 0);
             grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
         }
         .filter-grid {
-            display: grid;
-            gap: 14px 16px;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            display: flex;
+            align-items: flex-end;
+            gap: 12px;
+            flex-wrap: wrap;
             margin-bottom: 18px;
-            align-items: end;
         }
         .filter-grid label {
-            display: flex;
+            display: grid;
             flex-direction: column;
-            gap: 6px;
-            font-weight: 600;
+            gap: 5px;
+            min-width: 190px;
+            color: var(--text-muted, #64748b);
+            font-size: 0.78rem;
+            font-weight: 800;
+        }
+        .filter-grid label:has(input[type="search"]),
+        .filter-grid label:has(input[name="q"]) {
+            min-width: min(100%, 320px);
+            width: min(100%, 420px);
+        }
+        .filter-grid label > span:first-child {
             color: var(--text-muted);
         }
         .filter-grid input,
         .filter-grid select {
-            border-radius: 12px;
-            border: 1px solid var(--border);
-            padding: 12px 14px;
-            background: var(--surface-alt);
-            color: var(--text);
+            min-height: 42px;
+            border-radius: 14px;
+            border: 1px solid var(--border, #e5e7eb);
+            padding: 0.55rem 0.85rem;
+            background: var(--surface, #fff);
+            color: var(--text, #111827);
             font-size: 0.95rem;
+            font-weight: 800;
+            outline: 0;
+            box-shadow: 0 8px 24px rgba(15, 23, 42, 0.04);
+        }
+        .filter-grid input:focus,
+        .filter-grid select:focus,
+        .filter-grid label:focus-within input,
+        .filter-grid label:focus-within select {
+            border-color: var(--primary, #4f46e5);
+            box-shadow: var(--primary-glow, 0 0 0 3px rgba(79, 70, 229, 0.20)), 0 12px 26px -22px rgba(var(--primary-rgb, 79, 70, 229), 0.74);
         }
         .filter-actions {
             display: flex;
             gap: 10px;
             align-items: center;
+            align-self: flex-end;
+            min-height: 42px;
         }
         .form-grid label {
             display: flex;
