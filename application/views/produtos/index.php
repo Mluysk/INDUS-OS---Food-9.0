@@ -109,14 +109,15 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
         opacity: 0.9;
     }
     .product-type-filter {
-        width: clamp(180px, 18vw, 245px);
+        min-width: 0 !important;
+        width: calc(20ch + 42px);
         max-width: 100%;
     }
 
     .product-type-filter select {
         width: 100%;
         min-width: 0;
-        padding-right: 2.45rem;
+        padding-right: 2.15rem;
     }
     .catalog-meta-row {
         display: flex;
