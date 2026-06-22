@@ -65,9 +65,11 @@ if (!empty($filters['tipo'])) {
         <style>
             .visual-catalog { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
             .visual-product { overflow: hidden; border: 1px solid rgba(15, 23, 42, 0.10); border-radius: 18px; background: #fff; box-shadow: 0 18px 44px -34px rgba(15, 23, 42, 0.45); break-inside: avoid; }
-            .visual-product__photo { display: grid; place-items: center; aspect-ratio: 4 / 3; background: linear-gradient(135deg, rgba(15, 23, 42, 0.04), rgba(15, 23, 42, 0.015)); border-bottom: 1px solid rgba(15, 23, 42, 0.08); }
+            .visual-product__photo { display: grid; place-items: center; aspect-ratio: 4 / 3; background: linear-gradient(135deg, color-mix(in srgb, var(--brand) 8%, #fff), rgba(15, 23, 42, 0.018)); border-bottom: 1px solid rgba(15, 23, 42, 0.08); }
             .visual-product__photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
-            .visual-product__empty { width: 68px; height: 68px; border-radius: 18px; display: grid; place-items: center; background: color-mix(in srgb, var(--brand) 10%, #fff); color: var(--brand); font-size: 0.75rem; font-weight: 900; text-align: center; }
+            .visual-product__empty { width: 100%; height: 100%; display: grid; place-items: center; background: radial-gradient(circle at center, color-mix(in srgb, var(--brand) 15%, #fff) 0 30%, color-mix(in srgb, var(--brand) 5%, #fff) 31% 100%); color: var(--brand); }
+            .visual-product__empty-mark { width: 74px; height: 74px; border-radius: 22px; display: grid; place-items: center; background: rgba(255, 255, 255, 0.82); border: 1px solid color-mix(in srgb, var(--brand) 18%, transparent); box-shadow: 0 18px 34px -28px color-mix(in srgb, var(--brand) 55%, transparent); }
+            .visual-product__empty-mark svg { width: 34px; height: 34px; stroke: currentColor; }
             .visual-product__body { display: grid; gap: 10px; padding: 14px; }
             .visual-product__top { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
             .visual-product h2 { margin: 0; color: #0f172a; font-size: 1rem; line-height: 1.2; }
@@ -165,7 +167,15 @@ if (!empty($filters['tipo'])) {
                         <?php if ($imageUrl !== ''): ?>
                             <img src="<?= htmlspecialchars($imageUrl, ENT_QUOTES, 'UTF-8'); ?>" alt="<?= htmlspecialchars($produto['nome'] ?? 'Produto', ENT_QUOTES, 'UTF-8'); ?>">
                         <?php else: ?>
-                            <span class="visual-product__empty">Sem foto</span>
+                            <span class="visual-product__empty" aria-label="Produto sem imagem cadastrada">
+                                <span class="visual-product__empty-mark" aria-hidden="true">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
+                                        <rect width="18" height="18" x="3" y="3" rx="2"></rect>
+                                        <circle cx="9" cy="9" r="2"></circle>
+                                        <path d="m21 15-3.1-3.1a2 2 0 0 0-2.8 0L6 21"></path>
+                                    </svg>
+                                </span>
+                            </span>
                         <?php endif; ?>
                     </div>
                     <div class="visual-product__body">
