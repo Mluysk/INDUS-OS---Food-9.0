@@ -54,6 +54,7 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
     .product-catalog-search {
         display: grid;
         gap: 8px;
+        width: min(100%, calc(37ch + 72px));
     }
     .product-catalog-search__control {
         display: inline-flex;
@@ -92,7 +93,7 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
         color: var(--text, #111827);
         outline: 0;
         font-weight: 800;
-        font-size: 0.88rem;
+        font-size: 0.82rem;
         box-shadow: none;
     }
     .product-catalog-search__control input:focus,
@@ -107,7 +108,7 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
     }
     .product-catalog-search__control input::placeholder {
         color: var(--text-muted, #64748b);
-        opacity: 0.8;
+        opacity: 0.85;
     }
     .product-type-filter {
         min-width: 0 !important;

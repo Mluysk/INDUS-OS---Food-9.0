@@ -635,7 +635,7 @@
         display: inline-flex;
         align-items: center;
         gap: 0.62rem;
-        width: min(100%, 420px);
+        width: min(100%, calc(48ch + 72px));
         min-height: 42px;
         border: 1px solid var(--border, #e5e7eb);
         border-radius: 999px;
@@ -662,7 +662,7 @@
         color: var(--text, #111827);
         outline: 0;
         font-weight: 800;
-        font-size: 0.825rem;
+        font-size: 0.78rem;
     }
 
     .clientes-search-box input::placeholder {

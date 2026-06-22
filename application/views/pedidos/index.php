@@ -820,7 +820,7 @@
     .pedido-list-search {
         display: grid;
         gap: 0.35rem;
-        width: min(100%, 390px);
+        width: min(100%, calc(36ch + 72px));
         color: var(--text-muted, #64748b);
         font-size: 0.78rem;
         font-weight: 800;
@@ -864,6 +864,7 @@
         background: transparent;
         outline: 0;
         font-weight: 800;
+        font-size: 0.82rem;
     }
 
     .pedido-list-sort-head {
