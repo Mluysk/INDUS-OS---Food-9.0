@@ -328,8 +328,7 @@ class ConfigController extends Controller
 
         $currentBackupFile = $this->config->get('BACKUP_LAST_FILE', '');
 
-        if (!$this->wantsJson()) {
-            $uploadMap = [
+        $uploadMap = [
                 'THEME_LOGO_LIGHT' => 'logo_light_file',
                 'THEME_LOGO_DARK' => 'logo_dark_file',
                 'THEME_LOGO_COMPACT_LIGHT' => 'logo_compact_light_file',
@@ -389,7 +388,8 @@ class ConfigController extends Controller
                 $data[$configKey] = $relativePath;
             }
 
-            $cleanDest = trim((string)($data['BACKUP_DEST_PATH'] ?? $this->config->get('BACKUP_DEST_PATH', 'storage/backups/uploads')));
+            if (!$this->wantsJson()) {
+                $cleanDest = trim((string)($data['BACKUP_DEST_PATH'] ?? $this->config->get('BACKUP_DEST_PATH', 'storage/backups/uploads')));
             $cleanDest = str_replace('..', '', $cleanDest);
             $cleanDest = ltrim($cleanDest, '/');
             if ($cleanDest === '') {
@@ -401,7 +401,7 @@ class ConfigController extends Controller
             if (!is_dir($backupUploadDir) && !mkdir($backupUploadDir, 0775, true) && !is_dir($backupUploadDir)) {
                 $errors[] = 'Não foi possível preparar o diretório de backups.';
             }
-            if (isset($_FILES['backup_file']) && is_array($_FILES['backup_file']) && ($_FILES['backup_file']['error'] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_OK) {
+                if (isset($_FILES['backup_file']) && is_array($_FILES['backup_file']) && ($_FILES['backup_file']['error'] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_OK) {
                 $original = (string)($_FILES['backup_file']['name'] ?? '');
                 $safeName = preg_replace('/[^A-Za-z0-9_.-]/', '_', $original);
                 $ext = pathinfo($safeName, PATHINFO_EXTENSION) ?: 'zip';
@@ -682,6 +682,7 @@ class ConfigController extends Controller
             http_response_code($status);
             $this->json([
                 'message' => $errors ? implode(' ', $errors) : 'Configurações atualizadas'.$backupMessage,
+                'config' => $data,
             ]);
             return;
         }

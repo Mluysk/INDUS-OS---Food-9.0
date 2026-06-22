@@ -1009,7 +1009,7 @@ $previewMatrixDefault = app_logo_matrix_values($logoTintPreviewHex);
                     </div>
                 </div>
                 <label class="logo-label" for="note-logo">Caminho logo da nota</label>
-                <input id="note-logo" name="config[NOTE_LOGO]" value="<?= htmlspecialchars($noteLogoPath, ENT_QUOTES, 'UTF-8'); ?>" placeholder="img/logo.png">
+                <input id="note-logo" name="config[NOTE_LOGO]" value="<?= htmlspecialchars($noteLogoPath, ENT_QUOTES, 'UTF-8'); ?>" placeholder="uploads/branding/logodark.png">
                 <label class="upload-label" for="note-logo-file">
                     <span>Enviar novo arquivo</span>
                     <input type="file" id="note-logo-file" name="note_logo_file" accept="image/*">
@@ -2588,6 +2588,7 @@ $previewMatrixDefault = app_logo_matrix_values($logoTintPreviewHex);
             { file: '#logo-compact-dark-file', text: '#logo-compact-dark', preview: '#preview-compact-dark' },
             { file: '#portal-login-logo-light-file', text: '#portal-login-logo-light', preview: '#preview-portal-login-light' },
             { file: '#portal-login-logo-dark-file', text: '#portal-login-logo-dark', preview: '#preview-portal-login-dark' },
+            { file: '#note-logo-file', text: '#note-logo', preview: '#preview-note' },
         ];
 
         logoBindings.forEach(({ file, text, preview }) => {
@@ -2745,6 +2746,31 @@ $previewMatrixDefault = app_logo_matrix_values($logoTintPreviewHex);
                 return target.closest('[data-autosave-skip]') !== null;
             };
 
+            const syncSavedConfig = (form, payload) => {
+                const config = payload && payload.config && typeof payload.config === 'object' ? payload.config : {};
+                Object.entries(config).forEach(([key, value]) => {
+                    const input = form.querySelector(`[name="config[${key}]"]`);
+                    if (!input || input.type === 'file') {
+                        return;
+                    }
+                    input.value = value;
+                    const previewMap = {
+                        THEME_LOGO_LIGHT: '#preview-light',
+                        THEME_LOGO_DARK: '#preview-dark',
+                        THEME_LOGO_COMPACT_LIGHT: '#preview-compact-light',
+                        THEME_LOGO_COMPACT_DARK: '#preview-compact-dark',
+                        PORTAL_LOGIN_LOGO_LIGHT: '#preview-portal-login-light',
+                        PORTAL_LOGIN_LOGO_DARK: '#preview-portal-login-dark',
+                        NOTE_LOGO: '#preview-note',
+                    };
+                    const previewImg = previewMap[key] ? document.querySelector(previewMap[key]) : null;
+                    if (previewImg && value) {
+                        previewImg.src = resolveAsset(String(value));
+                        applyLogoTint();
+                    }
+                });
+            };
+
             const autosave = (form) => {
                 const previous = controllers.get(form);
                 if (previous) {
@@ -2769,6 +2795,7 @@ $previewMatrixDefault = app_logo_matrix_values($logoTintPreviewHex);
                         if (!response.ok) {
                             throw new Error(payload.message || 'Não foi possível salvar automaticamente.');
                         }
+                        syncSavedConfig(form, payload);
                         setLabel(form, 'Salvo automaticamente.');
                         showConfigToast('Configuração salva automaticamente.');
                     })
@@ -2799,6 +2826,15 @@ $previewMatrixDefault = app_logo_matrix_values($logoTintPreviewHex);
                     }
                     window.clearTimeout(timers.get(form));
                     timers.set(form, window.setTimeout(() => autosave(form), 250));
+                });
+                form.querySelectorAll('input[type="file"]').forEach((input) => {
+                    input.addEventListener('change', () => {
+                        if (!input.files || !input.files.length) {
+                            return;
+                        }
+                        window.clearTimeout(timers.get(form));
+                        timers.set(form, window.setTimeout(() => autosave(form), 80));
+                    });
                 });
             });
         };
