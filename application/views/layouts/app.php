@@ -403,7 +403,7 @@ $brandTitleOffsetY = (int)($theme['title_offset_y'] ?? 0);
             box-shadow: inset -1px 0 0 rgba(15, 23, 42, 0.06);
             transition: width 0.25s ease, padding 0.25s ease;
             overflow-y: auto;
-            overflow-x: visible;
+            overflow-x: hidden;
         }
         .sidebar.collapsed {
             width: var(--sidebar-width-collapsed);
@@ -574,6 +574,8 @@ $brandTitleOffsetY = (int)($theme['title_offset_y'] ?? 0);
             display: flex;
             align-items: center;
             gap: 10px;
+            width: 100%;
+            min-width: 0;
             border-radius: 14px;
             padding: 10px 14px;
             background: var(--sidebar-search-bg);
@@ -585,6 +587,7 @@ $brandTitleOffsetY = (int)($theme['title_offset_y'] ?? 0);
             outline: none;
             color: var(--sidebar-search-text);
             flex: 1;
+            min-width: 0;
             font-size: 0.95rem;
         }
         .sidebar-search .icon {
@@ -594,6 +597,17 @@ $brandTitleOffsetY = (int)($theme['title_offset_y'] ?? 0);
         }
         .sidebar-search input::placeholder {
             color: rgba(148, 163, 184, 0.7);
+        }
+        .sidebar-search.search-clear-host input[type="search"],
+        .sidebar-search.search-clear-host input.has-search-clear-button {
+            padding-right: 28px !important;
+        }
+        .sidebar-search .search-clear-button {
+            right: 8px;
+            width: 22px;
+            height: 22px;
+            min-width: 22px;
+            min-height: 22px;
         }
         .sidebar-body {
             display: flex;
