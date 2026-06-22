@@ -1703,6 +1703,7 @@
         const fieldsToFill = [
             'razao_social',
             'nome_fantasia',
+            'ie',
             'email',
             'telefone',
             'contato_tipo',

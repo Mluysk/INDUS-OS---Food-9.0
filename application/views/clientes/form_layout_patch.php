@@ -299,7 +299,68 @@
         if (String(input.value || '').trim() === '') {
             input.value = String(value).trim();
             input.dispatchEvent(new Event('input', { bubbles: true }));
+            input.dispatchEvent(new Event('change', { bubbles: true }));
         }
+    };
+
+    const firstValue = (...values) => {
+        for (const value of values.flat()) {
+            if (value === undefined || value === null) {
+                continue;
+            }
+            const text = String(value).trim();
+            if (text !== '') {
+                return text;
+            }
+        }
+        return '';
+    };
+
+    const formatPhone = (value) => {
+        const digits = onlyDigits(value);
+        if (digits.length === 11) {
+            return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
+        }
+        if (digits.length === 10) {
+            return `(${digits.slice(0, 2)}) ${digits.slice(2, 6)}-${digits.slice(6)}`;
+        }
+        return String(value || '').trim();
+    };
+
+    const ieFromItem = (item) => {
+        if (!item || typeof item !== 'object') {
+            return '';
+        }
+        return firstValue(item.inscricao_estadual, item.inscricao, item.numero, item.ie);
+    };
+
+    const findStateRegistration = (data) => {
+        const direct = firstValue(data.inscricao_estadual, data.inscricao_estadual_numero, data.ie);
+        if (direct) {
+            return direct;
+        }
+
+        const uf = String(data.uf || '').toUpperCase();
+        const lists = [
+            data.inscricoes_estaduais,
+            data.inscricoesEstaduais,
+            data.estabelecimento && data.estabelecimento.inscricoes_estaduais,
+            data.estabelecimento && data.estabelecimento.inscricoesEstaduais,
+        ].filter(Array.isArray);
+
+        for (const list of lists) {
+            const match = list.find((item) => {
+                const itemUf = String((item && (item.estado || item.uf)) || '').toUpperCase();
+                const inactive = ['false', 'baixada', 'inativo', 'inativa'].includes(String((item && (item.ativo ?? item.situacao)) || '').toLowerCase());
+                return !inactive && (!uf || !itemUf || itemUf === uf);
+            }) || list[0];
+            const value = ieFromItem(match);
+            if (value) {
+                return value;
+            }
+        }
+
+        return '';
     };
 
     const formatCep = (cep) => {
@@ -308,15 +369,19 @@
     };
 
     const fillFromCnpj = (data) => {
-        const phone = data.ddd_telefone_1 || data.telefone || '';
+        const primaryPhone = firstValue(data.ddd_telefone_1, data.telefone, data.phone);
+        const secondaryPhone = firstValue(data.whatsapp, data.celular, data.ddd_telefone_2, data.phone2);
+        const phone = formatPhone(primaryPhone || secondaryPhone);
+        const whatsapp = formatPhone(secondaryPhone || primaryPhone);
         const email = data.email || '';
         const fantasy = data.nome_fantasia || data.razao_social || '';
 
         fillIfEmpty('razao_social', data.razao_social);
         fillIfEmpty('nome_fantasia', fantasy);
+        fillIfEmpty('ie', findStateRegistration(data));
         fillIfEmpty('email', email);
         fillIfEmpty('telefone', phone);
-        fillIfEmpty('whatsapp', phone);
+        fillIfEmpty('whatsapp', whatsapp || phone);
         fillIfEmpty('cep', formatCep(data.cep));
         fillIfEmpty('endereco', data.logradouro || data.descricao_tipo_de_logradouro);
         fillIfEmpty('numero', data.numero);
