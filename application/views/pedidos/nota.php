@@ -65,6 +65,50 @@ $pixLabels = [
 ];
 $pixLabel = $pixLabels[strtolower($pixType)] ?? '';
 $pedidoCodigo = $pedido['codigo'] ?? ('#'.$pedido['id']);
+$formaPagto = trim((string)($pedido['forma_pagto'] ?? 'A combinar'));
+$formaPagto = $formaPagto !== '' ? $formaPagto : 'A combinar';
+$paymentIcon = static function (string $payment): string {
+    if (strtoupper(trim($payment)) === 'PIX') {
+        return '';
+    }
+
+    $text = strtolower($payment);
+    $icon = 'more';
+    if (strpos($text, 'dinheiro') !== false) {
+        $icon = 'banknote';
+    } elseif (strpos($text, 'cart') !== false) {
+        $icon = 'card';
+    } elseif (strpos($text, 'boleto') !== false) {
+        $icon = 'file';
+    } elseif (strpos($text, 'ted') !== false || strpos($text, 'dep') !== false) {
+        $icon = 'bank';
+    } elseif (strpos($text, 'transfer') !== false) {
+        $icon = 'transfer';
+    } elseif (strpos($text, 'cheque') !== false) {
+        $icon = 'receipt';
+    } elseif (strpos($text, 'vale') !== false) {
+        $icon = 'utensils';
+    } elseif (strpos($text, 'prazo') !== false) {
+        $icon = 'calendar';
+    }
+
+    $paths = [
+        'banknote' => '<rect x="3" y="6" width="18" height="12" rx="2"></rect><circle cx="12" cy="12" r="2.2"></circle><path d="M7 10v4M17 10v4"></path>',
+        'card' => '<rect x="3" y="5" width="18" height="14" rx="2.5"></rect><path d="M3 10h18M7 15h4"></path>',
+        'file' => '<path d="M7 3h7l4 4v14H7z"></path><path d="M14 3v5h5M9 13h6M9 17h4"></path>',
+        'bank' => '<path d="M4 10h16L12 5z"></path><path d="M6 10v8M10 10v8M14 10v8M18 10v8M4 19h16"></path>',
+        'transfer' => '<path d="M7 7h13M17 4l3 3-3 3M17 17H4M7 14l-3 3 3 3"></path>',
+        'receipt' => '<path d="M7 3h10v18l-2-1.2L13 21l-2-1.2L9 21l-2-1.2z"></path><path d="M9 8h6M9 12h6M9 16h4"></path>',
+        'utensils' => '<path d="M7 3v8M5 3v4a2 2 0 0 0 4 0V3M7 11v10M16 3v18M16 3c2 1.4 3 3.3 3 5.5 0 1.8-.8 3.2-3 4"></path>',
+        'calendar' => '<rect x="4" y="5" width="16" height="16" rx="2"></rect><path d="M8 3v4M16 3v4M4 10h16M8 14h3M13 14h3M8 18h3"></path>',
+        'more' => '<circle cx="6" cy="12" r="1.5"></circle><circle cx="12" cy="12" r="1.5"></circle><circle cx="18" cy="12" r="1.5"></circle>',
+    ];
+
+    return '<svg class="nota-payment-icon" viewBox="0 0 24 24" aria-hidden="true">' . ($paths[$icon] ?? $paths['more']) . '</svg>';
+};
+$paymentInline = static function (string $payment) use ($paymentIcon): string {
+    return '<span class="nota-payment-method">' . $paymentIcon($payment) . '<span>' . htmlspecialchars($payment, ENT_QUOTES, 'UTF-8') . '</span></span>';
+};
 $itensSubtotal = array_reduce($itens, static function($carry, $item){
     $q = (float)($item['quantidade'] ?? 0);
     $p = (float)($item['preco_unit'] ?? 0);
@@ -139,7 +183,7 @@ $pixQrUrl = $pixPayload !== '' ? 'https://quickchart.io/qr?size=200&margin=2&tex
             <h3>Pedido</h3>
             <p><span class="label">Código:</span> <?= htmlspecialchars($pedidoCodigo, ENT_QUOTES, 'UTF-8'); ?></p>
             <p><span class="label">Vendedor:</span> <?= htmlspecialchars($pedido['vendedor'] ?? 'Administrador', ENT_QUOTES, 'UTF-8'); ?></p>
-            <p><span class="label">Pagamento:</span> <?= htmlspecialchars($pedido['forma_pagto'] ?? 'A combinar', ENT_QUOTES, 'UTF-8'); ?></p>
+            <p><span class="label">Pagamento:</span> <?= $paymentInline($formaPagto); ?></p>
             <p><span class="label">Validade da proposta:</span> <?= htmlspecialchars($pedido['validade'] ?? date('d/m/Y', strtotime('+7 days')), ENT_QUOTES, 'UTF-8'); ?></p>
         </div>
     </div>
@@ -209,7 +253,7 @@ $pixQrUrl = $pixPayload !== '' ? 'https://quickchart.io/qr?size=200&margin=2&tex
             <h4>Observações</h4>
             <p><?= nl2br(htmlspecialchars($pedido['observacoes'] ?? '-', ENT_QUOTES, 'UTF-8')); ?></p>
             <h4>Forma de pagamento</h4>
-            <p><?= htmlspecialchars($pedido['forma_pagto'] ?? 'PIX / Transferência', ENT_QUOTES, 'UTF-8'); ?></p>
+            <p><?= $paymentInline($formaPagto); ?></p>
         </div>
         <div class="nota-observacoes__col total-box">
             <div class="total-row"><span>Subtotal produtos</span><span>R$ <?= number_format($itensSubtotal, 2, ',', '.'); ?></span></div>
@@ -266,6 +310,8 @@ $pixQrUrl = $pixPayload !== '' ? 'https://quickchart.io/qr?size=200&margin=2&tex
     .nota-block h3 { margin:0 0 4px; font-size: 13px; text-transform: uppercase; letter-spacing: 0.04em; }
     .nota-block .label { color: var(--nota-muted); font-weight:600; }
     .nota-block p { margin: 2px 0; }
+    .nota-payment-method { display:inline-flex; align-items:center; gap:4px; vertical-align:middle; }
+    .nota-payment-icon { width:13px; height:13px; flex:0 0 13px; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; color:var(--nota-muted); }
     .nota-items { border:2px solid var(--nota-border); border-top:none; }
     .nota-table { width:100%; border-collapse: collapse; table-layout: fixed; }
     .nota-table th, .nota-table td { border:1px solid var(--nota-border); padding:7px 8px; text-align:center; vertical-align: middle; }
