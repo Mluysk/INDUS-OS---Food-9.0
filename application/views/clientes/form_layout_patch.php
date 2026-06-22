@@ -372,7 +372,6 @@
         const primaryPhone = firstValue(data.ddd_telefone_1, data.telefone, data.phone);
         const secondaryPhone = firstValue(data.whatsapp, data.celular, data.ddd_telefone_2, data.phone2);
         const phone = formatPhone(primaryPhone || secondaryPhone);
-        const whatsapp = formatPhone(secondaryPhone || primaryPhone);
         const email = data.email || '';
         const fantasy = data.nome_fantasia || data.razao_social || '';
 
@@ -381,7 +380,6 @@
         fillIfEmpty('ie', findStateRegistration(data));
         fillIfEmpty('email', email);
         fillIfEmpty('telefone', phone);
-        fillIfEmpty('whatsapp', whatsapp || phone);
         fillIfEmpty('cep', formatCep(data.cep));
         fillIfEmpty('endereco', data.logradouro || data.descricao_tipo_de_logradouro);
         fillIfEmpty('numero', data.numero);
