@@ -103,6 +103,26 @@
         box-shadow: 0 0 0 3px rgba(var(--primary-rgb, 220, 38, 38), 0.14);
     }
 
+    #pedido-form .produto-search-wrap .search-clear-button {
+        top: 23px;
+        right: 12px;
+        width: 24px;
+        height: 24px;
+        min-width: 24px;
+        min-height: 24px;
+        transform: translateY(-50%);
+        display: grid;
+        place-items: center;
+        line-height: 1;
+    }
+
+    #pedido-form .produto-search-wrap .search-clear-button svg {
+        display: block;
+        width: 12px;
+        height: 12px;
+        margin: 0;
+    }
+
     #pedido-form .produto-suggestions {
         position: absolute;
         z-index: 30;
