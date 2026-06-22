@@ -1657,6 +1657,35 @@
             editCancel.hidden = true;
         }
         form.reset();
+        const radioNames = new Set();
+        form.querySelectorAll('input, textarea, select').forEach((field) => {
+            if (field.type === 'radio') {
+                if (radioNames.has(field.name)) {
+                    return;
+                }
+                radioNames.add(field.name);
+                const group = Array.from(form.querySelectorAll(`input[type="radio"][name="${field.name}"]`));
+                const checked = group.find((option) => option.defaultChecked) || group[0];
+                group.forEach((option) => {
+                    option.checked = option === checked;
+                    option.dispatchEvent(new Event('change', { bubbles: true }));
+                });
+                return;
+            }
+            if (field.type === 'checkbox') {
+                field.checked = field.defaultChecked;
+                field.dispatchEvent(new Event('change', { bubbles: true }));
+                return;
+            }
+            if (field.tagName === 'SELECT') {
+                field.selectedIndex = 0;
+                field.dispatchEvent(new Event('change', { bubbles: true }));
+                return;
+            }
+            field.value = '';
+            field.dispatchEvent(new Event('input', { bubbles: true }));
+            field.dispatchEvent(new Event('change', { bubbles: true }));
+        });
         if (window.updateClienteUfFlag) {
             window.updateClienteUfFlag();
         }
@@ -1664,6 +1693,7 @@
             cnpjButton.click();
         }
     };
+    window.resetClienteEditState = resetEditState;
 
     const hideModal = () => {
         modal.setAttribute('hidden', 'hidden');

@@ -169,10 +169,16 @@
     }, true);
 
     editCancel?.addEventListener('click', () => {
+        if (window.resetClienteEditState) {
+            window.resetClienteEditState();
+            return;
+        }
         form.removeAttribute('data-edit-id');
         if (submitButton) {
             submitButton.textContent = defaultSubmitText;
         }
+        form.reset();
+        editCancel.hidden = true;
     });
 })();
 </script>
