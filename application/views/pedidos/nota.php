@@ -190,7 +190,7 @@ $pixQrUrl = $pixPayload !== '' ? 'https://quickchart.io/qr?size=200&margin=2&tex
         </div>
         <div class="nota-block__col">
             <h3>Pedido</h3>
-            <p><span class="label">Código:</span> <?= htmlspecialchars($pedidoCodigo, ENT_QUOTES, 'UTF-8'); ?></p>
+            <p><span class="label">Nº do pedido:</span> <?= htmlspecialchars($pedidoCodigo, ENT_QUOTES, 'UTF-8'); ?></p>
             <p><span class="label">Vendedor:</span> <?= htmlspecialchars($pedido['vendedor'] ?? 'Administrador', ENT_QUOTES, 'UTF-8'); ?></p>
             <p><span class="label">Pagamento:</span> <?= $paymentInline($formaPagto); ?></p>
             <p><span class="label">Validade da proposta:</span> <?= htmlspecialchars($pedido['validade'] ?? date('d/m/Y', strtotime('+7 days')), ENT_QUOTES, 'UTF-8'); ?></p>
