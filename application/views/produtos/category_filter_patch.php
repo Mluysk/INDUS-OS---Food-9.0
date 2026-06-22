@@ -27,8 +27,8 @@ $selectedCategorias = array_values(array_unique(array_filter(array_map('trim', $
     }
     .category-multi-button:hover,
     .category-multi-filter.is-open .category-multi-button {
-        border-color: var(--primary, #dc2626);
-        box-shadow: 0 10px 28px rgba(220, 38, 38, 0.10);
+        border-color: var(--border-muted, #d8e0ec);
+        box-shadow: 0 10px 26px rgba(15, 23, 42, 0.08);
     }
     .category-multi-button::after { content: "v"; font-size: 0.78rem; color: var(--text-muted, #64748b); }
     .category-multi-filter.is-open .category-multi-button::after { content: "^"; }
@@ -90,6 +90,13 @@ $selectedCategorias = array_values(array_unique(array_filter(array_map('trim', $
         margin: 0;
         accent-color: var(--primary, #dc2626);
         order: 2;
+        outline: 0;
+        box-shadow: none;
+    }
+    .category-multi-option input:focus,
+    .category-multi-option input:focus-visible {
+        outline: 0;
+        box-shadow: none;
     }
     .category-multi-actions {
         position: sticky;
