@@ -97,6 +97,16 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
         color: var(--text-muted, #64748b);
         opacity: 0.9;
     }
+    .product-type-filter {
+        width: clamp(180px, 18vw, 245px);
+        max-width: 100%;
+    }
+
+    .product-type-filter select {
+        width: 100%;
+        min-width: 0;
+        padding-right: 2.45rem;
+    }
     .catalog-meta-row {
         display: flex;
         align-items: center;
@@ -690,7 +700,7 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
                 <?php endforeach; ?>
             </select>
         </label>
-        <label>
+        <label class="product-type-filter">
             Tipo
             <select name="tipo">
                 <option value="">Todos</option>
