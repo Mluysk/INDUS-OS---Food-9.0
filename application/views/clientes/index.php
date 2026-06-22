@@ -662,6 +662,11 @@
         color: var(--text, #111827);
         outline: 0;
         font-weight: 800;
+        font-size: 0.825rem;
+    }
+
+    .clientes-search-box input::placeholder {
+        opacity: 0.85;
     }
 
     .clientes-search-box input:focus {
