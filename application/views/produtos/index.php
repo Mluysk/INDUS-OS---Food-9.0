@@ -92,6 +92,7 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
         color: var(--text, #111827);
         outline: 0;
         font-weight: 800;
+        font-size: 0.88rem;
         box-shadow: none;
     }
     .product-catalog-search__control input:focus,
@@ -106,7 +107,7 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
     }
     .product-catalog-search__control input::placeholder {
         color: var(--text-muted, #64748b);
-        opacity: 0.9;
+        opacity: 0.8;
     }
     .product-type-filter {
         min-width: 0 !important;
