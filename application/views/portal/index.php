@@ -1479,10 +1479,16 @@ if ($supportWhatsapp !== '') {
         position: absolute;
         right: 14px;
         top: 14px;
-        display: inline-grid;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
         place-items: center;
         width: 38px;
         height: 38px;
+        min-width: 38px;
+        min-height: 38px;
+        aspect-ratio: 1 / 1;
+        padding: 0;
         border: 1px solid rgba(255, 255, 255, 0.72);
         border-radius: 50%;
         background: #dc2626;
@@ -1494,8 +1500,10 @@ if ($supportWhatsapp !== '') {
         transition: none;
     }
     .portal-image-lightbox__close svg {
-        width: 19px;
-        height: 19px;
+        display: block;
+        width: 18px;
+        height: 18px;
+        flex: 0 0 18px;
         stroke: currentColor;
     }
     .portal-image-lightbox__nav {
