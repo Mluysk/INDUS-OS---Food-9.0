@@ -237,7 +237,7 @@ $pixQrUrl = $pixPayload !== '' ? 'https://quickchart.io/qr?size=200&margin=2&tex
                 <?php if ($freteValor > 0): ?>
                     <tr class="nota-frete-row">
                         <td class="code-col"><strong>FRETE</strong></td>
-                        <td class="left product-col"><strong>Frete</strong></td>
+                        <td class="left product-col"><strong>FRETE</strong></td>
                         <td class="qty-col">1,00</td>
                         <td class="weight-col">-</td>
                         <td class="money-col">R$ <?= number_format($freteValor, 2, ',', '.'); ?></td>
@@ -247,7 +247,7 @@ $pixQrUrl = $pixPayload !== '' ? 'https://quickchart.io/qr?size=200&margin=2&tex
             <?php else: ?>
                 <tr><td colspan="6" class="no-data">Nenhum item informado.</td></tr>
                 <?php if ($freteValor > 0): ?>
-                    <tr class="nota-frete-row"><td class="code-col"><strong>FRETE</strong></td><td class="left product-col"><strong>Frete</strong></td><td class="qty-col">1,00</td><td class="weight-col">-</td><td class="money-col">R$ <?= number_format($freteValor, 2, ',', '.'); ?></td><td class="money-col">R$ <?= number_format($freteValor, 2, ',', '.'); ?></td></tr>
+                    <tr class="nota-frete-row"><td class="code-col"><strong>FRETE</strong></td><td class="left product-col"><strong>FRETE</strong></td><td class="qty-col">1,00</td><td class="weight-col">-</td><td class="money-col">R$ <?= number_format($freteValor, 2, ',', '.'); ?></td><td class="money-col">R$ <?= number_format($freteValor, 2, ',', '.'); ?></td></tr>
                 <?php endif; ?>
                 <?php if ($cobrancaDiferencaValor > 0): ?>
                     <tr class="nota-cobranca-row"><td class="code-col"><strong>00</strong></td><td class="left product-col"><strong><?= htmlspecialchars($cobrancaDiferencaDescricao, ENT_QUOTES, 'UTF-8'); ?></strong></td><td class="qty-col">1,00</td><td class="weight-col">-</td><td class="money-col">R$ <?= number_format($cobrancaDiferencaValor, 2, ',', '.'); ?></td><td class="money-col">R$ <?= number_format($cobrancaDiferencaValor, 2, ',', '.'); ?></td></tr>
@@ -267,7 +267,7 @@ $pixQrUrl = $pixPayload !== '' ? 'https://quickchart.io/qr?size=200&margin=2&tex
         <div class="nota-observacoes__col total-box">
             <div class="total-row"><span>Subtotal produtos</span><span>R$ <?= number_format($itensSubtotal, 2, ',', '.'); ?></span></div>
             <?php if ($freteValor > 0): ?>
-                <div class="total-row"><span>Frete</span><span>R$ <?= number_format($freteValor, 2, ',', '.'); ?></span></div>
+                <div class="total-row total-row__frete"><span>FRETE</span><span>R$ <?= number_format($freteValor, 2, ',', '.'); ?></span></div>
             <?php endif; ?>
             <?php if ($cobrancaDiferencaValor > 0): ?>
                 <div class="total-row"><span><?= htmlspecialchars($cobrancaDiferencaDescricao, ENT_QUOTES, 'UTF-8'); ?></span><span>R$ <?= number_format($cobrancaDiferencaValor, 2, ',', '.'); ?></span></div>
@@ -327,7 +327,8 @@ $pixQrUrl = $pixPayload !== '' ? 'https://quickchart.io/qr?size=200&margin=2&tex
     .nota-table th { background:#f8fafc; font-size:11px; }
     .nota-table td.left, .nota-table th.left { text-align:left; }
     .nota-table .muted { color: var(--nota-muted); font-size:11px; }
-    .nota-frete-row td { background:#fff7ed; font-weight:800; }
+    .nota-frete-row td { background:#fff7ed; color:#9a3412; font-weight:800; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+    .total-row__frete { color:#9a3412; font-weight:800; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
     .nota-cobranca-row td { background:#fef2f2; font-weight:800; }
     .code-col { width: 12%; }
     .product-col { width: 36%; }
