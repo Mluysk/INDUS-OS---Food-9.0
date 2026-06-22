@@ -83,20 +83,25 @@ $selectedCategorias = array_values(array_unique(array_filter(array_map('trim', $
         text-overflow: ellipsis;
         white-space: nowrap;
     }
-    .category-multi-option input {
+    .category-multi-option input,
+    .filter-grid .category-multi-menu label.category-multi-option input[type="checkbox"] {
         flex: 0 0 auto;
         width: 18px;
         height: 18px;
         margin: 0;
         accent-color: var(--primary, #dc2626);
         order: 2;
-        outline: 0;
-        box-shadow: none;
+        outline: 0 !important;
+        box-shadow: none !important;
     }
     .category-multi-option input:focus,
-    .category-multi-option input:focus-visible {
-        outline: 0;
-        box-shadow: none;
+    .category-multi-option input:focus-visible,
+    .filter-grid .category-multi-menu label.category-multi-option:focus-within input[type="checkbox"],
+    .filter-grid .category-multi-menu label.category-multi-option input[type="checkbox"]:focus,
+    .filter-grid .category-multi-menu label.category-multi-option input[type="checkbox"]:focus-visible {
+        border-color: #9ca3af !important;
+        outline: 0 !important;
+        box-shadow: none !important;
     }
     .category-multi-actions {
         position: sticky;
