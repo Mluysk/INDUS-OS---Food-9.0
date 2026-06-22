@@ -110,7 +110,7 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
     }
     .product-type-filter {
         min-width: 0 !important;
-        width: calc(20ch + 42px);
+        width: calc(22ch + 44px);
         max-width: 100%;
     }
 
@@ -118,6 +118,8 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
         width: 100%;
         min-width: 0;
         padding-right: 2.15rem;
+        font-weight: 700;
+        font-size: 0.9rem;
     }
     .catalog-meta-row {
         display: flex;
