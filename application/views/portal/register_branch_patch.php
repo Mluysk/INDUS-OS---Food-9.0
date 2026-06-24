@@ -95,7 +95,7 @@ include __DIR__.'/register.php';
     html body .portal-branch-card {
         display: grid;
         gap: 0.8rem;
-        margin: 0.35rem 0 1rem;
+        margin: calc(0.35rem + 6px) 0 1rem;
         padding: 0.95rem;
         border: 1px solid var(--portal-card-border, rgba(15, 23, 42, 0.08));
         border-radius: 18px;

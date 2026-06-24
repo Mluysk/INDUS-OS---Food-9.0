@@ -22,13 +22,13 @@ include __DIR__.'/register_icons_patch.php';
     html body .portal-contact-type {
         display: flex;
         align-items: center;
-        gap: 0.42rem;
+        gap: 0.34rem;
         flex-wrap: wrap;
-        margin: 0.36rem 0 0.78rem;
-        padding: 0.38rem 0.44rem;
+        margin: 0.42rem 0 0.82rem;
+        padding: 0.3rem 0.36rem;
         border: 1px solid color-mix(in srgb, var(--primary, #dc2626) 10%, var(--portal-card-border, rgba(15, 23, 42, 0.08)));
-        border-radius: 14px;
-        background: color-mix(in srgb, var(--primary, #dc2626) 4%, #ffffff);
+        border-radius: 13px;
+        background: color-mix(in srgb, var(--primary, #dc2626) 3%, #ffffff);
         box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.65);
         color: var(--portal-muted, rgba(71, 85, 105, 0.82));
         font-weight: 750;
@@ -43,33 +43,33 @@ include __DIR__.'/register_icons_patch.php';
         display: inline-flex;
         align-items: center;
         gap: 0.35rem;
-        min-height: 30px;
-        padding: 0 0.46rem;
+        min-height: 27px;
+        padding: 0 0.42rem;
         color: var(--text, #111827);
-        font-size: 0.8rem;
+        font-size: 0.77rem;
         letter-spacing: 0.04em;
         text-transform: uppercase;
     }
 
     html body .portal-contact-type__title .portal-form-icon {
-        width: 16px;
-        height: 16px;
+        width: 15px;
+        height: 15px;
         color: var(--text-muted, #64748b);
     }
 
     html body .portal-contact-type label {
         display: inline-flex;
         align-items: center;
-        gap: 0.38rem;
-        min-height: 30px;
+        gap: 0.32rem;
+        min-height: 27px;
         margin: 0;
-        padding: 0.32rem 0.62rem;
+        padding: 0.22rem 0.52rem;
         border: 1px solid color-mix(in srgb, var(--primary, #dc2626) 10%, rgba(148, 163, 184, 0.26));
         border-radius: 999px;
         background: rgba(255, 255, 255, 0.76);
         color: var(--text, #111827);
         cursor: pointer;
-        font-size: 0.84rem;
+        font-size: 0.8rem;
         box-shadow: none;
         transition: background 0.18s ease, border-color 0.18s ease, color 0.18s ease, transform 0.18s ease;
     }
@@ -87,12 +87,12 @@ include __DIR__.'/register_icons_patch.php';
     }
 
     html body .portal-contact-type label:hover {
-        transform: translateY(-1px);
+        transform: none;
     }
 
     html body .portal-contact-type input[type="radio"] {
-        width: 13px;
-        height: 13px;
+        width: 11px;
+        height: 11px;
         accent-color: var(--primary, #dc2626);
     }
 
@@ -110,7 +110,7 @@ include __DIR__.'/register_icons_patch.php';
         }
 
         html body .portal-contact-type label {
-            flex: 1 1 130px;
+            flex: 1 1 96px;
             justify-content: center;
         }
     }

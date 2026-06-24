@@ -527,6 +527,10 @@ $loginUrl = htmlspecialchars($url('portal'), ENT_QUOTES, 'UTF-8');
     .portal-brand-card__tag {
         background: color-mix(in srgb, var(--primary, #2563eb) 12%, transparent);
         color: color-mix(in srgb, var(--primary, #2563eb) 82%, var(--text, #0f172a));
+        min-height: 38px;
+        padding: 0.47rem 1.06rem;
+        font-size: 1.13rem;
+        font-weight: 800;
     }
 
     [data-theme="dark"] .portal-brand-card__tag {
