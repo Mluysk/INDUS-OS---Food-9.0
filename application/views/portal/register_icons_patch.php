@@ -96,12 +96,12 @@ include __DIR__.'/register_branch_patch.php';
         if (branchSwitch && branchSwitch.dataset.textWrapped !== '1') {
             branchSwitch.dataset.textWrapped = '1';
             const textNode = Array.from(branchSwitch.childNodes).find((node) => node.nodeType === Node.TEXT_NODE && node.textContent.trim());
-            const textSpan = Array.from(branchSwitch.children).find((child) => child.tagName === 'SPAN' && ['Tem filial?', 'É uma filial'].includes(child.textContent.trim()));
+            const textSpan = Array.from(branchSwitch.children).find((child) => child.tagName === 'SPAN' && ['Tem filial?', 'É uma filial', 'É uma filial?'].includes(child.textContent.trim()));
             const target = textSpan || textNode;
             if (target) {
                 const wrapper = document.createElement('span');
                 wrapper.className = 'portal-branch-text portal-icon-label';
-                wrapper.innerHTML = '<span class="portal-form-icon" data-lucide="store"></span><span>É uma filial</span>';
+                wrapper.innerHTML = '<span class="portal-form-icon" data-lucide="store"></span><span>É uma filial?</span>';
                 target.replaceWith(wrapper);
             }
         }
