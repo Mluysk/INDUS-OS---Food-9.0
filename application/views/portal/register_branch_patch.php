@@ -348,7 +348,7 @@ include __DIR__.'/register.php';
 
         const helper = document.createElement('p');
         helper.className = 'portal-store-helper';
-        helper.innerHTML = '<span><strong>Nome da loja como vai aparecer no portal.</strong> Use um nome curto para ficar bonito na saudação, na pílula do usuário e nos pedidos. Se tiver filial ativa, marque <strong>Tem filial?</strong> e informe qual filial.</span>';
+        helper.innerHTML = '<span><strong>Nome da loja como vai aparecer na saudação do portal.</strong> Use um nome curto para ficar bonito na saudação, na pílula do usuário e nos pedidos. Se essa conta for uma filial, marque <strong>É uma filial</strong> e informe qual filial.</span>';
         storeInput.insertAdjacentElement('afterend', helper);
 
         const wrapper = document.createElement('div');
@@ -357,7 +357,7 @@ include __DIR__.'/register.php';
             <label class="portal-branch-switch" for="registro-tem-filial">
                 <input type="checkbox" id="registro-tem-filial" name="tem_filial" value="1">
                 <span class="portal-branch-pill" aria-hidden="true"></span>
-                <span>Tem filial?</span>
+                <span>É uma filial</span>
             </label>
             <div class="portal-branch-field is-hidden" data-portal-branch-field>
                 <label for="registro-filial">Nome da filial</label>
