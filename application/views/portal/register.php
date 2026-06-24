@@ -3,7 +3,7 @@ $portalLoginLogoLightPath = $theme['portal_login_logo_light'] ?? ($theme['logo_l
 $portalLoginLogoDarkPath = $theme['portal_login_logo_dark'] ?? ($theme['logo_dark'] ?? 'img/logodark.png');
 $portalLogoLight = htmlspecialchars($asset($portalLoginLogoLightPath), ENT_QUOTES, 'UTF-8');
 $portalLogoDark = htmlspecialchars($asset($portalLoginLogoDarkPath), ENT_QUOTES, 'UTF-8');
-$portalLoginLogoFilter = ($theme['portal_login_logo_filter'] ?? '0') === '1';
+$portalLoginLogoFilter = (($theme['portal_login_logo_filter'] ?? '0') === '1') || (($theme['logo_filter'] ?? '0') === '1');
 $portalLoginLogoLightSize = max(24, min(180, (int)($theme['portal_login_logo_light_size'] ?? 60)));
 $portalLoginLogoDarkSize = max(24, min(180, (int)($theme['portal_login_logo_dark_size'] ?? 60)));
 $portalLoginLogoLightOffsetX = max(-200, min(200, (int)($theme['portal_login_logo_light_offset_x'] ?? 0)));
