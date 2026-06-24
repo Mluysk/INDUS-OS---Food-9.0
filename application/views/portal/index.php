@@ -213,8 +213,14 @@ if ($supportWhatsapp !== '') {
                         </div>
                         <div class="portal-catalog-card__controls">
                             <div class="portal-view-toggle" role="group" aria-label="Visualização do catálogo">
-                                <button type="button" class="portal-view-toggle__btn" data-catalog-view="grid" aria-pressed="false">Grade</button>
-                                <button type="button" class="portal-view-toggle__btn active" data-catalog-view="list" aria-pressed="true">Lista</button>
+                                <button type="button" class="portal-view-toggle__btn" data-catalog-view="grid" aria-pressed="false">
+                                    <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="6" height="6" rx="1.5"></rect><rect x="14" y="4" width="6" height="6" rx="1.5"></rect><rect x="4" y="14" width="6" height="6" rx="1.5"></rect><rect x="14" y="14" width="6" height="6" rx="1.5"></rect></svg>
+                                    <span>Grade</span>
+                                </button>
+                                <button type="button" class="portal-view-toggle__btn active" data-catalog-view="list" aria-pressed="true">
+                                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 6h12"></path><path d="M8 12h12"></path><path d="M8 18h12"></path><circle cx="4" cy="6" r="1.2"></circle><circle cx="4" cy="12" r="1.2"></circle><circle cx="4" cy="18" r="1.2"></circle></svg>
+                                    <span>Lista</span>
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -1278,12 +1284,27 @@ if ($supportWhatsapp !== '') {
         border: none;
         background: transparent;
         color: var(--portal-muted);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.38rem;
         font-weight: 600;
         font-size: 0.9rem;
         padding: 0.35rem 0.9rem;
         border-radius: 999px;
         cursor: pointer;
         transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .portal-view-toggle__btn svg {
+        width: 1rem;
+        height: 1rem;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        flex: 0 0 auto;
     }
 
     .portal-view-toggle__btn.active {
