@@ -13,7 +13,7 @@ $asset = static function (string $path) use ($basePath): string {
     $prefix = $basePath === '' ? '' : $basePath;
     return $prefix.'/'.ltrim($normalized, '/');
 };
-$footerLogoPath = $theme['logo_footer'] ?? 'img/rodape/logo.png';
+$footerLogoPath = $theme['logo_footer'] ?? 'uploads/branding/logo.png';
 $footerLogo = htmlspecialchars($asset($footerLogoPath), ENT_QUOTES, 'UTF-8');
 $portalPrimaryHex = htmlspecialchars($theme['primary_hex'] ?? '#2563EB', ENT_QUOTES, 'UTF-8');
 $currentYear = date('Y');

@@ -69,7 +69,7 @@ class ConfigController extends Controller
             return;
         }
 
-        $compactFallback = $this->config->get('THEME_LOGO_COMPACT', 'img/logosmall.png') ?: 'img/logosmall.png';
+        $compactFallback = $this->config->get('THEME_LOGO_COMPACT', 'uploads/branding/logosmalldark.png') ?: 'uploads/branding/logosmalldark.png';
         $themeDefaults = [
             'THEME_APP_TITLE' => $this->config->get('THEME_APP_TITLE', 'IndusOS Food') ?: 'IndusOS Food',
             'THEME_APP_TAGLINE' => $this->config->get('THEME_APP_TAGLINE', 'Sistema de Controle Industrial (SCI)') ?: 'Sistema de Controle Industrial (SCI)',
@@ -82,7 +82,7 @@ class ConfigController extends Controller
             'THEME_LOGO_LIGHT' => $this->config->get('THEME_LOGO_LIGHT', 'uploads/branding/logodark.png') ?: 'uploads/branding/logodark.png',
             'THEME_LOGO_DARK' => $this->config->get('THEME_LOGO_DARK', 'uploads/branding/logowhite.png') ?: 'uploads/branding/logowhite.png',
             'THEME_LOGO_COMPACT_LIGHT' => $this->config->get('THEME_LOGO_COMPACT_LIGHT', $compactFallback) ?: $compactFallback,
-            'THEME_LOGO_COMPACT_DARK' => $this->config->get('THEME_LOGO_COMPACT_DARK', $compactFallback) ?: $compactFallback,
+            'THEME_LOGO_COMPACT_DARK' => $this->config->get('THEME_LOGO_COMPACT_DARK', 'uploads/branding/logosmallwhite.png') ?: 'uploads/branding/logosmallwhite.png',
             'THEME_LOGO_COMPACT' => $compactFallback,
             'THEME_LOGO_FOOTER' => $this->config->get('THEME_LOGO_FOOTER', 'uploads/branding/logo.png') ?: 'uploads/branding/logo.png',
             'THEME_LOGO_LIGHT_SIZE' => $this->config->get('THEME_LOGO_LIGHT_SIZE', '50') ?: '50',

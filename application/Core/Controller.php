@@ -55,9 +55,9 @@ abstract class Controller
             'primary_name' => 'Grafite Suave',
             'logo_light' => 'uploads/branding/logodark.png',
             'logo_dark' => 'uploads/branding/logowhite.png',
-            'logo_compact' => 'img/logosmall.png',
-            'logo_compact_light' => 'img/logosmall.png',
-            'logo_compact_dark' => 'img/logosmall.png',
+            'logo_compact' => 'uploads/branding/logosmalldark.png',
+            'logo_compact_light' => 'uploads/branding/logosmalldark.png',
+            'logo_compact_dark' => 'uploads/branding/logosmallwhite.png',
             'logo_footer' => 'uploads/branding/logo.png',
             'title_colorize' => '0',
             'logo_filter' => '0',
@@ -170,7 +170,7 @@ abstract class Controller
             $theme['logo_dark'] = $configService->get('THEME_LOGO_DARK', $theme['logo_dark']) ?: $theme['logo_dark'];
             $compactFallback = $configService->get('THEME_LOGO_COMPACT', $theme['logo_compact']) ?: $theme['logo_compact'];
             $theme['logo_compact_light'] = $configService->get('THEME_LOGO_COMPACT_LIGHT', $compactFallback) ?: $compactFallback;
-            $theme['logo_compact_dark'] = $configService->get('THEME_LOGO_COMPACT_DARK', $compactFallback) ?: $compactFallback;
+            $theme['logo_compact_dark'] = $configService->get('THEME_LOGO_COMPACT_DARK', $theme['logo_compact_dark']) ?: $theme['logo_compact_dark'];
             $theme['logo_compact'] = $theme['logo_compact_light'];
             $theme['logo_footer'] = $configService->get('THEME_LOGO_FOOTER', $theme['logo_footer']) ?: $theme['logo_footer'];
             $theme['portal_login_logo_light'] = $configService->get('PORTAL_LOGIN_LOGO_LIGHT', $theme['logo_light']) ?: $theme['logo_light'];

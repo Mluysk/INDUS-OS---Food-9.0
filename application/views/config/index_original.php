@@ -15,9 +15,9 @@ $titleColorize = $themeDefaults['THEME_TITLE_COLORIZE'] ?? '0';
 $logoFilter = $themeDefaults['THEME_LOGO_FILTER'] ?? '0';
 $themeLogoLight = $themeDefaults['THEME_LOGO_LIGHT'] ?? 'uploads/branding/logodark.png';
 $themeLogoDark = $themeDefaults['THEME_LOGO_DARK'] ?? 'uploads/branding/logowhite.png';
-$compactFallback = $themeDefaults['THEME_LOGO_COMPACT'] ?? 'img/logosmall.png';
+$compactFallback = $themeDefaults['THEME_LOGO_COMPACT'] ?? 'uploads/branding/logosmalldark.png';
 $themeLogoCompactLight = $themeDefaults['THEME_LOGO_COMPACT_LIGHT'] ?? $compactFallback;
-$themeLogoCompactDark = $themeDefaults['THEME_LOGO_COMPACT_DARK'] ?? $compactFallback;
+$themeLogoCompactDark = $themeDefaults['THEME_LOGO_COMPACT_DARK'] ?? 'uploads/branding/logosmallwhite.png';
 $themeLogoFooter = $themeDefaults['THEME_LOGO_FOOTER'] ?? 'uploads/branding/logo.png';
 $logoLightSize = $themeDefaults['THEME_LOGO_LIGHT_SIZE'] ?? '50';
 $logoDarkSize = $themeDefaults['THEME_LOGO_DARK_SIZE'] ?? '50';
@@ -783,7 +783,7 @@ $previewMatrixDefault = app_logo_matrix_values($logoTintPreviewHex);
                         </div>
                     </div>
                     <label class="logo-label" for="logo-compact-light">Caminho logo compacta clara</label>
-                    <input id="logo-compact-light" name="config[THEME_LOGO_COMPACT_LIGHT]" value="<?= htmlspecialchars($themeLogoCompactLight, ENT_QUOTES, 'UTF-8'); ?>" placeholder="img/logosmall.png">
+                    <input id="logo-compact-light" name="config[THEME_LOGO_COMPACT_LIGHT]" value="<?= htmlspecialchars($themeLogoCompactLight, ENT_QUOTES, 'UTF-8'); ?>" placeholder="uploads/branding/logosmalldark.png">
                     <label class="upload-label" for="logo-compact-light-file">
                         <span>Enviar novo arquivo</span>
                         <input type="file" id="logo-compact-light-file" name="logo_compact_light_file" accept="image/*">
@@ -808,7 +808,7 @@ $previewMatrixDefault = app_logo_matrix_values($logoTintPreviewHex);
                         </div>
                     </div>
                     <label class="logo-label" for="logo-compact-dark">Caminho logo compacta escura</label>
-                    <input id="logo-compact-dark" name="config[THEME_LOGO_COMPACT_DARK]" value="<?= htmlspecialchars($themeLogoCompactDark, ENT_QUOTES, 'UTF-8'); ?>" placeholder="img/logosmall.png">
+                    <input id="logo-compact-dark" name="config[THEME_LOGO_COMPACT_DARK]" value="<?= htmlspecialchars($themeLogoCompactDark, ENT_QUOTES, 'UTF-8'); ?>" placeholder="uploads/branding/logosmallwhite.png">
                     <label class="upload-label" for="logo-compact-dark-file">
                         <span>Enviar novo arquivo</span>
                         <input type="file" id="logo-compact-dark-file" name="logo_compact_dark_file" accept="image/*">
