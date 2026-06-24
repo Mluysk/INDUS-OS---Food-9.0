@@ -213,18 +213,18 @@ if ($supportWhatsapp !== '') {
                         </div>
                         <div class="portal-catalog-card__controls">
                             <div class="portal-view-toggle" role="group" aria-label="Visualização do catálogo">
-                                <button type="button" class="portal-view-toggle__btn" data-catalog-view="grid" aria-pressed="false">
+                                <button type="button" class="portal-view-toggle__btn active" data-catalog-view="grid" aria-pressed="true">
                                     <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="6" height="6" rx="1.5"></rect><rect x="14" y="4" width="6" height="6" rx="1.5"></rect><rect x="4" y="14" width="6" height="6" rx="1.5"></rect><rect x="14" y="14" width="6" height="6" rx="1.5"></rect></svg>
                                     <span>Grade</span>
                                 </button>
-                                <button type="button" class="portal-view-toggle__btn active" data-catalog-view="list" aria-pressed="true">
+                                <button type="button" class="portal-view-toggle__btn" data-catalog-view="list" aria-pressed="false">
                                     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 6h12"></path><path d="M8 12h12"></path><path d="M8 18h12"></path><circle cx="4" cy="6" r="1.2"></circle><circle cx="4" cy="12" r="1.2"></circle><circle cx="4" cy="18" r="1.2"></circle></svg>
                                     <span>Lista</span>
                                 </button>
                             </div>
                         </div>
                     </div>
-                    <div id="portal-catalog" class="portal-catalog" data-view="list"></div>
+                    <div id="portal-catalog" class="portal-catalog" data-view="grid"></div>
                 </div>
                 <div class="portal-cart-stack">
                     <aside class="portal-cart-card">
@@ -2828,7 +2828,7 @@ $catalogoPayload = json_encode(array_map(static function ($produto) use ($asset)
     let imageLightboxGallery = [];
     let imageLightboxIndex = 0;
     const cart = [];
-    let catalogView = 'list';
+    let catalogView = localStorage.getItem('portal-catalog-view') === 'list' ? 'list' : 'grid';
     const welcomeModal = document.getElementById('portal-welcome-modal');
     const welcomeModalName = welcomeModal?.querySelector('[data-welcome-name]');
     const welcomeDismissTriggers = welcomeModal ? welcomeModal.querySelectorAll('[data-welcome-dismiss]') : [];
