@@ -337,6 +337,12 @@ $loginUrl = htmlspecialchars($url('portal'), ENT_QUOTES, 'UTF-8');
         color: var(--portal-muted);
     }
 
+    .portal-auth-cta .portal-btn,
+    .portal-auth-cta .portal-btn:hover,
+    .portal-auth-cta .portal-btn:focus-visible {
+        text-decoration: none;
+    }
+
     .document-toggle {
         display: flex;
         align-items: center;
@@ -568,6 +574,86 @@ $loginUrl = htmlspecialchars($url('portal'), ENT_QUOTES, 'UTF-8');
         box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.12);
     }
 
+    .portal-input-shell {
+        position: relative;
+        display: flex;
+        align-items: center;
+        width: 100%;
+    }
+
+    .portal-input-shell input {
+        width: 100%;
+    }
+
+    .portal-input-shell--password input {
+        padding-right: 3.35rem;
+    }
+
+    .portal-password-toggle {
+        position: absolute;
+        right: 0.66rem;
+        top: 50%;
+        z-index: 2;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 2.25rem;
+        height: 2.25rem;
+        padding: 0;
+        border: 1px solid color-mix(in srgb, var(--primary, #2563eb) 16%, transparent);
+        border-radius: 999px;
+        background: color-mix(in srgb, var(--primary, #2563eb) 8%, #ffffff);
+        color: color-mix(in srgb, var(--primary, #2563eb) 78%, #334155);
+        box-shadow: none;
+        cursor: pointer;
+        transform: translateY(-50%) !important;
+        transition: background 0.18s ease, color 0.18s ease, border-color 0.18s ease;
+    }
+
+    .portal-password-toggle:hover,
+    .portal-password-toggle:focus-visible {
+        outline: none;
+        background: color-mix(in srgb, var(--primary, #2563eb) 14%, #ffffff);
+        color: var(--primary, #2563eb);
+        border-color: color-mix(in srgb, var(--primary, #2563eb) 30%, transparent);
+        box-shadow: none;
+        transform: translateY(-50%) !important;
+    }
+
+    .portal-password-toggle__icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 1.05rem;
+        height: 1.05rem;
+        color: currentColor;
+        pointer-events: none;
+    }
+
+    .portal-password-toggle__icon svg {
+        width: 100%;
+        height: 100%;
+        display: block;
+    }
+
+    .portal-password-toggle__icon--hide {
+        display: none !important;
+    }
+
+    .portal-password-toggle.is-visible .portal-password-toggle__icon--show {
+        display: none !important;
+    }
+
+    .portal-password-toggle.is-visible .portal-password-toggle__icon--hide {
+        display: inline-flex !important;
+    }
+
+    [data-theme="dark"] .portal-password-toggle {
+        background: color-mix(in srgb, var(--primary, #2563eb) 18%, rgba(15, 23, 42, 0.88));
+        border-color: color-mix(in srgb, var(--primary, #2563eb) 24%, rgba(148, 163, 184, 0.18));
+        color: color-mix(in srgb, var(--primary, #2563eb) 66%, #ffffff);
+    }
+
     .portal-auth-title {
         display: inline-flex;
         align-items: center;
@@ -695,6 +781,36 @@ $loginUrl = htmlspecialchars($url('portal'), ENT_QUOTES, 'UTF-8');
         const feedback = document.getElementById('portal-register-feedback');
         const actionUrl = <?= json_encode($url('portal/cadastro')); ?>;
         const loginUrl = <?= json_encode($url('portal')); ?>;
+
+        const mountPasswordToggle = (input) => {
+            if (!input || input.dataset.passwordMounted === 'true') return;
+            input.dataset.passwordMounted = 'true';
+            const shell = document.createElement('div');
+            shell.className = 'portal-input-shell portal-input-shell--password';
+            input.parentNode.insertBefore(shell, input);
+            shell.appendChild(input);
+            const button = document.createElement('button');
+            button.type = 'button';
+            button.className = 'portal-password-toggle';
+            button.dataset.passwordToggle = 'true';
+            button.setAttribute('aria-label', 'Mostrar senha');
+            button.setAttribute('aria-pressed', 'false');
+            button.innerHTML = '<span class="portal-password-toggle__icon portal-password-toggle__icon--show" data-lucide="eye" aria-hidden="true"></span><span class="portal-password-toggle__icon portal-password-toggle__icon--hide" data-lucide="eye-off" aria-hidden="true"></span>';
+            shell.appendChild(button);
+            button.addEventListener('click', () => {
+                const visible = input.type === 'text';
+                input.type = visible ? 'password' : 'text';
+                button.classList.toggle('is-visible', !visible);
+                button.setAttribute('aria-pressed', String(!visible));
+                button.setAttribute('aria-label', visible ? 'Mostrar senha' : 'Ocultar senha');
+                input.focus();
+            });
+        };
+
+        ['registro-senha', 'registro-confirma'].forEach((id) => mountPasswordToggle(document.getElementById(id)));
+        if (window.lucide) {
+            window.lucide.createIcons();
+        }
 
         const setFeedback = (element, message, state = '') => {
             if (!element) return;
