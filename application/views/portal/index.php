@@ -213,12 +213,12 @@ if ($supportWhatsapp !== '') {
                         </div>
                         <div class="portal-catalog-card__controls">
                             <div class="portal-view-toggle" role="group" aria-label="Visualização do catálogo">
-                                <button type="button" class="portal-view-toggle__btn active" data-catalog-view="grid" aria-pressed="true">Grade</button>
-                                <button type="button" class="portal-view-toggle__btn" data-catalog-view="list" aria-pressed="false">Lista</button>
+                                <button type="button" class="portal-view-toggle__btn" data-catalog-view="grid" aria-pressed="false">Grade</button>
+                                <button type="button" class="portal-view-toggle__btn active" data-catalog-view="list" aria-pressed="true">Lista</button>
                             </div>
                         </div>
                     </div>
-                    <div id="portal-catalog" class="portal-catalog" data-view="grid"></div>
+                    <div id="portal-catalog" class="portal-catalog" data-view="list"></div>
                 </div>
                 <div class="portal-cart-stack">
                     <aside class="portal-cart-card">
@@ -2807,7 +2807,7 @@ $catalogoPayload = json_encode(array_map(static function ($produto) use ($asset)
     let imageLightboxGallery = [];
     let imageLightboxIndex = 0;
     const cart = [];
-    let catalogView = localStorage.getItem('portal-catalog-view') === 'list' ? 'list' : 'grid';
+    let catalogView = 'list';
     const welcomeModal = document.getElementById('portal-welcome-modal');
     const welcomeModalName = welcomeModal?.querySelector('[data-welcome-name]');
     const welcomeDismissTriggers = welcomeModal ? welcomeModal.querySelectorAll('[data-welcome-dismiss]') : [];
