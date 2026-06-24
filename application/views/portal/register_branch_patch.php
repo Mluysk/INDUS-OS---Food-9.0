@@ -4,7 +4,7 @@ include __DIR__.'/register.php';
 <style>
     html body .portal-store-helper,
     html body .portal-cnpj-feedback {
-        margin: -0.05rem 0 0.65rem;
+        margin: 2.6px 0 0.65rem;
         color: var(--portal-muted, rgba(71, 85, 105, 0.82));
         font-size: 0.86rem;
     }
