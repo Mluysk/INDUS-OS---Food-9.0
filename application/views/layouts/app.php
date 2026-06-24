@@ -180,27 +180,33 @@ $titleColorize = ($theme['title_colorize'] ?? '0') === '1';
 $logoTintEnabled = ($theme['logo_filter'] ?? '0') === '1';
 $logoSizing = [
     'light' => [
-        'height' => (int)($theme['logo_light_size'] ?? 50),
+        'height' => (int)($theme['logo_light_size'] ?? 57),
         'x' => (int)($theme['logo_light_offset_x'] ?? 0),
         'y' => (int)($theme['logo_light_offset_y'] ?? 0),
     ],
     'dark' => [
-        'height' => (int)($theme['logo_dark_size'] ?? 50),
+        'height' => (int)($theme['logo_dark_size'] ?? 57),
         'x' => (int)($theme['logo_dark_offset_x'] ?? 0),
         'y' => (int)($theme['logo_dark_offset_y'] ?? 0),
     ],
     'compact-light' => [
-        'height' => (int)($theme['logo_compact_light_size'] ?? 40),
+        'height' => (int)($theme['logo_compact_light_size'] ?? 76),
         'x' => (int)($theme['logo_compact_light_offset_x'] ?? 0),
         'y' => (int)($theme['logo_compact_light_offset_y'] ?? 0),
     ],
     'compact-dark' => [
-        'height' => (int)($theme['logo_compact_dark_size'] ?? 40),
+        'height' => (int)($theme['logo_compact_dark_size'] ?? 76),
         'x' => (int)($theme['logo_compact_dark_offset_x'] ?? 0),
         'y' => (int)($theme['logo_compact_dark_offset_y'] ?? 0),
     ],
 ];
-$titleSizePx = isset($theme['title_size']) ? (int)$theme['title_size'] : 24;
+$logoCalibration = [
+    'light' => ['x' => 2, 'y' => 8],
+    'dark' => ['x' => 2, 'y' => 8],
+    'compact-light' => ['x' => -5, 'y' => 1],
+    'compact-dark' => ['x' => -5, 'y' => 1],
+];
+$titleSizePx = isset($theme['title_size']) ? (int)$theme['title_size'] : 26;
 if ($titleSizePx < 16) {
     $titleSizePx = 16;
 } elseif ($titleSizePx > 64) {
@@ -209,6 +215,8 @@ if ($titleSizePx < 16) {
 $brandTitleSize = $titleSizePx.'px';
 $brandTitleOffsetX = (int)($theme['title_offset_x'] ?? 0);
 $brandTitleOffsetY = (int)($theme['title_offset_y'] ?? 0);
+$brandTitleCalibratedX = $brandTitleOffsetX + 11;
+$brandTitleCalibratedY = $brandTitleOffsetY - 1;
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -263,16 +271,16 @@ $brandTitleOffsetY = (int)($theme['title_offset_y'] ?? 0);
             --logo-dark-height: <?= (int)$logoSizing['dark']['height']; ?>px;
             --logo-compact-light-height: <?= (int)$logoSizing['compact-light']['height']; ?>px;
             --logo-compact-dark-height: <?= (int)$logoSizing['compact-dark']['height']; ?>px;
-            --logo-light-x: <?= (int)$logoSizing['light']['x']; ?>px;
-            --logo-light-y: <?= (int)$logoSizing['light']['y']; ?>px;
-            --logo-dark-x: <?= (int)$logoSizing['dark']['x']; ?>px;
-            --logo-dark-y: <?= (int)$logoSizing['dark']['y']; ?>px;
-            --logo-compact-light-x: <?= (int)$logoSizing['compact-light']['x']; ?>px;
-            --logo-compact-light-y: <?= (int)$logoSizing['compact-light']['y']; ?>px;
-            --logo-compact-dark-x: <?= (int)$logoSizing['compact-dark']['x']; ?>px;
-            --logo-compact-dark-y: <?= (int)$logoSizing['compact-dark']['y']; ?>px;
-            --brand-title-x: <?= $brandTitleOffsetX; ?>px;
-            --brand-title-y: <?= $brandTitleOffsetY; ?>px;
+            --logo-light-x: <?= (int)($logoSizing['light']['x'] + $logoCalibration['light']['x']); ?>px;
+            --logo-light-y: <?= (int)($logoSizing['light']['y'] + $logoCalibration['light']['y']); ?>px;
+            --logo-dark-x: <?= (int)($logoSizing['dark']['x'] + $logoCalibration['dark']['x']); ?>px;
+            --logo-dark-y: <?= (int)($logoSizing['dark']['y'] + $logoCalibration['dark']['y']); ?>px;
+            --logo-compact-light-x: <?= (int)($logoSizing['compact-light']['x'] + $logoCalibration['compact-light']['x']); ?>px;
+            --logo-compact-light-y: <?= (int)($logoSizing['compact-light']['y'] + $logoCalibration['compact-light']['y']); ?>px;
+            --logo-compact-dark-x: <?= (int)($logoSizing['compact-dark']['x'] + $logoCalibration['compact-dark']['x']); ?>px;
+            --logo-compact-dark-y: <?= (int)($logoSizing['compact-dark']['y'] + $logoCalibration['compact-dark']['y']); ?>px;
+            --brand-title-x: <?= $brandTitleCalibratedX; ?>px;
+            --brand-title-y: <?= $brandTitleCalibratedY; ?>px;
         }
         :root {
             --sidebar-width: 265px;
@@ -434,11 +442,11 @@ $brandTitleOffsetY = (int)($theme['title_offset_y'] ?? 0);
             transition: opacity 0.2s ease, filter 0.3s ease;
         }
         .brand-logo-img[data-logo-variant="light"] {
-            max-height: var(--logo-light-height, 50px);
+            max-height: var(--logo-light-height, 57px);
             transform: translate(var(--logo-light-x, 0px), var(--logo-light-y, 0px));
         }
         .brand-logo-img[data-logo-variant="dark"] {
-            max-height: var(--logo-dark-height, 50px);
+            max-height: var(--logo-dark-height, 57px);
             transform: translate(var(--logo-dark-x, 0px), var(--logo-dark-y, 0px));
         }
         .brand-logo-expanded {
@@ -458,14 +466,14 @@ $brandTitleOffsetY = (int)($theme['title_offset_y'] ?? 0);
         }
         .brand-logo-compact {
             display: none;
-            max-height: 40px;
+            max-height: 76px;
         }
         .brand-logo-img[data-logo-variant="compact-light"] {
-            max-height: var(--logo-compact-light-height, 40px);
+            max-height: var(--logo-compact-light-height, 76px);
             transform: translate(var(--logo-compact-light-x, 0px), var(--logo-compact-light-y, 0px));
         }
         .brand-logo-img[data-logo-variant="compact-dark"] {
-            max-height: var(--logo-compact-dark-height, 40px);
+            max-height: var(--logo-compact-dark-height, 76px);
             transform: translate(var(--logo-compact-dark-x, 0px), var(--logo-compact-dark-y, 0px));
         }
         .brand-title {

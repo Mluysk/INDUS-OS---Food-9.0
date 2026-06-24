@@ -8,7 +8,7 @@ $themePrimaryName = $themeDefaults['THEME_PRIMARY_NAME'] ?? 'Grafite Suave';
 $themePrimaryHex = $themeDefaults['THEME_PRIMARY_HEX'] ?? '#5b616f';
 $themeTitle = $themeDefaults['THEME_APP_TITLE'] ?? 'IndusOS Food';
 $themeTagline = $themeDefaults['THEME_APP_TAGLINE'] ?? 'Sistema de Controle Industrial (SCI)';
-$titleSize = $themeDefaults['THEME_TITLE_SIZE'] ?? '24';
+$titleSize = $themeDefaults['THEME_TITLE_SIZE'] ?? '26';
 $titleOffsetX = $themeDefaults['THEME_TITLE_OFFSET_X'] ?? '0';
 $titleOffsetY = $themeDefaults['THEME_TITLE_OFFSET_Y'] ?? '0';
 $titleColorize = $themeDefaults['THEME_TITLE_COLORIZE'] ?? '0';
@@ -19,10 +19,10 @@ $compactFallback = $themeDefaults['THEME_LOGO_COMPACT'] ?? 'uploads/branding/log
 $themeLogoCompactLight = $themeDefaults['THEME_LOGO_COMPACT_LIGHT'] ?? $compactFallback;
 $themeLogoCompactDark = $themeDefaults['THEME_LOGO_COMPACT_DARK'] ?? 'uploads/branding/logosmallwhite.png';
 $themeLogoFooter = $themeDefaults['THEME_LOGO_FOOTER'] ?? 'uploads/branding/logo.png';
-$logoLightSize = $themeDefaults['THEME_LOGO_LIGHT_SIZE'] ?? '50';
-$logoDarkSize = $themeDefaults['THEME_LOGO_DARK_SIZE'] ?? '50';
-$logoCompactLightSize = $themeDefaults['THEME_LOGO_COMPACT_LIGHT_SIZE'] ?? '40';
-$logoCompactDarkSize = $themeDefaults['THEME_LOGO_COMPACT_DARK_SIZE'] ?? '40';
+$logoLightSize = $themeDefaults['THEME_LOGO_LIGHT_SIZE'] ?? '57';
+$logoDarkSize = $themeDefaults['THEME_LOGO_DARK_SIZE'] ?? '57';
+$logoCompactLightSize = $themeDefaults['THEME_LOGO_COMPACT_LIGHT_SIZE'] ?? '76';
+$logoCompactDarkSize = $themeDefaults['THEME_LOGO_COMPACT_DARK_SIZE'] ?? '76';
 $logoLightOffsetX = $themeDefaults['THEME_LOGO_LIGHT_OFFSET_X'] ?? '0';
 $logoLightOffsetY = $themeDefaults['THEME_LOGO_LIGHT_OFFSET_Y'] ?? '0';
 $logoDarkOffsetX = $themeDefaults['THEME_LOGO_DARK_OFFSET_X'] ?? '0';
@@ -2074,8 +2074,9 @@ $previewMatrixDefault = app_logo_matrix_values($logoTintPreviewHex);
         const setTitleOffsetPreview = (axis, value) => {
             const parsed = parseInt(value, 10);
             const clamped = Number.isNaN(parsed) ? 0 : Math.max(-80, Math.min(80, parsed));
+            const calibration = axis === 'y' ? -1 : 11;
             const root = document.documentElement;
-            root.style.setProperty(axis === 'y' ? '--brand-title-y' : '--brand-title-x', `${clamped}px`);
+            root.style.setProperty(axis === 'y' ? '--brand-title-y' : '--brand-title-x', `${clamped + calibration}px`);
             storage.set('themePreviewActive', '1');
             storage.set(axis === 'y' ? 'themePreviewTitleOffsetY' : 'themePreviewTitleOffsetX', String(clamped));
         };
@@ -2446,6 +2447,8 @@ $previewMatrixDefault = app_logo_matrix_values($logoTintPreviewHex);
                 cssSize: '--logo-light-height',
                 cssX: '--logo-light-x',
                 cssY: '--logo-light-y',
+                baseX: 2,
+                baseY: 8,
             },
             {
                 size: '#logo-dark-size',
@@ -2460,6 +2463,8 @@ $previewMatrixDefault = app_logo_matrix_values($logoTintPreviewHex);
                 cssSize: '--logo-dark-height',
                 cssX: '--logo-dark-x',
                 cssY: '--logo-dark-y',
+                baseX: 2,
+                baseY: 8,
             },
             {
                 size: '#logo-compact-light-size',
@@ -2474,6 +2479,8 @@ $previewMatrixDefault = app_logo_matrix_values($logoTintPreviewHex);
                 cssSize: '--logo-compact-light-height',
                 cssX: '--logo-compact-light-x',
                 cssY: '--logo-compact-light-y',
+                baseX: -5,
+                baseY: 1,
             },
             {
                 size: '#logo-compact-dark-size',
@@ -2488,6 +2495,8 @@ $previewMatrixDefault = app_logo_matrix_values($logoTintPreviewHex);
                 cssSize: '--logo-compact-dark-height',
                 cssX: '--logo-compact-dark-x',
                 cssY: '--logo-compact-dark-y',
+                baseX: -5,
+                baseY: 1,
             },
             {
                 size: '#portal-login-logo-light-size',
@@ -2517,7 +2526,7 @@ $previewMatrixDefault = app_logo_matrix_values($logoTintPreviewHex);
             },
         ];
 
-        const applyLogoSizeAndOffset = ({ size, x, y, output, outputX, outputY, preview, min, max, offsetMin = -80, offsetMax = 80, cssSize, cssX, cssY }) => {
+        const applyLogoSizeAndOffset = ({ size, x, y, output, outputX, outputY, preview, min, max, offsetMin = -80, offsetMax = 80, cssSize, cssX, cssY, baseX = 0, baseY = 0 }) => {
             const sizeInput = document.querySelector(size);
             const offsetX = document.querySelector(x);
             const offsetY = document.querySelector(y);
@@ -2541,17 +2550,17 @@ $previewMatrixDefault = app_logo_matrix_values($logoTintPreviewHex);
             if (outputYEl) {
                 outputYEl.textContent = `${yVal}px`;
             }
-            img.style.transform = `translate(${xVal}px, ${yVal}px)`;
+            img.style.transform = `translate(${xVal + baseX}px, ${yVal + baseY}px)`;
 
             const root = document.documentElement;
             if (cssSize) {
                 root.style.setProperty(cssSize, `${sizeVal}px`);
             }
             if (cssX) {
-                root.style.setProperty(cssX, `${xVal}px`);
+                root.style.setProperty(cssX, `${xVal + baseX}px`);
             }
             if (cssY) {
-                root.style.setProperty(cssY, `${yVal}px`);
+                root.style.setProperty(cssY, `${yVal + baseY}px`);
             }
         };
 
