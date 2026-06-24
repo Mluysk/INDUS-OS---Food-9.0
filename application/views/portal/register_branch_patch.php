@@ -15,6 +15,38 @@ include __DIR__.'/register.php';
         font-weight: 700;
     }
 
+    html body .portal-store-helper {
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr);
+        gap: 0.62rem;
+        align-items: start;
+        padding: 0.74rem 0.82rem;
+        border: 1px solid color-mix(in srgb, var(--primary, #dc2626) 22%, transparent);
+        border-radius: 14px;
+        background: color-mix(in srgb, var(--primary, #dc2626) 8%, #fff);
+        box-shadow: 0 10px 24px -20px color-mix(in srgb, var(--primary, #dc2626) 55%, transparent);
+        line-height: 1.35;
+    }
+
+    html body .portal-store-helper::before {
+        content: '?';
+        width: 22px;
+        height: 22px;
+        border-radius: 999px;
+        display: inline-grid;
+        place-items: center;
+        background: color-mix(in srgb, var(--primary, #dc2626) 14%, #fff);
+        color: var(--primary, #dc2626);
+        font-size: 0.76rem;
+        font-weight: 900;
+        line-height: 1;
+    }
+
+    html body .portal-store-helper strong {
+        color: var(--text, #111827);
+        font-weight: 900;
+    }
+
     html body .portal-cnpj-feedback[data-state] {
         display: block;
     }
@@ -316,7 +348,7 @@ include __DIR__.'/register.php';
 
         const helper = document.createElement('p');
         helper.className = 'portal-store-helper';
-        helper.textContent = 'Esse nome será usado na saudação e no perfil do portal.';
+        helper.innerHTML = '<span><strong>Nome da loja como vai aparecer no portal.</strong> Use um nome curto para ficar bonito na saudação, na pílula do usuário e nos pedidos. Se tiver filial ativa, marque <strong>Tem filial?</strong> e informe qual filial.</span>';
         storeInput.insertAdjacentElement('afterend', helper);
 
         const wrapper = document.createElement('div');
