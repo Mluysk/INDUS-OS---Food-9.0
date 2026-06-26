@@ -89,8 +89,12 @@ class ConfigDataController extends Controller
                     $payload['contato_tipo'] = 'celular';
                 }
 
-                $payload = $this->cleanPayload(array_intersect_key($payload, array_flip($allowed)));
-                if (!$this->hasUsefulClientPayload($payload)) {
+                $payload = $this->prepareClientImportPayload(
+                    $this->cleanPayload(array_intersect_key($payload, array_flip($allowed))),
+                    $row,
+                    $count + $skipped + 1
+                );
+                if (!$payload) {
                     $skipped++;
                     continue;
                 }
@@ -104,7 +108,7 @@ class ConfigDataController extends Controller
 
             $message = $count.' cliente(s) importado(s) com sucesso.';
             if ($skipped > 0) {
-                $message .= ' '.$skipped.' linha(s) sem dados reconhecidos foram ignoradas.';
+                $message .= ' '.$skipped.' linha(s) totalmente vazia(s) foram ignoradas.';
             }
             $this->audit->log((int)($this->auth->user()['id'] ?? 0), 'import', 'clientes', null, [
                 'arquivo' => $this->uploadedFilename('arquivo'),
@@ -786,6 +790,59 @@ class ConfigDataController extends Controller
         }
 
         return false;
+    }
+
+    private function prepareClientImportPayload(array $payload, array $sourceRow, int $rowNumber): array
+    {
+        if (!$this->hasUsefulClientPayload($payload)) {
+            $fallback = $this->firstNonEmptyValue($sourceRow);
+            if ($fallback === null) {
+                return [];
+            }
+            $payload['razao_social'] = 'Cliente importado - '.$fallback;
+            $payload['nome_fantasia'] = $payload['razao_social'];
+            return $payload;
+        }
+
+        if (empty($payload['razao_social']) && empty($payload['nome_fantasia'])) {
+            $reference = $this->clientImportReference($payload) ?? $this->firstNonEmptyValue($sourceRow) ?? ('linha '.$rowNumber);
+            $payload['razao_social'] = 'Cliente importado - '.$reference;
+            $payload['nome_fantasia'] = $payload['razao_social'];
+            return $payload;
+        }
+
+        if (empty($payload['razao_social'])) {
+            $payload['razao_social'] = $payload['nome_fantasia'];
+        }
+        if (empty($payload['nome_fantasia'])) {
+            $payload['nome_fantasia'] = $payload['razao_social'];
+        }
+
+        return $payload;
+    }
+
+    private function clientImportReference(array $payload): ?string
+    {
+        foreach (['cnpj', 'cpf', 'email', 'telefone', 'whatsapp', 'cidade'] as $field) {
+            $value = trim((string)($payload[$field] ?? ''));
+            if ($value !== '') {
+                return $value;
+            }
+        }
+
+        return null;
+    }
+
+    private function firstNonEmptyValue(array $row): ?string
+    {
+        foreach ($row as $value) {
+            $value = trim((string)$value);
+            if ($value !== '') {
+                return mb_substr($value, 0, 80);
+            }
+        }
+
+        return null;
     }
 
     private function normalizeKey(?string $value): string
