@@ -463,20 +463,25 @@ if ($supportWhatsapp !== '') {
         padding: 2.5rem;
         box-shadow: 0 32px 70px -45px rgba(15, 23, 42, 0.55);
         backdrop-filter: blur(12px);
+        overflow: visible;
     }
 
     .portal-brand-card__logo {
         display: flex;
         gap: 12px;
         align-items: center;
+        width: 100%;
         margin-bottom: 1.5rem;
-        min-height: var(--portal-logo-size, 60px);
+        min-height: calc(var(--portal-logo-size, 60px) + 24px);
+        padding: 12px 0;
         overflow: visible;
     }
 
     .portal-logo {
         height: var(--portal-logo-size, 60px);
         width: auto;
+        max-width: 100%;
+        object-fit: contain;
         transform: translate(var(--portal-logo-x, 0), var(--portal-logo-y, 0));
         transition: transform 180ms ease;
     }
@@ -484,7 +489,9 @@ if ($supportWhatsapp !== '') {
     .portal-logo-filtered {
         display: block;
         width: min(calc(var(--portal-logo-size, 60px) * 3.9), 100%);
+        max-width: 100%;
         height: var(--portal-logo-size, 60px);
+        flex: 0 1 min(calc(var(--portal-logo-size, 60px) * 3.9), 100%);
         background: var(--primary);
         transform: translate(var(--portal-logo-x, 0), var(--portal-logo-y, 0));
         -webkit-mask: var(--portal-login-logo-url) center / contain no-repeat;

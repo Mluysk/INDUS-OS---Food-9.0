@@ -90,7 +90,7 @@ class ConfigDataController extends Controller
                 }
 
                 $payload = $this->cleanPayload(array_intersect_key($payload, array_flip($allowed)));
-                if (empty($payload['razao_social']) && empty($payload['nome_fantasia'])) {
+                if (!$this->hasUsefulClientPayload($payload)) {
                     $skipped++;
                     continue;
                 }
@@ -104,7 +104,7 @@ class ConfigDataController extends Controller
 
             $message = $count.' cliente(s) importado(s) com sucesso.';
             if ($skipped > 0) {
-                $message .= ' '.$skipped.' linha(s) foram ignoradas por estarem incompletas.';
+                $message .= ' '.$skipped.' linha(s) sem dados reconhecidos foram ignoradas.';
             }
             $this->audit->log((int)($this->auth->user()['id'] ?? 0), 'import', 'clientes', null, [
                 'arquivo' => $this->uploadedFilename('arquivo'),
@@ -772,6 +772,20 @@ class ConfigDataController extends Controller
             $clean[$key] = $value;
         }
         return $clean;
+    }
+
+    private function hasUsefulClientPayload(array $payload): bool
+    {
+        foreach ($payload as $field => $value) {
+            if ($field === 'contato_tipo') {
+                continue;
+            }
+            if ($value !== null && trim((string)$value) !== '') {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private function normalizeKey(?string $value): string

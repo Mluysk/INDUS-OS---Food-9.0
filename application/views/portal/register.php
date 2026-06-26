@@ -3,13 +3,15 @@ $portalLoginLogoLightPath = $theme['portal_login_logo_light'] ?? ($theme['logo_l
 $portalLoginLogoDarkPath = $theme['portal_login_logo_dark'] ?? ($theme['logo_dark'] ?? 'img/logodark.png');
 $portalLogoLight = htmlspecialchars($asset($portalLoginLogoLightPath), ENT_QUOTES, 'UTF-8');
 $portalLogoDark = htmlspecialchars($asset($portalLoginLogoDarkPath), ENT_QUOTES, 'UTF-8');
-$portalLoginLogoFilter = (($theme['portal_login_logo_filter'] ?? '0') === '1') || (($theme['logo_filter'] ?? '0') === '1');
+$portalLoginLogoFilter = ($theme['portal_login_logo_filter'] ?? '0') === '1';
 $portalLoginLogoLightSize = max(24, min(180, (int)($theme['portal_login_logo_light_size'] ?? 60)));
 $portalLoginLogoDarkSize = max(24, min(180, (int)($theme['portal_login_logo_dark_size'] ?? 60)));
 $portalLoginLogoLightOffsetX = max(-200, min(200, (int)($theme['portal_login_logo_light_offset_x'] ?? 0)));
 $portalLoginLogoLightOffsetY = max(-200, min(200, (int)($theme['portal_login_logo_light_offset_y'] ?? 0)));
 $portalLoginLogoDarkOffsetX = max(-200, min(200, (int)($theme['portal_login_logo_dark_offset_x'] ?? 0)));
 $portalLoginLogoDarkOffsetY = max(-200, min(200, (int)($theme['portal_login_logo_dark_offset_y'] ?? 0)));
+$portalRegisterLogoLightOffsetY = max(-200, min(200, $portalLoginLogoLightOffsetY - 16));
+$portalRegisterLogoDarkOffsetY = max(-200, min(200, $portalLoginLogoDarkOffsetY - 16));
 $appDisplayName = htmlspecialchars($appName ?? 'IndusOS Food', ENT_QUOTES, 'UTF-8');
 $appTaglineText = htmlspecialchars($appTagline ?? 'Sistema de Controle Industrial (SCI)', ENT_QUOTES, 'UTF-8');
 $actionUrl = htmlspecialchars($url('portal/cadastro'), ENT_QUOTES, 'UTF-8');
@@ -20,10 +22,10 @@ $loginUrl = htmlspecialchars($url('portal'), ENT_QUOTES, 'UTF-8');
         <div class="portal-brand-card">
             <div class="portal-brand-card__logo <?= $portalLoginLogoFilter ? 'portal-brand-card__logo--filtered' : 'portal-brand-card__logo--plain'; ?>" aria-hidden="true">
                 <?php if ($portalLoginLogoFilter): ?>
-                    <span class="portal-logo-filtered" style="--portal-login-logo-url: url('<?= $portalLogoDark; ?>'); --portal-logo-size: <?= $portalLoginLogoDarkSize; ?>px; --portal-logo-x: <?= $portalLoginLogoDarkOffsetX; ?>px; --portal-logo-y: <?= $portalLoginLogoDarkOffsetY; ?>px;"></span>
+                    <span class="portal-logo-filtered" style="--portal-login-logo-url: url('<?= $portalLogoDark; ?>'); --portal-logo-size: <?= $portalLoginLogoDarkSize; ?>px; --portal-logo-x: <?= $portalLoginLogoDarkOffsetX; ?>px; --portal-logo-y: <?= $portalRegisterLogoDarkOffsetY; ?>px;"></span>
                 <?php else: ?>
-                    <img class="portal-logo portal-logo-light" style="--portal-logo-size: <?= $portalLoginLogoLightSize; ?>px; --portal-logo-x: <?= $portalLoginLogoLightOffsetX; ?>px; --portal-logo-y: <?= $portalLoginLogoLightOffsetY; ?>px;" src="<?= $portalLogoLight; ?>" alt="Logotipo modo claro">
-                    <img class="portal-logo portal-logo-dark" style="--portal-logo-size: <?= $portalLoginLogoDarkSize; ?>px; --portal-logo-x: <?= $portalLoginLogoDarkOffsetX; ?>px; --portal-logo-y: <?= $portalLoginLogoDarkOffsetY; ?>px;" src="<?= $portalLogoDark; ?>" alt="Logotipo modo escuro">
+                    <img class="portal-logo portal-logo-light" style="--portal-logo-size: <?= $portalLoginLogoLightSize; ?>px; --portal-logo-x: <?= $portalLoginLogoLightOffsetX; ?>px; --portal-logo-y: <?= $portalRegisterLogoLightOffsetY; ?>px;" src="<?= $portalLogoLight; ?>" alt="Logotipo modo claro">
+                    <img class="portal-logo portal-logo-dark" style="--portal-logo-size: <?= $portalLoginLogoDarkSize; ?>px; --portal-logo-x: <?= $portalLoginLogoDarkOffsetX; ?>px; --portal-logo-y: <?= $portalRegisterLogoDarkOffsetY; ?>px;" src="<?= $portalLogoDark; ?>" alt="Logotipo modo escuro">
                 <?php endif; ?>
             </div>
             <span class="portal-brand-card__tag">Portal do cliente</span>
@@ -182,6 +184,7 @@ $loginUrl = htmlspecialchars($url('portal'), ENT_QUOTES, 'UTF-8');
         display: flex;
         flex-direction: column;
         gap: 0.75rem;
+        overflow: visible;
     }
 
     [data-theme="dark"] .portal-brand-card {
@@ -193,20 +196,27 @@ $loginUrl = htmlspecialchars($url('portal'), ENT_QUOTES, 'UTF-8');
         display: flex;
         align-items: center;
         gap: 0.8rem;
-        min-height: var(--portal-logo-size, 60px);
+        width: 100%;
+        min-height: calc(var(--portal-logo-size, 60px) + 24px);
+        padding: 12px 0;
+        overflow: visible;
     }
 
     .portal-logo {
         height: var(--portal-logo-size, 60px);
         width: auto;
+        max-width: 100%;
         display: block;
+        object-fit: contain;
         transform: translate(var(--portal-logo-x, 0), var(--portal-logo-y, 0));
     }
 
     .portal-logo-filtered {
         display: block;
         width: min(calc(var(--portal-logo-size, 60px) * 3.9), 100%);
+        max-width: 100%;
         height: var(--portal-logo-size, 60px);
+        flex: 0 1 min(calc(var(--portal-logo-size, 60px) * 3.9), 100%);
         background: var(--primary);
         transform: translate(var(--portal-logo-x, 0), var(--portal-logo-y, 0));
         -webkit-mask: var(--portal-login-logo-url) center / contain no-repeat;
