@@ -221,7 +221,7 @@ $loginUrl = htmlspecialchars($url('portal'), ENT_QUOTES, 'UTF-8');
                 var(--portal-logo-x, 0px),
                 calc((100cqw - 100%) / 2)
             ),
-            var(--portal-logo-y, 0px)
+            calc(var(--portal-logo-y, 0px) + 12px)
         );
     }
 
@@ -238,7 +238,7 @@ $loginUrl = htmlspecialchars($url('portal'), ENT_QUOTES, 'UTF-8');
                 var(--portal-logo-x, 0px),
                 calc((100cqw - 100%) / 2)
             ),
-            var(--portal-logo-y, 0px)
+            calc(var(--portal-logo-y, 0px) + 12px)
         );
         -webkit-mask: var(--portal-login-logo-url) center / contain no-repeat;
         mask: var(--portal-login-logo-url) center / contain no-repeat;
@@ -785,7 +785,7 @@ $loginUrl = htmlspecialchars($url('portal'), ENT_QUOTES, 'UTF-8');
 
         .portal-logo,
         .portal-logo-filtered {
-            transform: translate(0, var(--portal-logo-y, 0));
+            transform: translate(0, calc(var(--portal-logo-y, 0px) + 12px));
         }
 
         .portal-auth-title {
