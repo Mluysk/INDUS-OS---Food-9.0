@@ -7,9 +7,9 @@ $portalLoginLogoFilter = ($theme['portal_login_logo_filter'] ?? '0') === '1';
 $portalLoginLogoLightSize = max(24, min(180, (int)($theme['portal_login_logo_light_size'] ?? 60)));
 $portalLoginLogoDarkSize = max(24, min(180, (int)($theme['portal_login_logo_dark_size'] ?? 60)));
 $portalLoginLogoLightOffsetX = max(-534, min(534, (int)($theme['portal_login_logo_light_offset_x'] ?? 0)));
-$portalLoginLogoLightOffsetY = max(-60, min(60, (int)($theme['portal_login_logo_light_offset_y'] ?? 0)));
+$portalLoginLogoLightOffsetY = max(-200, min(200, (int)($theme['portal_login_logo_light_offset_y'] ?? 0)));
 $portalLoginLogoDarkOffsetX = max(-534, min(534, (int)($theme['portal_login_logo_dark_offset_x'] ?? 0)));
-$portalLoginLogoDarkOffsetY = max(-60, min(60, (int)($theme['portal_login_logo_dark_offset_y'] ?? 0)));
+$portalLoginLogoDarkOffsetY = max(-200, min(200, (int)($theme['portal_login_logo_dark_offset_y'] ?? 0)));
 $portalLogoFrameSize = $portalLoginLogoFilter ? $portalLoginLogoDarkSize : $portalLoginLogoLightSize;
 $portalLogoFrameOffsetX = $portalLoginLogoFilter ? $portalLoginLogoDarkOffsetX : $portalLoginLogoLightOffsetX;
 $portalLogoFrameOffsetY = $portalLoginLogoFilter ? $portalLoginLogoDarkOffsetY : $portalLoginLogoLightOffsetY;
@@ -475,12 +475,11 @@ if ($supportWhatsapp !== '') {
         align-items: center;
         justify-content: center;
         box-sizing: border-box;
-        container-type: size;
+        container-type: inline-size;
         width: calc(100% + 5rem);
         margin: 0 0 1.5rem -2.5rem;
-        height: 133px;
-        min-height: 133px;
-        padding: 6px;
+        min-height: calc(var(--portal-logo-size, 60px) + 24px);
+        padding: 12px 6px;
         overflow: visible;
     }
 
@@ -488,7 +487,6 @@ if ($supportWhatsapp !== '') {
         height: var(--portal-logo-size, 60px);
         width: auto;
         max-width: 100%;
-        max-height: 121px;
         object-fit: contain;
         transform: translate(
             clamp(
@@ -496,22 +494,17 @@ if ($supportWhatsapp !== '') {
                 var(--portal-logo-x, 0px),
                 calc((100cqw - 100%) / 2)
             ),
-            clamp(
-                calc((100% - 100cqh) / 2),
-                var(--portal-logo-y, 0px),
-                calc((100cqh - 100%) / 2)
-            )
+            var(--portal-logo-y, 0px)
         );
         transition: transform 180ms ease;
     }
 
     .portal-logo-filtered {
-        --portal-logo-render-size: min(var(--portal-logo-size, 60px), 121px);
         display: block;
-        width: min(calc(var(--portal-logo-render-size) * 3.9), 100%);
+        width: min(calc(var(--portal-logo-size, 60px) * 3.9), 100%);
         max-width: 100%;
-        height: var(--portal-logo-render-size);
-        flex: 0 1 min(calc(var(--portal-logo-render-size) * 3.9), 100%);
+        height: var(--portal-logo-size, 60px);
+        flex: 0 1 min(calc(var(--portal-logo-size, 60px) * 3.9), 100%);
         background: var(--primary);
         transform: translate(
             clamp(
@@ -519,11 +512,7 @@ if ($supportWhatsapp !== '') {
                 var(--portal-logo-x, 0px),
                 calc((100cqw - 100%) / 2)
             ),
-            clamp(
-                calc((100% - 100cqh) / 2),
-                var(--portal-logo-y, 0px),
-                calc((100cqh - 100%) / 2)
-            )
+            var(--portal-logo-y, 0px)
         );
         -webkit-mask: var(--portal-login-logo-url) center / contain no-repeat;
         mask: var(--portal-login-logo-url) center / contain no-repeat;
