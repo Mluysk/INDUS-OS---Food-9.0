@@ -73,7 +73,8 @@ include __DIR__.'/index_with_patch.php';
         margin-left: auto;
     }
 
-    html body .topbar > .portal-theme-button {
+    html body .topbar > .portal-theme-button,
+    html body .topbar > .portal-theme-switch {
         margin-left: 0;
     }
 
@@ -353,7 +354,7 @@ include __DIR__.'/index_with_patch.php';
 
     const run = () => {
         const topbar = document.querySelector('.topbar');
-        const themeButton = document.querySelector('.portal-theme-button');
+        const themeButton = document.querySelector('.portal-theme-switch') || document.querySelector('.portal-theme-button');
         const profile = document.querySelector('.portal-app__profile');
         const portalApp = document.getElementById('portal-app');
         if (!topbar || !themeButton || !profile || profile.dataset.topbarReady === '1') return;

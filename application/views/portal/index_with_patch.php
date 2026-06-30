@@ -11,7 +11,7 @@ include __DIR__.'/index.php';
         gap: 1rem;
     }
 
-    html body .topbar .theme-toggle {
+    html body .topbar .theme-toggle:not(.portal-theme-switch) {
         position: absolute;
         width: 1px;
         height: 1px;
@@ -359,7 +359,7 @@ include __DIR__.'/index.php';
     const setupThemeButton = () => {
         const topbar = document.querySelector('.topbar');
         const toggle = document.getElementById('toggle-theme');
-        if (!topbar || !toggle || document.querySelector('.portal-theme-button')) return;
+        if (!topbar || !toggle || document.querySelector('.portal-theme-switch') || document.querySelector('.portal-theme-button')) return;
 
         const button = document.createElement('button');
         button.type = 'button';

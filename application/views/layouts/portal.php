@@ -60,6 +60,72 @@ $currentYear = date('Y');
         .topbar strong { color: var(--primary-contrast); }
         .theme-toggle { display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.95rem; color: var(--muted); }
         .theme-toggle input { width: auto; }
+        .portal-theme-switch {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            margin: 0;
+            color: var(--primary-contrast, #fff);
+            font-size: 0.9rem;
+            font-weight: 800;
+            line-height: 1;
+            cursor: pointer;
+            user-select: none;
+        }
+        .portal-theme-switch input {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            opacity: 0;
+            pointer-events: none;
+        }
+        .portal-theme-switch__track {
+            position: relative;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            align-items: center;
+            width: 64px;
+            height: 34px;
+            padding: 3px;
+            border: 2px solid rgba(255, 255, 255, 0.9);
+            border-radius: 999px;
+            background: color-mix(in srgb, var(--primary, #2563eb) 72%, #0f172a);
+            box-sizing: border-box;
+            transition: background 180ms ease, border-color 180ms ease;
+        }
+        .portal-theme-switch__icon {
+            position: relative;
+            z-index: 1;
+            display: grid;
+            place-items: center;
+            color: #fff;
+            font-size: 15px;
+            line-height: 1;
+            transition: color 180ms ease;
+        }
+        .portal-theme-switch__thumb {
+            position: absolute;
+            z-index: 0;
+            top: 3px;
+            left: 3px;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #fff;
+            box-shadow: 0 5px 14px -7px rgba(15, 23, 42, 0.8);
+            transition: transform 180ms ease;
+        }
+        .portal-theme-switch input:checked + .portal-theme-switch__track .portal-theme-switch__thumb {
+            transform: translateX(30px);
+        }
+        .portal-theme-switch input:not(:checked) + .portal-theme-switch__track .portal-theme-switch__icon:first-child,
+        .portal-theme-switch input:checked + .portal-theme-switch__track .portal-theme-switch__icon:nth-child(2) {
+            color: var(--primary, #2563eb);
+        }
+        .portal-theme-switch input:focus-visible + .portal-theme-switch__track {
+            outline: 3px solid color-mix(in srgb, #fff 46%, transparent);
+            outline-offset: 3px;
+        }
         footer { text-align: center; padding: 2.5rem 1.5rem 3.5rem; color: var(--muted); font-size: 0.92rem; }
         .footer-brand { display: flex; flex-direction: column; align-items: center; gap: 12px; margin-bottom: 1rem; }
         .footer-brand img { max-height: 65px; width: auto; display: block; }
@@ -121,7 +187,7 @@ $currentYear = date('Y');
     </style>
 </head>
 <body>
-    <header class="topbar"><div><strong><?= htmlspecialchars($appName ?? 'IndusOS Food', ENT_QUOTES, 'UTF-8'); ?></strong></div><label class="theme-toggle"><input type="checkbox" id="toggle-theme">Tema escuro</label></header>
+    <header class="topbar"><div><strong><?= htmlspecialchars($appName ?? 'IndusOS Food', ENT_QUOTES, 'UTF-8'); ?></strong></div><label class="theme-toggle portal-theme-switch" for="toggle-theme"><span>Alternar tema</span><input type="checkbox" id="toggle-theme" aria-label="Alternar entre tema claro e escuro"><span class="portal-theme-switch__track" aria-hidden="true"><span class="portal-theme-switch__icon">&#9788;</span><span class="portal-theme-switch__icon">&#9790;</span><span class="portal-theme-switch__thumb"></span></span></label></header>
     <?php if (!empty($flash['success'])): ?><div class="container"><div class="alert alert-success"><?= htmlspecialchars($flash['success'], ENT_QUOTES, 'UTF-8'); ?></div></div><?php endif; ?>
     <?php if (!empty($flash['error'])): ?><div class="container"><div class="alert alert-error"><?= htmlspecialchars($flash['error'], ENT_QUOTES, 'UTF-8'); ?></div></div><?php endif; ?>
     <?= $content ?? '' ?>
