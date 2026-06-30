@@ -899,7 +899,7 @@ $previewMatrixDefault = app_logo_matrix_values($logoTintPreviewHex);
                                     <input type="range" id="portal-login-logo-light-size" name="config[PORTAL_LOGIN_LOGO_LIGHT_SIZE]" min="24" max="180" value="<?= htmlspecialchars($portalLoginLogoLightSize, ENT_QUOTES, 'UTF-8'); ?>" data-preview="preview-portal-login-light">
                                     <div class="pos-grid">
                                         <label class="slider-label" for="portal-login-logo-light-x">Posi&ccedil;&atilde;o X <output id="portal-login-logo-light-x-val"><?= htmlspecialchars($portalLoginLogoLightOffsetX, ENT_QUOTES, 'UTF-8'); ?>px</output></label>
-                                        <input type="range" id="portal-login-logo-light-x" name="config[PORTAL_LOGIN_LOGO_LIGHT_OFFSET_X]" min="-200" max="200" value="<?= htmlspecialchars($portalLoginLogoLightOffsetX, ENT_QUOTES, 'UTF-8'); ?>" data-preview="preview-portal-login-light" data-axis="x">
+                                        <input type="range" id="portal-login-logo-light-x" name="config[PORTAL_LOGIN_LOGO_LIGHT_OFFSET_X]" min="0" max="600" value="<?= htmlspecialchars($portalLoginLogoLightOffsetX, ENT_QUOTES, 'UTF-8'); ?>" data-preview="preview-portal-login-light" data-axis="x">
                                         <label class="slider-label" for="portal-login-logo-light-y">Posi&ccedil;&atilde;o Y <output id="portal-login-logo-light-y-val"><?= htmlspecialchars($portalLoginLogoLightOffsetY, ENT_QUOTES, 'UTF-8'); ?>px</output></label>
                                         <input type="range" id="portal-login-logo-light-y" name="config[PORTAL_LOGIN_LOGO_LIGHT_OFFSET_Y]" min="-200" max="200" value="<?= htmlspecialchars($portalLoginLogoLightOffsetY, ENT_QUOTES, 'UTF-8'); ?>" data-preview="preview-portal-login-light" data-axis="y">
                                     </div>
@@ -924,7 +924,7 @@ $previewMatrixDefault = app_logo_matrix_values($logoTintPreviewHex);
                                     <input type="range" id="portal-login-logo-dark-size" name="config[PORTAL_LOGIN_LOGO_DARK_SIZE]" min="24" max="180" value="<?= htmlspecialchars($portalLoginLogoDarkSize, ENT_QUOTES, 'UTF-8'); ?>" data-preview="preview-portal-login-dark">
                                     <div class="pos-grid">
                                         <label class="slider-label" for="portal-login-logo-dark-x">Posi&ccedil;&atilde;o X <output id="portal-login-logo-dark-x-val"><?= htmlspecialchars($portalLoginLogoDarkOffsetX, ENT_QUOTES, 'UTF-8'); ?>px</output></label>
-                                        <input type="range" id="portal-login-logo-dark-x" name="config[PORTAL_LOGIN_LOGO_DARK_OFFSET_X]" min="-200" max="200" value="<?= htmlspecialchars($portalLoginLogoDarkOffsetX, ENT_QUOTES, 'UTF-8'); ?>" data-preview="preview-portal-login-dark" data-axis="x">
+                                        <input type="range" id="portal-login-logo-dark-x" name="config[PORTAL_LOGIN_LOGO_DARK_OFFSET_X]" min="0" max="600" value="<?= htmlspecialchars($portalLoginLogoDarkOffsetX, ENT_QUOTES, 'UTF-8'); ?>" data-preview="preview-portal-login-dark" data-axis="x">
                                         <label class="slider-label" for="portal-login-logo-dark-y">Posi&ccedil;&atilde;o Y <output id="portal-login-logo-dark-y-val"><?= htmlspecialchars($portalLoginLogoDarkOffsetY, ENT_QUOTES, 'UTF-8'); ?>px</output></label>
                                         <input type="range" id="portal-login-logo-dark-y" name="config[PORTAL_LOGIN_LOGO_DARK_OFFSET_Y]" min="-200" max="200" value="<?= htmlspecialchars($portalLoginLogoDarkOffsetY, ENT_QUOTES, 'UTF-8'); ?>" data-preview="preview-portal-login-dark" data-axis="y">
                                     </div>
@@ -1749,18 +1749,13 @@ $previewMatrixDefault = app_logo_matrix_values($logoTintPreviewHex);
         align-items: center;
         justify-content: center;
         box-sizing: border-box;
-        min-height: calc(
-            var(--preview-logo-size, 96px) + 32px
-            + max(0px, var(--preview-logo-y, 0px))
-            + max(0px, calc(-1 * var(--preview-logo-y, 0px)))
-        );
-        padding:
-            calc(16px + max(0px, calc(-1 * var(--preview-logo-y, 0px))))
-            calc(16px + max(0px, var(--preview-logo-x, 0px)))
-            calc(16px + max(0px, var(--preview-logo-y, 0px)))
-            calc(16px + max(0px, calc(-1 * var(--preview-logo-x, 0px))));
+        min-height: 128px;
+        padding: 16px;
         background: rgba(255, 255, 255, 0.85);
         overflow: hidden;
+    }
+    .portal-login-logo-grid .preview-body {
+        justify-content: flex-start;
     }
     .logo-preview.light {
         background: linear-gradient(135deg, rgba(255,255,255,0.96), rgba(226,232,240,0.84));
@@ -2519,8 +2514,8 @@ $previewMatrixDefault = app_logo_matrix_values($logoTintPreviewHex);
                 preview: '#preview-portal-login-light',
                 min: 24,
                 max: 180,
-                offsetMin: -200,
-                offsetMax: 200,
+                offsetMin: 0,
+                offsetMax: 600,
             },
             {
                 size: '#portal-login-logo-dark-size',
@@ -2532,8 +2527,8 @@ $previewMatrixDefault = app_logo_matrix_values($logoTintPreviewHex);
                 preview: '#preview-portal-login-dark',
                 min: 24,
                 max: 180,
-                offsetMin: -200,
-                offsetMax: 200,
+                offsetMin: 0,
+                offsetMax: 600,
             },
         ];
 
@@ -2563,8 +2558,8 @@ $previewMatrixDefault = app_logo_matrix_values($logoTintPreviewHex);
                     ? img.naturalWidth / img.naturalHeight
                     : 1;
                 const logoWidth = Math.min(sizeVal * aspectRatio, availableWidth);
-                const horizontalLimit = Math.max(0, Math.floor((availableWidth - logoWidth) / 2));
-                safeXVal = clampNumber(xVal, -horizontalLimit, horizontalLimit);
+                const horizontalLimit = Math.max(0, Math.floor(availableWidth - logoWidth));
+                safeXVal = clampNumber(xVal, 0, horizontalLimit);
                 offsetX.value = String(safeXVal);
             }
             if (outputXEl) {
