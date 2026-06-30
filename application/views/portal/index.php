@@ -10,6 +10,9 @@ $portalLoginLogoLightOffsetX = max(-200, min(200, (int)($theme['portal_login_log
 $portalLoginLogoLightOffsetY = max(-200, min(200, (int)($theme['portal_login_logo_light_offset_y'] ?? 0)));
 $portalLoginLogoDarkOffsetX = max(-200, min(200, (int)($theme['portal_login_logo_dark_offset_x'] ?? 0)));
 $portalLoginLogoDarkOffsetY = max(-200, min(200, (int)($theme['portal_login_logo_dark_offset_y'] ?? 0)));
+$portalLogoFrameSize = $portalLoginLogoFilter ? $portalLoginLogoDarkSize : $portalLoginLogoLightSize;
+$portalLogoFrameOffsetX = $portalLoginLogoFilter ? $portalLoginLogoDarkOffsetX : $portalLoginLogoLightOffsetX;
+$portalLogoFrameOffsetY = $portalLoginLogoFilter ? $portalLoginLogoDarkOffsetY : $portalLoginLogoLightOffsetY;
 $appDisplayName = htmlspecialchars($appName ?? 'IndusOS Food', ENT_QUOTES, 'UTF-8');
 $appTaglineText = htmlspecialchars($appTagline ?? 'Sistema de Controle Industrial (SCI)', ENT_QUOTES, 'UTF-8');
 $supportData = $support ?? [];
@@ -36,7 +39,7 @@ if ($supportWhatsapp !== '') {
 <section class="portal-hero" data-portal-hero>
     <div class="portal-hero__content">
         <div class="portal-brand-card">
-            <div class="portal-brand-card__logo <?= $portalLoginLogoFilter ? 'portal-brand-card__logo--filtered' : 'portal-brand-card__logo--plain'; ?>" aria-hidden="true">
+            <div class="portal-brand-card__logo <?= $portalLoginLogoFilter ? 'portal-brand-card__logo--filtered' : 'portal-brand-card__logo--plain'; ?>" style="--portal-logo-size: <?= $portalLogoFrameSize; ?>px; --portal-logo-x: <?= $portalLogoFrameOffsetX; ?>px; --portal-logo-y: <?= $portalLogoFrameOffsetY; ?>px;" aria-hidden="true">
                 <?php if ($portalLoginLogoFilter): ?>
                     <span class="portal-logo-filtered" style="--portal-login-logo-url: url('<?= $portalLogoDark; ?>'); --portal-logo-size: <?= $portalLoginLogoDarkSize; ?>px; --portal-logo-x: <?= $portalLoginLogoDarkOffsetX; ?>px; --portal-logo-y: <?= $portalLoginLogoDarkOffsetY; ?>px;"></span>
                 <?php else: ?>
@@ -470,11 +473,20 @@ if ($supportWhatsapp !== '') {
         display: flex;
         gap: 12px;
         align-items: center;
+        box-sizing: border-box;
         width: 100%;
         margin-bottom: 1.5rem;
-        min-height: calc(var(--portal-logo-size, 60px) + 24px);
-        padding: 12px 0;
-        overflow: visible;
+        min-height: calc(
+            var(--portal-logo-size, 60px) + 24px
+            + max(0px, var(--portal-logo-y, 0px))
+            + max(0px, calc(-1 * var(--portal-logo-y, 0px)))
+        );
+        padding:
+            calc(12px + max(0px, calc(-1 * var(--portal-logo-y, 0px))))
+            calc(12px + max(0px, var(--portal-logo-x, 0px)))
+            calc(12px + max(0px, var(--portal-logo-y, 0px)))
+            calc(12px + max(0px, calc(-1 * var(--portal-logo-x, 0px))));
+        overflow: hidden;
     }
 
     .portal-logo {

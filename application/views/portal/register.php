@@ -12,6 +12,9 @@ $portalLoginLogoDarkOffsetX = max(-200, min(200, (int)($theme['portal_login_logo
 $portalLoginLogoDarkOffsetY = max(-200, min(200, (int)($theme['portal_login_logo_dark_offset_y'] ?? 0)));
 $portalRegisterLogoLightOffsetY = max(-200, min(200, $portalLoginLogoLightOffsetY - 16));
 $portalRegisterLogoDarkOffsetY = max(-200, min(200, $portalLoginLogoDarkOffsetY - 16));
+$portalLogoFrameSize = $portalLoginLogoFilter ? $portalLoginLogoDarkSize : $portalLoginLogoLightSize;
+$portalLogoFrameOffsetX = $portalLoginLogoFilter ? $portalLoginLogoDarkOffsetX : $portalLoginLogoLightOffsetX;
+$portalLogoFrameOffsetY = $portalLoginLogoFilter ? $portalRegisterLogoDarkOffsetY : $portalRegisterLogoLightOffsetY;
 $appDisplayName = htmlspecialchars($appName ?? 'IndusOS Food', ENT_QUOTES, 'UTF-8');
 $appTaglineText = htmlspecialchars($appTagline ?? 'Sistema de Controle Industrial (SCI)', ENT_QUOTES, 'UTF-8');
 $actionUrl = htmlspecialchars($url('portal/cadastro'), ENT_QUOTES, 'UTF-8');
@@ -20,7 +23,7 @@ $loginUrl = htmlspecialchars($url('portal'), ENT_QUOTES, 'UTF-8');
 <section class="portal-hero portal-hero--register" data-portal-hero>
     <div class="portal-hero__content">
         <div class="portal-brand-card">
-            <div class="portal-brand-card__logo <?= $portalLoginLogoFilter ? 'portal-brand-card__logo--filtered' : 'portal-brand-card__logo--plain'; ?>" aria-hidden="true">
+            <div class="portal-brand-card__logo <?= $portalLoginLogoFilter ? 'portal-brand-card__logo--filtered' : 'portal-brand-card__logo--plain'; ?>" style="--portal-logo-size: <?= $portalLogoFrameSize; ?>px; --portal-logo-x: <?= $portalLogoFrameOffsetX; ?>px; --portal-logo-y: <?= $portalLogoFrameOffsetY; ?>px;" aria-hidden="true">
                 <?php if ($portalLoginLogoFilter): ?>
                     <span class="portal-logo-filtered" style="--portal-login-logo-url: url('<?= $portalLogoDark; ?>'); --portal-logo-size: <?= $portalLoginLogoDarkSize; ?>px; --portal-logo-x: <?= $portalLoginLogoDarkOffsetX; ?>px; --portal-logo-y: <?= $portalRegisterLogoDarkOffsetY; ?>px;"></span>
                 <?php else: ?>
@@ -196,10 +199,19 @@ $loginUrl = htmlspecialchars($url('portal'), ENT_QUOTES, 'UTF-8');
         display: flex;
         align-items: center;
         gap: 0.8rem;
+        box-sizing: border-box;
         width: 100%;
-        min-height: calc(var(--portal-logo-size, 60px) + 24px);
-        padding: 12px 0;
-        overflow: visible;
+        min-height: calc(
+            var(--portal-logo-size, 60px) + 24px
+            + max(0px, var(--portal-logo-y, 0px))
+            + max(0px, calc(-1 * var(--portal-logo-y, 0px)))
+        );
+        padding:
+            calc(12px + max(0px, calc(-1 * var(--portal-logo-y, 0px))))
+            calc(12px + max(0px, var(--portal-logo-x, 0px)))
+            calc(12px + max(0px, var(--portal-logo-y, 0px)))
+            calc(12px + max(0px, calc(-1 * var(--portal-logo-x, 0px))));
+        overflow: hidden;
     }
 
     .portal-logo {

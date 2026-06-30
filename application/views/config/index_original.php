@@ -1748,8 +1748,19 @@ $previewMatrixDefault = app_logo_matrix_values($logoTintPreviewHex);
         display: flex;
         align-items: center;
         justify-content: center;
-        padding: 16px;
+        box-sizing: border-box;
+        min-height: calc(
+            var(--preview-logo-size, 96px) + 32px
+            + max(0px, var(--preview-logo-y, 0px))
+            + max(0px, calc(-1 * var(--preview-logo-y, 0px)))
+        );
+        padding:
+            calc(16px + max(0px, calc(-1 * var(--preview-logo-y, 0px))))
+            calc(16px + max(0px, var(--preview-logo-x, 0px)))
+            calc(16px + max(0px, var(--preview-logo-y, 0px)))
+            calc(16px + max(0px, calc(-1 * var(--preview-logo-x, 0px))));
         background: rgba(255, 255, 255, 0.85);
+        overflow: hidden;
     }
     .logo-preview.light {
         background: linear-gradient(135deg, rgba(255,255,255,0.96), rgba(226,232,240,0.84));
@@ -2544,20 +2555,37 @@ $previewMatrixDefault = app_logo_matrix_values($logoTintPreviewHex);
             }
             const xVal = offsetX ? clampNumber(parseInt(offsetX.value || '0', 10), offsetMin, offsetMax) : 0;
             const yVal = offsetY ? clampNumber(parseInt(offsetY.value || '0', 10), offsetMin, offsetMax) : 0;
+            const previewBody = img.closest('.preview-body');
+            let safeXVal = xVal;
+            if (previewBody && offsetX && preview.includes('portal-login')) {
+                const availableWidth = Math.max(0, previewBody.clientWidth - 32);
+                const aspectRatio = img.naturalWidth > 0 && img.naturalHeight > 0
+                    ? img.naturalWidth / img.naturalHeight
+                    : 1;
+                const logoWidth = Math.min(sizeVal * aspectRatio, availableWidth);
+                const horizontalLimit = Math.max(0, Math.floor((availableWidth - logoWidth) / 2));
+                safeXVal = clampNumber(xVal, -horizontalLimit, horizontalLimit);
+                offsetX.value = String(safeXVal);
+            }
             if (outputXEl) {
-                outputXEl.textContent = `${xVal}px`;
+                outputXEl.textContent = `${safeXVal}px`;
             }
             if (outputYEl) {
                 outputYEl.textContent = `${yVal}px`;
             }
-            img.style.transform = `translate(${xVal + baseX}px, ${yVal + baseY}px)`;
+            img.style.transform = `translate(${safeXVal + baseX}px, ${yVal + baseY}px)`;
+            if (previewBody) {
+                previewBody.style.setProperty('--preview-logo-size', `${sizeVal}px`);
+                previewBody.style.setProperty('--preview-logo-x', `${safeXVal + baseX}px`);
+                previewBody.style.setProperty('--preview-logo-y', `${yVal + baseY}px`);
+            }
 
             const root = document.documentElement;
             if (cssSize) {
                 root.style.setProperty(cssSize, `${sizeVal}px`);
             }
             if (cssX) {
-                root.style.setProperty(cssX, `${xVal + baseX}px`);
+                root.style.setProperty(cssX, `${safeXVal + baseX}px`);
             }
             if (cssY) {
                 root.style.setProperty(cssY, `${yVal + baseY}px`);
