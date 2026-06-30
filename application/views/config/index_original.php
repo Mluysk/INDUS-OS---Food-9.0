@@ -933,29 +933,44 @@ $previewMatrixDefault = app_logo_matrix_values($logoTintPreviewHex);
                         </div>
                     </div>
                     <div class="support-card">
-                <h3>Suporte do portal</h3>
+                <h3 class="support-title"><span data-lucide="headset" aria-hidden="true"></span><span>Suporte do portal</span></h3>
                 <p class="card-subtitle">Defina os canais exibidos na aba "Suporte" para seus clientes.</p>
                 <div class="support-grid">
                     <div class="field">
                         <label for="support-email">E-mail de atendimento</label>
-                        <input id="support-email" name="config[PORTAL_SUPPORT_EMAIL]" type="email" placeholder="suporte@empresa.com" value="<?= htmlspecialchars($supportEmail, ENT_QUOTES, 'UTF-8'); ?>">
+                        <div class="support-input-shell">
+                            <span class="support-input-icon" data-lucide="mail" aria-hidden="true"></span>
+                            <input id="support-email" name="config[PORTAL_SUPPORT_EMAIL]" type="email" placeholder="suporte@empresa.com" value="<?= htmlspecialchars($supportEmail, ENT_QUOTES, 'UTF-8'); ?>">
+                        </div>
                     </div>
                     <div class="field">
                         <label for="support-phone">Telefone</label>
-                        <input id="support-phone" name="config[PORTAL_SUPPORT_PHONE]" placeholder="(11) 3000-0000" value="<?= htmlspecialchars($supportTelefone, ENT_QUOTES, 'UTF-8'); ?>">
+                        <div class="support-input-shell">
+                            <span class="support-input-icon" data-lucide="phone" aria-hidden="true"></span>
+                            <input id="support-phone" name="config[PORTAL_SUPPORT_PHONE]" placeholder="(11) 3000-0000" value="<?= htmlspecialchars($supportTelefone, ENT_QUOTES, 'UTF-8'); ?>">
+                        </div>
                     </div>
                     <div class="field">
                         <label for="support-whatsapp">WhatsApp</label>
-                        <input id="support-whatsapp" name="config[PORTAL_SUPPORT_WHATSAPP]" placeholder="+55 11 90000-0000" value="<?= htmlspecialchars($supportWhatsapp, ENT_QUOTES, 'UTF-8'); ?>">
+                        <div class="support-input-shell">
+                            <span class="support-input-icon" data-lucide="message-circle" aria-hidden="true"></span>
+                            <input id="support-whatsapp" name="config[PORTAL_SUPPORT_WHATSAPP]" placeholder="+55 11 90000-0000" value="<?= htmlspecialchars($supportWhatsapp, ENT_QUOTES, 'UTF-8'); ?>">
+                        </div>
                     </div>
                     <div class="field">
                         <label for="support-hours">Horário de atendimento</label>
-                        <input id="support-hours" name="config[PORTAL_SUPPORT_HOURS]" placeholder="Segunda a sexta, 8h às 18h" value="<?= htmlspecialchars($supportHorario, ENT_QUOTES, 'UTF-8'); ?>">
+                        <div class="support-input-shell">
+                            <span class="support-input-icon" data-lucide="clock-3" aria-hidden="true"></span>
+                            <input id="support-hours" name="config[PORTAL_SUPPORT_HOURS]" placeholder="Segunda a sexta, 8h às 18h" value="<?= htmlspecialchars($supportHorario, ENT_QUOTES, 'UTF-8'); ?>">
+                        </div>
                     </div>
                 </div>
                 <div class="field">
                     <label for="support-message">Mensagem complementar</label>
-                    <textarea id="support-message" name="config[PORTAL_SUPPORT_MESSAGE]" rows="2" placeholder="Conte conosco para ajustar volumes, lotes ou agendar coletas."><?= htmlspecialchars($supportMensagem, ENT_QUOTES, 'UTF-8'); ?></textarea>
+                    <div class="support-input-shell support-input-shell--textarea">
+                        <span class="support-input-icon" data-lucide="message-square-text" aria-hidden="true"></span>
+                        <textarea id="support-message" name="config[PORTAL_SUPPORT_MESSAGE]" rows="2" placeholder="Conte conosco para ajustar volumes, lotes ou agendar coletas."><?= htmlspecialchars($supportMensagem, ENT_QUOTES, 'UTF-8'); ?></textarea>
+                    </div>
                 </div>
                     </div>
                 </div>
@@ -1575,10 +1590,48 @@ $previewMatrixDefault = app_logo_matrix_values($logoTintPreviewHex);
         font-size: 1.1rem;
         color: var(--text);
     }
+    .support-title {
+        display: inline-flex;
+        align-items: center;
+        gap: 9px;
+    }
+    .support-title svg {
+        width: 23px;
+        height: 23px;
+        color: var(--primary);
+        stroke-width: 2;
+        flex: 0 0 auto;
+    }
     .support-grid {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
         gap: 16px;
+    }
+    .support-input-shell {
+        position: relative;
+        width: 100%;
+    }
+    .support-input-shell > input,
+    .support-input-shell > textarea {
+        width: 100%;
+        box-sizing: border-box;
+        padding-left: 44px;
+    }
+    .support-input-icon {
+        position: absolute;
+        z-index: 1;
+        left: 14px;
+        top: 50%;
+        width: 19px;
+        height: 19px;
+        color: var(--primary);
+        stroke-width: 2;
+        transform: translateY(-50%);
+        pointer-events: none;
+    }
+    .support-input-shell--textarea .support-input-icon {
+        top: 14px;
+        transform: none;
     }
     .support-card textarea {
         min-height: 72px;
@@ -1588,6 +1641,9 @@ $previewMatrixDefault = app_logo_matrix_values($logoTintPreviewHex);
         padding: 12px 14px;
         background: var(--surface);
         color: var(--text);
+    }
+    .support-card .support-input-shell--textarea textarea {
+        padding-left: 44px;
     }
     .theme-mode {
         display: inline-flex;
