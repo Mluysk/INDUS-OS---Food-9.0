@@ -191,14 +191,28 @@ include __DIR__.'/index_whatsapp_beside_contact_type_patch.php';
             display: block !important;
             width: auto !important;
             max-width: 100% !important;
-            transform: translate(0, var(--portal-logo-y, 0px)) !important;
+            transform: translate(
+                0,
+                clamp(
+                    calc((100% - 100cqh) / 2),
+                    var(--portal-logo-y, 0px),
+                    calc((100cqh - 100%) / 2)
+                )
+            ) !important;
             object-fit: contain !important;
         }
 
         html body .portal-logo-filtered {
             width: min(100%, calc(var(--portal-logo-size, 60px) * 3.9)) !important;
             max-width: 100% !important;
-            transform: translate(0, var(--portal-logo-y, 0px)) !important;
+            transform: translate(
+                0,
+                clamp(
+                    calc((100% - 100cqh) / 2),
+                    var(--portal-logo-y, 0px),
+                    calc((100cqh - 100%) / 2)
+                )
+            ) !important;
         }
 
         html body .portal-brand-card h1 {

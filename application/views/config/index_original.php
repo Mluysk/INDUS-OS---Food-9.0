@@ -901,7 +901,7 @@ $previewMatrixDefault = app_logo_matrix_values($logoTintPreviewHex);
                                         <label class="slider-label" for="portal-login-logo-light-x">Posi&ccedil;&atilde;o X <output id="portal-login-logo-light-x-val"><?= htmlspecialchars($portalLoginLogoLightOffsetX, ENT_QUOTES, 'UTF-8'); ?>px</output></label>
                                         <input type="range" id="portal-login-logo-light-x" name="config[PORTAL_LOGIN_LOGO_LIGHT_OFFSET_X]" min="-534" max="534" value="<?= htmlspecialchars($portalLoginLogoLightOffsetX, ENT_QUOTES, 'UTF-8'); ?>" data-preview="preview-portal-login-light" data-axis="x">
                                         <label class="slider-label" for="portal-login-logo-light-y">Posi&ccedil;&atilde;o Y <output id="portal-login-logo-light-y-val"><?= htmlspecialchars($portalLoginLogoLightOffsetY, ENT_QUOTES, 'UTF-8'); ?>px</output></label>
-                                        <input type="range" id="portal-login-logo-light-y" name="config[PORTAL_LOGIN_LOGO_LIGHT_OFFSET_Y]" min="-200" max="200" value="<?= htmlspecialchars($portalLoginLogoLightOffsetY, ENT_QUOTES, 'UTF-8'); ?>" data-preview="preview-portal-login-light" data-axis="y">
+                                        <input type="range" id="portal-login-logo-light-y" name="config[PORTAL_LOGIN_LOGO_LIGHT_OFFSET_Y]" min="-60" max="60" value="<?= htmlspecialchars($portalLoginLogoLightOffsetY, ENT_QUOTES, 'UTF-8'); ?>" data-preview="preview-portal-login-light" data-axis="y">
                                     </div>
                                 </div>
                             </div>
@@ -926,7 +926,7 @@ $previewMatrixDefault = app_logo_matrix_values($logoTintPreviewHex);
                                         <label class="slider-label" for="portal-login-logo-dark-x">Posi&ccedil;&atilde;o X <output id="portal-login-logo-dark-x-val"><?= htmlspecialchars($portalLoginLogoDarkOffsetX, ENT_QUOTES, 'UTF-8'); ?>px</output></label>
                                         <input type="range" id="portal-login-logo-dark-x" name="config[PORTAL_LOGIN_LOGO_DARK_OFFSET_X]" min="-534" max="534" value="<?= htmlspecialchars($portalLoginLogoDarkOffsetX, ENT_QUOTES, 'UTF-8'); ?>" data-preview="preview-portal-login-dark" data-axis="x">
                                         <label class="slider-label" for="portal-login-logo-dark-y">Posi&ccedil;&atilde;o Y <output id="portal-login-logo-dark-y-val"><?= htmlspecialchars($portalLoginLogoDarkOffsetY, ENT_QUOTES, 'UTF-8'); ?>px</output></label>
-                                        <input type="range" id="portal-login-logo-dark-y" name="config[PORTAL_LOGIN_LOGO_DARK_OFFSET_Y]" min="-200" max="200" value="<?= htmlspecialchars($portalLoginLogoDarkOffsetY, ENT_QUOTES, 'UTF-8'); ?>" data-preview="preview-portal-login-dark" data-axis="y">
+                                        <input type="range" id="portal-login-logo-dark-y" name="config[PORTAL_LOGIN_LOGO_DARK_OFFSET_Y]" min="-60" max="60" value="<?= htmlspecialchars($portalLoginLogoDarkOffsetY, ENT_QUOTES, 'UTF-8'); ?>" data-preview="preview-portal-login-dark" data-axis="y">
                                     </div>
                                 </div>
                             </div>
@@ -1755,18 +1755,25 @@ $previewMatrixDefault = app_logo_matrix_values($logoTintPreviewHex);
         overflow: hidden;
     }
     .portal-login-logo-grid .preview-body {
-        container-type: inline-size;
+        container-type: size;
         justify-content: center;
-        padding-inline: 6px;
+        height: 133px;
+        min-height: 133px;
+        padding: 6px;
     }
     .portal-login-logo-grid .preview-body img {
+        max-height: 121px !important;
         transform: translate(
             clamp(
                 calc((100% - 100cqw) / 2),
                 var(--preview-logo-x, 0px),
                 calc((100cqw - 100%) / 2)
             ),
-            var(--preview-logo-y, 0px)
+            clamp(
+                calc((100% - 100cqh) / 2),
+                var(--preview-logo-y, 0px),
+                calc((100cqh - 100%) / 2)
+            )
         ) !important;
     }
     .logo-preview.light {
@@ -2528,6 +2535,8 @@ $previewMatrixDefault = app_logo_matrix_values($logoTintPreviewHex);
                 max: 180,
                 offsetMin: -534,
                 offsetMax: 534,
+                offsetYMin: -60,
+                offsetYMax: 60,
             },
             {
                 size: '#portal-login-logo-dark-size',
@@ -2541,10 +2550,12 @@ $previewMatrixDefault = app_logo_matrix_values($logoTintPreviewHex);
                 max: 180,
                 offsetMin: -534,
                 offsetMax: 534,
+                offsetYMin: -60,
+                offsetYMax: 60,
             },
         ];
 
-        const applyLogoSizeAndOffset = ({ size, x, y, output, outputX, outputY, preview, min, max, offsetMin = -80, offsetMax = 80, cssSize, cssX, cssY, baseX = 0, baseY = 0 }) => {
+        const applyLogoSizeAndOffset = ({ size, x, y, output, outputX, outputY, preview, min, max, offsetMin = -80, offsetMax = 80, offsetYMin = offsetMin, offsetYMax = offsetMax, cssSize, cssX, cssY, baseX = 0, baseY = 0 }) => {
             const sizeInput = document.querySelector(size);
             const offsetX = document.querySelector(x);
             const offsetY = document.querySelector(y);
@@ -2561,7 +2572,7 @@ $previewMatrixDefault = app_logo_matrix_values($logoTintPreviewHex);
                 outputEl.textContent = `${sizeVal}px`;
             }
             let xVal = offsetX ? clampNumber(parseInt(offsetX.value || '0', 10), offsetMin, offsetMax) : 0;
-            const yVal = offsetY ? clampNumber(parseInt(offsetY.value || '0', 10), offsetMin, offsetMax) : 0;
+            let yVal = offsetY ? clampNumber(parseInt(offsetY.value || '0', 10), offsetYMin, offsetYMax) : 0;
             const previewBody = img.closest('.preview-body');
             const isPortalLoginLogo = preview.includes('portal-login');
             let previewXVal = xVal;
@@ -2570,15 +2581,26 @@ $previewMatrixDefault = app_logo_matrix_values($logoTintPreviewHex);
                     ? img.naturalWidth / img.naturalHeight
                     : 1;
                 const targetAvailableWidth = 1080 - 12;
-                const targetLogoWidth = Math.min(sizeVal * aspectRatio, targetAvailableWidth);
+                const renderedLogoHeight = Math.min(sizeVal, 133 - 12);
+                const targetLogoWidth = Math.min(renderedLogoHeight * aspectRatio, targetAvailableWidth);
                 const horizontalLimit = Math.max(0, Math.floor((targetAvailableWidth - targetLogoWidth) / 2));
                 offsetX.min = String(-horizontalLimit);
                 offsetX.max = String(horizontalLimit);
                 xVal = clampNumber(xVal, -horizontalLimit, horizontalLimit);
                 offsetX.value = String(xVal);
 
+                const targetAvailableHeight = 133 - 12;
+                const targetLogoHeight = renderedLogoHeight;
+                const verticalLimit = Math.max(0, Math.floor((targetAvailableHeight - targetLogoHeight) / 2));
+                if (offsetY) {
+                    offsetY.min = String(-verticalLimit);
+                    offsetY.max = String(verticalLimit);
+                    yVal = clampNumber(yVal, -verticalLimit, verticalLimit);
+                    offsetY.value = String(yVal);
+                }
+
                 const previewAvailableWidth = Math.max(0, previewBody.clientWidth - 12);
-                const previewLogoWidth = Math.min(sizeVal * aspectRatio, previewAvailableWidth);
+                const previewLogoWidth = Math.min(renderedLogoHeight * aspectRatio, previewAvailableWidth);
                 const previewLimit = Math.max(0, (previewAvailableWidth - previewLogoWidth) / 2);
                 previewXVal = horizontalLimit > 0 ? (xVal / horizontalLimit) * previewLimit : 0;
             }
