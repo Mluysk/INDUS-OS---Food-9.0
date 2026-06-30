@@ -469,7 +469,7 @@ class ConfigController extends Controller
             $isPortalLogoOffset = strpos($key, 'PORTAL_LOGIN_LOGO_') === 0;
             $isPortalLogoX = $isPortalLogoOffset && substr($key, -9) === '_OFFSET_X';
             $minOffset = $isPortalLogoX ? 0 : ($isPortalLogoOffset ? -200 : -80);
-            $maxOffset = $isPortalLogoX ? 600 : ($isPortalLogoOffset ? 200 : 80);
+            $maxOffset = $isPortalLogoX ? 2000 : ($isPortalLogoOffset ? 200 : 80);
             $val = (int)$data[$key];
             $val = max($minOffset, min($maxOffset, $val));
             $data[$key] = (string)$val;

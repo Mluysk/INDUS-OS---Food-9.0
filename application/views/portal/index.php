@@ -6,9 +6,9 @@ $portalLogoDark = htmlspecialchars($asset($portalLoginLogoDarkPath), ENT_QUOTES,
 $portalLoginLogoFilter = ($theme['portal_login_logo_filter'] ?? '0') === '1';
 $portalLoginLogoLightSize = max(24, min(180, (int)($theme['portal_login_logo_light_size'] ?? 60)));
 $portalLoginLogoDarkSize = max(24, min(180, (int)($theme['portal_login_logo_dark_size'] ?? 60)));
-$portalLoginLogoLightOffsetX = max(0, min(600, (int)($theme['portal_login_logo_light_offset_x'] ?? 0)));
+$portalLoginLogoLightOffsetX = max(0, min(2000, (int)($theme['portal_login_logo_light_offset_x'] ?? 0)));
 $portalLoginLogoLightOffsetY = max(-200, min(200, (int)($theme['portal_login_logo_light_offset_y'] ?? 0)));
-$portalLoginLogoDarkOffsetX = max(0, min(600, (int)($theme['portal_login_logo_dark_offset_x'] ?? 0)));
+$portalLoginLogoDarkOffsetX = max(0, min(2000, (int)($theme['portal_login_logo_dark_offset_x'] ?? 0)));
 $portalLoginLogoDarkOffsetY = max(-200, min(200, (int)($theme['portal_login_logo_dark_offset_y'] ?? 0)));
 $portalLogoFrameSize = $portalLoginLogoFilter ? $portalLoginLogoDarkSize : $portalLoginLogoLightSize;
 $portalLogoFrameOffsetX = $portalLoginLogoFilter ? $portalLoginLogoDarkOffsetX : $portalLoginLogoLightOffsetX;
@@ -478,7 +478,7 @@ if ($supportWhatsapp !== '') {
         width: 100%;
         margin-bottom: 1.5rem;
         min-height: calc(var(--portal-logo-size, 60px) + 24px);
-        padding: 12px;
+        padding: 12px 6px;
         overflow: visible;
     }
 
