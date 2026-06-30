@@ -6,9 +6,9 @@ $portalLogoDark = htmlspecialchars($asset($portalLoginLogoDarkPath), ENT_QUOTES,
 $portalLoginLogoFilter = ($theme['portal_login_logo_filter'] ?? '0') === '1';
 $portalLoginLogoLightSize = max(24, min(180, (int)($theme['portal_login_logo_light_size'] ?? 60)));
 $portalLoginLogoDarkSize = max(24, min(180, (int)($theme['portal_login_logo_dark_size'] ?? 60)));
-$portalLoginLogoLightOffsetX = max(0, min(2000, (int)($theme['portal_login_logo_light_offset_x'] ?? 0)));
+$portalLoginLogoLightOffsetX = max(-534, min(534, (int)($theme['portal_login_logo_light_offset_x'] ?? 0)));
 $portalLoginLogoLightOffsetY = max(-200, min(200, (int)($theme['portal_login_logo_light_offset_y'] ?? 0)));
-$portalLoginLogoDarkOffsetX = max(0, min(2000, (int)($theme['portal_login_logo_dark_offset_x'] ?? 0)));
+$portalLoginLogoDarkOffsetX = max(-534, min(534, (int)($theme['portal_login_logo_dark_offset_x'] ?? 0)));
 $portalLoginLogoDarkOffsetY = max(-200, min(200, (int)($theme['portal_login_logo_dark_offset_y'] ?? 0)));
 $portalLogoFrameSize = $portalLoginLogoFilter ? $portalLoginLogoDarkSize : $portalLoginLogoLightSize;
 $portalLogoFrameOffsetX = $portalLoginLogoFilter ? $portalLoginLogoDarkOffsetX : $portalLoginLogoLightOffsetX;
@@ -473,10 +473,11 @@ if ($supportWhatsapp !== '') {
         display: flex;
         gap: 12px;
         align-items: center;
+        justify-content: center;
         box-sizing: border-box;
         container-type: inline-size;
-        width: 100%;
-        margin-bottom: 1.5rem;
+        width: calc(100% + 5rem);
+        margin: 0 0 1.5rem -2.5rem;
         min-height: calc(var(--portal-logo-size, 60px) + 24px);
         padding: 12px 6px;
         overflow: visible;
@@ -488,7 +489,11 @@ if ($supportWhatsapp !== '') {
         max-width: 100%;
         object-fit: contain;
         transform: translate(
-            clamp(0px, var(--portal-logo-x, 0px), calc(100cqw - 100%)),
+            clamp(
+                calc((100% - 100cqw) / 2),
+                var(--portal-logo-x, 0px),
+                calc((100cqw - 100%) / 2)
+            ),
             var(--portal-logo-y, 0px)
         );
         transition: transform 180ms ease;
@@ -502,7 +507,11 @@ if ($supportWhatsapp !== '') {
         flex: 0 1 min(calc(var(--portal-logo-size, 60px) * 3.9), 100%);
         background: var(--primary);
         transform: translate(
-            clamp(0px, var(--portal-logo-x, 0px), calc(100cqw - 100%)),
+            clamp(
+                calc((100% - 100cqw) / 2),
+                var(--portal-logo-x, 0px),
+                calc((100cqw - 100%) / 2)
+            ),
             var(--portal-logo-y, 0px)
         );
         -webkit-mask: var(--portal-login-logo-url) center / contain no-repeat;

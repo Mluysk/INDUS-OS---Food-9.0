@@ -180,6 +180,8 @@ include __DIR__.'/index_whatsapp_beside_contact_type_patch.php';
         html body .portal-brand-card__logo {
             align-items: center !important;
             justify-content: center !important;
+            width: 100% !important;
+            margin-left: 0 !important;
             margin-bottom: 0.9rem !important;
             max-width: 100% !important;
             overflow: hidden !important;
