@@ -47,6 +47,22 @@ include __DIR__.'/register.php';
         font-weight: 900;
     }
 
+    html[data-theme="dark"] body .portal-store-helper {
+        border-color: color-mix(in srgb, var(--primary, #dc2626) 32%, rgba(148, 163, 184, 0.2));
+        background: color-mix(in srgb, var(--primary, #dc2626) 10%, #111827);
+        color: #cbd5e1;
+        box-shadow: 0 12px 28px -22px color-mix(in srgb, var(--primary, #dc2626) 60%, #020617);
+    }
+
+    html[data-theme="dark"] body .portal-store-helper::before {
+        background: color-mix(in srgb, var(--primary, #dc2626) 20%, #1e293b);
+        color: color-mix(in srgb, var(--primary, #dc2626) 72%, #ffffff);
+    }
+
+    html[data-theme="dark"] body .portal-store-helper strong {
+        color: #f8fafc;
+    }
+
     html body .portal-cnpj-feedback[data-state] {
         display: block;
     }
@@ -102,6 +118,11 @@ include __DIR__.'/register.php';
         background: rgba(148, 163, 184, 0.08);
     }
 
+    html[data-theme="dark"] body .portal-branch-card {
+        border-color: rgba(148, 163, 184, 0.22);
+        background: rgba(30, 41, 59, 0.7);
+    }
+
     html body .portal-branch-switch {
         display: inline-flex;
         align-items: center;
@@ -132,6 +153,11 @@ include __DIR__.'/register.php';
         font-size: 0.76rem;
         font-weight: 900;
         transition: background 0.18s ease, color 0.18s ease;
+    }
+
+    html[data-theme="dark"] body .portal-branch-pill {
+        background: #334155;
+        color: #e2e8f0;
     }
 
     html body .portal-branch-pill::before {

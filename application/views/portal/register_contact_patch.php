@@ -34,9 +34,11 @@ include __DIR__.'/register_icons_patch.php';
         font-weight: 750;
     }
 
-    [data-theme="dark"] html body .portal-contact-type {
+    html[data-theme="dark"] body .portal-contact-type {
         background: color-mix(in srgb, var(--primary, #dc2626) 10%, rgba(15, 23, 42, 0.86));
         border-color: color-mix(in srgb, var(--primary, #dc2626) 18%, rgba(148, 163, 184, 0.16));
+        color: #cbd5e1;
+        box-shadow: inset 0 1px 0 rgba(148, 163, 184, 0.08);
     }
 
     html body .portal-contact-type__title {
@@ -74,9 +76,10 @@ include __DIR__.'/register_icons_patch.php';
         transition: background 0.18s ease, border-color 0.18s ease, color 0.18s ease, transform 0.18s ease;
     }
 
-    [data-theme="dark"] html body .portal-contact-type label {
+    html[data-theme="dark"] body .portal-contact-type label {
         background: rgba(15, 23, 42, 0.78);
         border-color: rgba(148, 163, 184, 0.2);
+        color: #e2e8f0;
     }
 
     html body .portal-contact-type label:has(input[type="radio"]:checked) {
