@@ -103,6 +103,9 @@ $currentYear = date('Y');
             line-height: 1;
             transition: color 180ms ease;
         }
+        .portal-theme-switch__icon:first-child {
+            transform: translateX(-2px);
+        }
         .portal-theme-switch__thumb {
             position: absolute;
             z-index: 0;
