@@ -22,12 +22,13 @@ include __DIR__.'/register_icons_patch.php';
     html body .portal-contact-type {
         display: flex;
         align-items: center;
-        gap: 0.34rem;
-        flex-wrap: wrap;
+        gap: 0.5rem;
+        flex-wrap: nowrap;
         margin: 0.42rem 0 0.82rem;
-        padding: 0.3rem 0.36rem;
+        min-height: 64px;
+        padding: 6px 10px;
         border: 1px solid color-mix(in srgb, var(--primary, #dc2626) 10%, var(--portal-card-border, rgba(15, 23, 42, 0.08)));
-        border-radius: 13px;
+        border-radius: 16px;
         background: color-mix(in srgb, var(--primary, #dc2626) 3%, #ffffff);
         box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.65);
         color: var(--portal-muted, rgba(71, 85, 105, 0.82));
@@ -45,12 +46,15 @@ include __DIR__.'/register_icons_patch.php';
         display: inline-flex;
         align-items: center;
         gap: 0.35rem;
-        min-height: 27px;
-        padding: 0 0.42rem;
+        flex: 0 0 auto;
+        min-height: 46px;
+        padding: 0 8px;
         color: var(--text, #111827);
-        font-size: 0.77rem;
+        font-size: 0.82rem;
+        font-weight: 850;
         letter-spacing: 0.04em;
         text-transform: uppercase;
+        white-space: nowrap;
     }
 
     html body .portal-contact-type__title .portal-form-icon {
@@ -62,16 +66,19 @@ include __DIR__.'/register_icons_patch.php';
     html body .portal-contact-type label {
         display: inline-flex;
         align-items: center;
-        gap: 0.32rem;
-        min-height: 27px;
+        justify-content: center;
+        gap: 0.42rem;
+        flex: 0 0 auto;
+        min-height: 48px;
         margin: 0;
-        padding: 0.22rem 0.52rem;
+        padding: 0.35rem 0.9rem;
         border: 1px solid color-mix(in srgb, var(--primary, #dc2626) 10%, rgba(148, 163, 184, 0.26));
         border-radius: 999px;
         background: rgba(255, 255, 255, 0.76);
         color: var(--text, #111827);
         cursor: pointer;
-        font-size: 0.8rem;
+        font-size: 0.9rem;
+        font-weight: 800;
         box-shadow: none;
         transition: background 0.18s ease, border-color 0.18s ease, color 0.18s ease, transform 0.18s ease;
     }
@@ -94,8 +101,8 @@ include __DIR__.'/register_icons_patch.php';
     }
 
     html body .portal-contact-type input[type="radio"] {
-        width: 11px;
-        height: 11px;
+        width: 13px;
+        height: 13px;
         accent-color: var(--primary, #dc2626);
     }
 
@@ -105,16 +112,25 @@ include __DIR__.'/register_icons_patch.php';
 
     @media (max-width: 640px) {
         html body .portal-contact-type {
-            align-items: stretch;
+            align-items: center;
+            gap: 4px;
+            min-height: 54px;
+            padding: 5px 6px;
         }
 
         html body .portal-contact-type__title {
-            width: 100%;
+            width: auto;
+            min-width: 0;
+            min-height: 40px;
+            padding: 0 4px;
+            font-size: 0.66rem;
         }
 
         html body .portal-contact-type label {
-            flex: 1 1 96px;
-            justify-content: center;
+            flex: 0 0 auto;
+            min-height: 40px;
+            padding: 0.22rem 0.5rem;
+            font-size: 0.75rem;
         }
     }
 
