@@ -147,6 +147,8 @@ include __DIR__.'/register.php';
         position: relative;
         display: inline-flex;
         align-items: center;
+        justify-content: flex-end;
+        box-sizing: border-box;
         padding: 0 10px;
         background: #d1d5db;
         color: #475569;
