@@ -69,9 +69,11 @@ include __DIR__.'/register_icons_patch.php';
         justify-content: center;
         gap: 0.42rem;
         flex: 0 0 auto;
+        box-sizing: border-box;
+        height: 48px;
         min-height: 48px;
         margin: 0;
-        padding: 0.35rem 0.9rem;
+        padding: 0 0.9rem;
         border: 1px solid color-mix(in srgb, var(--primary, #dc2626) 10%, rgba(148, 163, 184, 0.26));
         border-radius: 999px;
         background: rgba(255, 255, 255, 0.76);
@@ -128,8 +130,9 @@ include __DIR__.'/register_icons_patch.php';
 
         html body .portal-contact-type label {
             flex: 0 0 auto;
-            min-height: 40px;
-            padding: 0.22rem 0.5rem;
+            height: 48px;
+            min-height: 48px;
+            padding: 0 0.5rem;
             font-size: 0.75rem;
         }
     }
