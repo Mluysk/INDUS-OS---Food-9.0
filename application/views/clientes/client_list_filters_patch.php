@@ -5,6 +5,7 @@
         const paginationTarget = document.querySelector('[data-list-pagination="clientes"]');
         const searchInput = document.querySelector('[data-clientes-search]');
         const citySelect = document.querySelector('[data-clientes-city-filter]');
+        const ufSelect = document.querySelector('[data-clientes-uf-filter]');
         const sortButtons = Array.from(document.querySelectorAll('[data-clientes-sort-field]'));
 
         if (!tbody || !paginationTarget || tbody.dataset.clientesFilterPatch === '1') {
@@ -37,6 +38,30 @@
             .trim();
 
         const getRows = () => Array.from(tbody.querySelectorAll('tr[data-cliente-row]'));
+
+        const uppercaseUfValues = () => {
+            ufSelect?.querySelectorAll('option').forEach((option) => {
+                if (option.value !== '') {
+                    option.value = option.value.trim().toUpperCase();
+                    option.textContent = option.textContent.trim().toUpperCase();
+                }
+            });
+
+            getRows().forEach((row) => {
+                row.dataset.clienteUf = String(row.dataset.clienteUf || '').trim().toUpperCase();
+                row.querySelectorAll('.cliente-uf').forEach((element) => {
+                    element.textContent = String(element.textContent || '').trim().toUpperCase();
+                });
+            });
+
+            document.querySelectorAll('input[name="estado"], [data-field="estado"]').forEach((element) => {
+                if (element instanceof HTMLInputElement) {
+                    element.value = element.value.trim().toUpperCase();
+                    return;
+                }
+                element.textContent = String(element.textContent || '').trim().toUpperCase();
+            });
+        };
 
         const getCellText = (row, field) => {
             const index = columnIndex[field];
@@ -73,11 +98,14 @@
         const rowMatchesFilters = (row) => {
             const general = normalize(searchInput?.value || '');
             const city = normalize(citySelect?.value || '');
+            const uf = String(ufSelect?.value || '').trim().toUpperCase();
             const rowSearch = normalize(row.dataset.clienteSearch || row.textContent || '');
             const rowCity = normalize(row.dataset.clienteCity || getCellText(row, 'cidade'));
+            const rowUf = String(row.dataset.clienteUf || '').trim().toUpperCase();
 
             return (!general || rowSearch.includes(general))
-                && (!city || rowCity === city || rowCity.includes(city));
+                && (!city || rowCity === city || rowCity.includes(city))
+                && (!uf || rowUf === uf);
         };
 
         const sortedRows = (rows) => {
@@ -115,6 +143,7 @@
         };
 
         const renderPagination = () => {
+            uppercaseUfValues();
             const allRows = getRows();
             const staticEmptyRows = Array.from(tbody.querySelectorAll('tr:not([data-cliente-row]):not([data-clientes-filter-empty])'));
             const visibleRows = sortedRows(allRows.filter(rowMatchesFilters));
@@ -170,9 +199,11 @@
             });
         });
 
-        citySelect?.addEventListener('change', () => {
-            state.page = 1;
-            queueRender();
+        [citySelect, ufSelect].forEach((select) => {
+            select?.addEventListener('change', () => {
+                state.page = 1;
+                queueRender();
+            });
         });
 
         paginationTarget.addEventListener('click', (event) => {
