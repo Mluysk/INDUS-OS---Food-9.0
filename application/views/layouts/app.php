@@ -429,7 +429,9 @@ $brandTitleCalibratedY = $brandTitleOffsetY - 1;
             flex-direction: column;
             gap: 4px;
         }
-        .sidebar:not(.collapsed) .brand-identity {
+        .sidebar:not(.collapsed) .brand,
+        .sidebar:not(.collapsed) .brand-identity,
+        .sidebar:not(.collapsed) .brand-tagline {
             width: 100%;
         }
         .brand-logos {
