@@ -124,6 +124,7 @@
     </div>
     <?php
         $clienteCidades = [];
+        $clienteEstados = [];
         $normalizarCidadeFiltro = static function (string $cidade): string {
             $cidade = trim($cidade);
             $cidade = strtr($cidade, [
@@ -145,6 +146,10 @@
         };
         foreach (($clientes ?? []) as $clienteCidadeItem) {
             $cidadeOption = trim((string)($clienteCidadeItem['cidade'] ?? ''));
+            $estadoOption = strtoupper(trim((string)($clienteCidadeItem['estado'] ?? '')));
+            if ($estadoOption !== '') {
+                $clienteEstados[$estadoOption] = $estadoOption;
+            }
             if ($cidadeOption !== '') {
                 $cidadeKey = $normalizarCidadeFiltro($cidadeOption);
                 if ($cidadeKey === '') {
@@ -157,6 +162,7 @@
             }
         }
         natcasesort($clienteCidades);
+        ksort($clienteEstados);
     ?>
     <div class="clientes-filter-bar" aria-label="Filtros da lista de clientes">
         <label class="clientes-search-box">
@@ -169,6 +175,15 @@
                 <option value="">Todas as cidades</option>
                 <?php foreach ($clienteCidades as $cidadeKey => $cidadeOption): ?>
                     <option value="<?= htmlspecialchars($cidadeKey, ENT_QUOTES, 'UTF-8'); ?>"><?= htmlspecialchars($cidadeOption, ENT_QUOTES, 'UTF-8'); ?></option>
+                <?php endforeach; ?>
+            </select>
+        </label>
+        <label class="clientes-filter-field clientes-filter-field--uf">
+            <span>UF</span>
+            <select data-clientes-uf-filter>
+                <option value="">Todas</option>
+                <?php foreach ($clienteEstados as $estadoOption): ?>
+                    <option value="<?= htmlspecialchars($estadoOption, ENT_QUOTES, 'UTF-8'); ?>"><?= htmlspecialchars($estadoOption, ENT_QUOTES, 'UTF-8'); ?></option>
                 <?php endforeach; ?>
             </select>
         </label>
@@ -203,6 +218,7 @@
                             data-cliente-search="<?= htmlspecialchars($clienteBuscaGeral, ENT_QUOTES, 'UTF-8'); ?>"
                             data-cliente-name="<?= htmlspecialchars($clienteNomeBusca, ENT_QUOTES, 'UTF-8'); ?>"
                             data-cliente-city="<?= htmlspecialchars($clienteCidadeNormalizada, ENT_QUOTES, 'UTF-8'); ?>"
+                            data-cliente-uf="<?= htmlspecialchars(strtoupper(trim((string)($cliente['estado'] ?? ''))), ENT_QUOTES, 'UTF-8'); ?>"
                             data-sort-id="<?= (int)$cliente['id']; ?>"
                             data-sort-nome="<?= htmlspecialchars($clienteNomeBusca, ENT_QUOTES, 'UTF-8'); ?>"
                             data-sort-cnpj="<?= htmlspecialchars((string)($cliente['cnpj'] ?? ''), ENT_QUOTES, 'UTF-8'); ?>"
@@ -217,10 +233,14 @@
                             <td><?= htmlspecialchars($cliente['telefone'] ?? '-', ENT_QUOTES, 'UTF-8'); ?></td>
                             <?php
                                 $cidade = trim((string)($cliente['cidade'] ?? ''));
-                                $estado = trim((string)($cliente['estado'] ?? ''));
-                                $cidadeUf = $cidade && $estado ? $cidade.' / '.$estado : ($cidade ?: ($estado ?: '-'));
+                                $estado = strtoupper(trim((string)($cliente['estado'] ?? '')));
                             ?>
-                            <td><?= htmlspecialchars($cidadeUf, ENT_QUOTES, 'UTF-8'); ?></td>
+                            <td>
+                                <?php if ($cidade !== ''): ?><?= htmlspecialchars($cidade, ENT_QUOTES, 'UTF-8'); ?><?php endif; ?>
+                                <?php if ($cidade !== '' && $estado !== ''): ?> / <?php endif; ?>
+                                <?php if ($estado !== ''): ?><span class="cliente-uf"><?= htmlspecialchars($estado, ENT_QUOTES, 'UTF-8'); ?></span><?php endif; ?>
+                                <?php if ($cidade === '' && $estado === ''): ?>-<?php endif; ?>
+                            </td>
                             <?php
                                 $clientePayload = [
                                     'id' => $cliente['id'] ?? null,
@@ -236,7 +256,7 @@
                                     'numero' => $cliente['numero'] ?? null,
                                     'bairro' => $cliente['bairro'] ?? null,
                                     'cidade' => $cliente['cidade'] ?? null,
-                                    'estado' => $cliente['estado'] ?? null,
+                                    'estado' => isset($cliente['estado']) ? strtoupper((string)$cliente['estado']) : null,
                                     'cep' => $cliente['cep'] ?? null,
                                     'created_at' => $cliente['created_at'] ?? null,
                                 ];
@@ -486,6 +506,7 @@
         line-height: 1.2;
         padding: 0.2rem 3.6rem 0.2rem 0.55rem;
         box-sizing: border-box;
+        text-transform: uppercase;
     }
 
     .uf-flag {
@@ -697,6 +718,16 @@
 
     .clientes-filter-field--city {
         min-width: 220px;
+    }
+
+    .clientes-filter-field--uf {
+        min-width: 110px;
+    }
+
+    .clientes-filter-field--uf select,
+    .cliente-uf,
+    .cliente-modal__content [data-field="estado"] {
+        text-transform: uppercase;
     }
 
     .clientes-filter-field input:focus,
@@ -1103,6 +1134,7 @@
     const clientesTbody = document.querySelector('[data-clientes-tbody]');
     const clientesSearch = document.querySelector('[data-clientes-search]');
     const clientesCityFilter = document.querySelector('[data-clientes-city-filter]');
+    const clientesUfFilter = document.querySelector('[data-clientes-uf-filter]');
     const clientesSortButtons = document.querySelectorAll('[data-clientes-sort-field]');
     const paginationState = {
         page: 1,
@@ -1162,10 +1194,12 @@
 
         const general = normalizeClienteFilter(clientesSearch?.value || '');
         const city = normalizeClienteFilter(clientesCityFilter?.value || '');
+        const uf = String(clientesUfFilter?.value || '').trim().toUpperCase();
         Array.from(clientesTbody.querySelectorAll('tr[data-cliente-row]')).forEach((row) => {
             const matchesGeneral = !general || normalizeClienteFilter(row.dataset.clienteSearch || '').includes(general);
             const matchesCity = !city || normalizeClienteFilter(row.dataset.clienteCity || '') === city;
-            row.dataset.clientMatches = matchesGeneral && matchesCity ? '1' : '0';
+            const matchesUf = !uf || String(row.dataset.clienteUf || '').toUpperCase() === uf;
+            row.dataset.clientMatches = matchesGeneral && matchesCity && matchesUf ? '1' : '0';
         });
     };
     const pageWindow = (currentPage, totalPages) => {
@@ -1269,9 +1303,11 @@
             renderClientesPagination();
         });
     });
-    clientesCityFilter?.addEventListener('change', () => {
-        paginationState.page = 1;
-        renderClientesPagination();
+    [clientesCityFilter, clientesUfFilter].forEach((filter) => {
+        filter?.addEventListener('change', () => {
+            paginationState.page = 1;
+            renderClientesPagination();
+        });
     });
     clientesSortButtons.forEach((button) => {
         button.addEventListener('click', () => {
