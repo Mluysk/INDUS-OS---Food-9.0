@@ -63,4 +63,19 @@
         line-height: 1 !important;
         font-weight: 700 !important;
     }
+
+    .clientes-table .table-action:hover,
+    .clientes-table .table-action:focus-visible {
+        border-color: var(--primary, #4f46e5) !important;
+        background: var(--primary, #4f46e5) !important;
+        color: #fff !important;
+        box-shadow: 0 8px 18px rgba(var(--primary-rgb, 79, 70, 229), 0.28) !important;
+        outline: 0;
+    }
+
+    .clientes-table .table-action:hover .icon,
+    .clientes-table .table-action:focus-visible .icon {
+        color: currentColor !important;
+        stroke: currentColor !important;
+    }
 </style>
