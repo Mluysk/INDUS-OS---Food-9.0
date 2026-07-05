@@ -6,7 +6,7 @@
 
     .clientes-table thead th {
         padding: 14px 10px !important;
-        font-size: 0.72rem !important;
+        font-size: calc(0.72rem - 1px) !important;
         line-height: 1.15 !important;
         letter-spacing: 0.06em !important;
         font-weight: 800 !important;
@@ -16,7 +16,7 @@
 
     .clientes-table tbody td {
         padding: 14px 10px !important;
-        font-size: 0.88rem !important;
+        font-size: calc(0.88rem - 1px) !important;
         line-height: 1.22 !important;
         vertical-align: middle !important;
     }
@@ -59,7 +59,7 @@
     }
 
     .clientes-table .table-action {
-        font-size: 0.82rem !important;
+        font-size: calc(0.82rem - 1px) !important;
         line-height: 1 !important;
         font-weight: 700 !important;
     }
