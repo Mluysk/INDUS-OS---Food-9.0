@@ -199,11 +199,6 @@
             });
         });
 
-        citySelect?.addEventListener('input', () => {
-            state.page = 1;
-            queueRender();
-        });
-
         [citySelect, ufSelect].forEach((select) => {
             select?.addEventListener('change', () => {
                 state.page = 1;

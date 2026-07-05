@@ -171,19 +171,12 @@
         </label>
         <label class="clientes-filter-field clientes-filter-field--city">
             <span>Cidade</span>
-            <input
-                type="search"
-                data-clientes-city-filter
-                list="clientes-city-options"
-                placeholder="Todas as cidades"
-                aria-label="Filtrar clientes por cidade"
-                autocomplete="off"
-            >
-            <datalist id="clientes-city-options">
+            <select data-clientes-city-filter>
+                <option value="">Todas as cidades</option>
                 <?php foreach ($clienteCidades as $cidadeKey => $cidadeOption): ?>
-                    <option value="<?= htmlspecialchars($cidadeOption, ENT_QUOTES, 'UTF-8'); ?>"></option>
+                    <option value="<?= htmlspecialchars($cidadeKey, ENT_QUOTES, 'UTF-8'); ?>"><?= htmlspecialchars($cidadeOption, ENT_QUOTES, 'UTF-8'); ?></option>
                 <?php endforeach; ?>
-            </datalist>
+            </select>
         </label>
         <label class="clientes-filter-field clientes-filter-field--uf">
             <span>UF</span>
@@ -1204,7 +1197,7 @@
         const uf = String(clientesUfFilter?.value || '').trim().toUpperCase();
         Array.from(clientesTbody.querySelectorAll('tr[data-cliente-row]')).forEach((row) => {
             const matchesGeneral = !general || normalizeClienteFilter(row.dataset.clienteSearch || '').includes(general);
-            const matchesCity = !city || normalizeClienteFilter(row.dataset.clienteCity || '').includes(city);
+            const matchesCity = !city || normalizeClienteFilter(row.dataset.clienteCity || '') === city;
             const matchesUf = !uf || String(row.dataset.clienteUf || '').toUpperCase() === uf;
             row.dataset.clientMatches = matchesGeneral && matchesCity && matchesUf ? '1' : '0';
         });
@@ -1309,10 +1302,6 @@
             paginationState.page = 1;
             renderClientesPagination();
         });
-    });
-    clientesCityFilter?.addEventListener('input', () => {
-        paginationState.page = 1;
-        renderClientesPagination();
     });
     [clientesCityFilter, clientesUfFilter].forEach((filter) => {
         filter?.addEventListener('change', () => {
