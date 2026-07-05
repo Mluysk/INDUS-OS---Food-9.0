@@ -64,6 +64,12 @@
         font-weight: 700 !important;
     }
 
+    .clientes-table .table-action .icon {
+        color: var(--primary, #4f46e5) !important;
+        stroke: var(--primary, #4f46e5) !important;
+        fill: none !important;
+    }
+
     .clientes-table .table-action:hover,
     .clientes-table .table-action:focus-visible {
         border-color: var(--primary, #4f46e5) !important;
@@ -77,5 +83,6 @@
     .clientes-table .table-action:focus-visible .icon {
         color: currentColor !important;
         stroke: currentColor !important;
+        fill: none !important;
     }
 </style>
