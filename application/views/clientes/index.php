@@ -169,15 +169,38 @@
             <span class="icon" data-lucide="search" aria-hidden="true"></span>
             <input type="search" data-clientes-search placeholder="Buscar por ID, nome, CPF/CNPJ, contato ou cidade" aria-label="Buscar clientes">
         </label>
-        <label class="clientes-filter-field clientes-filter-field--city">
-            <span>Cidade</span>
-            <select data-clientes-city-filter>
-                <option value="">Todas as cidades</option>
-                <?php foreach ($clienteCidades as $cidadeKey => $cidadeOption): ?>
-                    <option value="<?= htmlspecialchars($cidadeKey, ENT_QUOTES, 'UTF-8'); ?>"><?= htmlspecialchars($cidadeOption, ENT_QUOTES, 'UTF-8'); ?></option>
-                <?php endforeach; ?>
-            </select>
-        </label>
+        <div class="clientes-filter-field clientes-filter-field--city">
+            <label for="clientes-city-filter">Cidade</label>
+            <div class="clientes-city-combobox" data-clientes-city-combobox>
+                <input
+                    id="clientes-city-filter"
+                    type="text"
+                    data-clientes-city-filter
+                    placeholder="Todas as cidades"
+                    autocomplete="off"
+                    role="combobox"
+                    aria-autocomplete="list"
+                    aria-expanded="false"
+                    aria-controls="clientes-city-options"
+                >
+                <button type="button" class="clientes-city-combobox__toggle" data-clientes-city-toggle aria-label="Abrir lista de cidades" title="Abrir lista de cidades">
+                    <span class="icon" data-lucide="chevron-down" aria-hidden="true"></span>
+                </button>
+                <div class="clientes-city-combobox__options" id="clientes-city-options" data-clientes-city-options role="listbox" hidden>
+                    <button type="button" class="clientes-city-combobox__option" data-clientes-city-option data-city-value="" role="option">Todas as cidades</button>
+                    <?php foreach ($clienteCidades as $cidadeKey => $cidadeOption): ?>
+                        <button
+                            type="button"
+                            class="clientes-city-combobox__option"
+                            data-clientes-city-option
+                            data-city-value="<?= htmlspecialchars($cidadeKey, ENT_QUOTES, 'UTF-8'); ?>"
+                            role="option"
+                        ><?= htmlspecialchars($cidadeOption, ENT_QUOTES, 'UTF-8'); ?></button>
+                    <?php endforeach; ?>
+                    <div class="clientes-city-combobox__empty" data-clientes-city-empty hidden>Nenhuma cidade encontrada</div>
+                </div>
+            </div>
+        </div>
         <label class="clientes-filter-field clientes-filter-field--uf">
             <span>UF</span>
             <select data-clientes-uf-filter>
@@ -720,6 +743,95 @@
         min-width: 220px;
     }
 
+    .clientes-city-combobox {
+        position: relative;
+        min-width: 220px;
+    }
+
+    .clientes-city-combobox > input {
+        width: 100%;
+        padding-right: 2.75rem;
+        box-sizing: border-box;
+    }
+
+    .clientes-city-combobox__toggle {
+        position: absolute;
+        top: 0;
+        right: 0;
+        z-index: 2;
+        width: 42px;
+        height: 42px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border: 0;
+        padding: 0;
+        background: transparent;
+        color: var(--text-muted, #64748b);
+        cursor: pointer;
+    }
+
+    .clientes-city-combobox__toggle .icon {
+        width: 17px;
+        height: 17px;
+        transition: transform 0.18s ease;
+    }
+
+    .clientes-city-combobox.is-open .clientes-city-combobox__toggle .icon {
+        transform: rotate(180deg);
+    }
+
+    .clientes-city-combobox__options {
+        position: absolute;
+        top: calc(100% + 6px);
+        left: 0;
+        z-index: 40;
+        width: max(100%, 260px);
+        max-height: 240px;
+        overflow-y: auto;
+        border: 1px solid var(--border, #e5e7eb);
+        border-radius: 8px;
+        padding: 5px;
+        background: var(--surface, #fff);
+        box-shadow: 0 18px 40px -24px rgba(15, 23, 42, 0.42);
+    }
+
+    .clientes-city-combobox__options[hidden],
+    .clientes-city-combobox__option[hidden],
+    .clientes-city-combobox__empty[hidden] {
+        display: none;
+    }
+
+    .clientes-city-combobox__option {
+        width: 100%;
+        min-height: 36px;
+        display: flex;
+        align-items: center;
+        border: 0;
+        border-radius: 6px;
+        padding: 0.5rem 0.65rem;
+        background: transparent;
+        color: var(--text, #111827);
+        font: inherit;
+        font-weight: 700;
+        text-align: left;
+        cursor: pointer;
+    }
+
+    .clientes-city-combobox__option:hover,
+    .clientes-city-combobox__option:focus-visible,
+    .clientes-city-combobox__option[aria-selected="true"] {
+        background: var(--surface-muted, #f1f5f9);
+        color: var(--primary, #4f46e5);
+        outline: 0;
+    }
+
+    .clientes-city-combobox__empty {
+        padding: 0.7rem;
+        color: var(--text-muted, #64748b);
+        font-weight: 700;
+    }
+
     .clientes-filter-field--uf {
         min-width: 110px;
     }
@@ -732,6 +844,7 @@
 
     .clientes-filter-field input:focus,
     .clientes-filter-field select:focus,
+    .clientes-city-combobox:focus-within > input,
     .clientes-search-box:focus-within {
         border-color: var(--primary, #4f46e5);
         box-shadow: var(--primary-glow, 0 0 0 3px rgba(79, 70, 229, 0.20)), 0 12px 26px -22px rgba(var(--primary-rgb, 79, 70, 229), 0.74);
@@ -1134,6 +1247,10 @@
     const clientesTbody = document.querySelector('[data-clientes-tbody]');
     const clientesSearch = document.querySelector('[data-clientes-search]');
     const clientesCityFilter = document.querySelector('[data-clientes-city-filter]');
+    const clientesCityCombobox = document.querySelector('[data-clientes-city-combobox]');
+    const clientesCityToggle = document.querySelector('[data-clientes-city-toggle]');
+    const clientesCityOptions = document.querySelector('[data-clientes-city-options]');
+    const clientesCityEmpty = document.querySelector('[data-clientes-city-empty]');
     const clientesUfFilter = document.querySelector('[data-clientes-uf-filter]');
     const clientesSortButtons = document.querySelectorAll('[data-clientes-sort-field]');
     const paginationState = {
@@ -1149,6 +1266,32 @@
         .replace(/[\u0300-\u036f]/g, '')
         .toLocaleLowerCase('pt-BR')
         .trim();
+    const cityOptionButtons = Array.from(document.querySelectorAll('[data-clientes-city-option]'));
+    const setCityOptionsOpen = (open) => {
+        if (!clientesCityCombobox || !clientesCityOptions || !clientesCityFilter) {
+            return;
+        }
+        clientesCityCombobox.classList.toggle('is-open', open);
+        clientesCityOptions.hidden = !open;
+        clientesCityFilter.setAttribute('aria-expanded', open ? 'true' : 'false');
+    };
+    const filterCityOptions = () => {
+        const query = normalizeClienteFilter(clientesCityFilter?.value || '');
+        let visible = 0;
+        cityOptionButtons.forEach((option) => {
+            const label = normalizeClienteFilter(option.textContent || '');
+            const isAllOption = (option.dataset.cityValue || '') === '';
+            const matches = isAllOption ? query === '' : (!query || label.includes(query));
+            option.hidden = !matches;
+            option.setAttribute('aria-selected', query !== '' && label === query ? 'true' : 'false');
+            if (matches) {
+                visible++;
+            }
+        });
+        if (clientesCityEmpty) {
+            clientesCityEmpty.hidden = visible > 0;
+        }
+    };
     const updateClientesSortButtons = () => {
         clientesSortButtons.forEach((button) => {
             const isActive = clientesSortState.field === button.dataset.clientesSortField && clientesSortState.direction;
@@ -1197,7 +1340,7 @@
         const uf = String(clientesUfFilter?.value || '').trim().toUpperCase();
         Array.from(clientesTbody.querySelectorAll('tr[data-cliente-row]')).forEach((row) => {
             const matchesGeneral = !general || normalizeClienteFilter(row.dataset.clienteSearch || '').includes(general);
-            const matchesCity = !city || normalizeClienteFilter(row.dataset.clienteCity || '') === city;
+            const matchesCity = !city || normalizeClienteFilter(row.dataset.clienteCity || '').includes(city);
             const matchesUf = !uf || String(row.dataset.clienteUf || '').toUpperCase() === uf;
             row.dataset.clientMatches = matchesGeneral && matchesCity && matchesUf ? '1' : '0';
         });
@@ -1302,6 +1445,67 @@
             paginationState.page = 1;
             renderClientesPagination();
         });
+    });
+    clientesCityFilter?.addEventListener('focus', () => {
+        filterCityOptions();
+        setCityOptionsOpen(true);
+    });
+    clientesCityFilter?.addEventListener('input', () => {
+        filterCityOptions();
+        setCityOptionsOpen(true);
+        paginationState.page = 1;
+        renderClientesPagination();
+    });
+    clientesCityFilter?.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') {
+            setCityOptionsOpen(false);
+            clientesCityFilter.blur();
+            return;
+        }
+        if (event.key === 'ArrowDown') {
+            event.preventDefault();
+            filterCityOptions();
+            setCityOptionsOpen(true);
+            cityOptionButtons.find((option) => !option.hidden)?.focus();
+        }
+    });
+    clientesCityToggle?.addEventListener('click', () => {
+        const shouldOpen = clientesCityOptions?.hidden !== false;
+        filterCityOptions();
+        setCityOptionsOpen(shouldOpen);
+        if (shouldOpen) {
+            clientesCityFilter?.focus();
+        }
+    });
+    clientesCityOptions?.addEventListener('click', (event) => {
+        const option = event.target instanceof Element ? event.target.closest('[data-clientes-city-option]') : null;
+        if (!option || option.hidden || !clientesCityFilter) {
+            return;
+        }
+        clientesCityFilter.value = option.dataset.cityValue === '' ? '' : (option.textContent || '').trim();
+        clientesCityFilter.dispatchEvent(new Event('input', { bubbles: true }));
+        setCityOptionsOpen(false);
+    });
+    clientesCityOptions?.addEventListener('keydown', (event) => {
+        if (!['ArrowDown', 'ArrowUp', 'Escape'].includes(event.key)) {
+            return;
+        }
+        event.preventDefault();
+        if (event.key === 'Escape') {
+            setCityOptionsOpen(false);
+            clientesCityFilter?.focus();
+            return;
+        }
+        const visibleOptions = cityOptionButtons.filter((option) => !option.hidden);
+        const currentIndex = visibleOptions.indexOf(document.activeElement);
+        const offset = event.key === 'ArrowDown' ? 1 : -1;
+        const nextIndex = Math.min(visibleOptions.length - 1, Math.max(0, currentIndex + offset));
+        visibleOptions[nextIndex]?.focus();
+    });
+    document.addEventListener('click', (event) => {
+        if (clientesCityCombobox && event.target instanceof Node && !clientesCityCombobox.contains(event.target)) {
+            setCityOptionsOpen(false);
+        }
     });
     [clientesCityFilter, clientesUfFilter].forEach((filter) => {
         filter?.addEventListener('change', () => {
