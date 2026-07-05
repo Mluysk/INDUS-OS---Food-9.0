@@ -259,7 +259,7 @@
                                 $estado = strtoupper(trim((string)($cliente['estado'] ?? '')));
                             ?>
                             <td>
-                                <?php if ($cidade !== ''): ?><?= htmlspecialchars($cidade, ENT_QUOTES, 'UTF-8'); ?><?php endif; ?>
+                                <?php if ($cidade !== ''): ?><span class="cliente-city"><?= htmlspecialchars($cidade, ENT_QUOTES, 'UTF-8'); ?></span><?php endif; ?>
                                 <?php if ($cidade !== '' && $estado !== ''): ?> / <?php endif; ?>
                                 <?php if ($estado !== ''): ?><span class="cliente-uf"><?= htmlspecialchars($estado, ENT_QUOTES, 'UTF-8'); ?></span><?php endif; ?>
                                 <?php if ($cidade === '' && $estado === ''): ?>-<?php endif; ?>
@@ -752,6 +752,7 @@
         width: 100%;
         padding-right: 2.75rem;
         box-sizing: border-box;
+        text-transform: uppercase;
     }
 
     .clientes-city-combobox__toggle {
@@ -816,6 +817,7 @@
         font-weight: 700;
         text-align: left;
         cursor: pointer;
+        text-transform: uppercase;
     }
 
     .clientes-city-combobox__option:hover,
@@ -837,6 +839,7 @@
     }
 
     .clientes-filter-field--uf select,
+    .cliente-city,
     .cliente-uf,
     .cliente-modal__content [data-field="estado"] {
         text-transform: uppercase;
