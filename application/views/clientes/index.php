@@ -122,9 +122,21 @@
                 <strong><?= $totalClientesCadastrados; ?></strong>
                 <?= $totalClientesCadastrados === 1 ? 'cliente cadastrado' : 'clientes cadastrados'; ?>
             </span>
-            <a class="button button-secondary" target="_blank" rel="noopener" href="<?= htmlspecialchars($url('clientes/imprimir'), ENT_QUOTES, 'UTF-8'); ?>">
-                <span class="icon" data-lucide="printer"></span>
-                <span>Imprimir lista</span>
+            <a
+                class="print-link"
+                data-tooltip="Imprimir relatorio completo"
+                title="Imprimir relatorio completo"
+                aria-label="Imprimir relatorio completo"
+                target="_blank"
+                rel="noreferrer"
+                href="<?= htmlspecialchars($url('clientes/imprimir'), ENT_QUOTES, 'UTF-8'); ?>"
+            >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M6 9V3h12v6" />
+                    <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" />
+                    <path d="M6 14h12v7H6z" />
+                </svg>
+                Imprimir relatório
             </a>
         </div>
     </div>
@@ -694,6 +706,65 @@
         color: var(--text, #111827);
         font-size: 0.9rem;
         font-weight: 900;
+    }
+
+    .print-link {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 42px;
+        height: 42px;
+        padding: 0;
+        border: 1px solid var(--border, #e5e7eb);
+        border-radius: 10px;
+        background: #fff;
+        color: var(--text, #111827);
+        font-size: 0;
+        font-weight: 700;
+        text-decoration: none;
+        transition: border-color 160ms ease, color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+    }
+
+    .print-link:hover,
+    .print-link:focus-visible {
+        border-color: var(--primary, #4b5563);
+        color: var(--primary, #4b5563);
+        box-shadow: 0 8px 20px rgba(15, 23, 42, 0.10);
+        transform: translateY(-1px);
+        outline: 0;
+    }
+
+    .print-link svg {
+        width: 19px;
+        height: 19px;
+    }
+
+    .print-link::after {
+        content: attr(data-tooltip);
+        position: absolute;
+        right: 0;
+        bottom: calc(100% + 8px);
+        z-index: 30;
+        width: max-content;
+        max-width: 220px;
+        padding: 7px 9px;
+        border-radius: 8px;
+        background: #111827;
+        color: #fff;
+        font-size: 0.76rem;
+        font-weight: 700;
+        line-height: 1.2;
+        pointer-events: none;
+        opacity: 0;
+        transform: translateY(4px);
+        transition: opacity 140ms ease, transform 140ms ease;
+    }
+
+    .print-link:hover::after,
+    .print-link:focus-visible::after {
+        opacity: 1;
+        transform: translateY(0);
     }
 
     .clientes-filter-bar {
