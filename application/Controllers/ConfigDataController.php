@@ -60,10 +60,13 @@ class ConfigDataController extends Controller
                 'razao_social', 'nome_fantasia', 'cnpj', 'cpf', 'ie', 'email', 'telefone', 'contato_tipo', 'whatsapp', 'cep', 'endereco', 'numero', 'bairro', 'cidade', 'estado'
             ]));
 
-            $count = 0;
+            $inserted = 0;
+            $updated = 0;
+            $duplicates = 0;
             $skipped = 0;
             $failed = 0;
             $rowErrors = [];
+            $seenClients = [];
             foreach ($rows as $index => $row) {
                 try {
                 $documento = $this->clientDocument($this->value($row, ['documento', 'cnpj cpf', 'cnpj/cpf', 'cpf cnpj', 'cpf/cnpj']));
@@ -96,15 +99,27 @@ class ConfigDataController extends Controller
                 $payload = $this->prepareClientImportPayload(
                     $this->cleanPayload(array_intersect_key($payload, array_flip($allowed))),
                     $row,
-                    $count + $skipped + 1
+                    $index + 2
                 );
                 if (!$payload) {
                     $skipped++;
                     continue;
                 }
 
-                if ($this->saveClientPayload($payload)) {
-                    $count++;
+                $identity = $this->clientImportIdentity($payload);
+                if ($identity !== null && isset($seenClients[$identity])) {
+                    $duplicates++;
+                    continue;
+                }
+                if ($identity !== null) {
+                    $seenClients[$identity] = true;
+                }
+
+                $result = $this->saveClientPayload($payload);
+                if ($result === 'inserted') {
+                    $inserted++;
+                } elseif ($result === 'updated') {
+                    $updated++;
                 } else {
                     $skipped++;
                 }
@@ -117,7 +132,12 @@ class ConfigDataController extends Controller
                 }
             }
 
-            $message = $count.' cliente(s) importado(s) com sucesso.';
+            $processed = $inserted + $updated;
+            $message = count($rows).' linha(s) lida(s): '.$processed.' cliente(s) unico(s) processado(s) ('
+                .$inserted.' novo(s) e '.$updated.' atualizado(s)).';
+            if ($duplicates > 0) {
+                $message .= ' '.$duplicates.' linha(s) duplicada(s) foram ignoradas.';
+            }
             if ($skipped > 0) {
                 $message .= ' '.$skipped.' linha(s) vazia(s) ou invalidas foram ignoradas.';
             }
@@ -125,7 +145,11 @@ class ConfigDataController extends Controller
                 'arquivo' => $this->uploadedFilename('arquivo'),
                 'formato' => 'xls',
                 'linhas_lidas' => count($rows),
-                'importados' => $count,
+                'clientes_unicos' => $processed,
+                'novos' => $inserted,
+                'atualizados' => $updated,
+                'duplicados' => $duplicates,
+                'importados' => $inserted,
                 'ignorados' => $skipped,
                 'erros' => $failed,
                 'detalhes_erros' => $rowErrors,
@@ -668,17 +692,17 @@ class ConfigDataController extends Controller
         return null;
     }
 
-    private function saveClientPayload(array $payload): bool
+    private function saveClientPayload(array $payload): string
     {
         $existingId = $this->existingClientId($payload);
         if ($existingId > 0) {
             $this->updateRow('clientes', $existingId, $this->withoutConflictingClientUniqueFields($payload, $existingId));
-            return true;
+            return 'updated';
         }
 
         try {
             $this->insertRow('clientes', $this->withoutConflictingClientUniqueFields($payload, 0));
-            return true;
+            return 'inserted';
         } catch (\PDOException $exception) {
             if ((string)$exception->getCode() !== '23000') {
                 throw $exception;
@@ -687,18 +711,30 @@ class ConfigDataController extends Controller
             $retryId = $this->existingClientId($payload);
             if ($retryId > 0) {
                 $this->updateRow('clientes', $retryId, $this->withoutConflictingClientUniqueFields($payload, $retryId));
-                return true;
+                return 'updated';
             }
 
             $fallback = $payload;
             unset($fallback['cnpj'], $fallback['cpf']);
             $fallback = $this->cleanPayload($fallback);
             if (empty($fallback['razao_social']) && empty($fallback['nome_fantasia'])) {
-                return false;
+                return 'skipped';
             }
             $this->insertRow('clientes', $fallback);
-            return true;
+            return 'inserted';
         }
+    }
+
+    private function clientImportIdentity(array $payload): ?string
+    {
+        foreach (['cnpj', 'cpf'] as $field) {
+            $value = trim((string)($payload[$field] ?? ''));
+            if ($value !== '') {
+                return $field.':'.$value;
+            }
+        }
+
+        return null;
     }
 
     private function withoutConflictingClientUniqueFields(array $payload, int $targetId): array
@@ -808,13 +844,7 @@ class ConfigDataController extends Controller
     private function prepareClientImportPayload(array $payload, array $sourceRow, int $rowNumber): array
     {
         if (!$this->hasUsefulClientPayload($payload)) {
-            $fallback = $this->firstNonEmptyValue($sourceRow);
-            if ($fallback === null) {
-                return [];
-            }
-            $payload['razao_social'] = 'Cliente importado - '.$fallback;
-            $payload['nome_fantasia'] = $payload['razao_social'];
-            return $payload;
+            return [];
         }
 
         if (empty($payload['razao_social']) && empty($payload['nome_fantasia'])) {

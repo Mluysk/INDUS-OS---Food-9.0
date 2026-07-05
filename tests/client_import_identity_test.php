@@ -12,6 +12,10 @@ $pdo = $container->get(PDO::class);
 
 $saveClient = new ReflectionMethod(ConfigDataController::class, 'saveClientPayload');
 $saveClient->setAccessible(true);
+$clientIdentity = new ReflectionMethod(ConfigDataController::class, 'clientImportIdentity');
+$clientIdentity->setAccessible(true);
+$preparePayload = new ReflectionMethod(ConfigDataController::class, 'prepareClientImportPayload');
+$preparePayload->setAccessible(true);
 
 $suffix = str_pad((string)random_int(0, 999999999999), 12, '0', STR_PAD_LEFT);
 $firstCnpj = '91'.substr($suffix, 0, 12);
@@ -26,14 +30,32 @@ try {
         'contato_tipo' => 'celular',
     ];
 
-    $saveClient->invoke($controller, $base + [
+    $firstResult = $saveClient->invoke($controller, $base + [
         'razao_social' => 'Cliente importado A',
         'cnpj' => $firstCnpj,
     ]);
-    $saveClient->invoke($controller, $base + [
+    $secondResult = $saveClient->invoke($controller, $base + [
         'razao_social' => 'Cliente importado B',
         'cnpj' => $secondCnpj,
     ]);
+    if ($firstResult !== 'inserted' || $secondResult !== 'inserted') {
+        throw new RuntimeException('A importacao nao informou corretamente os clientes novos.');
+    }
+
+    $firstIdentity = $clientIdentity->invoke($controller, ['cnpj' => $firstCnpj]);
+    if ($firstIdentity !== 'cnpj:'.$firstCnpj) {
+        throw new RuntimeException('A identidade usada para detectar linhas duplicadas esta incorreta.');
+    }
+
+    $blankPayload = $preparePayload->invoke(
+        $controller,
+        ['contato_tipo' => 'celular'],
+        ['tipo do contato' => 'celular', 'criado em' => '2026-07-05 10:00:00'],
+        2
+    );
+    if ($blankPayload !== []) {
+        throw new RuntimeException('Uma linha vazia foi transformada em cliente.');
+    }
 
     $stmt = $pdo->prepare('SELECT COUNT(*) FROM clientes WHERE cnpj IN (:first, :second)');
     $stmt->execute(['first' => $firstCnpj, 'second' => $secondCnpj]);
