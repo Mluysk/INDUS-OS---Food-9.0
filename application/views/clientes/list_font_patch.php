@@ -68,8 +68,14 @@
     .clientes-table .table-action:focus-visible {
         border-color: var(--primary, #4f46e5) !important;
         background: var(--surface-elevated) !important;
-        color: var(--text-strong) !important;
+        color: var(--primary, #dc2626) !important;
         box-shadow: none !important;
         outline: 0;
+    }
+
+    .clientes-table .table-action:hover .icon,
+    .clientes-table .table-action:focus-visible .icon {
+        color: currentColor !important;
+        stroke: currentColor !important;
     }
 </style>
