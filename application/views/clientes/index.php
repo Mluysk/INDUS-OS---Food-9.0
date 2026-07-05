@@ -116,6 +116,12 @@
             <p class="panel-description">Lista dos clientes com dados de contato e documentos.</p>
         </div>
         <div class="panel-actions">
+            <?php $totalClientesCadastrados = count($clientes ?? []); ?>
+            <span class="clientes-total-count" data-clientes-total-count>
+                <span class="icon" data-lucide="users" aria-hidden="true"></span>
+                <strong><?= $totalClientesCadastrados; ?></strong>
+                <?= $totalClientesCadastrados === 1 ? 'cliente cadastrado' : 'clientes cadastrados'; ?>
+            </span>
             <a class="button button-secondary" target="_blank" rel="noopener" href="<?= htmlspecialchars($url('clientes/imprimir'), ENT_QUOTES, 'UTF-8'); ?>">
                 <span class="icon" data-lucide="printer"></span>
                 <span>Imprimir lista</span>
@@ -665,6 +671,29 @@
         display: inline-flex;
         align-items: center;
         gap: 0.45rem;
+    }
+
+    .clientes-total-count {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.38rem;
+        min-height: 36px;
+        color: var(--text-muted, #64748b);
+        font-size: 0.82rem;
+        font-weight: 750;
+        white-space: nowrap;
+    }
+
+    .clientes-total-count .icon {
+        width: 17px;
+        height: 17px;
+        color: var(--primary, #4f46e5);
+    }
+
+    .clientes-total-count strong {
+        color: var(--text, #111827);
+        font-size: 0.9rem;
+        font-weight: 900;
     }
 
     .clientes-filter-bar {
