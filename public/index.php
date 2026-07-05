@@ -351,8 +351,16 @@ $autoDismissAlerts = <<<'HTML'
 </script>
 HTML;
 
-if (is_string($response) && stripos($response, '</body>') !== false) {
-    $response = preg_replace('/<\/body>/i', $menuHierarchyScript.$autoDismissAlerts.'</body>', $response, 1);
+if (is_string($response)) {
+    $bodyClosePosition = strripos($response, '</body>');
+    if ($bodyClosePosition !== false) {
+        $response = substr_replace(
+            $response,
+            $menuHierarchyScript.$autoDismissAlerts.'</body>',
+            $bodyClosePosition,
+            strlen('</body>')
+        );
+    }
 }
 
 echo $response;
