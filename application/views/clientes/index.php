@@ -110,12 +110,12 @@
 </section>
 
 <section class="panel">
-    <div class="panel-header">
+    <div class="panel-header clientes-list-header">
         <div>
             <h2>Clientes cadastrados</h2>
             <p class="panel-description">Lista dos clientes com dados de contato e documentos.</p>
         </div>
-        <div class="panel-actions">
+        <div class="panel-actions clientes-list-actions">
             <?php $totalClientesCadastrados = count($clientes ?? []); ?>
             <span class="clientes-total-count" data-clientes-total-count>
                 <span class="icon" data-lucide="users" aria-hidden="true"></span>
@@ -683,6 +683,21 @@
         display: inline-flex;
         align-items: center;
         gap: 0.45rem;
+    }
+
+    .clientes-list-header {
+        align-items: flex-start;
+    }
+
+    .clientes-list-actions {
+        flex-direction: column;
+        align-items: center;
+        gap: 12px;
+        margin-left: auto;
+    }
+
+    .clientes-list-actions .print-link {
+        align-self: center;
     }
 
     .clientes-total-count {
