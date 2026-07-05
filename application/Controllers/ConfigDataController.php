@@ -51,6 +51,7 @@ class ConfigDataController extends Controller
     {
         $this->auth->ensureRole(['admin']);
         $success = false;
+        @set_time_limit(0);
 
         try {
             $rows = $this->uploadedRows('arquivo');
@@ -61,7 +62,10 @@ class ConfigDataController extends Controller
 
             $count = 0;
             $skipped = 0;
-            foreach ($rows as $row) {
+            $failed = 0;
+            $rowErrors = [];
+            foreach ($rows as $index => $row) {
+                try {
                 $documento = $this->clientDocument($this->value($row, ['documento', 'cnpj cpf', 'cnpj/cpf', 'cpf cnpj', 'cpf/cnpj']));
                 $cnpj = $this->digits($this->value($row, ['cnpj'])) ?: $documento['cnpj'];
                 $cpf = $this->digits($this->value($row, ['cpf'])) ?: $documento['cpf'];
@@ -104,11 +108,18 @@ class ConfigDataController extends Controller
                 } else {
                     $skipped++;
                 }
+                } catch (\Throwable $rowException) {
+                    $skipped++;
+                    $failed++;
+                    if (count($rowErrors) < 5) {
+                        $rowErrors[] = 'linha '.($index + 2).': '.$rowException->getMessage();
+                    }
+                }
             }
 
             $message = $count.' cliente(s) importado(s) com sucesso.';
             if ($skipped > 0) {
-                $message .= ' '.$skipped.' linha(s) totalmente vazia(s) foram ignoradas.';
+                $message .= ' '.$skipped.' linha(s) vazia(s) ou invalidas foram ignoradas.';
             }
             $this->audit->log((int)($this->auth->user()['id'] ?? 0), 'import', 'clientes', null, [
                 'arquivo' => $this->uploadedFilename('arquivo'),
@@ -116,6 +127,8 @@ class ConfigDataController extends Controller
                 'linhas_lidas' => count($rows),
                 'importados' => $count,
                 'ignorados' => $skipped,
+                'erros' => $failed,
+                'detalhes_erros' => $rowErrors,
                 'resultado' => 'sucesso',
             ]);
             $this->setFlash('success', $message);
@@ -678,7 +691,7 @@ class ConfigDataController extends Controller
             }
 
             $fallback = $payload;
-            unset($fallback['cnpj'], $fallback['cpf'], $fallback['email']);
+            unset($fallback['cnpj'], $fallback['cpf']);
             $fallback = $this->cleanPayload($fallback);
             if (empty($fallback['razao_social']) && empty($fallback['nome_fantasia'])) {
                 return false;
@@ -690,7 +703,7 @@ class ConfigDataController extends Controller
 
     private function withoutConflictingClientUniqueFields(array $payload, int $targetId): array
     {
-        foreach (['cnpj', 'cpf', 'email'] as $field) {
+        foreach (['cnpj', 'cpf'] as $field) {
             if (empty($payload[$field])) {
                 continue;
             }
@@ -729,7 +742,7 @@ class ConfigDataController extends Controller
 
     private function existingClientId(array $payload): int
     {
-        foreach (['cnpj', 'cpf', 'email'] as $field) {
+        foreach (['cnpj', 'cpf'] as $field) {
             if (empty($payload[$field])) {
                 continue;
             }
