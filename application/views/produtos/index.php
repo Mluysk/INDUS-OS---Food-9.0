@@ -249,7 +249,9 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
         grid-template-columns: repeat(2, 349px);
         justify-content: center;
         gap: 14px;
-        margin-top: 19px;
+        position: relative;
+        top: 19px;
+        margin-bottom: 19px;
     }
     .product-image-gallery-upload.is-hidden {
         display: none;
