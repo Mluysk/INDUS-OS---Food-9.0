@@ -2840,6 +2840,68 @@ $brandTitleCalibratedY = $brandTitleOffsetY - 1;
     if (window.lucide) {
         lucide.createIcons();
     }
+
+    const paginationPageControlSelector = [
+        '[data-client-page]',
+        '[data-product-page]',
+        '[data-finance-page]',
+        '[data-client-page-input]',
+        '[data-product-page-input]',
+        '[data-finance-page-input]',
+        '.pagination a',
+        '.pagination button',
+    ].join(', ');
+
+    const scrollToPaginatedListStart = (control) => {
+        const pagination = control.closest('[data-list-pagination], [data-finance-pagination], .pagination');
+        if (!pagination) {
+            return;
+        }
+
+        const list = pagination.closest('.finance-card-panel, .panel, [data-list-container]');
+        if (!list) {
+            return;
+        }
+
+        window.requestAnimationFrame(() => {
+            const top = list.getBoundingClientRect().top + window.scrollY - 16;
+            window.scrollTo({
+                top: Math.max(0, top),
+                behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
+            });
+        });
+    };
+
+    document.addEventListener('click', (event) => {
+        const control = event.target instanceof Element
+            ? event.target.closest(paginationPageControlSelector)
+            : null;
+        if (control) {
+            scrollToPaginatedListStart(control);
+        }
+    }, { capture: true });
+
+    document.addEventListener('change', (event) => {
+        const control = event.target instanceof Element
+            ? event.target.closest('[data-client-page-input], [data-product-page-input], [data-finance-page-input]')
+            : null;
+        if (control) {
+            scrollToPaginatedListStart(control);
+        }
+    }, { capture: true });
+
+    document.addEventListener('keydown', (event) => {
+        if (event.key !== 'Enter') {
+            return;
+        }
+
+        const control = event.target instanceof Element
+            ? event.target.closest('[data-client-page-input], [data-product-page-input], [data-finance-page-input]')
+            : null;
+        if (control) {
+            scrollToPaginatedListStart(control);
+        }
+    }, { capture: true });
 </script>
 </body>
 </html>
