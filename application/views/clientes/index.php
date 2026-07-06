@@ -705,7 +705,7 @@
         align-items: center;
         gap: 0.38rem;
         min-height: 36px;
-        transform: translateY(-9px);
+        transform: translateY(-18px);
         color: var(--text-muted, #64748b);
         font-size: 0.82rem;
         font-weight: 750;
