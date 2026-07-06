@@ -327,7 +327,11 @@ $selectedCategorias = array_values(array_unique(array_filter(array_map('trim', $
             .then((res) => res.json())
             .then((payload) => {
                 const items = payload.data || [];
-                renderRows(items);
+                if (window.productCatalogPagination?.setItems) {
+                    window.productCatalogPagination.setItems(items);
+                } else {
+                    renderRows(items);
+                }
                 updateResultsLabel(items.length);
                 refreshSortIndicators();
                 updatePrintLink();

@@ -1860,6 +1860,16 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
             renderPagination(totalRows);
         };
 
+        window.productCatalogPagination = {
+            setItems(items, resetPage = true) {
+                currentCatalogItems = Array.isArray(items) ? items : [];
+                if (resetPage) {
+                    paginationState.page = 1;
+                }
+                renderProductPage();
+            }
+        };
+
         const refreshSortIndicators = () => {
             sortLinks.forEach((link) => {
                 const col = link.dataset.sort;
