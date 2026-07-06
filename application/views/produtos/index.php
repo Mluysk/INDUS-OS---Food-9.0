@@ -136,8 +136,9 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
     .product-image-upload {
         grid-column: 1 / -1;
         display: grid;
-        gap: 10px;
-        padding: 14px;
+        gap: 11px;
+        min-height: 236px;
+        padding: 16px 18px;
         border: 1px dashed color-mix(in srgb, var(--primary, #4b5563) 38%, var(--border, #e5e7eb));
         border-radius: 16px;
         background: color-mix(in srgb, var(--primary, #4b5563) 5%, var(--surface, #fff));
@@ -153,11 +154,12 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
         align-items: center;
         gap: 8px;
         color: var(--text, #0f172a);
+        font-size: 18px;
         font-weight: 850;
     }
     .product-image-upload__title .icon {
-        width: 19px;
-        height: 19px;
+        width: 21px;
+        height: 21px;
         color: var(--primary, #4b5563);
     }
     .product-image-upload input[type="file"] {
@@ -169,13 +171,15 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
     }
     .product-image-upload small {
         color: var(--text-muted, #64748b);
+        font-size: 12px;
         font-weight: 700;
+        line-height: 1.25;
     }
     .product-image-upload__drop {
         display: grid;
         place-items: center;
         gap: 7px;
-        min-height: 108px;
+        min-height: 134px;
         border: 1px solid color-mix(in srgb, var(--primary, #4b5563) 18%, var(--border, #e5e7eb));
         border-radius: 14px;
         background: color-mix(in srgb, var(--surface, #fff) 88%, var(--primary, #4b5563));
@@ -184,9 +188,17 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
         text-align: center;
         overflow: hidden;
     }
+    .product-image-upload__placeholder {
+        display: grid;
+        justify-items: center;
+        gap: 7px;
+        max-width: 260px;
+        font-size: 16px;
+        line-height: 1.25;
+    }
     .product-image-upload__drop .icon {
-        width: 28px;
-        height: 28px;
+        width: 54px;
+        height: 54px;
         color: var(--primary, #4b5563);
     }
     .product-image-upload__preview {
@@ -234,13 +246,12 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
     .product-image-gallery-upload {
         grid-column: 1 / -1;
         display: grid;
-        grid-template-columns: repeat(3, minmax(180px, 1fr));
-        gap: 12px;
+        grid-template-columns: repeat(2, minmax(280px, 1fr));
+        gap: 14px;
     }
     .product-image-gallery-upload .product-image-upload {
         grid-column: auto;
         align-content: start;
-        min-height: 148px;
     }
     @media (max-width: 900px) {
         .product-image-gallery-upload {
@@ -590,15 +601,15 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
                 <small>Foto base do produto no portal e catalogo visual.</small>
             </label>
             <label class="product-image-upload" data-image-upload data-image-field="imagem_pronto_path">
-                <span class="product-image-upload__title"><span class="icon" data-lucide="chef-hat" aria-hidden="true"></span><span>Foto pronto / frito</span></span>
+                <span class="product-image-upload__title"><span class="icon" data-lucide="images" aria-hidden="true"></span><span>Foto secundária</span></span>
                 <input type="file" name="imagem_pronto" accept="image/png,image/jpeg,image/webp,image/gif" data-image-input>
                 <input type="hidden" name="remove_imagem_pronto_path" value="0" data-image-remove>
                 <span class="product-image-upload__drop">
                     <span class="product-image-upload__placeholder"><span class="icon" data-lucide="upload-cloud" aria-hidden="true"></span><span>Fazer upload ou arrastar a imagem aqui</span></span>
-                    <span class="product-image-upload__preview"><img alt="Preview foto pronta"></span>
+                    <span class="product-image-upload__preview"><img alt="Preview foto secundária"></span>
                 </span>
-                <button type="button" class="product-image-upload__remove" data-image-clear aria-label="Remover foto pronta"><span class="icon" data-lucide="trash-2" aria-hidden="true"></span></button>
-                <small>Mostra o produto solto, pronto ou frito.</small>
+                <button type="button" class="product-image-upload__remove" data-image-clear aria-label="Remover foto secundária"><span class="icon" data-lucide="trash-2" aria-hidden="true"></span></button>
+                <small>Foto secundária do produto no portal e catálogo visual.</small>
             </label>
         </div>
         <div class="mp-only" id="mp-recebimento">
@@ -1393,7 +1404,7 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
             </label>
             <div class="product-image-gallery-upload">
                 <label class="product-image-upload" data-image-upload data-image-field="imagem_path">
-                    <span class="product-image-upload__title"><span class="icon" data-lucide="image" aria-hidden="true"></span><span>Trocar foto principal</span></span>
+                    <span class="product-image-upload__title"><span class="icon" data-lucide="image-plus" aria-hidden="true"></span><span>Foto principal</span></span>
                     <input type="file" name="imagem_produto" accept="image/png,image/jpeg,image/webp,image/gif" data-image-input>
                     <input type="hidden" name="remove_imagem_path" value="0" data-image-remove>
                     <span class="product-image-upload__drop">
@@ -1404,15 +1415,15 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
                     <small>Envie apenas se quiser substituir a imagem atual.</small>
                 </label>
                 <label class="product-image-upload" data-image-upload data-image-field="imagem_pronto_path">
-                    <span class="product-image-upload__title"><span class="icon" data-lucide="chef-hat" aria-hidden="true"></span><span>Trocar pronto / frito</span></span>
+                    <span class="product-image-upload__title"><span class="icon" data-lucide="images" aria-hidden="true"></span><span>Foto secundária</span></span>
                     <input type="file" name="imagem_pronto" accept="image/png,image/jpeg,image/webp,image/gif" data-image-input>
                     <input type="hidden" name="remove_imagem_pronto_path" value="0" data-image-remove>
                     <span class="product-image-upload__drop">
                         <span class="product-image-upload__placeholder"><span class="icon" data-lucide="upload-cloud" aria-hidden="true"></span><span>Fazer upload ou arrastar a imagem aqui</span></span>
-                        <span class="product-image-upload__preview"><img alt="Preview foto pronta"></span>
+                        <span class="product-image-upload__preview"><img alt="Preview foto secundária"></span>
                     </span>
-                    <button type="button" class="product-image-upload__remove" data-image-clear aria-label="Remover foto pronta"><span class="icon" data-lucide="trash-2" aria-hidden="true"></span></button>
-                    <small>Imagem opcional do produto pronto.</small>
+                    <button type="button" class="product-image-upload__remove" data-image-clear aria-label="Remover foto secundária"><span class="icon" data-lucide="trash-2" aria-hidden="true"></span></button>
+                    <small>Envie apenas se quiser substituir a imagem secundária atual.</small>
                 </label>
             </div>
             <div class="form-actions" style="grid-column: 1 / -1;">
