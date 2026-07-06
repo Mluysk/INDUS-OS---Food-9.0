@@ -1,6 +1,8 @@
 <?php
 $documentTitle = trim(($title ?? '') . ' · ' . ($appName ?? 'IndusOS Food'), ' ·');
 $hasCustomShareButton = str_contains((string)($content ?? ''), 'visual-share-button');
+$reportLogoTintEnabled = !empty($sidebarLogo['filter_enabled']);
+$reportLogoFilterMatrix = (string)($sidebarLogo['filter_matrix'] ?? '');
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -59,6 +61,11 @@ $hasCustomShareButton = str_contains((string)($content ?? ''), 'visual-share-but
         .print-header img {
             height: 58px;
             display: block;
+        }
+
+        body.report-logo-filter-enabled .print-header img {
+            filter: url(#reportLogoTintFilter);
+            -webkit-filter: url(#reportLogoTintFilter);
         }
 
         .print-meta {
@@ -366,7 +373,16 @@ $hasCustomShareButton = str_contains((string)($content ?? ''), 'visual-share-but
         }
     </style>
 </head>
-<body>
+<body class="<?= $reportLogoTintEnabled ? 'report-logo-filter-enabled' : ''; ?>">
+    <?php if ($reportLogoTintEnabled && $reportLogoFilterMatrix !== ''): ?>
+        <svg xmlns="http://www.w3.org/2000/svg" width="0" height="0" style="position:absolute;visibility:hidden" aria-hidden="true">
+            <defs>
+                <filter id="reportLogoTintFilter" color-interpolation-filters="sRGB">
+                    <feColorMatrix type="matrix" values="<?= htmlspecialchars($reportLogoFilterMatrix, ENT_QUOTES, 'UTF-8'); ?>"></feColorMatrix>
+                </filter>
+            </defs>
+        </svg>
+    <?php endif; ?>
     <div class="print-container">
         <?= $content; ?>
     </div>

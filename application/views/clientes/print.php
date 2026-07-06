@@ -42,7 +42,7 @@ $formatDateTime = static function (?string $value): string {
 };
 
 $now = (new DateTime('now', new DateTimeZone('America/Sao_Paulo')))->format('d/m/Y H:i');
-$logo = $asset($nota['logo'] ?? ($theme['logo_light'] ?? 'img/logo.png'));
+$logo = $asset($sidebarLogo['path'] ?? ($theme['logo_light'] ?? 'img/logo.png'));
 $totalClientes = count($clientes ?? []);
 ?>
 <style>

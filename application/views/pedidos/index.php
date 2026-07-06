@@ -359,11 +359,24 @@
     })();
 </script>
 
+<?php
+    $dailyReportLogoPath = $sidebarLogo['path'] ?? ($theme['logo_light'] ?? 'img/logo.png');
+    $dailyReportLogoFilterEnabled = !empty($sidebarLogo['filter_enabled']);
+    $dailyReportLogoFilterMatrix = (string)($sidebarLogo['filter_matrix'] ?? '');
+    $dailyReportLogoFilterSvg = '';
+    if ($dailyReportLogoFilterEnabled && $dailyReportLogoFilterMatrix !== '') {
+        $dailyReportLogoFilterSvg = '<svg xmlns="http://www.w3.org/2000/svg" width="0" height="0" style="position:absolute;visibility:hidden" aria-hidden="true"><defs><filter id="dailyOutputLogoTintFilter" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="'
+            . htmlspecialchars($dailyReportLogoFilterMatrix, ENT_QUOTES, 'UTF-8')
+            . '"></feColorMatrix></filter></defs></svg>';
+    }
+?>
 <script>
     (() => {
         const tabs = document.querySelectorAll('.pedidos-tab');
         const panels = document.querySelectorAll('.pedidos-tab-panel');
-        const reportLogo = <?= json_encode($asset($nota['logo'] ?? ($theme['logo_light'] ?? 'img/logo.png')), JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE); ?>;
+        const reportLogo = <?= json_encode($asset($dailyReportLogoPath), JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE); ?>;
+        const reportLogoFilterCss = <?= json_encode($dailyReportLogoFilterEnabled ? 'url(#dailyOutputLogoTintFilter)' : 'none'); ?>;
+        const reportLogoFilterSvg = <?= json_encode($dailyReportLogoFilterSvg, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE); ?>;
 
         tabs.forEach((tab) => {
             tab.addEventListener('click', () => {
@@ -429,6 +442,7 @@
                             max-width: 190px;
                             height: 54px;
                             object-fit: contain;
+                            filter: ${reportLogoFilterCss};
                         }
                         .daily-output-print-brand strong {
                             color: #0f172a;
@@ -527,6 +541,7 @@
                 ${lt}/style>
                 ${lt}/head>
                 ${lt}body>
+                    ${reportLogoFilterSvg}
                     ${lt}header class="daily-output-print-brand">
                         ${lt}img src="${reportLogo}" alt="Logo">
                         ${lt}strong>Relatório de saída${lt}/strong>

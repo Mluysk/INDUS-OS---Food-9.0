@@ -1,5 +1,5 @@
 <?php
-$logo = $asset($nota['logo'] ?? ($theme['logo_light'] ?? 'img/logo.png'));
+$logo = $asset($sidebarLogo['path'] ?? ($theme['logo_light'] ?? 'img/logo.png'));
 $now = (new DateTime('now', new DateTimeZone('America/Sao_Paulo')))->format('d/m/Y H:i');
 $today = (new DateTime('now', new DateTimeZone('America/Sao_Paulo')))->format('Y-m-d');
 $datas = $relatorioOp['datas'] ?? [];

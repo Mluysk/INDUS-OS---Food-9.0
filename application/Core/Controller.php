@@ -277,6 +277,15 @@ abstract class Controller
             // Ignore configuration lookup errors when the database é inacessível.
         }
 
+        $sidebarLogoFilterEnabled = ($theme['logo_filter'] ?? '0') === '1';
+        $sidebarLogo = [
+            'path' => $sidebarLogoFilterEnabled
+                ? ($theme['logo_dark'] ?? ($theme['logo_light'] ?? 'img/logo.png'))
+                : ($theme['logo_light'] ?? 'img/logo.png'),
+            'filter_enabled' => $sidebarLogoFilterEnabled,
+            'filter_matrix' => self::logoFilterMatrix((string)($theme['primary_hex'] ?? '#5b616f')),
+        ];
+
         $basePath = rtrim($_SERVER['APP_BASE_PATH'] ?? '', '/');
         $urlBuilder = function (string $path = '') use ($basePath): string {
             if (preg_match('#^https?://#i', $path)) {
@@ -329,6 +338,7 @@ abstract class Controller
             'asset' => $assetBuilder,
             'support' => $support,
             'nota' => $nota,
+            'sidebarLogo' => $sidebarLogo,
             'quickActions' => $quickActions,
             'shortcutMap' => $shortcutMap,
         ];
@@ -481,6 +491,35 @@ abstract class Controller
         }
 
         return $data[$key] ?? $default;
+    }
+
+    private static function logoFilterMatrix(string $hex): string
+    {
+        $hex = ltrim($hex, '#');
+        if (strlen($hex) === 3) {
+            $hex = $hex[0].$hex[0].$hex[1].$hex[1].$hex[2].$hex[2];
+        }
+        if (strlen($hex) !== 6 || !ctype_xdigit($hex)) {
+            $hex = '5B616F';
+        }
+
+        $red = hexdec(substr($hex, 0, 2)) / 255;
+        $green = hexdec(substr($hex, 2, 2)) / 255;
+        $blue = hexdec(substr($hex, 4, 2)) / 255;
+        $row = static fn(float $factor): array => [
+            sprintf('%.6f', 0.2126 * $factor),
+            sprintf('%.6f', 0.7152 * $factor),
+            sprintf('%.6f', 0.0722 * $factor),
+            '0',
+            '0',
+        ];
+
+        return implode(' ', array_merge(
+            $row($red),
+            $row($green),
+            $row($blue),
+            ['0', '0', '0', '1', '0']
+        ));
     }
 
     private function gatherInput(): array

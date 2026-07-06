@@ -28,7 +28,7 @@ if ($visual) {
 }
 
 $now = (new DateTime('now', new DateTimeZone('America/Sao_Paulo')))->format('d/m/Y H:i');
-$logo = $asset($nota['logo'] ?? ($theme['logo_light'] ?? 'img/logo.png'));
+$logo = $asset($sidebarLogo['path'] ?? ($theme['logo_light'] ?? 'img/logo.png'));
 
 $filterPills = [];
 if (!empty($filters['term'])) {
