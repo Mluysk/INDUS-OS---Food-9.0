@@ -30,7 +30,7 @@ class PortalController extends Controller
     {
         $allowedIds = $this->portalProductIds();
         $produtos = array_values(array_filter(
-            $this->produtos->all(),
+            $this->produtos->all(['mostrar_portal' => 1]),
             static function (array $produto) use ($allowedIds): bool {
                 if (($produto['tipo'] ?? 'PA') !== 'PA') {
                     return false;

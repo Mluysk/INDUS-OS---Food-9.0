@@ -243,6 +243,73 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
         width: 16px;
         height: 16px;
     }
+    .product-portal-toggle {
+        grid-column: 1 / -1;
+        display: flex !important;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        min-height: 64px;
+        border: 1px solid color-mix(in srgb, var(--primary, #4b5563) 14%, var(--border, #e5e7eb));
+        border-radius: 16px;
+        padding: 12px 16px;
+        background: color-mix(in srgb, var(--primary, #4b5563) 4%, var(--surface, #fff));
+        cursor: pointer;
+    }
+    .product-portal-toggle input {
+        position: absolute;
+        opacity: 0;
+        pointer-events: none;
+    }
+    .product-portal-toggle__text {
+        display: grid;
+        gap: 3px;
+        min-width: 0;
+    }
+    .product-portal-toggle__title {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--text, #0f172a);
+        font-weight: 850;
+    }
+    .product-portal-toggle__title .icon {
+        width: 18px;
+        height: 18px;
+        color: var(--primary, #4b5563);
+    }
+    .product-portal-toggle__hint {
+        color: var(--text-muted, #64748b);
+        font-size: 0.78rem;
+        font-weight: 700;
+    }
+    .product-portal-toggle__switch {
+        position: relative;
+        flex: 0 0 auto;
+        width: 54px;
+        height: 30px;
+        border-radius: 999px;
+        background: #cbd5e1;
+        transition: background 160ms ease;
+    }
+    .product-portal-toggle__switch::after {
+        content: '';
+        position: absolute;
+        top: 4px;
+        left: 4px;
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        background: #fff;
+        box-shadow: 0 8px 16px -10px rgba(15, 23, 42, 0.75);
+        transition: transform 160ms ease;
+    }
+    .product-portal-toggle input:checked + .product-portal-toggle__switch {
+        background: var(--primary, #4b5563);
+    }
+    .product-portal-toggle input:checked + .product-portal-toggle__switch::after {
+        transform: translateX(24px);
+    }
     .product-image-gallery-upload {
         grid-column: 1 / -1;
         display: grid;
@@ -602,6 +669,15 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
             Preço padrão
             <input type="number" step="0.01" name="preco">
         </label>
+        <label class="product-portal-toggle">
+            <span class="product-portal-toggle__text">
+                <span class="product-portal-toggle__title"><span class="icon" data-lucide="globe-2" aria-hidden="true"></span><span>Aparecer no portal</span></span>
+                <span class="product-portal-toggle__hint">Ligado: o produto aparece para o cliente no portal. Desligado: fica oculto.</span>
+            </span>
+            <input type="hidden" name="mostrar_portal" value="0">
+            <input type="checkbox" name="mostrar_portal" value="1" checked>
+            <span class="product-portal-toggle__switch" aria-hidden="true"></span>
+        </label>
         <div class="product-image-gallery-upload">
             <label class="product-image-upload" data-image-upload data-image-field="imagem_path">
                 <span class="product-image-upload__title"><span class="icon" data-lucide="image-plus" aria-hidden="true"></span><span>Foto principal</span></span>
@@ -940,6 +1016,8 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
             .product-actions .danger { color: #dc2626; border-color: #fecdd3; background: #fff1f2; }
             .product-status { display: inline-flex; margin-top: 4px; padding: 3px 8px; border-radius: 999px; background: #f1f5f9; color: #64748b; font-size: 0.72rem; font-weight: 800; }
             .product-status.is-active { background: #ecfdf5; color: #047857; }
+            .product-status--portal { margin-left: 5px; background: #eff6ff; color: #2563eb; }
+            .product-status--portal.is-hidden { background: #f8fafc; color: #94a3b8; }
             .product-info-modal.hidden { display: none !important; }
             .product-info-modal {
                 position: fixed;
@@ -1069,7 +1147,9 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
                                 <td>
                                     <?= htmlspecialchars($produto['nome'], ENT_QUOTES, 'UTF-8'); ?>
                                     <?php $isActive = (int)($produto['is_ativo'] ?? 1) === 1; ?>
+                                    <?php $isPortalVisible = (int)($produto['mostrar_portal'] ?? 1) === 1; ?>
                                     <span class="product-status <?= $isActive ? 'is-active' : ''; ?>"><?= $isActive ? 'Ativo' : 'Inativo'; ?></span>
+                                    <span class="product-status product-status--portal <?= $isPortalVisible ? '' : 'is-hidden'; ?>"><?= $isPortalVisible ? 'No portal' : 'Fora do portal'; ?></span>
                                 </td>
                                 <td><?= htmlspecialchars($produto['categoria'] ?? '—', ENT_QUOTES, 'UTF-8'); ?></td>
                                 <td><span class="badge <?= $produto['tipo'] === 'PA' ? 'badge-success' : 'badge-warning'; ?>"><?= htmlspecialchars($produto['tipo'], ENT_QUOTES, 'UTF-8'); ?></span></td>
@@ -1415,6 +1495,15 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
             <label>
                 Preço padrão
                 <input type="number" step="0.01" name="preco">
+            </label>
+            <label class="product-portal-toggle">
+                <span class="product-portal-toggle__text">
+                    <span class="product-portal-toggle__title"><span class="icon" data-lucide="globe-2" aria-hidden="true"></span><span>Aparecer no portal</span></span>
+                    <span class="product-portal-toggle__hint">Desligue para ocultar este produto do portal do cliente.</span>
+                </span>
+                <input type="hidden" name="mostrar_portal" value="0">
+                <input type="checkbox" name="mostrar_portal" value="1" checked>
+                <span class="product-portal-toggle__switch" aria-hidden="true"></span>
             </label>
             <div class="product-image-gallery-upload">
                 <label class="product-image-upload" data-image-upload data-image-field="imagem_path">
@@ -1788,6 +1877,7 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
                 const encoded = serializeProduct(item);
                 const itemId = Number(item.id || 0);
                 const isActive = Number(item.is_ativo ?? 1) === 1;
+                const isPortalVisible = Number(item.mostrar_portal ?? 1) === 1;
                 window.productInfoMap = window.productInfoMap || {};
                 if (!window.productInfoMap[itemId]) {
                     window.productInfoMap[itemId] = {
@@ -1805,7 +1895,10 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
                     <tr>
                         <td>${itemId}</td>
                         <td>${item.sku ?? ''}</td>
-                        <td>${item.nome ?? ''}</td>
+                        <td>${item.nome ?? ''}
+                            <span class="product-status ${isActive ? 'is-active' : ''}">${isActive ? 'Ativo' : 'Inativo'}</span>
+                            <span class="product-status product-status--portal ${isPortalVisible ? '' : 'is-hidden'}">${isPortalVisible ? 'No portal' : 'Fora do portal'}</span>
+                        </td>
                         <td>${categoria}</td>
                         <td><span class="badge ${badgeClass}">${item.tipo}</span></td>
                         <td>${item.unidade ?? ''}</td>
@@ -2095,6 +2188,10 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
             editForm.querySelector('input[name="peso_liquido"]').value = product.peso_liquido || '';
             editForm.querySelector('input[name="shelf_life_dias"]').value = product.shelf_life_dias || '';
             editForm.querySelector('input[name="preco"]').value = product.preco || '';
+            const portalCheckbox = editForm.querySelector('input[type="checkbox"][name="mostrar_portal"]');
+            if (portalCheckbox) {
+                portalCheckbox.checked = Number(product.mostrar_portal ?? 1) === 1;
+            }
             editForm.querySelectorAll('[data-image-upload]').forEach((box) => {
                 const field = box.dataset.imageField || '';
                 const remove = box.querySelector('[data-image-remove]');

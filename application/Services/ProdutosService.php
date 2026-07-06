@@ -77,6 +77,7 @@ class ProdutosService
             'dir' => isset($filters['dir']) ? strtolower(trim((string)$filters['dir'])) : null,
             'status' => isset($filters['status']) ? strtolower(trim((string)$filters['status'])) : null,
             'include_inactive' => !empty($filters['include_inactive']),
+            'mostrar_portal' => array_key_exists('mostrar_portal', $filters) ? (!empty($filters['mostrar_portal']) ? 1 : 0) : null,
         ];
 
         $normalized = array_filter($normalized, static function ($value) {
@@ -251,6 +252,9 @@ class ProdutosService
             'shelf_life_dias' => isset($data['shelf_life_dias']) ? (int)$data['shelf_life_dias'] : 0,
             'preco' => isset($data['preco']) ? (float)$data['preco'] : 0,
             'alergicos' => isset($data['alergicos']) ? trim((string)$data['alergicos']) : null,
+            'mostrar_portal' => array_key_exists('mostrar_portal', $data)
+                ? (!empty($data['mostrar_portal']) ? 1 : 0)
+                : (int)($existing['mostrar_portal'] ?? 1),
         ];
 
         if (array_key_exists('imagem_path', $data)) {

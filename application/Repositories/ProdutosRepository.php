@@ -6,6 +6,7 @@ class ProdutosRepository extends BaseRepository
     protected string $table = 'produtos';
     private ?bool $hasActiveColumn = null;
     private ?bool $hasImageColumn = null;
+    private ?bool $hasPortalVisibilityColumn = null;
     private bool $deletedSkuHistoryReady = false;
 
     public function create(array $data): int
@@ -13,6 +14,9 @@ class ProdutosRepository extends BaseRepository
         if (!$this->ensureImageColumn()) {
             unset($data['imagem_path']);
             unset($data['imagem_pronto_path']);
+        }
+        if (!$this->ensurePortalVisibilityColumn()) {
+            unset($data['mostrar_portal']);
         }
         return parent::create($data);
     }
@@ -22,6 +26,9 @@ class ProdutosRepository extends BaseRepository
         if (!$this->ensureImageColumn()) {
             unset($data['imagem_path']);
             unset($data['imagem_pronto_path']);
+        }
+        if (!$this->ensurePortalVisibilityColumn()) {
+            unset($data['mostrar_portal']);
         }
         return parent::update($id, $data);
     }
@@ -71,6 +78,7 @@ class ProdutosRepository extends BaseRepository
     {
         $hasActiveColumn = $this->ensureActiveColumn();
         $this->ensureImageColumn();
+        $hasPortalVisibilityColumn = $this->ensurePortalVisibilityColumn();
         $this->normalizarCategoriasExistentes();
 
         $sql = "SELECT * FROM {$this->table} WHERE 1=1";
@@ -108,6 +116,11 @@ class ProdutosRepository extends BaseRepository
         if (!empty($filters['tipo'])) {
             $sql .= " AND tipo = :tipo";
             $params['tipo'] = $filters['tipo'];
+        }
+
+        if ($hasPortalVisibilityColumn && array_key_exists('mostrar_portal', $filters)) {
+            $sql .= " AND COALESCE(mostrar_portal, 1) = :mostrar_portal";
+            $params['mostrar_portal'] = !empty($filters['mostrar_portal']) ? 1 : 0;
         }
 
         $sortable = [
@@ -294,6 +307,7 @@ class ProdutosRepository extends BaseRepository
     private function normalizarLinha(array $row): array
     {
         $this->ensureImageColumn();
+        $this->ensurePortalVisibilityColumn();
 
         if (isset($row['sku'])) {
             $row['sku'] = $this->normalizarSku((string)$row['sku']);
@@ -301,6 +315,10 @@ class ProdutosRepository extends BaseRepository
 
         if (array_key_exists('categoria', $row)) {
             $row['categoria'] = $this->normalizarCategoria($row['categoria']);
+        }
+
+        if (!array_key_exists('mostrar_portal', $row)) {
+            $row['mostrar_portal'] = 1;
         }
 
         return $row;
@@ -347,6 +365,27 @@ class ProdutosRepository extends BaseRepository
         }
 
         return $this->hasActiveColumn;
+    }
+
+    private function ensurePortalVisibilityColumn(): bool
+    {
+        if ($this->hasPortalVisibilityColumn !== null) {
+            return $this->hasPortalVisibilityColumn;
+        }
+
+        try {
+            $stmt = $this->db->query("SHOW COLUMNS FROM {$this->table} LIKE 'mostrar_portal'");
+            if (!$stmt || !$stmt->fetch()) {
+                $this->ensureImageColumn();
+                $this->db->exec("ALTER TABLE {$this->table} ADD COLUMN mostrar_portal TINYINT(1) NOT NULL DEFAULT 1 AFTER imagem_pronto_path");
+            }
+            $this->hasPortalVisibilityColumn = true;
+        } catch (\Throwable $exception) {
+            // Mantem compatibilidade com bancos sem permissao de alteracao automatica.
+            $this->hasPortalVisibilityColumn = false;
+        }
+
+        return $this->hasPortalVisibilityColumn;
     }
 
     private function normalizarCategoriasExistentes(): void
