@@ -249,6 +249,9 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
         grid-template-columns: repeat(2, minmax(280px, 1fr));
         gap: 14px;
     }
+    .product-image-gallery-upload.is-hidden {
+        display: none;
+    }
     .product-image-gallery-upload .product-image-upload {
         grid-column: auto;
         align-content: start;
@@ -1704,10 +1707,24 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
 
         setupImageUploads(document);
 
+        const toggleProductImageGallery = (targetForm) => {
+            if (!targetForm) return;
+            const tipoField = targetForm.querySelector('select[name="tipo"]');
+            const gallery = targetForm.querySelector('.product-image-gallery-upload');
+            if (!tipoField || !gallery) return;
+            const isFinishedProduct = tipoField.value !== 'MP';
+            gallery.classList.toggle('is-hidden', !isFinishedProduct);
+            gallery.setAttribute('aria-hidden', isFinishedProduct ? 'false' : 'true');
+            gallery.querySelectorAll('input').forEach((input) => {
+                input.disabled = !isFinishedProduct;
+            });
+        };
+
         const toggleMpRecebimento = () => {
             const tipoField = createForm?.querySelector('select[name="tipo"]');
             if (!mpRecebimento || !tipoField) return;
             mpRecebimento.classList.toggle('active', tipoField.value === 'MP');
+            toggleProductImageGallery(createForm);
         };
 
         if (createForm) {
@@ -1719,6 +1736,11 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
             applyAutoSku();
             toggleMpRecebimento();
         }
+
+        editForm?.querySelector('select[name="tipo"]')?.addEventListener('change', () => {
+            toggleProductImageGallery(editForm);
+        });
+        toggleProductImageGallery(editForm);
 
         const updatePrintLink = () => {
             if (!printButtons.length) return;
@@ -2041,6 +2063,7 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
             editForm.querySelector('input[name="sku"]').value = product.sku || '';
             editForm.querySelector('input[name="nome"]').value = product.nome || '';
             editForm.querySelector('select[name="tipo"]').value = product.tipo || 'PA';
+            toggleProductImageGallery(editForm);
             editForm.querySelector('input[name="categoria"]').value = product.categoria || '';
             const unidadeSelect = editForm.querySelector('select[name="unidade"]');
             if (unidadeSelect) {
