@@ -9,14 +9,19 @@
 
     .cliente-tab-button {
         appearance: none;
+        height: 34px;
+        min-height: 34px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
         border: 1px solid var(--border, #e5e7eb);
         background: var(--surface-alt, #f8fafc);
         color: var(--text, #111827);
         border-radius: 999px;
-        padding: 8px 14px;
+        padding: 0 14px;
         font-weight: 700;
         font-size: inherit;
-        line-height: normal;
+        line-height: 1;
         cursor: pointer;
         transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
     }
