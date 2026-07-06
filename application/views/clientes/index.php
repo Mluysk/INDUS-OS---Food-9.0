@@ -697,6 +697,8 @@
     }
 
     .clientes-list-actions .print-link {
+        position: relative;
+        left: 50px;
         align-self: center;
     }
 
