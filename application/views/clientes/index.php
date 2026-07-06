@@ -786,6 +786,8 @@
     }
 
     .clientes-filter-bar {
+        position: relative;
+        top: -6px;
         display: flex;
         align-items: flex-end;
         gap: 12px;
