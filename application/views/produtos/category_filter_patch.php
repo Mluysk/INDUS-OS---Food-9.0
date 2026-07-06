@@ -299,10 +299,11 @@ $selectedCategorias = array_values(array_unique(array_filter(array_map('trim', $
         sortLinks.forEach((link) => {
             const col = link.dataset.sort;
             const indicator = link.querySelector('.sort-indicator');
-            const isActive = state.sort === col;
-            link.dataset.next = isActive && state.dir === 'asc' ? 'desc' : 'asc';
+            const isActive = state.sort === col && Boolean(state.dir);
+            link.dataset.next = !isActive ? 'asc' : (state.dir === 'asc' ? 'desc' : '');
             link.dataset.active = state.sort;
             link.dataset.direction = state.dir;
+            link.setAttribute('aria-sort', isActive ? (state.dir === 'asc' ? 'ascending' : 'descending') : 'none');
             if (indicator) {
                 indicator.textContent = isActive ? (state.dir === 'asc' ? '▲' : '▼') : '⇅';
                 indicator.classList.toggle('active', isActive);
@@ -406,8 +407,16 @@ $selectedCategorias = array_values(array_unique(array_filter(array_map('trim', $
         link.addEventListener('click', (event) => {
             event.preventDefault();
             event.stopImmediatePropagation();
-            state.sort = link.dataset.sort || 'created_at';
-            state.dir = link.dataset.next || 'asc';
+            const column = link.dataset.sort || 'created_at';
+            if (state.sort !== column || !state.dir) {
+                state.sort = column;
+                state.dir = 'asc';
+            } else if (state.dir === 'asc') {
+                state.dir = 'desc';
+            } else {
+                state.sort = '';
+                state.dir = '';
+            }
             fetchCatalog();
         }, true);
     });

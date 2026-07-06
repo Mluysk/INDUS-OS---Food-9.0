@@ -756,15 +756,19 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
             }
             $sortLink = function (string $column, string $label, string $labelHtml = '') use ($activeSort, $activeDir, $queryBase, $url) {
                 $qs = $queryBase;
-                $qs['sort'] = $column;
-                $qs['dir'] = ($activeSort === $column && $activeDir === 'asc') ? 'desc' : 'asc';
-                $indicator = $activeSort === $column ? ($activeDir === 'asc' ? '▲' : '▼') : '⇅';
+                $isActive = $activeSort === $column;
+                $nextDirection = !$isActive ? 'asc' : ($activeDir === 'asc' ? 'desc' : '');
+                if ($nextDirection !== '') {
+                    $qs['sort'] = $column;
+                    $qs['dir'] = $nextDirection;
+                }
+                $indicator = $isActive ? ($activeDir === 'asc' ? '▲' : '▼') : '⇅';
                 $href = $url('produtos' . ($qs ? '?' . http_build_query($qs) : ''));
                 $labelMarkup = $labelHtml !== '' ? $labelHtml : htmlspecialchars($label, ENT_QUOTES, 'UTF-8');
 
-                return '<a class="sort-link" href="' . htmlspecialchars($href, ENT_QUOTES, 'UTF-8') . '" data-sort="' . htmlspecialchars($column, ENT_QUOTES, 'UTF-8') . '" data-next="' . htmlspecialchars($qs['dir'], ENT_QUOTES, 'UTF-8') . '" data-active="' . htmlspecialchars($activeSort, ENT_QUOTES, 'UTF-8') . '" data-direction="' . htmlspecialchars($activeDir, ENT_QUOTES, 'UTF-8') . '">' .
+                return '<a class="sort-link" href="' . htmlspecialchars($href, ENT_QUOTES, 'UTF-8') . '" data-sort="' . htmlspecialchars($column, ENT_QUOTES, 'UTF-8') . '" data-next="' . htmlspecialchars($nextDirection, ENT_QUOTES, 'UTF-8') . '" data-active="' . htmlspecialchars($activeSort, ENT_QUOTES, 'UTF-8') . '" data-direction="' . htmlspecialchars($activeDir, ENT_QUOTES, 'UTF-8') . '">' .
                     '<span class="sort-label">' . $labelMarkup . '</span>' .
-                    '<span class="sort-indicator' . ($activeSort === $column ? ' active' : '') . '">' . $indicator . '</span>' .
+                    '<span class="sort-indicator' . ($isActive ? ' active' : '') . '">' . $indicator . '</span>' .
                 '</a>';
             };
         ?>
@@ -772,27 +776,28 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
             .sort-link {
                 display: inline-flex;
                 align-items: center;
-                gap: 6px;
+                gap: 0.38rem;
                 color: inherit;
                 text-decoration: none;
-                font-weight: 600;
-            }
-            .sort-link:hover .sort-indicator {
-                opacity: 1;
+                font-weight: 800;
             }
             .sort-indicator {
-                font-size: 0.85rem;
-                opacity: 0.65;
-                padding: 2px 5px;
-                border-radius: 8px;
-                background: rgba(0,0,0,0.06);
-                color: inherit;
-                transition: all 0.2s ease;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                width: 21px;
+                height: 21px;
+                border-radius: 999px;
+                background: var(--surface-muted, #eef2f7);
+                color: var(--text-muted, #64748b);
+                font-size: 0.78rem;
+                line-height: 1;
+                transition: color 0.2s ease, background 0.2s ease;
             }
+            .sort-link:hover .sort-indicator,
             .sort-indicator.active {
-                background: rgba(86, 97, 255, 0.12);
-                color: inherit;
-                opacity: 1;
+                color: var(--primary, #4f46e5);
+                background: color-mix(in srgb, var(--primary, #4f46e5) 12%, #fff);
             }
             #catalog-table th { white-space: nowrap; font-size: calc(0.85rem - 3px); }
             #catalog-table td { font-size: calc(1rem - 3px); }
@@ -1859,11 +1864,12 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
             sortLinks.forEach((link) => {
                 const col = link.dataset.sort;
                 const indicator = link.querySelector('.sort-indicator');
-                const isActive = state.sort === col;
-                const nextDir = isActive && state.dir === 'asc' ? 'desc' : 'asc';
+                const isActive = state.sort === col && Boolean(state.dir);
+                const nextDir = !isActive ? 'asc' : (state.dir === 'asc' ? 'desc' : '');
                 link.dataset.next = nextDir;
                 link.dataset.active = state.sort;
                 link.dataset.direction = state.dir;
+                link.setAttribute('aria-sort', isActive ? (state.dir === 'asc' ? 'ascending' : 'descending') : 'none');
 
                 if (indicator) {
                     indicator.textContent = isActive ? (state.dir === 'asc' ? '▲' : '▼') : '⇅';
@@ -1934,9 +1940,15 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
             link.addEventListener('click', (e) => {
                 e.preventDefault();
                 const col = link.dataset.sort;
-                const next = link.dataset.next || 'asc';
-                state.sort = col;
-                state.dir = next;
+                if (state.sort !== col || !state.dir) {
+                    state.sort = col;
+                    state.dir = 'asc';
+                } else if (state.dir === 'asc') {
+                    state.dir = 'desc';
+                } else {
+                    state.sort = '';
+                    state.dir = '';
+                }
                 paginationState.page = 1;
                 fetchCatalog();
             });
