@@ -707,7 +707,7 @@
         min-height: 36px;
         transform: translateY(-18px);
         color: var(--text-muted, #64748b);
-        font-size: 0.82rem;
+        font-size: calc(0.82rem + 1px);
         font-weight: 750;
         white-space: nowrap;
     }
@@ -720,7 +720,7 @@
 
     .clientes-total-count strong {
         color: var(--text, #111827);
-        font-size: 0.9rem;
+        font-size: calc(0.9rem + 1px);
         font-weight: 900;
     }
 
