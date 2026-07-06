@@ -46,6 +46,18 @@ $reportLogoFilterMatrix = (string)($sidebarLogo['filter_matrix'] ?? '');
             margin-bottom: 1.75rem;
         }
 
+        .print-brand {
+            display: flex;
+            align-items: center;
+            gap: 22px;
+            min-width: 0;
+            padding: 8px 0;
+        }
+
+        .print-brand > div {
+            min-width: 0;
+        }
+
         .print-header h1 {
             margin: 0;
             font-size: 1.75rem;
@@ -61,6 +73,8 @@ $reportLogoFilterMatrix = (string)($sidebarLogo['filter_matrix'] ?? '');
         .print-header img {
             height: 58px;
             display: block;
+            flex: 0 0 auto;
+            object-fit: contain;
         }
 
         body.report-logo-filter-enabled .print-header img {
@@ -335,6 +349,11 @@ $reportLogoFilterMatrix = (string)($sidebarLogo['filter_matrix'] ?? '');
             body {
                 padding: 0;
                 background: #fff;
+            }
+
+            .print-brand {
+                gap: 14px;
+                padding: 4px 0;
             }
 
             .print-button {
