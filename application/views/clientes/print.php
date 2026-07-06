@@ -43,6 +43,7 @@ $formatDateTime = static function (?string $value): string {
 
 $now = (new DateTime('now', new DateTimeZone('America/Sao_Paulo')))->format('d/m/Y H:i');
 $logo = $asset($nota['logo'] ?? ($theme['logo_light'] ?? 'img/logo.png'));
+$totalClientes = count($clientes ?? []);
 ?>
 <style>
     .clients-print-table {
@@ -159,6 +160,7 @@ $logo = $asset($nota['logo'] ?? ($theme['logo_light'] ?? 'img/logo.png'));
         <div>
             <h1>Clientes cadastrados</h1>
             <p class="print-meta">Atualizado em <?= htmlspecialchars($now, ENT_QUOTES, 'UTF-8'); ?></p>
+            <p class="print-meta"><strong><?= $totalClientes; ?></strong> <?= $totalClientes === 1 ? 'cliente cadastrado' : 'clientes cadastrados'; ?></p>
         </div>
     </div>
     <button class="print-button" type="button" onclick="window.print()">Imprimir</button>
