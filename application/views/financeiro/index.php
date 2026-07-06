@@ -134,10 +134,10 @@ if (!function_exists('financeiro_format_date')) {
     .finance-status-filter-heading .finance-status-filter-count { margin-left: 0; padding: 2px 6px; font-size: 0.68rem; letter-spacing: 0; text-transform: none; }
     .finance-status-filter-group.is-heading .finance-status-filter-menu { position: fixed; left: auto; top: auto; text-transform: none; }
     .finance-status-filter-option.active::after { content: '✓'; font-weight: 900; color: #4f46e5; }
-    .finance-sort-link { display: inline-flex; align-items: center; gap: 6px; border: 0; padding: 0; background: transparent; color: inherit; font: inherit; font-weight: 700; cursor: pointer; }
-    .finance-sort-link:hover .finance-sort-indicator { opacity: 1; }
-    .finance-sort-indicator { font-size: 0.85rem; opacity: 0.65; padding: 2px 5px; border-radius: 8px; background: rgba(0,0,0,0.06); color: inherit; transition: all 0.2s ease; }
-    .finance-sort-indicator.active { background: rgba(86, 97, 255, 0.12); color: inherit; opacity: 1; }
+    .finance-sort-link { display: inline-flex; align-items: center; gap: 0.38rem; border: 0; padding: 0; background: transparent; color: inherit; font: inherit; font-weight: 800; cursor: pointer; }
+    .finance-sort-indicator { display: inline-flex; align-items: center; justify-content: center; width: 21px; height: 21px; border-radius: 999px; background: var(--surface-muted, #eef2f7); color: var(--text-muted, #64748b); font-size: 0.78rem; line-height: 1; transition: color 0.2s ease, background 0.2s ease; }
+    .finance-sort-link:hover .finance-sort-indicator,
+    .finance-sort-indicator.active { color: var(--primary, #4f46e5); background: color-mix(in srgb, var(--primary, #4f46e5) 12%, #fff); }
     .finance-status-badge {
         display: inline-flex;
         align-items: center;
@@ -2455,8 +2455,13 @@ if (!function_exists('financeiro_format_date')) {
                 const tipo = button.dataset.financeSortButton;
                 const field = button.dataset.financeSortField;
                 const current = financeSortState[tipo] || { field: '', direction: '' };
-                const nextDirection = current.field === field && current.direction === 'asc' ? 'desc' : 'asc';
-                financeSortState[tipo] = { field, direction: nextDirection };
+                if (current.field !== field || !current.direction) {
+                    financeSortState[tipo] = { field, direction: 'asc' };
+                } else if (current.direction === 'asc') {
+                    financeSortState[tipo] = { field, direction: 'desc' };
+                } else {
+                    financeSortState[tipo] = { field: '', direction: '' };
+                }
                 resetFinancePage(tipo);
                 renderFinanceList(tipo);
             });

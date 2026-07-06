@@ -1644,8 +1644,15 @@
                 return;
             }
 
-            clientesSortState.direction = clientesSortState.field === field && clientesSortState.direction === 'asc' ? 'desc' : 'asc';
-            clientesSortState.field = field;
+            if (clientesSortState.field !== field || !clientesSortState.direction) {
+                clientesSortState.field = field;
+                clientesSortState.direction = 'asc';
+            } else if (clientesSortState.direction === 'asc') {
+                clientesSortState.direction = 'desc';
+            } else {
+                clientesSortState.field = '';
+                clientesSortState.direction = '';
+            }
             paginationState.page = 1;
             updateClientesSortButtons();
             renderClientesPagination();

@@ -619,20 +619,31 @@
                 }
                 const field = button.dataset.pedidoSortField || '';
                 const type = button.dataset.pedidoSortType || 'text';
-                const nextDirection = pedidoSortState.field === field && pedidoSortState.direction === 'asc' ? 'desc' : 'asc';
-                pedidoSortState.field = field;
-                pedidoSortState.direction = nextDirection;
+                if (pedidoSortState.field !== field || !pedidoSortState.direction) {
+                    pedidoSortState.field = field;
+                    pedidoSortState.direction = 'asc';
+                } else if (pedidoSortState.direction === 'asc') {
+                    pedidoSortState.direction = 'desc';
+                } else {
+                    pedidoSortState.field = '';
+                    pedidoSortState.direction = '';
+                }
 
                 const rows = Array.from(pedidoTableBody.querySelectorAll('tr[data-pedido-row]'));
-                rows.sort((left, right) => {
-                    const leftValue = pedidoSortValue(left, field, type);
-                    const rightValue = pedidoSortValue(right, field, type);
-                    const result = type === 'number' || type === 'date'
-                        ? leftValue - rightValue
-                        : String(leftValue).localeCompare(String(rightValue), 'pt-BR', { numeric: true, sensitivity: 'base' });
-                    return nextDirection === 'desc' ? -result : result;
-                });
-                rows.forEach((row) => pedidoTableBody.appendChild(row));
+                const orderedRows = pedidoSortState.direction
+                    ? [...rows].sort((left, right) => {
+                        const leftValue = pedidoSortValue(left, field, type);
+                        const rightValue = pedidoSortValue(right, field, type);
+                        const result = type === 'number' || type === 'date'
+                            ? leftValue - rightValue
+                            : String(leftValue).localeCompare(String(rightValue), 'pt-BR', { numeric: true, sensitivity: 'base' });
+                        return pedidoSortState.direction === 'desc' ? -result : result;
+                    })
+                    : [...rows].sort((left, right) => {
+                        const createdResult = pedidoSortValue(right, 'created', 'date') - pedidoSortValue(left, 'created', 'date');
+                        return createdResult || pedidoSortValue(right, 'id', 'number') - pedidoSortValue(left, 'id', 'number');
+                    });
+                orderedRows.forEach((row) => pedidoTableBody.appendChild(row));
                 if (pedidoNoResults) {
                     pedidoTableBody.appendChild(pedidoNoResults);
                 }
@@ -671,20 +682,33 @@
                 }
                 const field = button.dataset.outputSortField || '';
                 const type = button.dataset.outputSortType || 'text';
-                const nextDirection = outputSortState.field === field && outputSortState.direction === 'asc' ? 'desc' : 'asc';
-                outputSortState.field = field;
-                outputSortState.direction = nextDirection;
+                if (outputSortState.field !== field || !outputSortState.direction) {
+                    outputSortState.field = field;
+                    outputSortState.direction = 'asc';
+                } else if (outputSortState.direction === 'asc') {
+                    outputSortState.direction = 'desc';
+                } else {
+                    outputSortState.field = '';
+                    outputSortState.direction = '';
+                }
 
                 const rows = Array.from(outputTableBody.querySelectorAll('tr[data-sort-sku]'));
-                rows.sort((left, right) => {
-                    const leftValue = outputSortValue(left, field, type);
-                    const rightValue = outputSortValue(right, field, type);
-                    const result = type === 'number'
-                        ? leftValue - rightValue
-                        : String(leftValue).localeCompare(String(rightValue), 'pt-BR', { numeric: true, sensitivity: 'base' });
-                    return nextDirection === 'desc' ? -result : result;
-                });
-                rows.forEach((row) => outputTableBody.appendChild(row));
+                const orderedRows = outputSortState.direction
+                    ? [...rows].sort((left, right) => {
+                        const leftValue = outputSortValue(left, field, type);
+                        const rightValue = outputSortValue(right, field, type);
+                        const result = type === 'number'
+                            ? leftValue - rightValue
+                            : String(leftValue).localeCompare(String(rightValue), 'pt-BR', { numeric: true, sensitivity: 'base' });
+                        return outputSortState.direction === 'desc' ? -result : result;
+                    })
+                    : [...rows].sort((left, right) => {
+                        const productResult = String(outputSortValue(left, 'produto', 'text'))
+                            .localeCompare(String(outputSortValue(right, 'produto', 'text')), 'pt-BR', { numeric: true, sensitivity: 'base' });
+                        return productResult || String(outputSortValue(left, 'sku', 'text'))
+                            .localeCompare(String(outputSortValue(right, 'sku', 'text')), 'pt-BR', { numeric: true, sensitivity: 'base' });
+                    });
+                orderedRows.forEach((row) => outputTableBody.appendChild(row));
                 updateOutputSortButtons();
             });
         });
@@ -901,21 +925,20 @@
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        width: 1.35rem;
-        height: 1.35rem;
+        width: 21px;
+        height: 21px;
         border-radius: 999px;
+        background: var(--surface-muted, #eef2f7);
         color: var(--text-muted, #64748b);
-        background: color-mix(in srgb, var(--text-muted, #64748b) 10%, transparent);
         font-size: 0.78rem;
-        font-weight: 850;
         line-height: 1;
-        transition: all 0.18s ease;
+        transition: color 0.2s ease, background 0.2s ease;
     }
 
     .pedido-list-sort-head:hover > span,
     .pedido-list-sort-head > span.active {
         color: var(--primary, #dc2626);
-        background: color-mix(in srgb, var(--primary, #dc2626) 12%, transparent);
+        background: color-mix(in srgb, var(--primary, #dc2626) 12%, #fff);
     }
 
     .daily-output-head {
@@ -1199,21 +1222,20 @@
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        width: 1.35rem;
-        height: 1.35rem;
+        width: 21px;
+        height: 21px;
         border-radius: 999px;
+        background: var(--surface-muted, #eef2f7);
         color: var(--text-muted, #64748b);
-        background: color-mix(in srgb, var(--text-muted, #64748b) 10%, transparent);
         font-size: 0.78rem;
-        font-weight: 850;
         line-height: 1;
-        transition: all 0.18s ease;
+        transition: color 0.2s ease, background 0.2s ease;
     }
 
     .daily-output-sort-head:hover > span,
     .daily-output-sort-head > span.active {
         color: var(--primary, #dc2626);
-        background: color-mix(in srgb, var(--primary, #dc2626) 12%, transparent);
+        background: color-mix(in srgb, var(--primary, #dc2626) 12%, #fff);
     }
 
     .pedido-actions {

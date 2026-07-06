@@ -38,6 +38,7 @@
             .trim();
 
         const getRows = () => Array.from(tbody.querySelectorAll('tr[data-cliente-row]'));
+        const originalRows = getRows();
 
         const uppercaseUfValues = () => {
             ufSelect?.querySelectorAll('option').forEach((option) => {
@@ -110,7 +111,11 @@
 
         const sortedRows = (rows) => {
             if (!state.sortField || !state.sortDirection) {
-                return rows;
+                const originalSet = new Set(originalRows);
+                return [
+                    ...rows.filter((row) => !originalSet.has(row)),
+                    ...originalRows.filter((row) => rows.includes(row))
+                ];
             }
 
             const button = sortButtons.find((item) => item.dataset.clientesSortField === state.sortField);
