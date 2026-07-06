@@ -1,5 +1,6 @@
 <?php
 $documentTitle = trim(($title ?? '') . ' · ' . ($appName ?? 'IndusOS Food'), ' ·');
+$hasCustomShareButton = str_contains((string)($content ?? ''), 'visual-share-button');
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -75,6 +76,79 @@ $documentTitle = trim(($title ?? '') . ' · ' . ($appName ?? 'IndusOS Food'), ' 
             font-weight: 600;
             cursor: pointer;
             box-shadow: 0 10px 28px rgba(15, 23, 42, 0.18);
+        }
+
+        .report-share-button {
+            position: fixed;
+            right: 22px;
+            bottom: 22px;
+            z-index: 40;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 9px;
+            min-height: 50px;
+            padding: 0 18px;
+            border: 0;
+            border-radius: 999px;
+            background: var(--brand);
+            color: #fff;
+            font: inherit;
+            font-weight: 900;
+            cursor: pointer;
+            box-shadow: 0 20px 42px -22px rgba(15, 23, 42, 0.65);
+        }
+
+        .report-share-button svg {
+            width: 20px;
+            height: 20px;
+            stroke: currentColor;
+        }
+
+        .report-share-status {
+            position: fixed;
+            right: 22px;
+            bottom: 82px;
+            z-index: 39;
+            display: none;
+            max-width: min(320px, calc(100vw - 44px));
+            padding: 10px 14px;
+            border-radius: 14px;
+            background: #0f172a;
+            color: #fff;
+            font-size: 0.86rem;
+            font-weight: 800;
+            box-shadow: 0 20px 42px -28px rgba(15, 23, 42, 0.72);
+        }
+
+        .report-share-status.is-visible {
+            display: block;
+        }
+
+        @media (max-width: 720px) {
+            .report-share-button {
+                right: 14px;
+                bottom: 14px;
+                width: 54px;
+                height: 54px;
+                min-height: 54px;
+                padding: 0;
+                border-radius: 50%;
+            }
+
+            .report-share-button span {
+                display: none;
+            }
+
+            .report-share-button svg {
+                width: 24px;
+                height: 24px;
+            }
+
+            .report-share-status {
+                right: 14px;
+                bottom: 76px;
+            }
         }
 
         table {
@@ -260,6 +334,11 @@ $documentTitle = trim(($title ?? '') . ' · ' . ($appName ?? 'IndusOS Food'), ' 
                 display: none;
             }
 
+            .report-share-button,
+            .report-share-status {
+                display: none !important;
+            }
+
             .print-container {
                 width: 100%;
                 max-width: none;
@@ -291,12 +370,78 @@ $documentTitle = trim(($title ?? '') . ' · ' . ($appName ?? 'IndusOS Food'), ' 
     <div class="print-container">
         <?= $content; ?>
     </div>
+    <?php if (!$hasCustomShareButton): ?>
+        <button type="button" class="report-share-button" aria-label="Compartilhar relatório">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <circle cx="18" cy="5" r="3"></circle>
+                <circle cx="6" cy="12" r="3"></circle>
+                <circle cx="18" cy="19" r="3"></circle>
+                <path d="m8.59 13.51 6.83 3.98"></path>
+                <path d="m15.41 6.51-6.82 3.98"></path>
+            </svg>
+            <span>Compartilhar link</span>
+        </button>
+        <div class="report-share-status" role="status" aria-live="polite"></div>
+    <?php endif; ?>
     <script>
-        window.addEventListener('load', () => {
-            if (window.matchMedia('print').matches) {
+        (() => {
+            const button = document.querySelector('.report-share-button');
+            const status = document.querySelector('.report-share-status');
+            if (!button) {
                 return;
             }
-        });
+
+            const showStatus = (message) => {
+                if (!status) {
+                    return;
+                }
+                status.textContent = message;
+                status.classList.add('is-visible');
+                window.clearTimeout(status._timer);
+                status._timer = window.setTimeout(() => status.classList.remove('is-visible'), 2600);
+            };
+
+            const copyLink = async (url) => {
+                if (navigator.clipboard && window.isSecureContext) {
+                    await navigator.clipboard.writeText(url);
+                    return true;
+                }
+
+                const input = document.createElement('input');
+                input.value = url;
+                input.setAttribute('readonly', 'readonly');
+                input.style.position = 'fixed';
+                input.style.left = '-9999px';
+                document.body.appendChild(input);
+                input.select();
+                const copied = document.execCommand('copy');
+                input.remove();
+                return copied;
+            };
+
+            button.addEventListener('click', async () => {
+                const url = window.location.href;
+                const title = document.title || 'Relatório';
+                try {
+                    if (navigator.share) {
+                        await navigator.share({
+                            title,
+                            text: 'Confira este relatório.',
+                            url,
+                        });
+                        return;
+                    }
+
+                    const copied = await copyLink(url);
+                    showStatus(copied ? 'Link do relatório copiado.' : 'Não foi possível copiar o link.');
+                } catch (error) {
+                    if (error && error.name === 'AbortError') {
+                        return;
+                    }
+                    showStatus('Não foi possível compartilhar. Copie o link da página.');
+                }
+            });
+        })();
     </script>
 </body>
 </html>
