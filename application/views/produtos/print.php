@@ -151,6 +151,12 @@ if (!empty($filters['tipo'])) {
             background: #fff;
             color: #475569;
         }
+        .visual-catalog-live-status {
+            margin: -8px 0 16px;
+            color: #64748b;
+            font-size: 0.84rem;
+            font-weight: 750;
+        }
         @media (max-width: 720px) {
             .visual-catalog-filters {
                 grid-template-columns: 1fr;
@@ -164,6 +170,9 @@ if (!empty($filters['tipo'])) {
             .visual-catalog-filters {
                 display: none !important;
             }
+            .visual-catalog-live-status {
+                display: none !important;
+            }
         }
     </style>
     <?php
@@ -173,7 +182,7 @@ if (!empty($filters['tipo'])) {
         }
         $clearVisualUrl = (parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH) ?: '') . '?' . http_build_query($clearVisualQuery);
     ?>
-    <form class="visual-catalog-filters" method="get">
+    <form class="visual-catalog-filters" method="get" data-visual-live-filter>
         <input type="hidden" name="modo" value="visual">
         <?php if ($sharedVisual): ?>
             <input type="hidden" name="compartilhar" value="1">
@@ -185,7 +194,7 @@ if (!empty($filters['tipo'])) {
                     <circle cx="11" cy="11" r="7"></circle>
                     <path d="m20 20-3.8-3.8"></path>
                 </svg>
-                <input id="visual-product-search" type="search" name="q" value="<?= htmlspecialchars((string)($filters['term'] ?? ''), ENT_QUOTES, 'UTF-8'); ?>" placeholder="Digite o nome do produto">
+                <input id="visual-product-search" type="search" name="q" value="<?= htmlspecialchars((string)($filters['term'] ?? ''), ENT_QUOTES, 'UTF-8'); ?>" placeholder="Digite o nome do produto" autocomplete="off">
             </div>
         </div>
         <div class="visual-catalog-filters__field">
@@ -200,12 +209,12 @@ if (!empty($filters['tipo'])) {
             </select>
         </div>
         <div class="visual-catalog-filters__actions">
-            <button class="visual-catalog-filters__submit" type="submit">Filtrar</button>
             <?php if (!empty($filters['term']) || !empty($filters['categoria'])): ?>
                 <a class="visual-catalog-filters__clear" href="<?= htmlspecialchars($clearVisualUrl, ENT_QUOTES, 'UTF-8'); ?>">Limpar</a>
             <?php endif; ?>
         </div>
     </form>
+    <div class="visual-catalog-live-status" data-visual-live-status aria-live="polite"></div>
 <?php endif; ?>
 
 <?php if (!empty($produtos)): ?>
@@ -213,6 +222,7 @@ if (!empty($filters['tipo'])) {
         <style>
             .visual-catalog { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
             .visual-product { overflow: hidden; border: 1px solid rgba(15, 23, 42, 0.10); border-radius: 18px; background: #fff; box-shadow: 0 18px 44px -34px rgba(15, 23, 42, 0.45); break-inside: avoid; }
+            .visual-product.is-hidden { display: none; }
             .visual-product__photo { position: relative; display: grid; place-items: center; aspect-ratio: 4 / 3; overflow: hidden; background: color-mix(in srgb, var(--brand) 8%, #fff); border-bottom: 1px solid rgba(15, 23, 42, 0.08); }
             .visual-product__photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
             .visual-product__zoom {
@@ -495,7 +505,7 @@ if (!empty($filters['tipo'])) {
                     );
                     $productName = (string)($produto['nome'] ?? 'Produto');
                 ?>
-                <article class="visual-product">
+                <article class="visual-product" data-product-name="<?= htmlspecialchars($productName, ENT_QUOTES, 'UTF-8'); ?>" data-product-category="<?= htmlspecialchars((string)($produto['categoria'] ?? ''), ENT_QUOTES, 'UTF-8'); ?>">
                     <div class="visual-product__photo"<?= $productImages ? ' data-visual-gallery="' . $productImagesJson . '" data-gallery-index="0"' : ''; ?>>
                         <?php if ($firstProductImage): ?>
                             <img src="<?= htmlspecialchars($firstProductImage['url'], ENT_QUOTES, 'UTF-8'); ?>" alt="<?= htmlspecialchars($productName . ' - ' . $firstProductImage['label'], ENT_QUOTES, 'UTF-8'); ?>">
@@ -583,6 +593,70 @@ if (!empty($filters['tipo'])) {
         <div class="visual-share-button__status" role="status" aria-live="polite"></div>
         <script>
             (() => {
+                const liveForm = document.querySelector('[data-visual-live-filter]');
+                const liveSearch = liveForm?.querySelector('input[name="q"]');
+                const liveCategory = liveForm?.querySelector('select[name="categoria"]');
+                const liveStatus = document.querySelector('[data-visual-live-status]');
+                const productCards = Array.from(document.querySelectorAll('.visual-product'));
+
+                const normalizeFilterText = (value) => String(value || '')
+                    .normalize('NFD')
+                    .replace(/[\u0300-\u036f]/g, '')
+                    .toUpperCase()
+                    .trim();
+
+                const updateLiveUrl = () => {
+                    const url = new URL(window.location.href);
+                    const query = liveSearch?.value.trim() || '';
+                    const category = liveCategory?.value || '';
+                    url.searchParams.set('modo', 'visual');
+                    if (query !== '') {
+                        url.searchParams.set('q', query);
+                    } else {
+                        url.searchParams.delete('q');
+                    }
+                    if (category !== '') {
+                        url.searchParams.set('categoria', category);
+                    } else {
+                        url.searchParams.delete('categoria');
+                    }
+                    window.history.replaceState({}, '', url.toString());
+                };
+
+                const applyLiveFilters = () => {
+                    if (!liveForm) return;
+                    const query = normalizeFilterText(liveSearch?.value || '');
+                    const category = normalizeFilterText(liveCategory?.value || '');
+                    let visibleCount = 0;
+
+                    productCards.forEach((card) => {
+                        const name = normalizeFilterText(card.dataset.productName || '');
+                        const cardCategory = normalizeFilterText(card.dataset.productCategory || '');
+                        const matchesName = query === '' || name.includes(query);
+                        const matchesCategory = category === '' || cardCategory === category;
+                        const isVisible = matchesName && matchesCategory;
+                        card.classList.toggle('is-hidden', !isVisible);
+                        if (isVisible) visibleCount += 1;
+                    });
+
+                    if (liveStatus) {
+                        liveStatus.textContent = visibleCount === 1
+                            ? '1 produto encontrado'
+                            : `${visibleCount} produtos encontrados`;
+                    }
+                    updateLiveUrl();
+                };
+
+                if (liveForm) {
+                    liveForm.addEventListener('submit', (event) => {
+                        event.preventDefault();
+                        applyLiveFilters();
+                    });
+                    liveSearch?.addEventListener('input', applyLiveFilters);
+                    liveCategory?.addEventListener('change', applyLiveFilters);
+                    applyLiveFilters();
+                }
+
                 const lightbox = document.getElementById('visual-image-lightbox');
                 const lightboxImage = lightbox?.querySelector('img');
                 const lightboxCaption = lightbox?.querySelector('.visual-image-lightbox__caption');
