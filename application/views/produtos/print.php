@@ -60,6 +60,154 @@ if (!empty($filters['tipo'])) {
     <button class="print-button" type="button" onclick="window.print()">Imprimir</button>
 </header>
 
+<?php if ($visual): ?>
+    <style>
+        .visual-catalog-filters {
+            display: grid;
+            grid-template-columns: minmax(240px, 1fr) minmax(190px, 280px) auto;
+            align-items: end;
+            gap: 12px;
+            margin: 0 0 20px;
+            padding: 16px;
+            border: 1px solid rgba(15, 23, 42, 0.10);
+            border-radius: 14px;
+            background: rgba(248, 250, 252, 0.82);
+        }
+        .visual-catalog-filters__field {
+            display: grid;
+            gap: 6px;
+            min-width: 0;
+        }
+        .visual-catalog-filters__field label {
+            color: #475569;
+            font-size: 0.78rem;
+            font-weight: 850;
+        }
+        .visual-catalog-filters__control {
+            position: relative;
+            min-width: 0;
+        }
+        .visual-catalog-filters__control svg {
+            position: absolute;
+            top: 50%;
+            left: 13px;
+            width: 18px;
+            height: 18px;
+            transform: translateY(-50%);
+            stroke: #64748b;
+            pointer-events: none;
+        }
+        .visual-catalog-filters input,
+        .visual-catalog-filters select {
+            width: 100%;
+            height: 44px;
+            border: 1px solid #d9dde4;
+            border-radius: 10px;
+            background: #fff;
+            color: #0f172a;
+            font: inherit;
+            font-size: 0.9rem;
+            outline: none;
+        }
+        .visual-catalog-filters input {
+            padding: 0 13px 0 41px;
+        }
+        .visual-catalog-filters select {
+            padding: 0 38px 0 13px;
+            cursor: pointer;
+        }
+        .visual-catalog-filters input:focus,
+        .visual-catalog-filters select:focus {
+            border-color: var(--brand);
+            box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand) 14%, transparent);
+        }
+        .visual-catalog-filters__actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .visual-catalog-filters__submit,
+        .visual-catalog-filters__clear {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            height: 44px;
+            border-radius: 10px;
+            padding: 0 16px;
+            font: inherit;
+            font-size: 0.86rem;
+            font-weight: 850;
+            text-decoration: none;
+            white-space: nowrap;
+            cursor: pointer;
+        }
+        .visual-catalog-filters__submit {
+            border: 1px solid var(--brand);
+            background: var(--brand);
+            color: #fff;
+        }
+        .visual-catalog-filters__clear {
+            border: 1px solid #d9dde4;
+            background: #fff;
+            color: #475569;
+        }
+        @media (max-width: 720px) {
+            .visual-catalog-filters {
+                grid-template-columns: 1fr;
+                padding: 12px;
+            }
+            .visual-catalog-filters__actions > * {
+                flex: 1 1 0;
+            }
+        }
+        @media print {
+            .visual-catalog-filters {
+                display: none !important;
+            }
+        }
+    </style>
+    <?php
+        $clearVisualQuery = ['modo' => 'visual'];
+        if ($sharedVisual) {
+            $clearVisualQuery['compartilhar'] = '1';
+        }
+        $clearVisualUrl = (parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH) ?: '') . '?' . http_build_query($clearVisualQuery);
+    ?>
+    <form class="visual-catalog-filters" method="get">
+        <input type="hidden" name="modo" value="visual">
+        <?php if ($sharedVisual): ?>
+            <input type="hidden" name="compartilhar" value="1">
+        <?php endif; ?>
+        <div class="visual-catalog-filters__field">
+            <label for="visual-product-search">Buscar produto por nome</label>
+            <div class="visual-catalog-filters__control">
+                <svg viewBox="0 0 24 24" fill="none" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <circle cx="11" cy="11" r="7"></circle>
+                    <path d="m20 20-3.8-3.8"></path>
+                </svg>
+                <input id="visual-product-search" type="search" name="q" value="<?= htmlspecialchars((string)($filters['term'] ?? ''), ENT_QUOTES, 'UTF-8'); ?>" placeholder="Digite o nome do produto">
+            </div>
+        </div>
+        <div class="visual-catalog-filters__field">
+            <label for="visual-product-category">Categoria</label>
+            <select id="visual-product-category" name="categoria">
+                <option value="">Todas as categorias</option>
+                <?php foreach (($categorias ?? []) as $categoria): ?>
+                    <option value="<?= htmlspecialchars($categoria, ENT_QUOTES, 'UTF-8'); ?>" <?= (($filters['categoria'] ?? '') === $categoria) ? 'selected' : ''; ?>>
+                        <?= htmlspecialchars($categoria, ENT_QUOTES, 'UTF-8'); ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
+        </div>
+        <div class="visual-catalog-filters__actions">
+            <button class="visual-catalog-filters__submit" type="submit">Filtrar</button>
+            <?php if (!empty($filters['term']) || !empty($filters['categoria'])): ?>
+                <a class="visual-catalog-filters__clear" href="<?= htmlspecialchars($clearVisualUrl, ENT_QUOTES, 'UTF-8'); ?>">Limpar</a>
+            <?php endif; ?>
+        </div>
+    </form>
+<?php endif; ?>
+
 <?php if (!empty($produtos)): ?>
     <?php if ($visual): ?>
         <style>
@@ -97,6 +245,46 @@ if (!empty($filters['tipo'])) {
                 box-shadow: 0 14px 28px -22px rgba(15, 23, 42, 0.58);
             }
             .visual-product__zoom svg { width: 25px; height: 25px; stroke: currentColor; }
+            .visual-product__photo-toggle {
+                position: absolute;
+                top: 50%;
+                right: -18px;
+                z-index: 2;
+                display: inline-grid;
+                place-items: center start;
+                width: 48px;
+                height: 48px;
+                min-width: 48px;
+                min-height: 48px;
+                transform: translateY(-50%);
+                border: 1px solid rgba(255, 255, 255, 0.52);
+                border-radius: 50%;
+                padding: 0 0 0 12px;
+                background: color-mix(in srgb, var(--brand) 48%, transparent);
+                backdrop-filter: blur(3px);
+                color: #fff;
+                cursor: pointer;
+                box-shadow: 0 14px 28px -22px rgba(15, 23, 42, 0.58);
+            }
+            .visual-product__photo-toggle:hover,
+            .visual-product__photo-toggle:focus-visible {
+                transform: translateY(-50%);
+                background: color-mix(in srgb, var(--brand) 48%, transparent);
+            }
+            .visual-product__photo-toggle svg { width: 14px; height: 14px; stroke: currentColor; }
+            .visual-product__photo-caption {
+                position: absolute;
+                left: 10px;
+                bottom: 10px;
+                z-index: 2;
+                max-width: calc(100% - 20px);
+                border-radius: 999px;
+                padding: 5px 9px;
+                background: rgba(15, 23, 42, 0.68);
+                color: #fff;
+                font-size: 0.68rem;
+                font-weight: 850;
+            }
             .visual-image-lightbox {
                 position: fixed;
                 inset: 0;
@@ -149,6 +337,30 @@ if (!empty($filters['tipo'])) {
                 box-shadow: 0 16px 30px -20px rgba(15, 23, 42, 0.82);
             }
             .visual-image-lightbox__close svg { width: 18px; height: 18px; stroke: currentColor; }
+            .visual-image-lightbox__nav {
+                position: absolute;
+                top: 50%;
+                z-index: 3;
+                display: inline-grid;
+                place-items: center;
+                width: 62px;
+                height: 62px;
+                transform: translateY(-50%);
+                border: 1px solid rgba(255, 255, 255, 0.62);
+                border-radius: 50%;
+                padding: 0;
+                background: color-mix(in srgb, var(--brand) 58%, transparent);
+                backdrop-filter: blur(6px);
+                color: #fff;
+                cursor: pointer;
+                box-shadow: 0 18px 36px -24px rgba(15, 23, 42, 0.72);
+            }
+            .visual-image-lightbox__nav--prev { left: 16px; }
+            .visual-image-lightbox__nav--next { right: 16px; }
+            .visual-image-lightbox__nav:hover,
+            .visual-image-lightbox__nav:focus-visible { transform: translateY(-50%); }
+            .visual-image-lightbox__nav[hidden] { display: none; }
+            .visual-image-lightbox__nav svg { width: 19px; height: 19px; stroke: currentColor; }
             body.visual-image-lightbox-open { overflow: hidden; }
             .visual-product__empty { width: 100%; height: 100%; display: grid; place-items: center; background: color-mix(in srgb, var(--brand) 8%, #fff); color: var(--brand); }
             .visual-product__empty-mark { width: 62px; height: 62px; border-radius: 18px; display: grid; place-items: center; background: rgba(255, 255, 255, 0.82); }
@@ -227,17 +439,32 @@ if (!empty($filters['tipo'])) {
             @media (hover: none) {
                 .visual-product__zoom {
                     opacity: 1;
+                    inset: auto 10px 10px auto;
+                    width: 36px;
+                    height: 36px;
+                    border-radius: 50%;
                     background: transparent;
                 }
                 .visual-product__zoom-mark {
-                    width: 42px;
-                    height: 42px;
+                    width: 36px;
+                    height: 36px;
                 }
+                .visual-product__zoom svg { width: 19px; height: 19px; }
+            }
+            @media (max-width: 640px) {
+                .visual-image-lightbox__nav {
+                    width: 52px;
+                    height: 52px;
+                }
+                .visual-image-lightbox__nav--prev { left: 10px; }
+                .visual-image-lightbox__nav--next { right: 10px; }
             }
             @media print {
                 .visual-share-button,
                 .visual-share-button__status,
                 .visual-product__zoom,
+                .visual-product__photo-toggle,
+                .visual-product__photo-caption,
                 .visual-image-lightbox {
                     display: none !important;
                 }
@@ -251,17 +478,28 @@ if (!empty($filters['tipo'])) {
         <section class="visual-catalog">
             <?php foreach ($produtos as $produto): ?>
                 <?php
-                    $imagePath = trim((string)($produto['imagem_path'] ?? ''));
-                    if ($imagePath === '') {
-                        $imagePath = trim((string)($produto['imagem_pronto_path'] ?? ''));
+                    $productImages = [];
+                    $primaryImagePath = trim((string)($produto['imagem_path'] ?? ''));
+                    $secondaryImagePath = trim((string)($produto['imagem_pronto_path'] ?? ''));
+                    if ($primaryImagePath !== '') {
+                        $productImages[] = ['url' => $asset($primaryImagePath), 'label' => 'Principal'];
                     }
-                    $imageUrl = $imagePath !== '' ? $asset($imagePath) : '';
+                    if ($secondaryImagePath !== '' && $secondaryImagePath !== $primaryImagePath) {
+                        $productImages[] = ['url' => $asset($secondaryImagePath), 'label' => 'Secundária'];
+                    }
+                    $firstProductImage = $productImages[0] ?? null;
+                    $productImagesJson = htmlspecialchars(
+                        json_encode($productImages, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
+                        ENT_QUOTES,
+                        'UTF-8'
+                    );
+                    $productName = (string)($produto['nome'] ?? 'Produto');
                 ?>
                 <article class="visual-product">
-                    <div class="visual-product__photo">
-                        <?php if ($imageUrl !== ''): ?>
-                            <img src="<?= htmlspecialchars($imageUrl, ENT_QUOTES, 'UTF-8'); ?>" alt="<?= htmlspecialchars($produto['nome'] ?? 'Produto', ENT_QUOTES, 'UTF-8'); ?>">
-                            <button type="button" class="visual-product__zoom" aria-label="Ampliar imagem de <?= htmlspecialchars($produto['nome'] ?? 'Produto', ENT_QUOTES, 'UTF-8'); ?>">
+                    <div class="visual-product__photo"<?= $productImages ? ' data-visual-gallery="' . $productImagesJson . '" data-gallery-index="0"' : ''; ?>>
+                        <?php if ($firstProductImage): ?>
+                            <img src="<?= htmlspecialchars($firstProductImage['url'], ENT_QUOTES, 'UTF-8'); ?>" alt="<?= htmlspecialchars($productName . ' - ' . $firstProductImage['label'], ENT_QUOTES, 'UTF-8'); ?>">
+                            <button type="button" class="visual-product__zoom" data-visual-gallery-zoom aria-label="Ampliar imagem de <?= htmlspecialchars($productName, ENT_QUOTES, 'UTF-8'); ?>">
                                 <span class="visual-product__zoom-mark" aria-hidden="true">
                                     <svg viewBox="0 0 24 24" fill="none" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round">
                                         <circle cx="10.5" cy="10.5" r="6.5"></circle>
@@ -271,6 +509,14 @@ if (!empty($filters['tipo'])) {
                                     </svg>
                                 </span>
                             </button>
+                            <span class="visual-product__photo-caption"><?= htmlspecialchars($firstProductImage['label'], ENT_QUOTES, 'UTF-8'); ?></span>
+                            <?php if (count($productImages) > 1): ?>
+                                <button type="button" class="visual-product__photo-toggle" data-visual-gallery-next aria-label="Ver outra foto de <?= htmlspecialchars($productName, ENT_QUOTES, 'UTF-8'); ?>">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke-width="2.35" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                        <path d="m9 18 6-6-6-6"></path>
+                                    </svg>
+                                </button>
+                            <?php endif; ?>
                         <?php else: ?>
                             <span class="visual-product__empty" aria-label="Produto sem imagem cadastrada">
                                 <span class="visual-product__empty-mark" aria-hidden="true">
@@ -310,7 +556,17 @@ if (!empty($filters['tipo'])) {
                         <path d="m6 6 12 12"></path>
                     </svg>
                 </button>
+                <button type="button" class="visual-image-lightbox__nav visual-image-lightbox__nav--prev" data-visual-lightbox-prev aria-label="Ver imagem anterior">
+                    <svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="m15 18-6-6 6-6"></path>
+                    </svg>
+                </button>
                 <img src="" alt="">
+                <button type="button" class="visual-image-lightbox__nav visual-image-lightbox__nav--next" data-visual-lightbox-next aria-label="Ver próxima imagem">
+                    <svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="m9 18 6-6-6-6"></path>
+                    </svg>
+                </button>
                 <span class="visual-image-lightbox__caption"></span>
             </div>
         </div>
@@ -331,27 +587,79 @@ if (!empty($filters['tipo'])) {
                 const lightboxImage = lightbox?.querySelector('img');
                 const lightboxCaption = lightbox?.querySelector('.visual-image-lightbox__caption');
                 const closeButton = lightbox?.querySelector('[data-visual-lightbox-close]');
+                const previousButton = lightbox?.querySelector('[data-visual-lightbox-prev]');
+                const nextButton = lightbox?.querySelector('[data-visual-lightbox-next]');
+                let lightboxGallery = [];
+                let lightboxIndex = 0;
                 let lastTrigger = null;
 
                 if (!lightbox || !lightboxImage) return;
+
+                const readGallery = (media) => {
+                    try {
+                        const images = JSON.parse(media?.dataset.visualGallery || '[]');
+                        return Array.isArray(images) ? images.filter((image) => image?.url) : [];
+                    } catch (error) {
+                        return [];
+                    }
+                };
+
+                const updateLightbox = () => {
+                    const image = lightboxGallery[lightboxIndex] || {};
+                    lightboxImage.src = image.url || '';
+                    lightboxImage.alt = image.label || 'Imagem ampliada do produto';
+                    if (lightboxCaption) {
+                        lightboxCaption.textContent = image.label || 'Imagem do produto';
+                    }
+                    const hasNavigation = lightboxGallery.length > 1;
+                    previousButton?.toggleAttribute('hidden', !hasNavigation);
+                    nextButton?.toggleAttribute('hidden', !hasNavigation);
+                };
+
+                const moveLightbox = (direction) => {
+                    if (lightboxGallery.length < 2) return;
+                    lightboxIndex = (lightboxIndex + direction + lightboxGallery.length) % lightboxGallery.length;
+                    updateLightbox();
+                };
 
                 const closeLightbox = () => {
                     lightbox.classList.remove('is-open');
                     lightbox.setAttribute('aria-hidden', 'true');
                     document.body.classList.remove('visual-image-lightbox-open');
+                    lightboxImage.src = '';
+                    lightboxGallery = [];
+                    lightboxIndex = 0;
                     lastTrigger?.focus();
                 };
 
-                document.querySelectorAll('.visual-product__zoom').forEach((button) => {
+                document.querySelectorAll('[data-visual-gallery-next]').forEach((button) => {
                     button.addEventListener('click', () => {
-                        const image = button.closest('.visual-product__photo')?.querySelector('img');
-                        if (!image) return;
-                        lastTrigger = button;
-                        lightboxImage.src = image.currentSrc || image.src;
-                        lightboxImage.alt = image.alt || 'Imagem ampliada do produto';
-                        if (lightboxCaption) {
-                            lightboxCaption.textContent = image.alt || 'Produto';
+                        const media = button.closest('.visual-product__photo');
+                        const images = readGallery(media);
+                        if (!media || images.length < 2) return;
+                        const nextIndex = (Number(media.dataset.galleryIndex || 0) + 1) % images.length;
+                        const image = media.querySelector('img');
+                        const caption = media.querySelector('.visual-product__photo-caption');
+                        media.dataset.galleryIndex = String(nextIndex);
+                        if (image) {
+                            image.src = images[nextIndex].url;
+                            image.alt = images[nextIndex].label || 'Produto';
                         }
+                        if (caption) {
+                            caption.textContent = images[nextIndex].label || 'Imagem';
+                        }
+                    });
+                });
+
+                document.querySelectorAll('[data-visual-gallery-zoom]').forEach((button) => {
+                    button.addEventListener('click', () => {
+                        const media = button.closest('.visual-product__photo');
+                        const images = readGallery(media);
+                        if (!media || !images.length) return;
+                        lastTrigger = button;
+                        lightboxGallery = images;
+                        lightboxIndex = Math.min(Math.max(Number(media.dataset.galleryIndex || 0), 0), images.length - 1);
+                        updateLightbox();
                         lightbox.classList.add('is-open');
                         lightbox.setAttribute('aria-hidden', 'false');
                         document.body.classList.add('visual-image-lightbox-open');
@@ -360,12 +668,20 @@ if (!empty($filters['tipo'])) {
                 });
 
                 closeButton?.addEventListener('click', closeLightbox);
+                previousButton?.addEventListener('click', () => moveLightbox(-1));
+                nextButton?.addEventListener('click', () => moveLightbox(1));
                 lightbox.addEventListener('click', (event) => {
                     if (event.target === lightbox) closeLightbox();
                 });
                 document.addEventListener('keydown', (event) => {
                     if (event.key === 'Escape' && lightbox.classList.contains('is-open')) {
                         closeLightbox();
+                    }
+                    if (event.key === 'ArrowLeft' && lightbox.classList.contains('is-open')) {
+                        moveLightbox(-1);
+                    }
+                    if (event.key === 'ArrowRight' && lightbox.classList.contains('is-open')) {
+                        moveLightbox(1);
                     }
                 });
             })();

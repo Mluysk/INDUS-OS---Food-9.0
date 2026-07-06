@@ -313,6 +313,7 @@ class ProdutosController extends Controller
             'include_inactive' => false,
         ];
         $produtos = $this->produtos->all($filters);
+        $categorias = $visual ? $this->produtos->categorias() : [];
         $usuarioId = (int)($this->auth->user()['id'] ?? 0);
         if ($usuarioId > 0) {
             $this->audit->log($usuarioId, 'documento', 'produtos', null, [
@@ -326,6 +327,7 @@ class ProdutosController extends Controller
 
         $this->render('produtos/print', [
             'produtos' => $produtos,
+            'categorias' => $categorias,
             'filters' => $filters,
             'simplified' => $simplified,
             'visual' => $visual,
