@@ -65,8 +65,91 @@ if (!empty($filters['tipo'])) {
         <style>
             .visual-catalog { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
             .visual-product { overflow: hidden; border: 1px solid rgba(15, 23, 42, 0.10); border-radius: 18px; background: #fff; box-shadow: 0 18px 44px -34px rgba(15, 23, 42, 0.45); break-inside: avoid; }
-            .visual-product__photo { display: grid; place-items: center; aspect-ratio: 4 / 3; background: color-mix(in srgb, var(--brand) 8%, #fff); border-bottom: 1px solid rgba(15, 23, 42, 0.08); }
+            .visual-product__photo { position: relative; display: grid; place-items: center; aspect-ratio: 4 / 3; overflow: hidden; background: color-mix(in srgb, var(--brand) 8%, #fff); border-bottom: 1px solid rgba(15, 23, 42, 0.08); }
             .visual-product__photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+            .visual-product__zoom {
+                position: absolute;
+                inset: 0;
+                display: grid;
+                place-items: center;
+                border: 0;
+                padding: 0;
+                background: rgba(15, 23, 42, 0.02);
+                color: #fff;
+                cursor: zoom-in;
+                opacity: 0;
+                transition: opacity 0.18s ease, background 0.18s ease;
+            }
+            .visual-product__photo:hover .visual-product__zoom,
+            .visual-product__zoom:focus-visible {
+                opacity: 1;
+                background: rgba(15, 23, 42, 0.07);
+            }
+            .visual-product__zoom-mark {
+                display: inline-grid;
+                place-items: center;
+                width: 48px;
+                height: 48px;
+                border: 1px solid rgba(255, 255, 255, 0.52);
+                border-radius: 50%;
+                background: color-mix(in srgb, var(--brand) 48%, transparent);
+                backdrop-filter: blur(3px);
+                box-shadow: 0 14px 28px -22px rgba(15, 23, 42, 0.58);
+            }
+            .visual-product__zoom svg { width: 25px; height: 25px; stroke: currentColor; }
+            .visual-image-lightbox {
+                position: fixed;
+                inset: 0;
+                z-index: 100;
+                display: none;
+                align-items: center;
+                justify-content: center;
+                padding: clamp(18px, 4vw, 46px);
+                background: rgba(15, 23, 42, 0.78);
+                backdrop-filter: blur(8px);
+            }
+            .visual-image-lightbox.is-open { display: flex; }
+            .visual-image-lightbox__dialog {
+                position: relative;
+                display: grid;
+                gap: 12px;
+                width: min(980px, 100%);
+            }
+            .visual-image-lightbox img {
+                width: 100%;
+                max-height: min(76vh, 760px);
+                object-fit: contain;
+                border-radius: 18px;
+                background: #fff;
+                box-shadow: 0 28px 70px -24px rgba(0, 0, 0, 0.78);
+            }
+            .visual-image-lightbox__caption {
+                justify-self: center;
+                padding: 7px 13px;
+                border-radius: 999px;
+                background: rgba(255, 255, 255, 0.92);
+                color: #0f172a;
+                font-weight: 850;
+            }
+            .visual-image-lightbox__close {
+                position: absolute;
+                top: 14px;
+                right: 14px;
+                z-index: 2;
+                display: inline-grid;
+                place-items: center;
+                width: 38px;
+                height: 38px;
+                border: 1px solid rgba(255, 255, 255, 0.72);
+                border-radius: 50%;
+                padding: 0;
+                background: var(--brand);
+                color: #fff;
+                cursor: pointer;
+                box-shadow: 0 16px 30px -20px rgba(15, 23, 42, 0.82);
+            }
+            .visual-image-lightbox__close svg { width: 18px; height: 18px; stroke: currentColor; }
+            body.visual-image-lightbox-open { overflow: hidden; }
             .visual-product__empty { width: 100%; height: 100%; display: grid; place-items: center; background: color-mix(in srgb, var(--brand) 8%, #fff); color: var(--brand); }
             .visual-product__empty-mark { width: 62px; height: 62px; border-radius: 18px; display: grid; place-items: center; background: rgba(255, 255, 255, 0.82); }
             .visual-product__empty-mark svg { width: 30px; height: 30px; stroke: currentColor; }
@@ -141,9 +224,21 @@ if (!empty($filters['tipo'])) {
                     bottom: 76px;
                 }
             }
+            @media (hover: none) {
+                .visual-product__zoom {
+                    opacity: 1;
+                    background: transparent;
+                }
+                .visual-product__zoom-mark {
+                    width: 42px;
+                    height: 42px;
+                }
+            }
             @media print {
                 .visual-share-button,
-                .visual-share-button__status {
+                .visual-share-button__status,
+                .visual-product__zoom,
+                .visual-image-lightbox {
                     display: none !important;
                 }
                 .visual-catalog { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
@@ -166,6 +261,16 @@ if (!empty($filters['tipo'])) {
                     <div class="visual-product__photo">
                         <?php if ($imageUrl !== ''): ?>
                             <img src="<?= htmlspecialchars($imageUrl, ENT_QUOTES, 'UTF-8'); ?>" alt="<?= htmlspecialchars($produto['nome'] ?? 'Produto', ENT_QUOTES, 'UTF-8'); ?>">
+                            <button type="button" class="visual-product__zoom" aria-label="Ampliar imagem de <?= htmlspecialchars($produto['nome'] ?? 'Produto', ENT_QUOTES, 'UTF-8'); ?>">
+                                <span class="visual-product__zoom-mark" aria-hidden="true">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round">
+                                        <circle cx="10.5" cy="10.5" r="6.5"></circle>
+                                        <path d="m16 16 4.5 4.5"></path>
+                                        <path d="M10.5 7.6v5.8"></path>
+                                        <path d="M7.6 10.5h5.8"></path>
+                                    </svg>
+                                </span>
+                            </button>
                         <?php else: ?>
                             <span class="visual-product__empty" aria-label="Produto sem imagem cadastrada">
                                 <span class="visual-product__empty-mark" aria-hidden="true">
@@ -197,6 +302,18 @@ if (!empty($filters['tipo'])) {
                 </article>
             <?php endforeach; ?>
         </section>
+        <div class="visual-image-lightbox" id="visual-image-lightbox" role="dialog" aria-modal="true" aria-hidden="true" aria-label="Imagem ampliada do produto">
+            <div class="visual-image-lightbox__dialog">
+                <button type="button" class="visual-image-lightbox__close" data-visual-lightbox-close aria-label="Fechar imagem ampliada">
+                    <svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round" aria-hidden="true">
+                        <path d="M18 6 6 18"></path>
+                        <path d="m6 6 12 12"></path>
+                    </svg>
+                </button>
+                <img src="" alt="">
+                <span class="visual-image-lightbox__caption"></span>
+            </div>
+        </div>
         <button type="button" class="visual-share-button" data-share-url="<?= htmlspecialchars($shareUrl, ENT_QUOTES, 'UTF-8'); ?>" aria-label="Compartilhar catálogo visual">
             <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <circle cx="18" cy="5" r="3"></circle>
@@ -208,6 +325,51 @@ if (!empty($filters['tipo'])) {
             <span>Compartilhar link</span>
         </button>
         <div class="visual-share-button__status" role="status" aria-live="polite"></div>
+        <script>
+            (() => {
+                const lightbox = document.getElementById('visual-image-lightbox');
+                const lightboxImage = lightbox?.querySelector('img');
+                const lightboxCaption = lightbox?.querySelector('.visual-image-lightbox__caption');
+                const closeButton = lightbox?.querySelector('[data-visual-lightbox-close]');
+                let lastTrigger = null;
+
+                if (!lightbox || !lightboxImage) return;
+
+                const closeLightbox = () => {
+                    lightbox.classList.remove('is-open');
+                    lightbox.setAttribute('aria-hidden', 'true');
+                    document.body.classList.remove('visual-image-lightbox-open');
+                    lastTrigger?.focus();
+                };
+
+                document.querySelectorAll('.visual-product__zoom').forEach((button) => {
+                    button.addEventListener('click', () => {
+                        const image = button.closest('.visual-product__photo')?.querySelector('img');
+                        if (!image) return;
+                        lastTrigger = button;
+                        lightboxImage.src = image.currentSrc || image.src;
+                        lightboxImage.alt = image.alt || 'Imagem ampliada do produto';
+                        if (lightboxCaption) {
+                            lightboxCaption.textContent = image.alt || 'Produto';
+                        }
+                        lightbox.classList.add('is-open');
+                        lightbox.setAttribute('aria-hidden', 'false');
+                        document.body.classList.add('visual-image-lightbox-open');
+                        closeButton?.focus();
+                    });
+                });
+
+                closeButton?.addEventListener('click', closeLightbox);
+                lightbox.addEventListener('click', (event) => {
+                    if (event.target === lightbox) closeLightbox();
+                });
+                document.addEventListener('keydown', (event) => {
+                    if (event.key === 'Escape' && lightbox.classList.contains('is-open')) {
+                        closeLightbox();
+                    }
+                });
+            })();
+        </script>
         <script>
             (() => {
                 const button = document.querySelector('.visual-share-button');
