@@ -246,8 +246,10 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
     .product-image-gallery-upload {
         grid-column: 1 / -1;
         display: grid;
-        grid-template-columns: repeat(2, minmax(280px, 1fr));
+        grid-template-columns: repeat(2, 349px);
+        justify-content: center;
         gap: 14px;
+        margin-top: 19px;
     }
     .product-image-gallery-upload.is-hidden {
         display: none;
@@ -255,10 +257,15 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
     .product-image-gallery-upload .product-image-upload {
         grid-column: auto;
         align-content: start;
+        width: 349px;
     }
     @media (max-width: 900px) {
         .product-image-gallery-upload {
             grid-template-columns: 1fr;
+        }
+        .product-image-gallery-upload .product-image-upload {
+            width: min(100%, 349px);
+            justify-self: center;
         }
     }
     @media (max-width: 560px) {
