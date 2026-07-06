@@ -268,7 +268,7 @@
                             data-sort-cidade="<?= htmlspecialchars($clienteCidadeBusca, ENT_QUOTES, 'UTF-8'); ?>"
                         >
                             <td><?= (int)$cliente['id']; ?></td>
-                            <td><?= htmlspecialchars($cliente['razao_social'] ?? $cliente['nome_fantasia'] ?? '', ENT_QUOTES, 'UTF-8'); ?></td>
+                            <td class="cliente-name"><?= htmlspecialchars($cliente['razao_social'] ?? $cliente['nome_fantasia'] ?? '', ENT_QUOTES, 'UTF-8'); ?></td>
                             <td><?= htmlspecialchars($cliente['cnpj'] ?? '-', ENT_QUOTES, 'UTF-8'); ?></td>
                             <td><?= htmlspecialchars($cliente['cpf'] ?? '-', ENT_QUOTES, 'UTF-8'); ?></td>
                             <td><?= htmlspecialchars($cliente['telefone'] ?? '-', ENT_QUOTES, 'UTF-8'); ?></td>
@@ -959,6 +959,7 @@
     }
 
     .clientes-filter-field--uf select,
+    .cliente-name,
     .cliente-city,
     .cliente-uf,
     .cliente-modal__content [data-field="estado"] {
