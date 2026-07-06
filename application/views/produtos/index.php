@@ -494,6 +494,9 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
         font-weight: 600;
         line-height: 1.2;
     }
+    .mp-only__label {
+        align-self: end;
+    }
     .mp-only input,
     .mp-only select {
         width: 100%;
@@ -630,7 +633,7 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
             </div>
             <div class="mp-only__fields mp-only__fields--primary">
             <label>
-                Quantidade de compra
+                <span class="mp-only__label">Quantidade de compra</span>
                 <input type="number" step="0.001" min="0" name="recebimento_quantidade" placeholder="0">
             </label>
             <label class="field-unidade-compra">
@@ -642,29 +645,29 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
                 </select>
             </label>
             <label class="field-fornecedor">
-                Fornecedor
+                <span class="mp-only__label">Fornecedor</span>
                 <input type="text" name="recebimento_fornecedor" placeholder="Fornecedor">
             </label>
             <label>
-                Data de entrega
+                <span class="mp-only__label">Data de entrega</span>
                 <input type="date" name="recebimento_data_entrega">
             </label>
             </div>
             <div class="mp-only__fields">
             <label class="field-lote">
-                Lote
+                <span class="mp-only__label">Lote</span>
                 <input type="text" name="recebimento_lote" placeholder="Lote">
             </label>
             <label>
-                Data de fabricação
+                <span class="mp-only__label">Data de fabricação</span>
                 <input type="date" name="recebimento_data_fabricacao">
             </label>
             <label>
-                Data de vencimento
+                <span class="mp-only__label">Data de vencimento</span>
                 <input type="date" name="recebimento_data_vencimento">
             </label>
             <label>
-                Preço de compra
+                <span class="mp-only__label">Preço de compra</span>
                 <input type="number" step="0.01" name="recebimento_preco" placeholder="0,00">
             </label>
             </div>
