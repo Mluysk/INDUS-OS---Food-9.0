@@ -50,7 +50,7 @@ $reportLogoFilterMatrix = (string)($sidebarLogo['filter_matrix'] ?? '');
             display: flex;
             flex-direction: column;
             align-items: flex-start;
-            gap: 24px;
+            gap: 18px;
             min-width: 0;
             padding: 8px 0;
         }
@@ -353,7 +353,7 @@ $reportLogoFilterMatrix = (string)($sidebarLogo['filter_matrix'] ?? '');
             }
 
             .print-brand {
-                gap: 16px;
+                gap: 10px;
                 padding: 4px 0;
             }
 
