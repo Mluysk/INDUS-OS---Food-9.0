@@ -1044,13 +1044,15 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
             .product-status { display: inline-flex; margin-top: 4px; padding: 3px 8px; border-radius: 999px; background: #f1f5f9; color: #64748b; font-size: 0.72rem; font-weight: 800; }
             .product-status.is-active { background: #ecfdf5; color: #047857; }
             .product-status--portal {
+                display: inline-grid;
+                place-items: center;
                 width: 24px;
                 height: 24px;
                 margin: 4px 0 0 5px;
-                justify-content: center;
                 padding: 0;
                 background: color-mix(in srgb, #2563eb 8%, transparent);
                 color: color-mix(in srgb, #2563eb 72%, #64748b);
+                line-height: 1;
                 vertical-align: middle;
             }
             .product-status--portal.is-hidden {
@@ -1059,6 +1061,7 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
             }
             .product-status--portal .icon,
             .product-status--portal svg {
+                display: block;
                 width: 13px;
                 height: 13px;
                 stroke-width: 2.35;
