@@ -248,7 +248,7 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
         align-items: center;
         justify-content: space-between;
         gap: 10px;
-        width: min(100%, 292px);
+        width: 173px;
         min-height: 42px;
         border: 1px solid color-mix(in srgb, var(--primary, #4b5563) 10%, var(--border, #e5e7eb));
         border-radius: 12px;
@@ -320,7 +320,7 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
         top: 38px;
         right: 38px;
         z-index: 2;
-        width: 328px;
+        width: 173px;
         justify-content: center;
     }
     #product-create-form .product-portal-toggle__text {
@@ -387,7 +387,7 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
         }
         #product-create-form .product-portal-toggle {
             position: static;
-            width: min(100%, 292px);
+            width: 173px;
             justify-content: space-between;
         }
         #product-create-form .product-portal-toggle__switch {
