@@ -1016,8 +1016,26 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
             .product-actions .danger { color: #dc2626; border-color: #fecdd3; background: #fff1f2; }
             .product-status { display: inline-flex; margin-top: 4px; padding: 3px 8px; border-radius: 999px; background: #f1f5f9; color: #64748b; font-size: 0.72rem; font-weight: 800; }
             .product-status.is-active { background: #ecfdf5; color: #047857; }
-            .product-status--portal { margin-left: 5px; background: #eff6ff; color: #2563eb; }
-            .product-status--portal.is-hidden { background: #f8fafc; color: #94a3b8; }
+            .product-status--portal {
+                width: 24px;
+                height: 24px;
+                margin: 4px 0 0 5px;
+                justify-content: center;
+                padding: 0;
+                background: color-mix(in srgb, #2563eb 8%, transparent);
+                color: color-mix(in srgb, #2563eb 72%, #64748b);
+                vertical-align: middle;
+            }
+            .product-status--portal.is-hidden {
+                background: #f8fafc;
+                color: #cbd5e1;
+            }
+            .product-status--portal .icon,
+            .product-status--portal svg {
+                width: 13px;
+                height: 13px;
+                stroke-width: 2.35;
+            }
             .product-info-modal.hidden { display: none !important; }
             .product-info-modal {
                 position: fixed;
@@ -1149,7 +1167,9 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
                                     <?php $isActive = (int)($produto['is_ativo'] ?? 1) === 1; ?>
                                     <?php $isPortalVisible = (int)($produto['mostrar_portal'] ?? 1) === 1; ?>
                                     <span class="product-status <?= $isActive ? 'is-active' : ''; ?>"><?= $isActive ? 'Ativo' : 'Inativo'; ?></span>
-                                    <span class="product-status product-status--portal <?= $isPortalVisible ? '' : 'is-hidden'; ?>"><?= $isPortalVisible ? 'No portal' : 'Fora do portal'; ?></span>
+                                    <span class="product-status product-status--portal <?= $isPortalVisible ? '' : 'is-hidden'; ?>" title="<?= $isPortalVisible ? 'Aparece no portal' : 'Oculto no portal'; ?>" aria-label="<?= $isPortalVisible ? 'Aparece no portal' : 'Oculto no portal'; ?>">
+                                        <span class="icon" data-lucide="<?= $isPortalVisible ? 'globe-2' : 'globe-lock'; ?>" aria-hidden="true"></span>
+                                    </span>
                                 </td>
                                 <td><?= htmlspecialchars($produto['categoria'] ?? '—', ENT_QUOTES, 'UTF-8'); ?></td>
                                 <td><span class="badge <?= $produto['tipo'] === 'PA' ? 'badge-success' : 'badge-warning'; ?>"><?= htmlspecialchars($produto['tipo'], ENT_QUOTES, 'UTF-8'); ?></span></td>
@@ -1897,7 +1917,9 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
                         <td>${item.sku ?? ''}</td>
                         <td>${item.nome ?? ''}
                             <span class="product-status ${isActive ? 'is-active' : ''}">${isActive ? 'Ativo' : 'Inativo'}</span>
-                            <span class="product-status product-status--portal ${isPortalVisible ? '' : 'is-hidden'}">${isPortalVisible ? 'No portal' : 'Fora do portal'}</span>
+                            <span class="product-status product-status--portal ${isPortalVisible ? '' : 'is-hidden'}" title="${isPortalVisible ? 'Aparece no portal' : 'Oculto no portal'}" aria-label="${isPortalVisible ? 'Aparece no portal' : 'Oculto no portal'}">
+                                <span class="icon" data-lucide="${isPortalVisible ? 'globe-2' : 'globe-lock'}" aria-hidden="true"></span>
+                            </span>
                         </td>
                         <td>${categoria}</td>
                         <td><span class="badge ${badgeClass}">${item.tipo}</span></td>
