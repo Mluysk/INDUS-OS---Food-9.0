@@ -244,16 +244,16 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
         height: 16px;
     }
     .product-portal-toggle {
-        grid-column: 1 / -1;
         display: flex !important;
         align-items: center;
         justify-content: space-between;
-        gap: 16px;
-        min-height: 64px;
-        border: 1px solid color-mix(in srgb, var(--primary, #4b5563) 14%, var(--border, #e5e7eb));
-        border-radius: 16px;
-        padding: 12px 16px;
-        background: color-mix(in srgb, var(--primary, #4b5563) 4%, var(--surface, #fff));
+        gap: 10px;
+        width: min(100%, 292px);
+        min-height: 42px;
+        border: 1px solid color-mix(in srgb, var(--primary, #4b5563) 10%, var(--border, #e5e7eb));
+        border-radius: 12px;
+        padding: 7px 10px;
+        background: color-mix(in srgb, var(--primary, #4b5563) 2%, var(--surface, #fff));
         cursor: pointer;
     }
     .product-portal-toggle input {
@@ -262,23 +262,25 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
         pointer-events: none;
     }
     .product-portal-toggle__text {
-        display: grid;
-        gap: 3px;
+        display: block;
         min-width: 0;
     }
     .product-portal-toggle__title {
         display: inline-flex;
         align-items: center;
-        gap: 8px;
+        gap: 6px;
         color: var(--text, #0f172a);
-        font-weight: 850;
+        font-size: 0.86rem;
+        font-weight: 800;
+        line-height: 1.1;
     }
     .product-portal-toggle__title .icon {
-        width: 18px;
-        height: 18px;
-        color: var(--primary, #4b5563);
+        width: 14px;
+        height: 14px;
+        color: color-mix(in srgb, var(--primary, #4b5563) 82%, #64748b);
     }
     .product-portal-toggle__hint {
+        display: none;
         color: var(--text-muted, #64748b);
         font-size: 0.78rem;
         font-weight: 700;
@@ -286,8 +288,8 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
     .product-portal-toggle__switch {
         position: relative;
         flex: 0 0 auto;
-        width: 54px;
-        height: 30px;
+        width: 39px;
+        height: 22px;
         border-radius: 999px;
         background: #cbd5e1;
         transition: background 160ms ease;
@@ -295,10 +297,10 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
     .product-portal-toggle__switch::after {
         content: '';
         position: absolute;
-        top: 4px;
-        left: 4px;
-        width: 22px;
-        height: 22px;
+        top: 3px;
+        left: 3px;
+        width: 16px;
+        height: 16px;
         border-radius: 50%;
         background: #fff;
         box-shadow: 0 8px 16px -10px rgba(15, 23, 42, 0.75);
@@ -308,7 +310,7 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
         background: var(--primary, #4b5563);
     }
     .product-portal-toggle input:checked + .product-portal-toggle__switch::after {
-        transform: translateX(24px);
+        transform: translateX(17px);
     }
     .product-image-gallery-upload {
         grid-column: 1 / -1;
