@@ -1053,7 +1053,7 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
                 background: color-mix(in srgb, #2563eb 8%, transparent);
                 color: color-mix(in srgb, #2563eb 72%, #64748b);
                 line-height: 1;
-                vertical-align: middle;
+                vertical-align: top;
             }
             .product-status--portal.is-hidden {
                 background: #f8fafc;
