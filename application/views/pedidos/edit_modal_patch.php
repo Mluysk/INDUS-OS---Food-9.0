@@ -123,7 +123,7 @@
     .pedido-edit-modal.hidden { display: none; }
     .pedido-edit-modal { position: fixed; inset: 0; z-index: 1300; display: grid; place-items: center; padding: 24px; }
     .pedido-edit-backdrop { position: absolute; inset: 0; background: rgba(15, 23, 42, 0.42); backdrop-filter: blur(2px); }
-    .pedido-edit-dialog { position: relative; width: min(1180px, 96vw); max-height: 90vh; overflow-y: auto; padding: 22px; border-radius: 18px; background: var(--surface-elevated, #fff); color: var(--text-primary, #0f172a); font-size: 11px; box-shadow: 0 22px 70px rgba(15, 23, 42, 0.22); }
+    .pedido-edit-dialog { position: relative; width: min(1180px, 96vw); max-height: 90vh; overflow-y: auto; padding: 22px; border-radius: 18px; background: var(--surface-elevated, #fff); color: var(--text-primary, #0f172a); font-size: 13px; box-shadow: 0 22px 70px rgba(15, 23, 42, 0.22); }
     .pedido-edit-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 16px; }
     .pedido-edit-head h3 { margin: 4px 0 0; }
     .pedido-edit-items { grid-column: 1 / -1; display: grid; gap: 12px; padding: 16px; border: 1px solid var(--border, #e5e7eb); border-radius: 14px; background: var(--surface-alt, #f8fafc); }
@@ -169,7 +169,7 @@
     .pedido-edit-frete-value input { width: 100%; min-height: 46px; border: 1px solid #dbe3ee; border-radius: 14px; padding: 0 14px; font-weight: 800; color: #0f172a; background: #f8fafc; }
     .pedido-edit-frete-toggle { display: inline-flex; align-items: center; min-width: 86px; height: 42px; border-radius: 999px; padding: 4px; background: #e5e7eb; cursor: pointer; user-select: none; box-shadow: inset 0 1px 2px rgba(15, 23, 42, .08); }
     .pedido-edit-frete-toggle input { position: absolute; opacity: 0; pointer-events: none; }
-    .pedido-edit-frete-track { position: relative; display: flex; align-items: center; width: 100%; height: 100%; border-radius: inherit; padding: 0 12px; color: #64748b; font-size: 11px; font-weight: 900; transition: background .2s ease, color .2s ease; }
+    .pedido-edit-frete-track { position: relative; display: flex; align-items: center; width: 100%; height: 100%; border-radius: inherit; padding: 0 12px; color: #64748b; font-size: 13px; font-weight: 900; transition: background .2s ease, color .2s ease; }
     .pedido-edit-frete-track::after { content: ''; position: absolute; top: 4px; left: 4px; width: 26px; height: 26px; border-radius: 50%; background: #fff; box-shadow: 0 2px 8px rgba(15, 23, 42, .18); transition: transform .2s ease; }
     .pedido-edit-frete-track::before { content: 'Não'; padding-left: 30px; }
     .pedido-edit-frete-toggle input:checked + .pedido-edit-frete-track { background: var(--accent, #dc2626); color: #fff; }
