@@ -275,16 +275,16 @@
         place-items: center;
         border: 0;
         border-radius: 10px;
-        background: color-mix(in srgb, var(--danger, #dc2626) 10%, #fff);
-        color: var(--danger, #dc2626);
+        background: #f1f5f9;
+        color: #475569;
         box-shadow: none;
         transition: background 0.15s ease, color 0.15s ease, transform 0.15s ease;
     }
 
     #pedido-form .pedido-trash-icon { position: relative; display: block; width: 15px; height: 17px; color: currentColor; }
-    #pedido-form .pedido-trash-icon::before { content: ''; position: absolute; left: 3px; top: 7px; width: 9px; height: 8px; border: 2px solid currentColor; border-top: 0; border-radius: 0 0 2px 2px; background: linear-gradient(90deg, transparent 0 22%, currentColor 22% 32%, transparent 32% 47%, currentColor 47% 57%, transparent 57% 72%, currentColor 72% 82%, transparent 82% 100%) center 1px / 100% 7px no-repeat; }
+    #pedido-form .pedido-trash-icon::before { content: ''; position: absolute; left: 3px; top: 7px; width: 9px; height: 8px; border: 2px solid currentColor; border-top: 0; border-radius: 0 0 2px 2px; background: linear-gradient(90deg, transparent 0 28%, currentColor 28% 38%, transparent 38% 62%, currentColor 62% 72%, transparent 72% 100%) center 1px / 100% 7px no-repeat; }
     #pedido-form .pedido-trash-icon::after { content: ''; position: absolute; left: 1px; top: 4px; width: 13px; height: 2px; border-radius: 999px; background: currentColor; transition: transform 0.18s ease; }
-    #pedido-form .pedido-trash-icon__handle { position: absolute; left: 5px; top: 1px; width: 5px; height: 4px; border: 2px solid currentColor; border-bottom: 0; border-radius: 3px 3px 0 0; transition: transform 0.18s ease; }
+    #pedido-form .pedido-trash-icon__handle { position: absolute; left: 4.5px; top: 1px; width: 6px; height: 4px; border: 2px solid currentColor; border-bottom: 0; border-radius: 3px 3px 0 0; transition: transform 0.18s ease; }
 
     #pedido-form .pedido-products-row .remove-item:hover,
     #pedido-form .pedido-products-row .remove-item:focus-visible {
