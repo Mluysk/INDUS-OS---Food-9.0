@@ -273,21 +273,23 @@
         justify-self: center;
         display: inline-grid;
         place-items: center;
-        border-radius: 10px;
-        color: var(--text-muted, #64748b);
+        border: 0;
+        border-radius: 9px;
+        background: transparent;
+        color: var(--danger, #dc2626);
         transition: background 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
     }
 
-    #pedido-form .pedido-trash-icon { position: relative; display: block; width: 15px; height: 17px; color: currentColor; }
-    #pedido-form .pedido-trash-icon::before { content: ''; position: absolute; left: 2px; top: 5px; width: 11px; height: 11px; border: 2px solid currentColor; border-top: 0; border-radius: 1px 1px 3px 3px; }
-    #pedido-form .pedido-trash-icon::after { content: ''; position: absolute; left: 1px; top: 2px; width: 13px; height: 2px; border-radius: 999px; background: currentColor; transform-origin: 12px 1px; transition: transform 0.18s ease; }
-    #pedido-form .pedido-trash-icon__handle { position: absolute; left: 5px; top: 0; width: 5px; height: 3px; border: 2px solid currentColor; border-bottom: 0; border-radius: 3px 3px 0 0; transform-origin: 8px 4px; transition: transform 0.18s ease; }
+    #pedido-form .pedido-trash-icon { position: relative; display: block; width: 16px; height: 18px; color: currentColor; }
+    #pedido-form .pedido-trash-icon::before { content: ''; position: absolute; left: 3px; top: 7px; width: 10px; height: 9px; border: 2px solid currentColor; border-top: 0; border-radius: 0 0 2px 2px; background: linear-gradient(90deg, transparent 0 20%, currentColor 20% 30%, transparent 30% 45%, currentColor 45% 55%, transparent 55% 70%, currentColor 70% 80%, transparent 80% 100%) center 2px / 100% 7px no-repeat; }
+    #pedido-form .pedido-trash-icon::after { content: ''; position: absolute; left: 1px; top: 4px; width: 14px; height: 2px; border-radius: 999px; background: currentColor; transform-origin: 13px 1px; transition: transform 0.18s ease; }
+    #pedido-form .pedido-trash-icon__handle { position: absolute; left: 5px; top: 1px; width: 6px; height: 4px; border: 2px solid currentColor; border-bottom: 0; border-radius: 3px 3px 0 0; transform-origin: 9px 5px; transition: transform 0.18s ease; }
 
     #pedido-form .pedido-products-row .remove-item:hover,
     #pedido-form .pedido-products-row .remove-item:focus-visible {
-        background: color-mix(in srgb, var(--danger, #dc2626) 12%, #fff);
+        background: color-mix(in srgb, var(--danger, #dc2626) 10%, transparent);
         color: var(--danger, #dc2626);
-        box-shadow: 0 8px 18px rgba(220, 38, 38, 0.14);
+        box-shadow: none;
         outline: 0;
     }
 
@@ -295,7 +297,7 @@
     #pedido-form .pedido-products-row .remove-item:focus-visible .pedido-trash-icon::after,
     #pedido-form .pedido-products-row .remove-item:hover .pedido-trash-icon__handle,
     #pedido-form .pedido-products-row .remove-item:focus-visible .pedido-trash-icon__handle {
-        transform: rotate(-22deg) translate(-1px, -2px);
+        transform: rotate(-20deg) translate(-1px, -2px);
     }
 
     #pedido-form .pedido-empty-list {
