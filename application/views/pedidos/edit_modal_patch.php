@@ -52,7 +52,7 @@
                 </div>
                 <div class="pedido-edit-item-entry">
                     <label class="pedido-edit-field pedido-edit-code-field">
-                        CÃ³digo
+                        Código
                         <span class="pedido-edit-code-preview" id="pedido-edit-produto-codigo">-</span>
                     </label>
                     <label class="pedido-edit-field pedido-edit-produto-search-wrap">
@@ -200,7 +200,23 @@
 
         if (!modal || !form || !grid || !search || !suggestions || !codePreview || !weightPreview || !qtyEntry || !priceEntry || !subtotalPreview || !addButton || !totalEl || !freightToggle || !freightInput) return;
 
-        const parseNumber = (value) => Number(String(value || '0').replace(/\./g, '').replace(',', '.')) || 0;
+        const parseNumber = (value) => {
+            const raw = String(value ?? '').trim();
+            if (!raw) return 0;
+            const cleaned = raw.replace(/[^\d,.-]/g, '');
+            const hasComma = cleaned.includes(',');
+            const hasDot = cleaned.includes('.');
+            let normalized = cleaned;
+            if (hasComma && hasDot) {
+                normalized = cleaned.lastIndexOf(',') > cleaned.lastIndexOf('.')
+                    ? cleaned.replace(/\./g, '').replace(',', '.')
+                    : cleaned.replace(/,/g, '');
+            } else if (hasComma) {
+                normalized = cleaned.replace(',', '.');
+            }
+            return Number(normalized) || 0;
+        };
+        const formatDecimalValue = (value) => parseNumber(value).toFixed(2);
         const formatCurrency = (value) => 'R$ ' + Number(value || 0).toFixed(2).replace('.', ',');
         const normalize = (value) => String(value || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
         const escapeHtml = (value = '') => String(value ?? '')
@@ -245,7 +261,7 @@
                 name.title = productLabel(produto);
             }
             if (options.updatePrice) {
-                row.querySelector('input[name="item_preco[]"]').value = productPrice(produto).toFixed(2);
+                row.querySelector('input[name="item_preco[]"]').value = formatDecimalValue(productPrice(produto));
             }
         };
         const updateEntrySubtotal = () => {
@@ -265,7 +281,7 @@
             search.value = productLabel(produto);
             codePreview.textContent = productSku(produto);
             weightPreview.textContent = formatWeight(productWeight(produto));
-            priceEntry.value = productPrice(produto).toFixed(2);
+            priceEntry.value = formatDecimalValue(productPrice(produto));
             updateEntrySubtotal();
             closeSuggestions();
         };
@@ -318,7 +334,7 @@
                 <span class="pedido-edit-product-name" title="${escapeHtml(produtoNome)}">${escapeHtml(produtoNome)}</span>
                 <input type="number" min="0" step="0.01" name="item_quantidade[]" value="${item.quantidade ?? 1}">
                 <span class="pedido-edit-weight">${escapeHtml(formatWeight(productWeight(produto)))}</span>
-                <input type="number" min="0" step="0.01" name="item_preco[]" value="${item.preco_unit ?? productPrice(produto)}">
+                <input type="number" min="0" step="0.01" name="item_preco[]" value="${formatDecimalValue(item.preco_unit ?? productPrice(produto))}">
                 <span class="pedido-edit-subtotal">R$ 0,00</span>
                 <button type="button" class="button button-ghost remove-item" aria-label="Remover">x</button>
                 <input type="hidden" name="item_produto[]" value="${escapeHtml(item.produto_id ?? '')}" required>
@@ -351,7 +367,7 @@
             grid.appendChild(buildRow({
                 produto_id: selectedProduct.id,
                 quantidade: quantity,
-                preco_unit: parseNumber(priceEntry.value),
+                preco_unit: formatDecimalValue(priceEntry.value),
             }));
             resetEntry();
             computeTotal();
