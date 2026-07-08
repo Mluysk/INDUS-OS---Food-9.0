@@ -47,9 +47,36 @@
                 <div class="item-table__header">
                     <div>
                         <strong>Itens do pedido</strong>
-                        <p class="panel-description">Ao trocar o produto, código SKU, peso, valor e subtotal acompanham automaticamente.</p>
+                        <p class="panel-description">Digite o produto para acrescentar itens; código SKU, peso, valor e subtotal acompanham automaticamente.</p>
                     </div>
-                    <button type="button" class="button" id="pedido-edit-add-item">Adicionar item</button>
+                </div>
+                <div class="pedido-edit-item-entry">
+                    <label class="pedido-edit-field pedido-edit-code-field">
+                        CÃ³digo
+                        <span class="pedido-edit-code-preview" id="pedido-edit-produto-codigo">-</span>
+                    </label>
+                    <label class="pedido-edit-field pedido-edit-produto-search-wrap">
+                        Produto
+                        <input type="text" id="pedido-edit-produto-search" autocomplete="off" placeholder="Produto..." aria-autocomplete="list">
+                        <ul class="pedido-edit-produto-suggestions" id="pedido-edit-produto-suggestions" hidden></ul>
+                    </label>
+                    <label class="pedido-edit-field">
+                        Quantidade
+                        <input type="number" min="0" step="0.01" id="pedido-edit-item-quantidade" value="1">
+                    </label>
+                    <label class="pedido-edit-field">
+                        Peso
+                        <span class="pedido-edit-code-preview" id="pedido-edit-produto-peso">-</span>
+                    </label>
+                    <label class="pedido-edit-field">
+                        Valor
+                        <input type="number" min="0" step="0.01" id="pedido-edit-item-valor" value="0">
+                    </label>
+                    <label class="pedido-edit-field">
+                        Subtotal
+                        <span class="pedido-edit-subtotal-preview" id="pedido-edit-item-subtotal">R$ 0,00</span>
+                    </label>
+                    <button type="button" class="button pedido-edit-add-item" id="pedido-edit-add-search-item">Adicionar item</button>
                 </div>
                 <div class="pedido-edit-grid" id="pedido-edit-grid">
                     <div class="item-row item-row--head">
@@ -100,11 +127,24 @@
     .pedido-edit-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 16px; }
     .pedido-edit-head h3 { margin: 4px 0 0; }
     .pedido-edit-items { grid-column: 1 / -1; display: grid; gap: 12px; padding: 16px; border: 1px solid var(--border, #e5e7eb); border-radius: 14px; background: var(--surface-alt, #f8fafc); }
+    .pedido-edit-item-entry { display: grid; grid-template-columns: minmax(112px, .55fr) minmax(260px, 1.55fr) minmax(110px, .55fr) minmax(110px, .55fr) minmax(120px, .62fr) minmax(120px, .62fr) auto; gap: 8px; align-items: end; }
+    .pedido-edit-field { display: grid; gap: 6px; min-width: 0; color: var(--text-muted, #64748b); font-weight: 800; }
+    .pedido-edit-field input { width: 100%; min-height: 46px; border: 1px solid var(--border-subtle, #e2e8f0); border-radius: 12px; padding: 0 .85rem; background: var(--surface-elevated, #fff); color: var(--text-strong, #0f172a); font: inherit; font-weight: 700; }
+    .pedido-edit-produto-search-wrap { position: relative; }
+    .pedido-edit-produto-suggestions { position: absolute; z-index: 20; top: calc(100% + 6px); left: 0; right: 0; max-height: 260px; overflow-y: auto; margin: 0; padding: 6px; list-style: none; border: 1px solid var(--border, #e5e7eb); border-radius: 12px; background: var(--surface-elevated, #fff); box-shadow: 0 16px 36px rgba(15, 23, 42, .14); }
+    .pedido-edit-produto-suggestions[hidden] { display: none; }
+    .pedido-edit-produto-suggestions button { width: 100%; border: 0; border-radius: 10px; padding: 9px 10px; background: transparent; color: var(--text, #0f172a); text-align: left; font-weight: 800; cursor: pointer; }
+    .pedido-edit-produto-suggestions button:hover, .pedido-edit-produto-suggestions button:focus { background: var(--surface-muted, #f1f5f9); }
+    .pedido-edit-suggestion-meta { display: block; margin-top: 3px; color: var(--text-muted, #64748b); font-size: .78rem; font-weight: 700; }
+    .pedido-edit-code-preview, .pedido-edit-subtotal-preview { display: flex; align-items: center; min-height: 46px; padding: 0 .85rem; border: 1px solid var(--border-subtle, #e2e8f0); border-radius: 12px; background: var(--surface-elevated, #fff); color: var(--text-strong, #0f172a); font-weight: 850; font-variant-numeric: tabular-nums; white-space: nowrap; }
+    .pedido-edit-code-preview { justify-content: center; background: var(--surface-muted, #f8fafc); }
+    .pedido-edit-add-item { min-height: 46px; white-space: nowrap; }
     .pedido-edit-grid { display: grid; gap: 8px; }
     .pedido-edit-grid .item-row { display: grid; grid-template-columns: minmax(104px, 0.5fr) minmax(250px, 1.55fr) minmax(110px, 0.55fr) minmax(110px, 0.55fr) minmax(120px, 0.62fr) minmax(120px, 0.62fr) 44px; gap: 8px; align-items: center; }
     .pedido-edit-grid .item-row--head { color: var(--text-muted, #64748b); font-size: 0.78rem; font-weight: 800; letter-spacing: 0.04em; text-transform: uppercase; }
     .pedido-edit-grid select, .pedido-edit-grid input { width: 100%; }
-    .pedido-edit-code, .pedido-edit-weight, .pedido-edit-subtotal { display: flex; align-items: center; min-height: 42px; padding: 0.55rem 0.7rem; border: 1px solid var(--border-subtle, #e2e8f0); border-radius: 10px; background: var(--surface-elevated, #fff); color: var(--text-strong, #0f172a); font-weight: 800; font-variant-numeric: tabular-nums; white-space: nowrap; }
+    .pedido-edit-code, .pedido-edit-product-name, .pedido-edit-weight, .pedido-edit-subtotal { display: flex; align-items: center; min-height: 42px; padding: 0.55rem 0.7rem; border: 1px solid var(--border-subtle, #e2e8f0); border-radius: 10px; background: var(--surface-elevated, #fff); color: var(--text-strong, #0f172a); font-weight: 800; font-variant-numeric: tabular-nums; white-space: nowrap; }
+    .pedido-edit-product-name { overflow: hidden; text-overflow: ellipsis; }
     .pedido-edit-code { justify-content: center; background: var(--surface-muted, #f8fafc); }
     .pedido-edit-weight { color: var(--text-muted, #64748b); }
     .pedido-edit-summary { display: grid; grid-template-columns: minmax(260px, 1fr) minmax(220px, 320px); gap: 16px; align-items: stretch; margin-top: 12px; }
@@ -131,9 +171,9 @@
     .pedido-edit-feedback[data-state="error"] { color: var(--danger-strong, #dc2626); }
     .pedido-edit-feedback[data-state="success"] { color: var(--success-strong, #047857); }
     .pedido-edit-actions { grid-column: 1 / -1; gap: 10px; }
-    @media (max-width: 980px) { .pedido-edit-grid .item-row { grid-template-columns: repeat(2, minmax(180px, 1fr)); padding: 10px 0; border-bottom: 1px solid var(--border, #e5e7eb); } .pedido-edit-grid .item-row--head { display: none; } }
+    @media (max-width: 980px) { .pedido-edit-item-entry, .pedido-edit-grid .item-row { grid-template-columns: repeat(2, minmax(180px, 1fr)); padding: 10px 0; border-bottom: 1px solid var(--border, #e5e7eb); } .pedido-edit-grid .item-row--head { display: none; } }
     @media (max-width: 760px) { .pedido-edit-summary, .pedido-edit-frete-row { grid-template-columns: 1fr; } }
-    @media (max-width: 640px) { .pedido-edit-modal { padding: 12px; } .pedido-edit-dialog { padding: 16px; } .pedido-edit-grid .item-row { grid-template-columns: 1fr; } }
+    @media (max-width: 640px) { .pedido-edit-modal { padding: 12px; } .pedido-edit-dialog { padding: 16px; } .pedido-edit-item-entry, .pedido-edit-grid .item-row { grid-template-columns: 1fr; } }
 </style>
 
 <script>
@@ -143,7 +183,14 @@
         const modal = document.getElementById('pedido-edit-modal');
         const form = document.getElementById('pedido-edit-form');
         const grid = document.getElementById('pedido-edit-grid');
-        const addButton = document.getElementById('pedido-edit-add-item');
+        const search = document.getElementById('pedido-edit-produto-search');
+        const suggestions = document.getElementById('pedido-edit-produto-suggestions');
+        const codePreview = document.getElementById('pedido-edit-produto-codigo');
+        const weightPreview = document.getElementById('pedido-edit-produto-peso');
+        const qtyEntry = document.getElementById('pedido-edit-item-quantidade');
+        const priceEntry = document.getElementById('pedido-edit-item-valor');
+        const subtotalPreview = document.getElementById('pedido-edit-item-subtotal');
+        const addButton = document.getElementById('pedido-edit-add-search-item');
         const totalEl = document.getElementById('pedido-edit-total');
         const freightToggle = document.getElementById('pedido-edit-frete-ativo');
         const freightInput = document.getElementById('pedido-edit-frete-valor');
@@ -151,10 +198,17 @@
         const headRow = grid?.querySelector('.item-row--head');
         const pagamentosValidos = ['PIX','Dinheiro','Cartão de crédito','Cartão de débito','Boleto','TED','Transferência bancária','Depósito bancário','Cheque','Vale alimentação','Vale refeição','A prazo','Outros'];
 
-        if (!modal || !form || !grid || !addButton || !totalEl || !freightToggle || !freightInput) return;
+        if (!modal || !form || !grid || !search || !suggestions || !codePreview || !weightPreview || !qtyEntry || !priceEntry || !subtotalPreview || !addButton || !totalEl || !freightToggle || !freightInput) return;
 
         const parseNumber = (value) => Number(String(value || '0').replace(/\./g, '').replace(',', '.')) || 0;
         const formatCurrency = (value) => 'R$ ' + Number(value || 0).toFixed(2).replace('.', ',');
+        const normalize = (value) => String(value || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+        const escapeHtml = (value = '') => String(value ?? '')
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#039;');
         const formatWeight = (value) => {
             const numeric = Number(value || 0);
             if (!numeric) return '-';
@@ -165,7 +219,9 @@
         const productPrice = (produto) => Number(produto?.preco ?? produto?.preco_venda ?? produto?.valor ?? 0);
         const productWeight = (produto) => Number(produto?.peso_liquido ?? produto?.peso ?? produto?.peso_bruto ?? 0);
         const productSku = (produto) => String(produto?.sku || '-');
-        const selectedProduto = (row) => productById(row.querySelector('select[name="item_produto[]"]')?.value);
+        const productLabel = (produto) => String(produto?.nome || 'Produto');
+        const selectedProduto = (row) => productById(row.querySelector('input[name="item_produto[]"]')?.value);
+        let selectedProduct = null;
         const setFeedback = (message, state = '') => {
             if (!feedback) return;
             feedback.textContent = message || '';
@@ -183,9 +239,59 @@
             const produto = selectedProduto(row);
             row.querySelector('.pedido-edit-code').textContent = productSku(produto);
             row.querySelector('.pedido-edit-weight').textContent = formatWeight(productWeight(produto));
+            const name = row.querySelector('.pedido-edit-product-name');
+            if (name) {
+                name.textContent = productLabel(produto);
+                name.title = productLabel(produto);
+            }
             if (options.updatePrice) {
                 row.querySelector('input[name="item_preco[]"]').value = productPrice(produto).toFixed(2);
             }
+        };
+        const updateEntrySubtotal = () => {
+            subtotalPreview.textContent = formatCurrency(parseNumber(qtyEntry.value) * parseNumber(priceEntry.value));
+        };
+        const clearEntryProduct = () => {
+            selectedProduct = null;
+            codePreview.textContent = '-';
+            weightPreview.textContent = '-';
+            updateEntrySubtotal();
+        };
+        const closeSuggestions = () => {
+            suggestions.hidden = true;
+        };
+        const chooseProduct = (produto) => {
+            selectedProduct = produto;
+            search.value = productLabel(produto);
+            codePreview.textContent = productSku(produto);
+            weightPreview.textContent = formatWeight(productWeight(produto));
+            priceEntry.value = productPrice(produto).toFixed(2);
+            updateEntrySubtotal();
+            closeSuggestions();
+        };
+        const renderSuggestions = () => {
+            const term = normalize(search.value);
+            const matches = produtos.filter((produto) => normalize(`${produto.nome || ''} ${produto.sku || ''}`).includes(term));
+            suggestions.innerHTML = '';
+            if (!matches.length) {
+                suggestions.innerHTML = '<li><button type="button" disabled>Nenhum produto encontrado</button></li>';
+                suggestions.hidden = false;
+                selectedProduct = null;
+                codePreview.textContent = '-';
+                weightPreview.textContent = '-';
+                return;
+            }
+            matches.forEach((produto) => {
+                const item = document.createElement('li');
+                const button = document.createElement('button');
+                button.type = 'button';
+                button.innerHTML = `${escapeHtml(productLabel(produto))}<span class="pedido-edit-suggestion-meta">${escapeHtml(productSku(produto))} - ${escapeHtml(formatWeight(productWeight(produto)))} - ${escapeHtml(formatCurrency(productPrice(produto)))}</span>`;
+                button.addEventListener('mousedown', (event) => event.preventDefault());
+                button.addEventListener('click', () => chooseProduct(produto));
+                item.appendChild(button);
+                suggestions.appendChild(item);
+            });
+            suggestions.hidden = false;
         };
         const computeTotal = () => {
             let total = 0;
@@ -201,36 +307,54 @@
             total += freightToggle.checked ? parseNumber(freightInput.value) : 0;
             totalEl.textContent = formatCurrency(total);
         };
-        const productOptions = (selectedId = '') => produtos.map((produto) => {
-            const id = String(produto.id ?? '');
-            const selected = id === String(selectedId) ? 'selected' : '';
-            const label = produto.nome ?? 'Produto';
-            return `<option value="${id}" ${selected}>${label}</option>`;
-        }).join('');
         const buildRow = (item = {}) => {
             const row = document.createElement('div');
             row.className = 'item-row';
             row.dataset.row = '1';
             const produto = productById(item.produto_id ?? '');
+            const produtoNome = productLabel(produto);
             row.innerHTML = `
-                <span class="pedido-edit-code">${productSku(produto)}</span>
-                <select name="item_produto[]" required>
-                    <option value="">Produto...</option>
-                    ${productOptions(item.produto_id ?? '')}
-                </select>
+                <span class="pedido-edit-code">${escapeHtml(productSku(produto))}</span>
+                <span class="pedido-edit-product-name" title="${escapeHtml(produtoNome)}">${escapeHtml(produtoNome)}</span>
                 <input type="number" min="0" step="0.01" name="item_quantidade[]" value="${item.quantidade ?? 1}">
-                <span class="pedido-edit-weight">${formatWeight(productWeight(produto))}</span>
+                <span class="pedido-edit-weight">${escapeHtml(formatWeight(productWeight(produto)))}</span>
                 <input type="number" min="0" step="0.01" name="item_preco[]" value="${item.preco_unit ?? productPrice(produto)}">
                 <span class="pedido-edit-subtotal">R$ 0,00</span>
                 <button type="button" class="button button-ghost remove-item" aria-label="Remover">x</button>
+                <input type="hidden" name="item_produto[]" value="${escapeHtml(item.produto_id ?? '')}" required>
             `;
-            row.querySelector('select').addEventListener('change', () => {
-                syncRowProductFields(row, { updatePrice: true });
-                computeTotal();
-            });
             row.querySelectorAll('input').forEach((input) => input.addEventListener('input', computeTotal));
             row.querySelector('.remove-item').addEventListener('click', () => { row.remove(); computeTotal(); });
             return row;
+        };
+        const resetEntry = () => {
+            selectedProduct = null;
+            search.value = '';
+            qtyEntry.value = '1';
+            priceEntry.value = '0';
+            codePreview.textContent = '-';
+            weightPreview.textContent = '-';
+            updateEntrySubtotal();
+            closeSuggestions();
+        };
+        const addSearchItem = () => {
+            if (!selectedProduct) {
+                search.focus();
+                renderSuggestions();
+                return;
+            }
+            const quantity = parseNumber(qtyEntry.value);
+            if (quantity <= 0) {
+                qtyEntry.focus();
+                return;
+            }
+            grid.appendChild(buildRow({
+                produto_id: selectedProduct.id,
+                quantidade: quantity,
+                preco_unit: parseNumber(priceEntry.value),
+            }));
+            resetEntry();
+            computeTotal();
         };
         const resetRows = () => grid.querySelectorAll('.item-row[data-row]').forEach((row) => row.remove());
         const renderPedido = (payload) => {
@@ -248,7 +372,7 @@
             freightInput.value = freteValor.toFixed(2);
             resetRows();
             itens.forEach((item) => grid.appendChild(buildRow(item)));
-            if (!itens.length && headRow) grid.appendChild(buildRow());
+            resetEntry();
             computeTotal();
         };
         const loadPedido = (pedidoId) => {
@@ -268,7 +392,33 @@
         }, true);
 
         modal.querySelectorAll('[data-edit-close]').forEach((button) => button.addEventListener('click', closeModal));
-        addButton.addEventListener('click', () => { grid.appendChild(buildRow()); computeTotal(); });
+        search.addEventListener('input', () => {
+            selectedProduct = null;
+            codePreview.textContent = '-';
+            weightPreview.textContent = '-';
+            renderSuggestions();
+        });
+        search.addEventListener('focus', renderSuggestions);
+        search.addEventListener('blur', () => window.setTimeout(closeSuggestions, 120));
+        search.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                const first = suggestions.querySelector('button:not([disabled])');
+                first?.click();
+            }
+            if (event.key === 'Escape') {
+                closeSuggestions();
+                search.blur();
+            }
+        });
+        document.addEventListener('click', (event) => {
+            if (!modal.contains(event.target)) {
+                closeSuggestions();
+            }
+        });
+        qtyEntry.addEventListener('input', updateEntrySubtotal);
+        priceEntry.addEventListener('input', updateEntrySubtotal);
+        addButton.addEventListener('click', addSearchItem);
         freightToggle.addEventListener('change', computeTotal);
         freightInput.addEventListener('input', computeTotal);
 
