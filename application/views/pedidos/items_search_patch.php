@@ -267,12 +267,21 @@
     #pedido-form .pedido-products-row .remove-item {
         width: 32px;
         height: 32px;
+        min-width: 32px;
         min-height: 32px;
         padding: 0;
         justify-self: center;
+        display: inline-grid;
+        place-items: center;
         border-radius: 10px;
+        color: var(--text-muted, #64748b);
         transition: background 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
     }
+
+    #pedido-form .pedido-trash-icon { position: relative; display: block; width: 15px; height: 17px; color: currentColor; }
+    #pedido-form .pedido-trash-icon::before { content: ''; position: absolute; left: 2px; top: 5px; width: 11px; height: 11px; border: 2px solid currentColor; border-top: 0; border-radius: 1px 1px 3px 3px; }
+    #pedido-form .pedido-trash-icon::after { content: ''; position: absolute; left: 1px; top: 2px; width: 13px; height: 2px; border-radius: 999px; background: currentColor; transform-origin: 12px 1px; transition: transform 0.18s ease; }
+    #pedido-form .pedido-trash-icon__handle { position: absolute; left: 5px; top: 0; width: 5px; height: 3px; border: 2px solid currentColor; border-bottom: 0; border-radius: 3px 3px 0 0; transform-origin: 8px 4px; transition: transform 0.18s ease; }
 
     #pedido-form .pedido-products-row .remove-item:hover,
     #pedido-form .pedido-products-row .remove-item:focus-visible {
@@ -280,6 +289,13 @@
         color: var(--danger, #dc2626);
         box-shadow: 0 8px 18px rgba(220, 38, 38, 0.14);
         outline: 0;
+    }
+
+    #pedido-form .pedido-products-row .remove-item:hover .pedido-trash-icon::after,
+    #pedido-form .pedido-products-row .remove-item:focus-visible .pedido-trash-icon::after,
+    #pedido-form .pedido-products-row .remove-item:hover .pedido-trash-icon__handle,
+    #pedido-form .pedido-products-row .remove-item:focus-visible .pedido-trash-icon__handle {
+        transform: rotate(-22deg) translate(-1px, -2px);
     }
 
     #pedido-form .pedido-empty-list {
@@ -550,7 +566,7 @@
                 <span class="pedido-line-weight">${weight}</span>
                 <input type="number" min="0" step="0.01" class="pedido-line-input pedido-line-price" value="${price.toFixed(2)}">
                 <span class="pedido-line-subtotal">${money(subtotal)}</span>
-                <button type="button" class="button button-ghost remove-item" aria-label="Remover item">×</button>
+                <button type="button" class="button button-ghost remove-item" aria-label="Remover produto"><span class="pedido-trash-icon" aria-hidden="true"><span class="pedido-trash-icon__handle"></span></span></button>
                 <input type="hidden" name="item_produto[]" value="${selectedProduct.id}">
                 <input type="hidden" name="item_quantidade[]" value="${quantity}">
                 <input type="hidden" name="item_preco[]" value="${price}">

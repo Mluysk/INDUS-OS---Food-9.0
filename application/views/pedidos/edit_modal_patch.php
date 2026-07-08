@@ -148,6 +148,13 @@
     .pedido-edit-grid .item-row { display: grid; grid-template-columns: minmax(104px, 0.5fr) minmax(250px, 1.55fr) minmax(110px, 0.55fr) minmax(110px, 0.55fr) minmax(120px, 0.62fr) minmax(120px, 0.62fr) 44px; gap: 8px; align-items: center; }
     .pedido-edit-grid .item-row--head { color: var(--text-muted, #64748b); font-size: 0.78rem; font-weight: 800; letter-spacing: 0.04em; text-transform: uppercase; }
     .pedido-edit-grid select, .pedido-edit-grid input { width: 100%; }
+    .pedido-edit-grid .remove-item { width: 32px; height: 32px; min-width: 32px; min-height: 32px; padding: 0; justify-self: center; display: inline-grid; place-items: center; border-radius: 10px; color: var(--text-muted, #64748b); transition: background .16s ease, color .16s ease, box-shadow .16s ease; }
+    .pedido-trash-icon { position: relative; display: block; width: 15px; height: 17px; color: currentColor; }
+    .pedido-trash-icon::before { content: ''; position: absolute; left: 2px; top: 5px; width: 11px; height: 11px; border: 2px solid currentColor; border-top: 0; border-radius: 1px 1px 3px 3px; }
+    .pedido-trash-icon::after { content: ''; position: absolute; left: 1px; top: 2px; width: 13px; height: 2px; border-radius: 999px; background: currentColor; transform-origin: 12px 1px; transition: transform .18s ease; }
+    .pedido-trash-icon__handle { position: absolute; left: 5px; top: 0; width: 5px; height: 3px; border: 2px solid currentColor; border-bottom: 0; border-radius: 3px 3px 0 0; transform-origin: 8px 4px; transition: transform .18s ease; }
+    .remove-item:hover, .remove-item:focus-visible { background: color-mix(in srgb, var(--danger, #dc2626) 12%, #fff); color: var(--danger, #dc2626); box-shadow: 0 8px 18px rgba(220, 38, 38, .14); outline: 0; }
+    .remove-item:hover .pedido-trash-icon::after, .remove-item:focus-visible .pedido-trash-icon::after, .remove-item:hover .pedido-trash-icon__handle, .remove-item:focus-visible .pedido-trash-icon__handle { transform: rotate(-22deg) translate(-1px, -2px); }
     .pedido-edit-code, .pedido-edit-product-name, .pedido-edit-weight, .pedido-edit-subtotal { display: flex; align-items: center; min-height: 42px; padding: 0.55rem 0.7rem; border: 1px solid var(--border-subtle, #e2e8f0); border-radius: 10px; background: var(--surface-elevated, #fff); color: var(--text-strong, #0f172a); font-weight: 800; font-variant-numeric: tabular-nums; white-space: nowrap; }
     .pedido-edit-product-name { overflow: hidden; text-overflow: ellipsis; }
     .pedido-edit-code { justify-content: center; background: var(--surface-muted, #f8fafc); }
@@ -341,7 +348,7 @@
                 <span class="pedido-edit-weight">${escapeHtml(formatWeight(productWeight(produto)))}</span>
                 <input type="number" min="0" step="0.01" name="item_preco[]" value="${formatDecimalValue(item.preco_unit ?? productPrice(produto))}">
                 <span class="pedido-edit-subtotal">R$ 0,00</span>
-                <button type="button" class="button button-ghost remove-item" aria-label="Remover">x</button>
+                <button type="button" class="button button-ghost remove-item" aria-label="Remover produto"><span class="pedido-trash-icon" aria-hidden="true"><span class="pedido-trash-icon__handle"></span></span></button>
                 <input type="hidden" name="item_produto[]" value="${escapeHtml(item.produto_id ?? '')}" required>
             `;
             row.querySelectorAll('input').forEach((input) => input.addEventListener('input', computeTotal));
