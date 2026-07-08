@@ -133,8 +133,8 @@
     .pedido-edit-field input:focus { outline: 0; border-color: var(--primary, var(--accent, #dc2626)); box-shadow: 0 0 0 3px rgba(var(--primary-rgb, 220, 38, 38), .14); }
     .pedido-edit-produto-search-wrap { position: relative; }
     .pedido-edit-produto-search-wrap input.has-search-clear-button { padding-right: 42px !important; }
-    .pedido-edit-produto-search-wrap .search-clear-button { top: calc(1.2em + 0.35rem + 23px); right: 12px; width: 24px; height: 24px; min-width: 24px; min-height: 24px; transform: translateY(-50%); display: grid; place-items: center; line-height: 1; }
-    .pedido-edit-produto-search-wrap .search-clear-button:hover, .pedido-edit-produto-search-wrap .search-clear-button:focus-visible { transform: translateY(-50%); }
+    .pedido-edit-produto-search-wrap .search-clear-button { top: auto; bottom: 11px; right: 12px; width: 24px; height: 24px; min-width: 24px; min-height: 24px; transform: none; display: grid; place-items: center; line-height: 1; }
+    .pedido-edit-produto-search-wrap .search-clear-button:hover, .pedido-edit-produto-search-wrap .search-clear-button:focus-visible { transform: none; }
     .pedido-edit-produto-search-wrap .search-clear-button svg { display: block; width: 12px; height: 12px; margin: 0; }
     .pedido-edit-produto-suggestions { position: absolute; z-index: 20; top: calc(100% + 6px); left: 0; right: 0; max-height: 260px; overflow-y: auto; margin: 0; padding: 6px; list-style: none; border: 1px solid var(--border, #e5e7eb); border-radius: 12px; background: var(--surface-elevated, #fff); box-shadow: 0 16px 36px rgba(15, 23, 42, .14); }
     .pedido-edit-produto-suggestions[hidden] { display: none; }
