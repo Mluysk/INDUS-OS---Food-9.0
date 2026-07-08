@@ -2430,6 +2430,7 @@ $brandTitleCalibratedY = $brandTitleOffsetY - 1;
             '.product-catalog-search input',
             '.cliente-search-wrap input',
             '.produto-search-wrap input',
+            '.pedido-edit-produto-search-wrap input',
             '.pedido-list-search-box input',
             '.history-search-box input',
         ].join(',');

@@ -57,7 +57,7 @@
                     </label>
                     <label class="pedido-edit-field pedido-edit-produto-search-wrap">
                         Produto
-                        <input type="text" id="pedido-edit-produto-search" autocomplete="off" placeholder="Produto..." aria-autocomplete="list">
+                        <input type="text" id="pedido-edit-produto-search" autocomplete="off" placeholder="Produto..." aria-autocomplete="list" data-search-clear>
                         <ul class="pedido-edit-produto-suggestions" id="pedido-edit-produto-suggestions" hidden></ul>
                     </label>
                     <label class="pedido-edit-field">
@@ -129,8 +129,13 @@
     .pedido-edit-items { grid-column: 1 / -1; display: grid; gap: 12px; padding: 16px; border: 1px solid var(--border, #e5e7eb); border-radius: 14px; background: var(--surface-alt, #f8fafc); }
     .pedido-edit-item-entry { display: grid; grid-template-columns: minmax(112px, .55fr) minmax(260px, 1.55fr) minmax(110px, .55fr) minmax(110px, .55fr) minmax(120px, .62fr) minmax(120px, .62fr) auto; gap: 8px; align-items: end; }
     .pedido-edit-field { display: grid; gap: 6px; min-width: 0; color: var(--text-muted, #64748b); font-weight: 800; }
-    .pedido-edit-field input { width: 100%; min-height: 46px; border: 1px solid var(--border-subtle, #e2e8f0); border-radius: 12px; padding: 0 .85rem; background: var(--surface-elevated, #fff); color: var(--text-strong, #0f172a); font: inherit; font-weight: 700; }
+    .pedido-edit-field input { width: 100%; min-height: 46px; border: 1px solid var(--border-subtle, #e2e8f0); border-radius: 12px; padding: 0 .85rem; background: var(--surface-elevated, #fff); color: var(--text-strong, #0f172a); font: inherit; font-weight: 700; transition: border-color .15s ease, box-shadow .15s ease; }
+    .pedido-edit-field input:focus { outline: 0; border-color: var(--primary, var(--accent, #dc2626)); box-shadow: 0 0 0 3px rgba(var(--primary-rgb, 220, 38, 38), .14); }
     .pedido-edit-produto-search-wrap { position: relative; }
+    .pedido-edit-produto-search-wrap input.has-search-clear-button { padding-right: 42px !important; }
+    .pedido-edit-produto-search-wrap .search-clear-button { top: calc(1.2em + 0.35rem + 23px); right: 12px; width: 24px; height: 24px; min-width: 24px; min-height: 24px; transform: translateY(-50%); display: grid; place-items: center; line-height: 1; }
+    .pedido-edit-produto-search-wrap .search-clear-button:hover, .pedido-edit-produto-search-wrap .search-clear-button:focus-visible { transform: translateY(-50%); }
+    .pedido-edit-produto-search-wrap .search-clear-button svg { display: block; width: 12px; height: 12px; margin: 0; }
     .pedido-edit-produto-suggestions { position: absolute; z-index: 20; top: calc(100% + 6px); left: 0; right: 0; max-height: 260px; overflow-y: auto; margin: 0; padding: 6px; list-style: none; border: 1px solid var(--border, #e5e7eb); border-radius: 12px; background: var(--surface-elevated, #fff); box-shadow: 0 16px 36px rgba(15, 23, 42, .14); }
     .pedido-edit-produto-suggestions[hidden] { display: none; }
     .pedido-edit-produto-suggestions button { width: 100%; border: 0; border-radius: 10px; padding: 9px 10px; background: transparent; color: var(--text, #0f172a); text-align: left; font-weight: 800; cursor: pointer; }
@@ -412,6 +417,10 @@
             selectedProduct = null;
             codePreview.textContent = '-';
             weightPreview.textContent = '-';
+            if (!search.value.trim()) {
+                priceEntry.value = '0';
+            }
+            updateEntrySubtotal();
             renderSuggestions();
         });
         search.addEventListener('focus', renderSuggestions);
