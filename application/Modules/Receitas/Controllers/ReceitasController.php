@@ -34,7 +34,7 @@ class ReceitasController extends Controller
             'active' => $_GET['active'] ?? null,
         ];
         $recipes = $this->recipes->listRecipes($filters);
-        $paRecipeRows = $this->buildPARecipeRows($filters);
+        $paRecipeRows = $this->buildPARecipeRows([]);
 
         $this->render('receitas/list', [
             'recipes' => $recipes,

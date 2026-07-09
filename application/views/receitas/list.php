@@ -164,7 +164,10 @@
 
         search?.addEventListener('input', applyFilters);
         status?.addEventListener('change', applyFilters);
-        form.addEventListener('submit', applyFilters);
+        form.addEventListener('submit', (event) => {
+            event.preventDefault();
+            applyFilters();
+        });
         applyFilters();
     };
 
