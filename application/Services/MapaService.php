@@ -348,7 +348,7 @@ class MapaService
                 if ($consumirReceita) {
                     $runId = $this->recipes->runRecipeFromMapaEntrada($entradaId, $data['produto_id'], (float)$data['quantidade'], $usuarioId);
                     if (!$runId) {
-                        throw new \InvalidArgumentException('Produto sem receita vinculada para consumo automático de MP.');
+                        throw new \InvalidArgumentException('Entrada bloqueada: este produto P.A. nao tem receita ativa para baixar MP automaticamente. Cadastre ou ative a receita, ou desative a regra "Consumir MP automaticamente no mapa".');
                     }
                 }
             }
@@ -373,10 +373,10 @@ class MapaService
             return false;
         }
 
-        return $this->produtoPAComReceita($produtoId);
+        return $this->produtoEhPA($produtoId);
     }
 
-    private function produtoPAComReceita(int $produtoId): bool
+    private function produtoEhPA(int $produtoId): bool
     {
         if ($produtoId <= 0) {
             return false;
@@ -388,19 +388,7 @@ class MapaService
         }
 
         $tipo = strtoupper(trim((string)($produto['tipo'] ?? '')));
-        if ($tipo !== 'PA') {
-            return false;
-        }
-
-        if ((int)($produto['recipe_id'] ?? 0) > 0) {
-            return true;
-        }
-
-        $conn = $this->produtos->getConnection();
-        $stmt = $conn->prepare('SELECT id FROM recipes WHERE produto_pa_id = :produto AND active = 1 LIMIT 1');
-        $stmt->execute(['produto' => $produtoId]);
-
-        return (bool)$stmt->fetchColumn();
+        return $tipo === 'PA';
     }
 
     /**
