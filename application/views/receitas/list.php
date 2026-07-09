@@ -33,7 +33,6 @@
         </div>
         <div class="panel-actions">
             <a class="btn primary" href="<?= htmlspecialchars($url('receitas/nova'), ENT_QUOTES, 'UTF-8'); ?>">Nova receita</a>
-            <a class="btn ghost" href="<?= htmlspecialchars($url('produtos'), ENT_QUOTES, 'UTF-8'); ?>">Voltar para produtos</a>
         </div>
     </div>
 
