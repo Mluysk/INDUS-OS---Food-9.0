@@ -64,7 +64,34 @@ try {
     const valueText = (key,value,change = {}) => { if(value === null || value === undefined || value === '') return 'vazio'; if(Array.isArray(value)) return String(key) === 'itens' ? itemListText(value, itemNameMap(change)) : `${value.length} ${value.length===1?'item':'itens'}`; if(typeof value === 'object') return JSON.stringify(value); if(moneyField(key) && !Number.isNaN(Number(String(value).replace(',','.')))) return Number(String(value).replace(',','.')).toLocaleString('pt-BR',{style:'currency',currency:'BRL'}); return String(value); };
     const productName = (details) => text(details?.nome || details?.depois?.nome || details?.antes?.nome || details?.produto_nome, '');
     const changeSummary = (details, row = {}) => { const changes = details && details.mudancas && typeof details.mudancas === 'object' ? details.mudancas : {}; const entries = Object.entries(changes); const isProduct = ['produto','produtos'].includes(String(row.entidade || '').toLowerCase()); const header = isProduct && productName(details) ? `<div class="audit-change-row"><b>Produto</b><span style="grid-column:2 / 5;text-align:left;">${escapeHtml(productName(details))}</span></div>` : ''; const body = entries.length ? entries.slice(0,10).map(([key,item])=>`<div class="audit-change-row"><b>${escapeHtml(labelField(key))}</b><span>${escapeHtml(valueText(key,item?.antes,item))}</span><em>&gt;</em><span>${escapeHtml(valueText(key,item?.depois,item))}</span></div>`).join('') : '<div class="audit-change-row"><span>Nenhuma diferen\u00e7a campo a campo registrada.</span></div>'; return header + body; };
-    const colorAuditJson = (details) => escapeHtml(JSON.stringify(details,null,2) || '{}').replace(/^(\s*&quot;antes&quot;\s*:.*)$/gm,'<span class="audit-json-old">$1</span>').replace(/^(\s*&quot;depois&quot;\s*:.*)$/gm,'<span class="audit-json-new">$1</span>');
+    const jsonDepthDelta = (line) => (line.match(/[{\[]/g) || []).length - (line.match(/[}\]]/g) || []).length;
+    const colorAuditJson = (details) => {
+        const lines = String(JSON.stringify(details,null,2) || '{}').split('\n');
+        let activeClass = '';
+        let activeDepth = 0;
+        return lines.map((line) => {
+            const startsOld = /^\s*"antes"\s*:/.test(line);
+            const startsNew = /^\s*"depois"\s*:/.test(line);
+            let lineClass = activeClass;
+            if (startsOld || startsNew) {
+                activeClass = startsOld ? 'audit-json-old' : 'audit-json-new';
+                lineClass = activeClass;
+                activeDepth = Math.max(0, jsonDepthDelta(line));
+                if (activeDepth === 0) {
+                    activeClass = '';
+                }
+            } else if (activeClass) {
+                lineClass = activeClass;
+                activeDepth += jsonDepthDelta(line);
+                if (activeDepth <= 0) {
+                    activeClass = '';
+                    activeDepth = 0;
+                }
+            }
+            const safeLine = escapeHtml(line);
+            return lineClass ? `<span class="${lineClass}">${safeLine}</span>` : safeLine;
+        }).join('\n');
+    };
     const summarize = (row) => { const changed = changeKeys(row.detalhes); const keys = changed.length ? changed : detailKeys(row.detalhes); const action = String(row.acao||'').toLowerCase(); if(!keys.length) return 'Sem detalhes adicionais'; if(action==='update' || action==='status') return `Campos alterados: ${keys.slice(0,5).map(labelField).join(', ')}${keys.length>5?'...':''}`; if(action==='create') return `Dados adicionados: ${keys.slice(0,5).map(labelField).join(', ')}${keys.length>5?'...':''}`; if(action==='delete') return `Registro removido com ${keys.length} dado(s) gravado(s)`; return `Detalhes: ${keys.slice(0,5).map(labelField).join(', ')}${keys.length>5?'...':''}`; };
     const unique = (key) => Array.from(new Set(rows.map((row)=>String(row[key]||'').toLowerCase()).filter(Boolean))).sort();
     const matches = (row, search, action, entity) => { const all = [row.usuario,row.usuario_email,row.acao,row.entidade,row.entidade_id,row.ip,row.created_at,JSON.stringify(row.detalhes||{})].join(' ').toLowerCase(); return (!search || all.includes(search)) && (!action || String(row.acao||'').toLowerCase()===action) && (!entity || String(row.entidade||'').toLowerCase()===entity); };
