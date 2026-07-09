@@ -9,6 +9,7 @@ try {
         LIMIT 300");
 
     $productCache = [];
+    $orderCache = [];
     $productLookup = static function ($produtoId) use ($auditDb, &$productCache): ?array {
         $id = (int)($produtoId ?? 0);
         if ($id <= 0) {
@@ -40,6 +41,62 @@ try {
             return null;
         }
     };
+    $orderLookup = static function ($pedidoId) use ($auditDb, &$orderCache): ?array {
+        $id = (int)($pedidoId ?? 0);
+        if ($id <= 0) {
+            return null;
+        }
+        if (array_key_exists($id, $orderCache)) {
+            return $orderCache[$id];
+        }
+        try {
+            $orderStmt = $auditDb->prepare(
+                "SELECT p.id, p.codigo, p.status, p.total, p.created_at,
+                        c.nome_fantasia AS cliente_nome_fantasia,
+                        c.razao_social AS cliente_razao_social
+                 FROM pedidos p
+                 LEFT JOIN clientes c ON c.id = p.cliente_id
+                 WHERE p.id = :id
+                 LIMIT 1"
+            );
+            $orderStmt->execute(['id' => $id]);
+            $order = $orderStmt->fetch(\PDO::FETCH_ASSOC) ?: null;
+            if (!$order) {
+                $orderCache[$id] = null;
+                return null;
+            }
+            $codigo = trim((string)($order['codigo'] ?? ''));
+            $cliente = trim((string)($order['cliente_nome_fantasia'] ?? ''));
+            if ($cliente === '') {
+                $cliente = trim((string)($order['cliente_razao_social'] ?? ''));
+            }
+            $status = trim((string)($order['status'] ?? ''));
+            $total = (float)($order['total'] ?? 0);
+            $parts = [];
+            $parts[] = $codigo !== '' ? 'Pedido ' . $codigo : 'Pedido #' . $id;
+            if ($cliente !== '') {
+                $parts[] = $cliente;
+            }
+            if ($status !== '') {
+                $parts[] = 'status ' . $status;
+            }
+            if ($total > 0) {
+                $parts[] = 'R$ ' . number_format($total, 2, ',', '.');
+            }
+            $orderCache[$id] = [
+                'id' => $id,
+                'codigo' => $codigo,
+                'cliente' => $cliente,
+                'status' => $status,
+                'total' => $total,
+                'label' => implode(' - ', $parts),
+            ];
+            return $orderCache[$id];
+        } catch (\Throwable $exception) {
+            $orderCache[$id] = null;
+            return null;
+        }
+    };
     $enrichProducts = null;
     $enrichProducts = static function (&$value) use (&$enrichProducts, $productLookup): void {
         if (!is_array($value)) {
@@ -65,6 +122,18 @@ try {
             $details = [];
         }
         $enrichProducts($details);
+        $entity = (string)($row['entidade'] ?? '');
+        if (in_array(strtolower($entity), ['pedido', 'pedidos'], true)) {
+            $order = $orderLookup($row['entidade_id'] ?? null);
+            if ($order) {
+                $details['pedido_id'] = $details['pedido_id'] ?? $order['id'];
+                $details['pedido_codigo'] = $details['pedido_codigo'] ?? $order['codigo'];
+                $details['pedido_cliente'] = $details['pedido_cliente'] ?? $order['cliente'];
+                $details['pedido_total'] = $details['pedido_total'] ?? $order['total'];
+                $details['pedido_status_atual'] = $details['pedido_status_atual'] ?? $order['status'];
+                $details['pedido_label'] = $details['pedido_label'] ?? $order['label'];
+            }
+        }
         $userName = trim((string)($row['usuario_nome'] ?? ''));
         if ($userName === '' && !empty($row['usuario_id'])) {
             $userName = 'Usuario #' . (int)$row['usuario_id'];
@@ -105,7 +174,7 @@ try {
     const dateParts = (value) => { const v = text(value,'N\u00e3o registrado'); const m = v.match(/^(\d{4}-\d{2}-\d{2})\s+(\d{2}:\d{2}(?::\d{2})?)$/); return m ? {date:m[1],time:m[2]} : {date:v,time:''}; };
     const detailKeys = (details) => (!details || typeof details !== 'object' || Array.isArray(details)) ? [] : Object.keys(details).filter((key)=>!['dispositivo','localidade','antes','depois','mudancas'].includes(key));
     const changeKeys = (details) => details && details.mudancas && typeof details.mudancas === 'object' && !Array.isArray(details.mudancas) ? Object.keys(details.mudancas) : [];
-    const labelField = (key) => ({preco:'Pre\u00e7o',valor:'Valor',total:'Total',frete_valor:'Frete',desconto:'Desconto',desconto_tipo:'Tipo de desconto',desconto_valor_original:'Desconto informado',cliente_id:'Cliente',forma_pagto:'Pagamento',observacoes:'Observa\u00e7\u00f5es',status:'Status',itens:'Itens',nome:'Nome',sku:'SKU',categoria:'Categoria',tipo:'Tipo',unidade:'Unidade',peso_liquido:'Peso l\u00edquido',shelf_life_dias:'Validade',is_ativo:'Ativo',mostrar_portal:'Portal',produto_id:'Produto',produto_nome:'Produto',produto_sku:'SKU do produto',produto_label:'Produto',data_referencia:'Data',quantidade:'Quantidade',lote:'Lote',validade:'Validade',origem:'Origem',destino:'Destino',ref_tipo:'Refer\u00eancia',ref_id:'ID refer\u00eancia',registro:'Registro',observacao:'Observa\u00e7\u00e3o',custo_unit:'Custo unit\u00e1rio',usuario_id:'Usu\u00e1rio'}[key] || String(key||'Campo').replace(/_/g,' '));
+    const labelField = (key) => ({preco:'Pre\u00e7o',valor:'Valor',total:'Total',frete_valor:'Frete',desconto:'Desconto',desconto_tipo:'Tipo de desconto',desconto_valor_original:'Desconto informado',cliente_id:'Cliente',forma_pagto:'Pagamento',observacoes:'Observa\u00e7\u00f5es',status:'Status',itens:'Itens',nome:'Nome',sku:'SKU',categoria:'Categoria',tipo:'Tipo',unidade:'Unidade',peso_liquido:'Peso l\u00edquido',shelf_life_dias:'Validade',is_ativo:'Ativo',mostrar_portal:'Portal',produto_id:'Produto',produto_nome:'Produto',produto_sku:'SKU do produto',produto_label:'Produto',pedido_id:'Pedido',pedido_codigo:'Codigo do pedido',pedido_cliente:'Cliente do pedido',pedido_total:'Total do pedido',pedido_status_atual:'Status atual',pedido_label:'Pedido',data_referencia:'Data',quantidade:'Quantidade',lote:'Lote',validade:'Validade',origem:'Origem',destino:'Destino',ref_tipo:'Refer\u00eancia',ref_id:'ID refer\u00eancia',registro:'Registro',observacao:'Observa\u00e7\u00e3o',custo_unit:'Custo unit\u00e1rio',usuario_id:'Usu\u00e1rio'}[key] || String(key||'Campo').replace(/_/g,' '));
     const moneyField = (key) => /(^preco$|valor|total|desconto|frete)/i.test(String(key||''));
     const itemNameMap = (change) => { const map = {}; [change?.antes, change?.depois].forEach((items)=>{ if(!Array.isArray(items)) return; items.forEach((item)=>{ const id = String(item?.produto_id || '').trim(); const name = text(item?.nome || item?.produto_nome || item?.sku, ''); if(id && name) map[id] = name; }); }); return map; };
     const itemName = (item, names = {}) => text(item?.nome || item?.produto_nome || item?.sku || names[String(item?.produto_id || '').trim()] || (item?.produto_id ? `Produto #${item.produto_id}` : ''), '');
@@ -115,6 +184,7 @@ try {
     const itemListText = (items, names = {}) => { const groups = itemGroups(items, names); const prefix = `${items.length} ${items.length===1?'item':'itens'}`; if(!groups.length) return prefix; return `${prefix}:\n${groups.map((group)=>`${itemQtyText(group.quantidade)}x ${group.name}${group.linhas > 1 ? ` (${group.linhas} lan\u00e7amentos)` : ''}`).join('\n')}`; };
     const valueText = (key,value,change = {}) => { if(String(key)==='produto_id' && change?.produto_label) return change.produto_label; if(value === null || value === undefined || value === '') return 'vazio'; if(Array.isArray(value)) return String(key) === 'itens' ? itemListText(value, itemNameMap(change)) : `${value.length} ${value.length===1?'item':'itens'}`; if(typeof value === 'object') return JSON.stringify(value); if(moneyField(key) && !Number.isNaN(Number(String(value).replace(',','.')))) return Number(String(value).replace(',','.')).toLocaleString('pt-BR',{style:'currency',currency:'BRL'}); return String(value); };
     const productName = (details) => text(details?.produto_label || details?.produto_nome || details?.nome || details?.depois?.produto_label || details?.depois?.produto_nome || details?.depois?.nome || details?.antes?.produto_label || details?.antes?.produto_nome || details?.antes?.nome, '');
+    const orderName = (details) => text(details?.pedido_label || details?.pedido_codigo || details?.depois?.pedido_label || details?.antes?.pedido_label, '');
     const singleValueRow = (label, value) => `<div class="audit-change-row"><b>${escapeHtml(label)}</b><span style="grid-column:2 / 5;text-align:left;">${escapeHtml(value)}</span></div>`;
     const flatSummary = (details, row = {}) => {
         const rows = [];
@@ -122,16 +192,18 @@ try {
         rows.push(singleValueRow('M\u00f3dulo', entityLabel(row.entidade)));
         const product = productName(details);
         if(product) rows.push(singleValueRow('Produto', product));
-        const important = ['registro','tipo','data_referencia','quantidade','custo_unit','lote','validade','origem','destino','ref_tipo','ref_id','observacao','status'];
+        const order = orderName(details);
+        if(order) rows.push(singleValueRow('Pedido', order));
+        const important = ['registro','tipo','data_referencia','quantidade','custo_unit','lote','validade','origem','destino','ref_tipo','ref_id','observacao','status','pedido_cliente','pedido_total','pedido_status_atual'];
         important.forEach((key) => {
             if(!(key in (details || {}))) return;
             rows.push(singleValueRow(labelField(key), valueText(key, details[key], details)));
         });
-        const extras = detailKeys(details).filter((key)=>!important.includes(key) && !['produto_id','produto_nome','produto_sku','produto_label','user_agent'].includes(key)).slice(0,6);
+        const extras = detailKeys(details).filter((key)=>!important.includes(key) && !['produto_id','produto_nome','produto_sku','produto_label','pedido_id','pedido_codigo','pedido_label','user_agent'].includes(key)).slice(0,6);
         extras.forEach((key)=>rows.push(singleValueRow(labelField(key), valueText(key, details[key], details))));
         return rows.join('') || '<div class="audit-change-row"><span>Nenhum detalhe adicional registrado.</span></div>';
     };
-    const changeSummary = (details, row = {}) => { const changes = details && details.mudancas && typeof details.mudancas === 'object' ? details.mudancas : {}; const entries = Object.entries(changes); const isProduct = ['produto','produtos'].includes(String(row.entidade || '').toLowerCase()); const header = entries.length && (isProduct || productName(details)) && productName(details) ? singleValueRow('Produto', productName(details)) : ''; const body = entries.length ? entries.slice(0,10).map(([key,item])=>`<div class="audit-change-row"><b>${escapeHtml(labelField(key))}</b><span>${escapeHtml(valueText(key,item?.antes,item))}</span><em>&gt;</em><span>${escapeHtml(valueText(key,item?.depois,item))}</span></div>`).join('') : flatSummary(details, row); return header + body; };
+    const changeSummary = (details, row = {}) => { const changes = details && details.mudancas && typeof details.mudancas === 'object' ? details.mudancas : {}; const entries = Object.entries(changes); const isProduct = ['produto','produtos'].includes(String(row.entidade || '').toLowerCase()); const isOrder = ['pedido','pedidos'].includes(String(row.entidade || '').toLowerCase()); const headerParts = []; if(entries.length && (isProduct || productName(details)) && productName(details)) headerParts.push(singleValueRow('Produto', productName(details))); if(entries.length && (isOrder || orderName(details)) && orderName(details)) headerParts.push(singleValueRow('Pedido', orderName(details))); const body = entries.length ? entries.slice(0,10).map(([key,item])=>`<div class="audit-change-row"><b>${escapeHtml(labelField(key))}</b><span>${escapeHtml(valueText(key,item?.antes,item))}</span><em>&gt;</em><span>${escapeHtml(valueText(key,item?.depois,item))}</span></div>`).join('') : flatSummary(details, row); return headerParts.join('') + body; };
     const jsonDepthDelta = (line) => (line.match(/[{\[]/g) || []).length - (line.match(/[}\]]/g) || []).length;
     const colorAuditJson = (details) => {
         const lines = String(JSON.stringify(details,null,2) || '{}').split('\n');
@@ -160,7 +232,7 @@ try {
             return lineClass ? `<span class="${lineClass}">${safeLine}</span>` : safeLine;
         }).join('\n');
     };
-    const summarize = (row) => { const changed = changeKeys(row.detalhes); const keys = changed.length ? changed : detailKeys(row.detalhes); const action = String(row.acao||'').toLowerCase(); const subject = productName(row.detalhes || {}); const suffix = subject ? ` - ${subject}` : ''; if(!keys.length) return `Sem detalhes adicionais${suffix}`; if(action==='update' || action==='status') return `Campos alterados: ${keys.slice(0,5).map(labelField).join(', ')}${suffix}`; if(action==='create') return `Dados adicionados: ${keys.slice(0,5).map(labelField).join(', ')}${suffix}`; if(action==='delete') return `Registro removido com ${keys.length} dado(s) gravado(s)${suffix}`; if(action==='movimento' || action==='planejamento') return `${actionLabel(action)}${suffix}`; return `Detalhes: ${keys.slice(0,5).map(labelField).join(', ')}${suffix}`; };
+    const summarize = (row) => { const changed = changeKeys(row.detalhes); const keys = changed.length ? changed : detailKeys(row.detalhes); const action = String(row.acao||'').toLowerCase(); const product = productName(row.detalhes || {}); const order = orderName(row.detalhes || {}); const subject = order || product; const suffix = subject ? ` - ${subject}` : ''; if(!keys.length) return `Sem detalhes adicionais${suffix}`; if(action==='update' || action==='status') return `Campos alterados: ${keys.slice(0,5).map(labelField).join(', ')}${suffix}`; if(action==='create') return `Dados adicionados: ${keys.slice(0,5).map(labelField).join(', ')}${suffix}`; if(action==='delete') return `Registro removido com ${keys.length} dado(s) gravado(s)${suffix}`; if(action==='movimento' || action==='planejamento') return `${actionLabel(action)}${suffix}`; return `Detalhes: ${keys.slice(0,5).map(labelField).join(', ')}${suffix}`; };
     const unique = (key) => Array.from(new Set(rows.map((row)=>String(row[key]||'').toLowerCase()).filter(Boolean))).sort();
     const matches = (row, search, action, entity) => { const all = [row.usuario,row.usuario_email,row.acao,row.entidade,row.entidade_id,row.ip,row.created_at,JSON.stringify(row.detalhes||{})].join(' ').toLowerCase(); return (!search || all.includes(search)) && (!action || String(row.acao||'').toLowerCase()===action) && (!entity || String(row.entidade||'').toLowerCase()===entity); };
     const activate = (tab) => { document.querySelectorAll('.tab-button').forEach((button)=>{ const active = button.dataset.tab === tab; button.classList.toggle('active',active); button.setAttribute('aria-selected',active?'true':'false'); }); document.querySelectorAll('.tab-panel').forEach((panel)=>panel.classList.toggle('active',panel.dataset.tabPanel===tab)); document.querySelectorAll('input[name="active_tab"]').forEach((input)=>{ input.value = tab; }); localStorage.setItem('configTab',tab); };
