@@ -1929,17 +1929,19 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
                 const isActive = Number(item.is_ativo ?? 1) === 1;
                 const isPortalVisible = Number(item.mostrar_portal ?? 1) === 1;
                 window.productInfoMap = window.productInfoMap || {};
-                if (!window.productInfoMap[itemId]) {
-                    window.productInfoMap[itemId] = {
-                        id: itemId,
-                        sku: item.sku || '',
-                        nome: item.nome || '',
-                        shelf_life_dias: Number(item.shelf_life_dias || 0),
-                        created_at: item.created_at || '',
-                        updated_at: '',
-                        prices: (window.historyPorProduto && window.historyPorProduto[itemId] ? window.historyPorProduto[itemId] : []).slice(0, 6),
-                    };
-                }
+                const currentInfo = window.productInfoMap[itemId] || {};
+                window.productInfoMap[itemId] = {
+                    ...currentInfo,
+                    id: itemId,
+                    sku: item.sku || '',
+                    nome: item.nome || '',
+                    shelf_life_dias: Number(item.shelf_life_dias || 0),
+                    created_at: item.created_at || currentInfo.created_at || '',
+                    updated_at: currentInfo.updated_at || '',
+                    prices: Array.isArray(currentInfo.prices)
+                        ? currentInfo.prices.slice(0, 6)
+                        : ((window.historyPorProduto && window.historyPorProduto[itemId] ? window.historyPorProduto[itemId] : []).slice(0, 6)),
+                };
 
                 return `
                     <tr>
@@ -2365,6 +2367,17 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
                         return payload;
                     })
                     .then((payload) => {
+                        const productId = Number(payload.product_id || id || 0);
+                        if (productId > 0 && Array.isArray(payload.prices)) {
+                            window.historyPorProduto = window.historyPorProduto || {};
+                            window.productInfoMap = window.productInfoMap || {};
+                            const latestPrices = payload.prices.slice(0, 6);
+                            window.historyPorProduto[productId] = latestPrices;
+                            window.productInfoMap[productId] = {
+                                ...(window.productInfoMap[productId] || {}),
+                                prices: latestPrices,
+                            };
+                        }
                         closeModal();
                         window.showAppToast?.(payload.message || 'Produto atualizado com sucesso.');
                         fetchCatalog();

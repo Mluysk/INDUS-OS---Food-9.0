@@ -342,6 +342,8 @@ class ProdutosController extends Controller
     {
         $this->auth->ensureRole(['admin','gestor']);
         $data = json_decode(file_get_contents('php://input'), true) ?: $_POST;
+        $produtoId = (int)$id;
+        $produtoAntes = $this->produtos->fichaTecnica($produtoId)['produto'] ?? null;
 
         try {
             $this->aplicarRemocaoImagens($data);
@@ -353,7 +355,8 @@ class ProdutosController extends Controller
             if ($imagemProntoPath !== null) {
                 $data['imagem_pronto_path'] = $imagemProntoPath;
             }
-            $this->produtos->update((int)$id, $data, $this->auth->user()['id']);
+            $this->produtos->update($produtoId, $data, $this->auth->user()['id']);
+            $this->registrarHistoricoPrecoEdicao($produtoId, $produtoAntes, $data);
         } catch (\InvalidArgumentException $e) {
             if ($this->wantsJson()) {
                 $this->json(['error' => $e->getMessage()], 422);
@@ -365,7 +368,11 @@ class ProdutosController extends Controller
         }
 
         if ($this->wantsJson()) {
-            $this->json(['message' => 'Produto atualizado com sucesso.']);
+            $this->json([
+                'message' => 'Produto atualizado com sucesso.',
+                'product_id' => $produtoId,
+                'prices' => array_slice($this->lancamentos->listarPorProdutos([$produtoId]), 0, 6),
+            ]);
         } else {
             $this->setFlash('success', 'Produto atualizado com sucesso.');
             $this->redirect('/produtos');
@@ -422,6 +429,25 @@ class ProdutosController extends Controller
         }
         $this->setFlash('success', $message);
         $this->redirect('/produtos?tab=lista');
+    }
+
+    private function registrarHistoricoPrecoEdicao(int $produtoId, ?array $produtoAntes, array $data): void
+    {
+        if ($produtoId <= 0 || !array_key_exists('preco', $data)) {
+            return;
+        }
+
+        $precoNovo = (float)str_replace(',', '.', (string)($data['preco'] ?? 0));
+        $precoAnterior = (float)($produtoAntes['preco'] ?? 0);
+        if (abs($precoNovo - $precoAnterior) < 0.005) {
+            return;
+        }
+
+        $this->lancamentos->criar([
+            'produto_id' => $produtoId,
+            'preco' => $precoNovo,
+            'usuario_id' => (int)$this->auth->user()['id'],
+        ]);
     }
 
     private function salvarImagemProduto(string $field): ?string
