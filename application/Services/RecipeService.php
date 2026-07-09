@@ -56,7 +56,7 @@ class RecipeService
     {
         $normalized = [
             'term' => isset($filters['term']) ? trim((string)$filters['term']) : null,
-            'active' => isset($filters['active']) ? $filters['active'] : null,
+            'active' => isset($filters['active']) && in_array((string)$filters['active'], ['0', '1'], true) ? (string)$filters['active'] : null,
         ];
         $normalized = array_filter($normalized, static fn($v) => $v !== null && $v !== '');
         return $this->recipes->search($normalized);
@@ -125,6 +125,18 @@ class RecipeService
         }
 
         $recipeId = (int)($produto['recipe_id'] ?? 0);
+        if ($recipeId > 0) {
+            $linkedRecipe = $this->recipes->find($recipeId);
+            if (!$linkedRecipe || (int)($linkedRecipe['active'] ?? 1) !== 1) {
+                $recipeId = 0;
+            }
+        }
+
+        if ($recipeId <= 0) {
+            $activeRecipe = $this->recipes->findActiveByProdutoPaId($produtoId);
+            $recipeId = $activeRecipe ? (int)($activeRecipe['id'] ?? 0) : 0;
+        }
+
         if ($recipeId <= 0) {
             return null;
         }
@@ -247,7 +259,10 @@ class RecipeService
         $factor = $producedQty / $yieldQty;
         $conn = $this->recipes->getConnection();
 
-        $conn->beginTransaction();
+        $startedTransaction = !$conn->inTransaction();
+        if ($startedTransaction) {
+            $conn->beginTransaction();
+        }
         try {
             $runId = $this->runs->create([
                 'recipe_id' => $recipeId,
@@ -312,11 +327,15 @@ class RecipeService
                 'margin_percent' => $margin,
             ]);
 
-            $conn->commit();
+            if ($startedTransaction) {
+                $conn->commit();
+            }
 
             return $runId;
         } catch (\Throwable $e) {
-            $conn->rollBack();
+            if ($startedTransaction && $conn->inTransaction()) {
+                $conn->rollBack();
+            }
             throw $e;
         }
     }

@@ -34,9 +34,11 @@ class ReceitasController extends Controller
             'active' => $_GET['active'] ?? null,
         ];
         $recipes = $this->recipes->listRecipes($filters);
+        $paRecipeRows = $this->buildPARecipeRows($filters);
 
         $this->render('receitas/list', [
             'recipes' => $recipes,
+            'paRecipeRows' => $paRecipeRows,
             'filters' => $filters,
         ], [
             'title' => 'Receitas',
@@ -54,6 +56,7 @@ class ReceitasController extends Controller
             'nextSku' => $this->recipes->getNextSku(),
             'products' => $this->listProducts(),
             'paProducts' => $this->listPAProducts(),
+            'selectedPaId' => max(0, (int)($_GET['produto_pa_id'] ?? 0)),
             'units' => $this->units(),
         ], [
             'title' => 'Nova receita',
@@ -251,6 +254,72 @@ class ReceitasController extends Controller
             'sort' => 'nome',
             'dir' => 'asc',
         ]);
+    }
+
+    private function buildPARecipeRows(array $filters = []): array
+    {
+        $paFilters = [
+            'tipo' => 'PA',
+            'sort' => 'nome',
+            'dir' => 'asc',
+        ];
+        if (!empty($filters['term'])) {
+            $paFilters['term'] = $filters['term'];
+        }
+
+        $paProducts = $this->produtos->search($paFilters);
+        $recipes = $this->recipes->listRecipes([]);
+        $recipesByProduct = [];
+        foreach ($recipes as $recipe) {
+            $produtoPaId = (int)($recipe['produto_pa_id'] ?? 0);
+            if ($produtoPaId > 0 && !isset($recipesByProduct[$produtoPaId])) {
+                $recipesByProduct[$produtoPaId] = $recipe;
+            }
+        }
+
+        $activeFilter = (string)($filters['active'] ?? '');
+        $rows = [];
+        foreach ($paProducts as $product) {
+            $productId = (int)($product['id'] ?? 0);
+            $recipe = $recipesByProduct[$productId] ?? null;
+            $status = 'none';
+            $statusLabel = 'Cadastrar receita';
+
+            if ($recipe) {
+                if ((int)($recipe['active'] ?? 1) !== 1) {
+                    $status = 'inactive';
+                    $statusLabel = 'Inativa';
+                } elseif ((int)($recipe['item_count'] ?? 0) <= 0) {
+                    $status = 'review';
+                    $statusLabel = 'Revisao';
+                } else {
+                    $status = 'active';
+                    $statusLabel = 'Ativa';
+                }
+            }
+
+            if ($activeFilter === '1' && !in_array($status, ['active', 'review'], true)) {
+                continue;
+            }
+            if ($activeFilter === '0' && $status !== 'inactive') {
+                continue;
+            }
+            if ($activeFilter === 'none' && $status !== 'none') {
+                continue;
+            }
+            if ($activeFilter === 'review' && $status !== 'review') {
+                continue;
+            }
+
+            $rows[] = [
+                'product' => $product,
+                'recipe' => $recipe,
+                'status' => $status,
+                'status_label' => $statusLabel,
+            ];
+        }
+
+        return $rows;
     }
 
     private function units(): array

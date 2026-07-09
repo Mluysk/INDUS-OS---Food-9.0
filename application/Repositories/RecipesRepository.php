@@ -34,7 +34,16 @@ class RecipesRepository extends BaseRepository
 
     public function search(array $filters = []): array
     {
-        $sql = "SELECT r.*, p.sku AS produto_pa_sku, p.nome AS produto_pa_nome FROM {$this->table} r LEFT JOIN produtos p ON p.id = r.produto_pa_id WHERE 1=1";
+        $sql = "SELECT r.*, p.sku AS produto_pa_sku, p.nome AS produto_pa_nome,
+                       COALESCE(ri.item_count, 0) AS item_count
+                FROM {$this->table} r
+                LEFT JOIN produtos p ON p.id = r.produto_pa_id
+                LEFT JOIN (
+                    SELECT recipe_id, COUNT(*) AS item_count
+                    FROM recipe_items
+                    GROUP BY recipe_id
+                ) ri ON ri.recipe_id = r.id
+                WHERE 1=1";
         $params = [];
 
         if (!empty($filters['term'])) {

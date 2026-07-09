@@ -12,9 +12,18 @@
 .badge { display: inline-flex; align-items: center; padding: 4px 10px; border-radius: 999px; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; }
 .badge-success { background: rgba(16,185,129,0.18); color: #0f766e; }
 .badge-muted { background: rgba(148,163,184,0.18); color: #475569; }
+.badge-warning { background: rgba(245,158,11,0.18); color: #92400e; }
+.badge-danger { background: rgba(239,68,68,0.14); color: #b91c1c; }
 .filter-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-top: 12px; }
 .filter-grid label { font-size: 0.82rem; color: var(--muted, #6b7280); display: flex; flex-direction: column; gap: 6px; }
 .filter-grid input, .filter-grid select { border: 1px solid var(--border, #e5e7eb); border-radius: 10px; padding: 8px 10px; background: var(--surface-alt, #f8fafc); }
+.pa-recipe-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; margin-top: 14px; }
+.pa-recipe-card { border: 1px solid rgba(148,163,184,0.32); border-radius: 12px; padding: 14px; background: rgba(248,250,252,0.76); display: flex; flex-direction: column; gap: 12px; }
+.pa-recipe-card__head { display: flex; justify-content: space-between; gap: 10px; align-items: flex-start; }
+.pa-recipe-card__sku { display: inline-flex; width: max-content; border-radius: 999px; padding: 3px 9px; background: rgba(15,23,42,0.08); font-size: 0.72rem; font-weight: 800; color: #334155; margin-bottom: 6px; }
+.pa-recipe-card__name { margin: 0; font-size: 0.96rem; line-height: 1.25; color: #0f172a; }
+.pa-recipe-card__meta { margin: 0; color: var(--muted, #64748b); font-size: 0.82rem; }
+.pa-recipe-card__actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: auto; }
 </style>
 
 <section class="panel">
@@ -40,6 +49,8 @@
                 <option value="">Todos</option>
                 <option value="1" <?= ($filters['active'] ?? '') === '1' ? 'selected' : ''; ?>>Ativo</option>
                 <option value="0" <?= ($filters['active'] ?? '') === '0' ? 'selected' : ''; ?>>Inativo</option>
+                <option value="review" <?= ($filters['active'] ?? '') === 'review' ? 'selected' : ''; ?>>Revisao</option>
+                <option value="none" <?= ($filters['active'] ?? '') === 'none' ? 'selected' : ''; ?>>Sem receita</option>
             </select>
         </label>
         <label style="align-self:flex-end;">
@@ -68,7 +79,9 @@
                             <td><?= htmlspecialchars($recipe['sku'] ?? '—', ENT_QUOTES, 'UTF-8'); ?></td>
                             <td><?= number_format((float)($recipe['yield_qty'] ?? 0), 3, ',', '.'); ?> <?= htmlspecialchars($recipe['yield_unit'] ?? '', ENT_QUOTES, 'UTF-8'); ?></td>
                             <td>
-                                <?php if ((int)($recipe['active'] ?? 1) === 1): ?>
+                                <?php if ((int)($recipe['active'] ?? 1) === 1 && (int)($recipe['item_count'] ?? 0) <= 0): ?>
+                                    <span class="badge badge-warning">Revisao</span>
+                                <?php elseif ((int)($recipe['active'] ?? 1) === 1): ?>
                                     <span class="badge badge-success">Ativa</span>
                                 <?php else: ?>
                                     <span class="badge badge-muted">Inativa</span>
@@ -89,5 +102,62 @@
                 <?php endif; ?>
             </tbody>
         </table>
+    </div>
+</section>
+
+<section class="panel">
+    <div class="panel-header">
+        <div>
+            <h3>Produtos P.A cadastrados</h3>
+            <p class="panel-description">Veja quais produtos acabados ja possuem receita, quais precisam cadastrar e quais precisam revisao.</p>
+        </div>
+    </div>
+
+    <div class="pa-recipe-grid">
+        <?php if (!empty($paRecipeRows)): ?>
+            <?php foreach ($paRecipeRows as $row): ?>
+                <?php
+                    $product = $row['product'] ?? [];
+                    $recipe = $row['recipe'] ?? null;
+                    $status = (string)($row['status'] ?? 'none');
+                    $badgeClass = [
+                        'active' => 'badge-success',
+                        'review' => 'badge-warning',
+                        'inactive' => 'badge-muted',
+                        'none' => 'badge-danger',
+                    ][$status] ?? 'badge-muted';
+                ?>
+                <article class="pa-recipe-card">
+                    <div class="pa-recipe-card__head">
+                        <div>
+                            <span class="pa-recipe-card__sku"><?= htmlspecialchars((string)($product['sku'] ?? 'SEM-SKU'), ENT_QUOTES, 'UTF-8'); ?></span>
+                            <h4 class="pa-recipe-card__name"><?= htmlspecialchars((string)($product['nome'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></h4>
+                        </div>
+                        <span class="badge <?= $badgeClass; ?>"><?= htmlspecialchars((string)($row['status_label'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></span>
+                    </div>
+                    <?php if ($recipe): ?>
+                        <p class="pa-recipe-card__meta">
+                            Receita #<?= (int)($recipe['id'] ?? 0); ?> - rendimento
+                            <?= number_format((float)($recipe['yield_qty'] ?? 0), 3, ',', '.'); ?>
+                            <?= htmlspecialchars((string)($recipe['yield_unit'] ?? ''), ENT_QUOTES, 'UTF-8'); ?>
+                        </p>
+                        <div class="pa-recipe-card__actions">
+                            <a class="btn ghost" href="<?= htmlspecialchars($url('receitas/' . (int)$recipe['id']), ENT_QUOTES, 'UTF-8'); ?>">Detalhar</a>
+                            <a class="btn ghost" href="<?= htmlspecialchars($url('receitas/' . (int)$recipe['id'] . '/editar'), ENT_QUOTES, 'UTF-8'); ?>">Editar</a>
+                            <?php if ($status === 'active'): ?>
+                                <a class="btn primary" href="<?= htmlspecialchars($url('receitas/' . (int)$recipe['id'] . '/executar'), ENT_QUOTES, 'UTF-8'); ?>">Executar</a>
+                            <?php endif; ?>
+                        </div>
+                    <?php else: ?>
+                        <p class="pa-recipe-card__meta">Sem receita vinculada para baixa automatica de MP.</p>
+                        <div class="pa-recipe-card__actions">
+                            <a class="btn primary" href="<?= htmlspecialchars($url('receitas/nova?produto_pa_id=' . (int)($product['id'] ?? 0)), ENT_QUOTES, 'UTF-8'); ?>">Criar nova receita</a>
+                        </div>
+                    <?php endif; ?>
+                </article>
+            <?php endforeach; ?>
+        <?php else: ?>
+            <p class="panel-description">Nenhum produto P.A encontrado.</p>
+        <?php endif; ?>
     </div>
 </section>

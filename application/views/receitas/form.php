@@ -7,6 +7,7 @@ $paProducts = $paProducts ?? [];
 $units = $units ?? ['kg', 'g', 'l', 'ml', 'un'];
 $nextSku = $nextSku ?? '';
 $skuValue = trim((string)($recipe['sku'] ?? ''));
+$selectedPaId = (int)($selectedPaId ?? 0);
 ?>
 <style>
 .panel { background: var(--surface, #fff); border-radius: 14px; padding: 18px; box-shadow: 0 10px 30px rgba(0,0,0,0.06); margin-bottom: 16px; }
@@ -45,7 +46,7 @@ $skuValue = trim((string)($recipe['sku'] ?? ''));
                         <option value="<?= $paId; ?>"
                             data-sku="<?= htmlspecialchars((string)($pa['sku'] ?? ''), ENT_QUOTES, 'UTF-8'); ?>"
                             data-nome="<?= htmlspecialchars((string)($pa['nome'] ?? ''), ENT_QUOTES, 'UTF-8'); ?>"
-                            <?= (int)($recipe['produto_pa_id'] ?? 0) === $paId ? 'selected' : ''; ?>>
+                            <?= ((int)($recipe['produto_pa_id'] ?? 0) === $paId || (!$isEdit && $selectedPaId === $paId)) ? 'selected' : ''; ?>>
                             <?= htmlspecialchars(((string)($pa['sku'] ?? 'SEM-SKU')).' — '.((string)($pa['nome'] ?? '')), ENT_QUOTES, 'UTF-8'); ?>
                         </option>
                     <?php endforeach; ?>
