@@ -770,8 +770,8 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
                 <input type="date" name="recebimento_data_vencimento">
             </label>
             <label>
-                <span class="mp-only__label">Preço de compra</span>
-                <input type="number" step="0.01" name="recebimento_preco" placeholder="0,00">
+                <span class="mp-only__label" data-recebimento-valor-label>Valor do kg ou un</span>
+                <input type="text" inputmode="decimal" name="recebimento_preco" placeholder="0,00">
             </label>
             </div>
         </div>
@@ -1611,6 +1611,8 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
         const editClose = document.getElementById('edit-close');
         const editCancel = document.getElementById('edit-cancel');
         const mpRecebimento = document.getElementById('mp-recebimento');
+        const recebimentoUnidade = createForm?.querySelector('select[name="recebimento_unidade"]');
+        const recebimentoValorLabel = createForm?.querySelector('[data-recebimento-valor-label]');
         const tabButtons = Array.from(document.querySelectorAll('.tab-button'));
         const tabPanels = Array.from(document.querySelectorAll('.tab-panel'));
         const lancamentoSelect = document.querySelector('select[name="lancamento_produto"]');
@@ -1877,14 +1879,22 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
             toggleProductImageGallery(createForm);
         };
 
+        const updateRecebimentoValorLabel = () => {
+            if (!recebimentoValorLabel) return;
+            const unidade = String(recebimentoUnidade?.value || '').trim();
+            recebimentoValorLabel.textContent = unidade ? `Valor do ${unidade}` : 'Valor do kg ou un';
+        };
+
         if (createForm) {
             const tipoField = createForm.querySelector('select[name="tipo"]');
             tipoField?.addEventListener('change', () => {
                 applyAutoSku();
                 toggleMpRecebimento();
             });
+            recebimentoUnidade?.addEventListener('change', updateRecebimentoValorLabel);
             applyAutoSku();
             toggleMpRecebimento();
+            updateRecebimentoValorLabel();
         }
 
         editForm?.querySelector('select[name="tipo"]')?.addEventListener('change', () => {

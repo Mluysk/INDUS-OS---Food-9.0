@@ -214,9 +214,7 @@ class ProdutosController extends Controller
             return;
         }
 
-        $quantidade = isset($data['recebimento_quantidade'])
-            ? (float)str_replace(',', '.', (string)$data['recebimento_quantidade'])
-            : 0;
+        $quantidade = $this->normalizeDecimal($data['recebimento_quantidade'] ?? 0);
         if ($quantidade <= 0) {
             return;
         }
@@ -228,7 +226,7 @@ class ProdutosController extends Controller
             'quantidade' => $quantidade,
             'lote' => $this->sanitizeText($data['recebimento_lote'] ?? null),
             'validade' => $this->normalizeDate($data['recebimento_data_vencimento'] ?? null),
-            'custo_unit' => isset($data['recebimento_preco']) ? (float)$data['recebimento_preco'] : 0,
+            'custo_unit' => $this->normalizeDecimal($data['recebimento_preco'] ?? 0),
             'usuario_id' => $this->auth->user()['id'],
         ], $this->auth->user()['id']);
     }
@@ -237,7 +235,7 @@ class ProdutosController extends Controller
     {
         return [
             'produto_id' => $produtoId,
-            'preco' => isset($data[$prefix.'preco']) ? (float)$data[$prefix.'preco'] : 0,
+            'preco' => $this->normalizeDecimal($data[$prefix.'preco'] ?? 0),
             'fornecedor' => $this->sanitizeText($data[$prefix.'fornecedor'] ?? null),
             'data_entrega' => $this->normalizeDate($data[$prefix.'data_entrega'] ?? null),
             'lote' => $this->sanitizeText($data[$prefix.'lote'] ?? null),
@@ -260,6 +258,24 @@ class ProdutosController extends Controller
         }
 
         return $date->format('Y-m-d');
+    }
+
+    private function normalizeDecimal(mixed $value): float
+    {
+        $value = trim((string)$value);
+        if ($value === '') {
+            return 0.0;
+        }
+
+        $value = preg_replace('/[^0-9,.-]/', '', $value) ?? '';
+        if (str_contains($value, ',') && str_contains($value, '.')) {
+            $value = str_replace('.', '', $value);
+            $value = str_replace(',', '.', $value);
+        } else {
+            $value = str_replace(',', '.', $value);
+        }
+
+        return is_numeric($value) ? (float)$value : 0.0;
     }
 
     private function sanitizeText(?string $value): ?string
