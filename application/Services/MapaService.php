@@ -392,7 +392,15 @@ class MapaService
             return false;
         }
 
-        return (int)($produto['recipe_id'] ?? 0) > 0;
+        if ((int)($produto['recipe_id'] ?? 0) > 0) {
+            return true;
+        }
+
+        $conn = $this->produtos->getConnection();
+        $stmt = $conn->prepare('SELECT id FROM recipes WHERE produto_pa_id = :produto AND active = 1 LIMIT 1');
+        $stmt->execute(['produto' => $produtoId]);
+
+        return (bool)$stmt->fetchColumn();
     }
 
     /**
