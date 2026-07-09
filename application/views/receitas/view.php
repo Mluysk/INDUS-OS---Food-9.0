@@ -29,7 +29,6 @@ $totalCost = $simulation['total_cost'] ?? 0;
         <div style="display:flex; gap:8px;">
             <a class="btn ghost" href="<?= htmlspecialchars($url('receitas'), ENT_QUOTES, 'UTF-8'); ?>">Voltar</a>
             <a class="btn ghost" href="<?= htmlspecialchars($url('receitas/' . (int)$recipe['id'] . '/editar'), ENT_QUOTES, 'UTF-8'); ?>">Editar</a>
-            <a class="btn primary" href="<?= htmlspecialchars($url('receitas/' . (int)$recipe['id'] . '/executar'), ENT_QUOTES, 'UTF-8'); ?>">Executar receita</a>
             <a class="btn ghost" href="<?= htmlspecialchars($url('receitas/' . (int)$recipe['id'] . '/runs'), ENT_QUOTES, 'UTF-8'); ?>">Histórico</a>
         </div>
     </div>

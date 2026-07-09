@@ -87,9 +87,6 @@
                         <div class="pa-recipe-card__actions">
                             <a class="btn ghost" href="<?= htmlspecialchars($url('receitas/' . (int)$recipe['id']), ENT_QUOTES, 'UTF-8'); ?>">Detalhar</a>
                             <a class="btn ghost" href="<?= htmlspecialchars($url('receitas/' . (int)$recipe['id'] . '/editar'), ENT_QUOTES, 'UTF-8'); ?>">Editar</a>
-                            <?php if ($status === 'active'): ?>
-                                <a class="btn primary" href="<?= htmlspecialchars($url('receitas/' . (int)$recipe['id'] . '/executar'), ENT_QUOTES, 'UTF-8'); ?>">Executar</a>
-                            <?php endif; ?>
                         </div>
                     <?php else: ?>
                         <p class="pa-recipe-card__meta">Sem receita vinculada para baixa automatica de MP.</p>

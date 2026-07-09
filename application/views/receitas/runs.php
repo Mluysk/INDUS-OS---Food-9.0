@@ -20,7 +20,6 @@ $runs = $runs ?? [];
         </div>
         <div style="display:flex; gap:8px;">
             <a class="btn ghost" href="<?= htmlspecialchars($url('receitas/' . (int)($recipe['id'] ?? 0)), ENT_QUOTES, 'UTF-8'); ?>">Voltar</a>
-            <a class="btn primary" href="<?= htmlspecialchars($url('receitas/' . (int)($recipe['id'] ?? 0) . '/executar'), ENT_QUOTES, 'UTF-8'); ?>">Nova execução</a>
         </div>
     </div>
 
