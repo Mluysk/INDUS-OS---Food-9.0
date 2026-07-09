@@ -164,6 +164,7 @@ class PedidosService
 
         $pedidoAntes = $pedidoAtual;
         $pedidoAntes['itens'] = $itensAtuais;
+        $itensDepois = $this->itens->listarPorPedido($pedidoId);
         $pedidoDepois = [
             'cliente_id' => $clienteId,
             'observacoes' => $observacoes,
@@ -173,7 +174,7 @@ class PedidosService
             'desconto_tipo' => $descontoTipoFinal,
             'desconto_valor_original' => $descontoValorOriginalFinal,
             'total' => $total,
-            'itens' => $itens,
+            'itens' => $itensDepois,
         ];
         $this->audit->log($usuarioId, 'update', 'pedidos', $pedidoId, $this->audit->withChanges($pedidoAntes, $pedidoDepois));
 
