@@ -42,6 +42,11 @@ class ProdutosService
 
     public function update(int $id, array $data, int $usuarioId): bool
     {
+        $produtoAtual = $this->produtos->find($id);
+        if (!$produtoAtual) {
+            throw new \InvalidArgumentException('Produto nao encontrado.');
+        }
+
         $payload = $this->sanitizeProdutoPayload($data, $id);
         if (!empty($payload['sku'])) {
             $existing = $this->produtos->findBySku($payload['sku']);
@@ -50,7 +55,7 @@ class ProdutosService
             }
         }
         $updated = $this->produtos->update($id, $payload);
-        $this->audit->log($usuarioId, 'update', 'produtos', $id, $payload);
+        $this->audit->log($usuarioId, 'update', 'produtos', $id, $this->audit->withChanges($produtoAtual, $payload));
         return $updated;
     }
 
@@ -63,7 +68,7 @@ class ProdutosService
 
         $payload = ['preco' => $preco];
         $updated = $this->produtos->update($id, $payload);
-        $this->audit->log($usuarioId, 'update', 'produtos', $id, $payload);
+        $this->audit->log($usuarioId, 'update', 'produtos', $id, $this->audit->withChanges($produto, $payload));
         return $updated;
     }
 
@@ -98,12 +103,13 @@ class ProdutosService
         }
 
         $updated = $this->produtos->deactivate($id);
-        $this->audit->log($usuarioId, 'status', 'produtos', $id, [
+        $statusPayload = [
             'sku' => $produto['sku'] ?? null,
             'nome' => $produto['nome'] ?? null,
             'is_ativo' => 0,
             'status' => 'desativado',
-        ]);
+        ];
+        $this->audit->log($usuarioId, 'status', 'produtos', $id, $this->audit->withChanges($produto, $statusPayload));
         return $updated;
     }
 
@@ -115,12 +121,13 @@ class ProdutosService
         }
 
         $updated = $this->produtos->activate($id);
-        $this->audit->log($usuarioId, 'status', 'produtos', $id, [
+        $statusPayload = [
             'sku' => $produto['sku'] ?? null,
             'nome' => $produto['nome'] ?? null,
             'is_ativo' => 1,
             'status' => 'ativado',
-        ]);
+        ];
+        $this->audit->log($usuarioId, 'status', 'produtos', $id, $this->audit->withChanges($produto, $statusPayload));
         return $updated;
     }
 

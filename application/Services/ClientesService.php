@@ -48,7 +48,7 @@ class ClientesService
             throw $exception;
         }
 
-        $this->audit->log($usuarioId, 'update', 'clientes', $id, $payload);
+        $this->audit->log($usuarioId, 'update', 'clientes', $id, $this->audit->withChanges($atual, $payload));
         return $result;
     }
 

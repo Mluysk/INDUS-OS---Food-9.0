@@ -119,6 +119,7 @@ class PedidosService
         if (empty($itens)) {
             throw new InvalidArgumentException('Informe pelo menos um item para o pedido.');
         }
+        $itensAtuais = $this->itens->listarPorPedido($pedidoId);
 
         $freteFinal = $freteValor ?? (float)($pedidoAtual['frete_valor'] ?? 0);
         $cobrancaDiferenca = max(0.0, (float)($pedidoAtual['cobranca_diferenca_valor'] ?? 0));
@@ -161,7 +162,9 @@ class PedidosService
             throw $exception;
         }
 
-        $this->audit->log($usuarioId, 'update', 'pedidos', $pedidoId, [
+        $pedidoAntes = $pedidoAtual;
+        $pedidoAntes['itens'] = $itensAtuais;
+        $pedidoDepois = [
             'cliente_id' => $clienteId,
             'observacoes' => $observacoes,
             'forma_pagto' => $formaPagto,
@@ -171,7 +174,8 @@ class PedidosService
             'desconto_valor_original' => $descontoValorOriginalFinal,
             'total' => $total,
             'itens' => $itens,
-        ]);
+        ];
+        $this->audit->log($usuarioId, 'update', 'pedidos', $pedidoId, $this->audit->withChanges($pedidoAntes, $pedidoDepois));
 
         return $this->detalharCompleto($pedidoId);
     }
@@ -186,7 +190,7 @@ class PedidosService
         $statusAnterior = $pedidoAtual['status'] ?? null;
 
         $this->pedidos->update($pedidoId, ['status' => $statusNormalizado]);
-        $this->audit->log($usuarioId, 'status', 'pedidos', $pedidoId, ['status' => $statusNormalizado]);
+        $this->audit->log($usuarioId, 'status', 'pedidos', $pedidoId, $this->audit->withChanges($pedidoAtual, ['status' => $statusNormalizado]));
 
         if ($statusNormalizado === 'faturado') {
             try {
