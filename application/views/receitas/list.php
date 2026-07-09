@@ -21,6 +21,8 @@
 .pa-recipe-card__name { margin: 0; font-size: 0.96rem; line-height: 1.25; color: #0f172a; }
 .pa-recipe-card__meta { margin: 0; color: var(--muted, #64748b); font-size: 0.82rem; line-height: 1.35; }
 .pa-recipe-card__actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: auto; }
+.pa-recipe-empty { display: none; margin: 18px 0 0; padding: 18px; border: 1px dashed var(--border, #dbe3ef); border-radius: 12px; color: var(--muted, #64748b); text-align: center; font-weight: 700; }
+.pa-recipe-empty.is-visible { display: block; }
 @media (max-width: 780px) { .filter-grid { grid-template-columns: 1fr; } }
 </style>
 
@@ -70,7 +72,17 @@
                         'none' => 'badge-danger',
                     ][$status] ?? 'badge-muted';
                 ?>
-                <article class="pa-recipe-card">
+                <?php
+                    $searchText = trim(implode(' ', [
+                        (string)($product['sku'] ?? ''),
+                        (string)($product['nome'] ?? ''),
+                        (string)($row['status_label'] ?? ''),
+                        $recipe ? (string)($recipe['sku'] ?? '') : '',
+                        $recipe ? (string)($recipe['name'] ?? '') : '',
+                    ]));
+                    $searchText = function_exists('mb_strtolower') ? mb_strtolower($searchText, 'UTF-8') : strtolower($searchText);
+                ?>
+                <article class="pa-recipe-card" data-recipe-card data-status="<?= htmlspecialchars($status, ENT_QUOTES, 'UTF-8'); ?>" data-search="<?= htmlspecialchars($searchText, ENT_QUOTES, 'UTF-8'); ?>">
                     <div class="pa-recipe-card__head">
                         <div>
                             <span class="pa-recipe-card__sku"><?= htmlspecialchars((string)($product['sku'] ?? 'SEM-SKU'), ENT_QUOTES, 'UTF-8'); ?></span>
@@ -100,4 +112,52 @@
             <p class="panel-description">Nenhum produto P.A encontrado.</p>
         <?php endif; ?>
     </div>
+    <div class="pa-recipe-empty" data-recipe-empty>Nenhum produto encontrado com esse filtro.</div>
 </section>
+
+<script>
+(() => {
+    const form = document.querySelector('.filter-grid');
+    const search = form?.querySelector('input[name="q"]');
+    const status = form?.querySelector('select[name="active"]');
+    const cards = Array.from(document.querySelectorAll('[data-recipe-card]'));
+    const empty = document.querySelector('[data-recipe-empty]');
+    if (!form || !cards.length) return;
+
+    const normalize = (value) => String(value || '').trim().toLocaleLowerCase('pt-BR');
+    const selectedStatus = () => {
+        const value = String(status?.value || '');
+        if (value === '1') return 'active';
+        if (value === '0') return 'inactive';
+        return value;
+    };
+
+    const applyFilters = () => {
+        const term = normalize(search?.value);
+        const wantedStatus = selectedStatus();
+        let visible = 0;
+
+        cards.forEach((card) => {
+            const cardStatus = String(card.dataset.status || '');
+            const haystack = normalize(card.dataset.search || card.textContent || '');
+            const matchesTerm = !term || haystack.includes(term);
+            const matchesStatus = !wantedStatus || cardStatus === wantedStatus;
+            const show = matchesTerm && matchesStatus;
+            card.hidden = !show;
+            if (show) visible += 1;
+        });
+
+        if (empty) {
+            empty.classList.toggle('is-visible', visible === 0);
+        }
+    };
+
+    form.addEventListener('submit', (event) => {
+        event.preventDefault();
+        applyFilters();
+    });
+    search?.addEventListener('input', applyFilters);
+    status?.addEventListener('change', applyFilters);
+    applyFilters();
+})();
+</script>
