@@ -34,7 +34,7 @@ class ReceitasController extends Controller
             'active' => $_GET['active'] ?? null,
         ];
         $recipes = $this->recipes->listRecipes($filters);
-        $paRecipeRows = $this->buildPARecipeRows([]);
+        $paRecipeRows = $this->buildPARecipeRows($filters);
 
         $this->render('receitas/list', [
             'recipes' => $recipes,
@@ -298,7 +298,7 @@ class ReceitasController extends Controller
                 }
             }
 
-            if ($activeFilter === '1' && !in_array($status, ['active', 'review'], true)) {
+            if ($activeFilter === '1' && $status !== 'active') {
                 continue;
             }
             if ($activeFilter === '0' && $status !== 'inactive') {

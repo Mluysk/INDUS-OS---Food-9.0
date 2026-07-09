@@ -37,14 +37,14 @@
         </div>
     </div>
 
-    <form class="filter-grid" method="get" action="<?= htmlspecialchars($url('receitas'), ENT_QUOTES, 'UTF-8'); ?>">
+    <form class="filter-grid" id="bom-filter-form" method="get" action="<?= htmlspecialchars($url('receitas'), ENT_QUOTES, 'UTF-8'); ?>">
         <label>
             Buscar
-            <input type="text" name="q" value="<?= htmlspecialchars($filters['term'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="Nome ou SKU">
+            <input type="text" id="bom-search" name="q" value="<?= htmlspecialchars($filters['term'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="Nome ou SKU" autocomplete="off">
         </label>
         <label>
             Status
-            <select name="active">
+            <select id="bom-status" name="active">
                 <option value="">Todos</option>
                 <option value="1" <?= ($filters['active'] ?? '') === '1' ? 'selected' : ''; ?>>Ativo</option>
                 <option value="0" <?= ($filters['active'] ?? '') === '0' ? 'selected' : ''; ?>>Inativo</option>
@@ -58,7 +58,7 @@
         </label>
     </form>
 
-    <div class="pa-recipe-grid">
+    <div class="pa-recipe-grid" id="bom-card-grid">
         <?php if (!empty($paRecipeRows)): ?>
             <?php foreach ($paRecipeRows as $row): ?>
                 <?php
@@ -112,52 +112,67 @@
             <p class="panel-description">Nenhum produto P.A encontrado.</p>
         <?php endif; ?>
     </div>
-    <div class="pa-recipe-empty" data-recipe-empty>Nenhum produto encontrado com esse filtro.</div>
+    <div class="pa-recipe-empty" id="bom-empty" data-recipe-empty>Nenhum produto encontrado com esse filtro.</div>
 </section>
 
 <script>
 (() => {
-    const form = document.querySelector('.filter-grid');
-    const search = form?.querySelector('input[name="q"]');
-    const status = form?.querySelector('select[name="active"]');
-    const cards = Array.from(document.querySelectorAll('[data-recipe-card]'));
-    const empty = document.querySelector('[data-recipe-empty]');
-    if (!form || !cards.length) return;
+    const bootBomFilters = () => {
+        const form = document.getElementById('bom-filter-form');
+        if (!form || form.dataset.filterReady === '1') return;
+        form.dataset.filterReady = '1';
 
-    const normalize = (value) => String(value || '').trim().toLocaleLowerCase('pt-BR');
-    const selectedStatus = () => {
-        const value = String(status?.value || '');
-        if (value === '1') return 'active';
-        if (value === '0') return 'inactive';
-        return value;
-    };
+        const search = document.getElementById('bom-search');
+        const status = document.getElementById('bom-status');
+        const grid = document.getElementById('bom-card-grid');
+        const empty = document.getElementById('bom-empty');
+        if (!grid) return;
 
-    const applyFilters = () => {
-        const term = normalize(search?.value);
-        const wantedStatus = selectedStatus();
-        let visible = 0;
+        const getCards = () => Array.from(grid.querySelectorAll('[data-recipe-card]'));
+        const normalize = (value) => String(value || '')
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '')
+            .trim()
+            .toLocaleLowerCase('pt-BR');
+        const selectedStatus = () => {
+            const value = String(status?.value || '');
+            if (value === '1') return 'active';
+            if (value === '0') return 'inactive';
+            return value;
+        };
 
-        cards.forEach((card) => {
-            const cardStatus = String(card.dataset.status || '');
-            const haystack = normalize(card.dataset.search || card.textContent || '');
-            const matchesTerm = !term || haystack.includes(term);
-            const matchesStatus = !wantedStatus || cardStatus === wantedStatus;
-            const show = matchesTerm && matchesStatus;
-            card.hidden = !show;
-            if (show) visible += 1;
-        });
+        const applyFilters = () => {
+            const cards = getCards();
+            const term = normalize(search?.value);
+            const wantedStatus = selectedStatus();
+            let visible = 0;
 
-        if (empty) {
-            empty.classList.toggle('is-visible', visible === 0);
-        }
-    };
+            cards.forEach((card) => {
+                const cardStatus = String(card.dataset.status || '');
+                const haystack = normalize(card.dataset.search || card.textContent || '');
+                const matchesTerm = !term || haystack.includes(term);
+                const matchesStatus = !wantedStatus || cardStatus === wantedStatus;
+                const show = matchesTerm && matchesStatus;
+                card.hidden = !show;
+                if (show) visible += 1;
+            });
 
-    form.addEventListener('submit', (event) => {
-        event.preventDefault();
+            if (empty) {
+                empty.classList.toggle('is-visible', cards.length > 0 && visible === 0);
+            }
+        };
+
+        search?.addEventListener('input', applyFilters);
+        status?.addEventListener('change', applyFilters);
+        form.addEventListener('submit', applyFilters);
         applyFilters();
-    });
-    search?.addEventListener('input', applyFilters);
-    status?.addEventListener('change', applyFilters);
-    applyFilters();
+    };
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', bootBomFilters, { once: true });
+    } else {
+        bootBomFilters();
+    }
+    document.addEventListener('indus:content-updated', bootBomFilters);
 })();
 </script>
