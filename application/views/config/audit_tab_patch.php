@@ -8,11 +8,63 @@ try {
         ORDER BY al.id DESC
         LIMIT 300");
 
+    $productCache = [];
+    $productLookup = static function ($produtoId) use ($auditDb, &$productCache): ?array {
+        $id = (int)($produtoId ?? 0);
+        if ($id <= 0) {
+            return null;
+        }
+        if (array_key_exists($id, $productCache)) {
+            return $productCache[$id];
+        }
+        try {
+            $productStmt = $auditDb->prepare('SELECT id, sku, nome FROM produtos WHERE id = :id LIMIT 1');
+            $productStmt->execute(['id' => $id]);
+            $product = $productStmt->fetch(\PDO::FETCH_ASSOC) ?: null;
+            if (!$product) {
+                $productCache[$id] = null;
+                return null;
+            }
+            $sku = trim((string)($product['sku'] ?? ''));
+            $nome = trim((string)($product['nome'] ?? ''));
+            $label = trim(($sku !== '' ? $sku . ' - ' : '') . $nome);
+            $productCache[$id] = [
+                'id' => $id,
+                'sku' => $sku,
+                'nome' => $nome,
+                'label' => $label !== '' ? $label : 'Produto #' . $id,
+            ];
+            return $productCache[$id];
+        } catch (\Throwable $exception) {
+            $productCache[$id] = null;
+            return null;
+        }
+    };
+    $enrichProducts = null;
+    $enrichProducts = static function (&$value) use (&$enrichProducts, $productLookup): void {
+        if (!is_array($value)) {
+            return;
+        }
+        if (isset($value['produto_id'])) {
+            $product = $productLookup($value['produto_id']);
+            if ($product) {
+                $value['produto_sku'] = $value['produto_sku'] ?? $product['sku'];
+                $value['produto_nome'] = $value['produto_nome'] ?? $product['nome'];
+                $value['produto_label'] = $value['produto_label'] ?? $product['label'];
+            }
+        }
+        foreach ($value as &$child) {
+            $enrichProducts($child);
+        }
+        unset($child);
+    };
+
     foreach ($stmt->fetchAll(\PDO::FETCH_ASSOC) ?: [] as $row) {
         $details = json_decode((string)($row['detalhes'] ?? ''), true);
         if (!is_array($details)) {
             $details = [];
         }
+        $enrichProducts($details);
         $userName = trim((string)($row['usuario_nome'] ?? ''));
         if ($userName === '' && !empty($row['usuario_id'])) {
             $userName = 'Usuario #' . (int)$row['usuario_id'];
@@ -42,8 +94,8 @@ try {
 (function(){
     const rows = <?= json_encode($auditRows, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP); ?>;
     const auditStandalone = <?= $auditStandalone ? 'true' : 'false'; ?>;
-    const actionLabels = {create:'Adicionou',update:'Mudou',delete:'Excluiu',status:'Mudou status',documento:'Gerou DOC',export:'Exportou',import:'Importou',planejamento:'Planejamento'};
-    const actionIcons = {create:'plus-circle',update:'pencil',delete:'trash-2',status:'refresh-cw',documento:'file-text',export:'download',import:'upload',planejamento:'calendar-plus'};
+    const actionLabels = {create:'Adicionou',update:'Mudou',delete:'Excluiu',status:'Mudou status',documento:'Gerou DOC',export:'Exportou',import:'Importou',planejamento:'Planejamento',movimento:'Movimenta\u00e7\u00e3o',iniciar:'Iniciou',finalizar:'Finalizou',baixa:'Baixa',pago:'Pago'};
+    const actionIcons = {create:'plus-circle',update:'pencil',delete:'trash-2',status:'refresh-cw',documento:'file-text',export:'download',import:'upload',planejamento:'calendar-plus',movimento:'arrow-left-right',iniciar:'play-circle',finalizar:'check-circle-2',baixa:'badge-dollar-sign',pago:'circle-dollar-sign'};
     const entityLabels = {clientes:'Clientes',cliente:'Cliente',produtos:'Produtos',produto:'Produto',pedidos:'Pedidos',pedido:'Pedido',usuarios:'Usu\u00e1rios',usuario:'Usu\u00e1rio',configuracoes:'Configura\u00e7\u00f5es',config:'Configura\u00e7\u00f5es',estoque:'Estoque',receitas:'Receitas',producao:'Produ\u00e7\u00e3o',expedicao:'Expedi\u00e7\u00e3o',financeiro:'Financeiro',portal:'Portal',mapa:'Mapa',mapa_entradas:'Planejamento'};
     const text = (value,fallback='-') => { const t = String(value ?? '').trim(); return t || fallback; };
     const escapeHtml = (value) => String(value ?? '').replace(/[&<>"']/g,(c)=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
@@ -53,7 +105,7 @@ try {
     const dateParts = (value) => { const v = text(value,'N\u00e3o registrado'); const m = v.match(/^(\d{4}-\d{2}-\d{2})\s+(\d{2}:\d{2}(?::\d{2})?)$/); return m ? {date:m[1],time:m[2]} : {date:v,time:''}; };
     const detailKeys = (details) => (!details || typeof details !== 'object' || Array.isArray(details)) ? [] : Object.keys(details).filter((key)=>!['dispositivo','localidade','antes','depois','mudancas'].includes(key));
     const changeKeys = (details) => details && details.mudancas && typeof details.mudancas === 'object' && !Array.isArray(details.mudancas) ? Object.keys(details.mudancas) : [];
-    const labelField = (key) => ({preco:'Pre\u00e7o',valor:'Valor',total:'Total',frete_valor:'Frete',desconto:'Desconto',desconto_tipo:'Tipo de desconto',desconto_valor_original:'Desconto informado',cliente_id:'Cliente',forma_pagto:'Pagamento',observacoes:'Observa\u00e7\u00f5es',status:'Status',itens:'Itens',nome:'Nome',sku:'SKU',categoria:'Categoria',tipo:'Tipo',unidade:'Unidade',peso_liquido:'Peso l\u00edquido',shelf_life_dias:'Validade',is_ativo:'Ativo',mostrar_portal:'Portal'}[key] || String(key||'Campo').replace(/_/g,' '));
+    const labelField = (key) => ({preco:'Pre\u00e7o',valor:'Valor',total:'Total',frete_valor:'Frete',desconto:'Desconto',desconto_tipo:'Tipo de desconto',desconto_valor_original:'Desconto informado',cliente_id:'Cliente',forma_pagto:'Pagamento',observacoes:'Observa\u00e7\u00f5es',status:'Status',itens:'Itens',nome:'Nome',sku:'SKU',categoria:'Categoria',tipo:'Tipo',unidade:'Unidade',peso_liquido:'Peso l\u00edquido',shelf_life_dias:'Validade',is_ativo:'Ativo',mostrar_portal:'Portal',produto_id:'Produto',produto_nome:'Produto',produto_sku:'SKU do produto',produto_label:'Produto',data_referencia:'Data',quantidade:'Quantidade',lote:'Lote',validade:'Validade',origem:'Origem',destino:'Destino',ref_tipo:'Refer\u00eancia',ref_id:'ID refer\u00eancia',registro:'Registro',observacao:'Observa\u00e7\u00e3o',custo_unit:'Custo unit\u00e1rio',usuario_id:'Usu\u00e1rio'}[key] || String(key||'Campo').replace(/_/g,' '));
     const moneyField = (key) => /(^preco$|valor|total|desconto|frete)/i.test(String(key||''));
     const itemNameMap = (change) => { const map = {}; [change?.antes, change?.depois].forEach((items)=>{ if(!Array.isArray(items)) return; items.forEach((item)=>{ const id = String(item?.produto_id || '').trim(); const name = text(item?.nome || item?.produto_nome || item?.sku, ''); if(id && name) map[id] = name; }); }); return map; };
     const itemName = (item, names = {}) => text(item?.nome || item?.produto_nome || item?.sku || names[String(item?.produto_id || '').trim()] || (item?.produto_id ? `Produto #${item.produto_id}` : ''), '');
@@ -61,9 +113,25 @@ try {
     const itemQtyText = (qty) => Number(qty || 0).toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 4 });
     const itemGroups = (items, names = {}) => { const groups = {}; items.forEach((item)=>{ const name = itemName(item, names); if(!name) return; const key = `${String(item?.produto_id || name)}|${name}`; if(!groups[key]) groups[key] = { name, linhas: 0, quantidade: 0 }; groups[key].linhas += 1; groups[key].quantidade += itemQty(item); }); return Object.values(groups); };
     const itemListText = (items, names = {}) => { const groups = itemGroups(items, names); const prefix = `${items.length} ${items.length===1?'item':'itens'}`; if(!groups.length) return prefix; return `${prefix}:\n${groups.map((group)=>`${itemQtyText(group.quantidade)}x ${group.name}${group.linhas > 1 ? ` (${group.linhas} lan\u00e7amentos)` : ''}`).join('\n')}`; };
-    const valueText = (key,value,change = {}) => { if(value === null || value === undefined || value === '') return 'vazio'; if(Array.isArray(value)) return String(key) === 'itens' ? itemListText(value, itemNameMap(change)) : `${value.length} ${value.length===1?'item':'itens'}`; if(typeof value === 'object') return JSON.stringify(value); if(moneyField(key) && !Number.isNaN(Number(String(value).replace(',','.')))) return Number(String(value).replace(',','.')).toLocaleString('pt-BR',{style:'currency',currency:'BRL'}); return String(value); };
-    const productName = (details) => text(details?.nome || details?.depois?.nome || details?.antes?.nome || details?.produto_nome, '');
-    const changeSummary = (details, row = {}) => { const changes = details && details.mudancas && typeof details.mudancas === 'object' ? details.mudancas : {}; const entries = Object.entries(changes); const isProduct = ['produto','produtos'].includes(String(row.entidade || '').toLowerCase()); const header = isProduct && productName(details) ? `<div class="audit-change-row"><b>Produto</b><span style="grid-column:2 / 5;text-align:left;">${escapeHtml(productName(details))}</span></div>` : ''; const body = entries.length ? entries.slice(0,10).map(([key,item])=>`<div class="audit-change-row"><b>${escapeHtml(labelField(key))}</b><span>${escapeHtml(valueText(key,item?.antes,item))}</span><em>&gt;</em><span>${escapeHtml(valueText(key,item?.depois,item))}</span></div>`).join('') : '<div class="audit-change-row"><span>Nenhuma diferen\u00e7a campo a campo registrada.</span></div>'; return header + body; };
+    const valueText = (key,value,change = {}) => { if(String(key)==='produto_id' && change?.produto_label) return change.produto_label; if(value === null || value === undefined || value === '') return 'vazio'; if(Array.isArray(value)) return String(key) === 'itens' ? itemListText(value, itemNameMap(change)) : `${value.length} ${value.length===1?'item':'itens'}`; if(typeof value === 'object') return JSON.stringify(value); if(moneyField(key) && !Number.isNaN(Number(String(value).replace(',','.')))) return Number(String(value).replace(',','.')).toLocaleString('pt-BR',{style:'currency',currency:'BRL'}); return String(value); };
+    const productName = (details) => text(details?.produto_label || details?.produto_nome || details?.nome || details?.depois?.produto_label || details?.depois?.produto_nome || details?.depois?.nome || details?.antes?.produto_label || details?.antes?.produto_nome || details?.antes?.nome, '');
+    const singleValueRow = (label, value) => `<div class="audit-change-row"><b>${escapeHtml(label)}</b><span style="grid-column:2 / 5;text-align:left;">${escapeHtml(value)}</span></div>`;
+    const flatSummary = (details, row = {}) => {
+        const rows = [];
+        rows.push(singleValueRow('A\u00e7\u00e3o', actionLabel(row.acao)));
+        rows.push(singleValueRow('M\u00f3dulo', entityLabel(row.entidade)));
+        const product = productName(details);
+        if(product) rows.push(singleValueRow('Produto', product));
+        const important = ['registro','tipo','data_referencia','quantidade','custo_unit','lote','validade','origem','destino','ref_tipo','ref_id','observacao','status'];
+        important.forEach((key) => {
+            if(!(key in (details || {}))) return;
+            rows.push(singleValueRow(labelField(key), valueText(key, details[key], details)));
+        });
+        const extras = detailKeys(details).filter((key)=>!important.includes(key) && !['produto_id','produto_nome','produto_sku','produto_label','user_agent'].includes(key)).slice(0,6);
+        extras.forEach((key)=>rows.push(singleValueRow(labelField(key), valueText(key, details[key], details))));
+        return rows.join('') || '<div class="audit-change-row"><span>Nenhum detalhe adicional registrado.</span></div>';
+    };
+    const changeSummary = (details, row = {}) => { const changes = details && details.mudancas && typeof details.mudancas === 'object' ? details.mudancas : {}; const entries = Object.entries(changes); const isProduct = ['produto','produtos'].includes(String(row.entidade || '').toLowerCase()); const header = entries.length && (isProduct || productName(details)) && productName(details) ? singleValueRow('Produto', productName(details)) : ''; const body = entries.length ? entries.slice(0,10).map(([key,item])=>`<div class="audit-change-row"><b>${escapeHtml(labelField(key))}</b><span>${escapeHtml(valueText(key,item?.antes,item))}</span><em>&gt;</em><span>${escapeHtml(valueText(key,item?.depois,item))}</span></div>`).join('') : flatSummary(details, row); return header + body; };
     const jsonDepthDelta = (line) => (line.match(/[{\[]/g) || []).length - (line.match(/[}\]]/g) || []).length;
     const colorAuditJson = (details) => {
         const lines = String(JSON.stringify(details,null,2) || '{}').split('\n');
@@ -92,7 +160,7 @@ try {
             return lineClass ? `<span class="${lineClass}">${safeLine}</span>` : safeLine;
         }).join('\n');
     };
-    const summarize = (row) => { const changed = changeKeys(row.detalhes); const keys = changed.length ? changed : detailKeys(row.detalhes); const action = String(row.acao||'').toLowerCase(); if(!keys.length) return 'Sem detalhes adicionais'; if(action==='update' || action==='status') return `Campos alterados: ${keys.slice(0,5).map(labelField).join(', ')}${keys.length>5?'...':''}`; if(action==='create') return `Dados adicionados: ${keys.slice(0,5).map(labelField).join(', ')}${keys.length>5?'...':''}`; if(action==='delete') return `Registro removido com ${keys.length} dado(s) gravado(s)`; return `Detalhes: ${keys.slice(0,5).map(labelField).join(', ')}${keys.length>5?'...':''}`; };
+    const summarize = (row) => { const changed = changeKeys(row.detalhes); const keys = changed.length ? changed : detailKeys(row.detalhes); const action = String(row.acao||'').toLowerCase(); const subject = productName(row.detalhes || {}); const suffix = subject ? ` - ${subject}` : ''; if(!keys.length) return `Sem detalhes adicionais${suffix}`; if(action==='update' || action==='status') return `Campos alterados: ${keys.slice(0,5).map(labelField).join(', ')}${suffix}`; if(action==='create') return `Dados adicionados: ${keys.slice(0,5).map(labelField).join(', ')}${suffix}`; if(action==='delete') return `Registro removido com ${keys.length} dado(s) gravado(s)${suffix}`; if(action==='movimento' || action==='planejamento') return `${actionLabel(action)}${suffix}`; return `Detalhes: ${keys.slice(0,5).map(labelField).join(', ')}${suffix}`; };
     const unique = (key) => Array.from(new Set(rows.map((row)=>String(row[key]||'').toLowerCase()).filter(Boolean))).sort();
     const matches = (row, search, action, entity) => { const all = [row.usuario,row.usuario_email,row.acao,row.entidade,row.entidade_id,row.ip,row.created_at,JSON.stringify(row.detalhes||{})].join(' ').toLowerCase(); return (!search || all.includes(search)) && (!action || String(row.acao||'').toLowerCase()===action) && (!entity || String(row.entidade||'').toLowerCase()===entity); };
     const activate = (tab) => { document.querySelectorAll('.tab-button').forEach((button)=>{ const active = button.dataset.tab === tab; button.classList.toggle('active',active); button.setAttribute('aria-selected',active?'true':'false'); }); document.querySelectorAll('.tab-panel').forEach((panel)=>panel.classList.toggle('active',panel.dataset.tabPanel===tab)); document.querySelectorAll('input[name="active_tab"]').forEach((input)=>{ input.value = tab; }); localStorage.setItem('configTab',tab); };
