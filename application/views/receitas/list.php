@@ -14,7 +14,6 @@
 .filter-grid label { font-size: 0.82rem; color: var(--muted, #6b7280); display: flex; flex-direction: column; gap: 6px; font-weight: 700; }
 .filter-grid input, .filter-grid select { border: 1px solid var(--border, #e5e7eb); border-radius: 10px; padding: 10px 12px; background: var(--surface-alt, #f8fafc); min-height: 46px; font-weight: 700; }
 .filter-grid .btn { min-height: 41px; width: 100%; }
-.pa-recipe-section-header { margin-top: 24px; padding-top: 18px; border-top: 1px solid var(--border, #e5e7eb); }
 .pa-recipe-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; margin-top: 14px; }
 .pa-recipe-card { border: 1px solid rgba(148,163,184,0.32); border-radius: 12px; padding: 14px; background: rgba(248,250,252,0.76); display: flex; flex-direction: column; gap: 12px; min-height: 176px; }
 .pa-recipe-card__head { display: flex; justify-content: space-between; gap: 10px; align-items: flex-start; }
@@ -56,13 +55,6 @@
             <button class="btn primary" type="submit">Filtrar</button>
         </label>
     </form>
-
-    <div class="panel-header pa-recipe-section-header">
-        <div>
-            <h3>Produtos P.A cadastrados</h3>
-            <p class="panel-description">Veja quais produtos acabados ja possuem receita, quais precisam cadastrar e quais precisam revisao.</p>
-        </div>
-    </div>
 
     <div class="pa-recipe-grid">
         <?php if (!empty($paRecipeRows)): ?>
