@@ -3,34 +3,33 @@
 .panel-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
 .panel-actions { display: flex; gap: 8px; flex-wrap: wrap; }
 .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 14px; border-radius: 10px; border: none; font-weight: 700; cursor: pointer; text-decoration: none; }
-.btn.primary { background: var(--primary, #4b5563); color: #fff; }
+.btn.primary { background: var(--primary, #e52528); color: #fff; }
 .btn.ghost { background: transparent; border: 1px solid var(--border, #e5e7eb); color: inherit; }
-.table-wrap { overflow-x: auto; }
-.data-table { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 0.92rem; }
-.data-table th, .data-table td { border: 1px solid rgba(148,163,184,0.4); padding: 8px 10px; text-align: left; }
-.data-table th { text-transform: uppercase; font-size: 0.72rem; letter-spacing: 0.08em; background: rgba(15,23,42,0.08); }
-.badge { display: inline-flex; align-items: center; padding: 4px 10px; border-radius: 999px; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; }
+.badge { display: inline-flex; align-items: center; padding: 4px 10px; border-radius: 999px; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; }
 .badge-success { background: rgba(16,185,129,0.18); color: #0f766e; }
 .badge-muted { background: rgba(148,163,184,0.18); color: #475569; }
 .badge-warning { background: rgba(245,158,11,0.18); color: #92400e; }
 .badge-danger { background: rgba(239,68,68,0.14); color: #b91c1c; }
-.filter-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-top: 12px; }
-.filter-grid label { font-size: 0.82rem; color: var(--muted, #6b7280); display: flex; flex-direction: column; gap: 6px; }
-.filter-grid input, .filter-grid select { border: 1px solid var(--border, #e5e7eb); border-radius: 10px; padding: 8px 10px; background: var(--surface-alt, #f8fafc); }
+.filter-grid { display: grid; grid-template-columns: minmax(180px, 1fr) minmax(180px, 1fr) minmax(160px, 1fr); gap: 12px; margin-top: 12px; align-items: end; }
+.filter-grid label { font-size: 0.82rem; color: var(--muted, #6b7280); display: flex; flex-direction: column; gap: 6px; font-weight: 700; }
+.filter-grid input, .filter-grid select { border: 1px solid var(--border, #e5e7eb); border-radius: 10px; padding: 10px 12px; background: var(--surface-alt, #f8fafc); min-height: 46px; font-weight: 700; }
+.filter-grid .btn { min-height: 41px; width: 100%; }
+.pa-recipe-section-header { margin-top: 24px; padding-top: 18px; border-top: 1px solid var(--border, #e5e7eb); }
 .pa-recipe-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; margin-top: 14px; }
-.pa-recipe-card { border: 1px solid rgba(148,163,184,0.32); border-radius: 12px; padding: 14px; background: rgba(248,250,252,0.76); display: flex; flex-direction: column; gap: 12px; }
+.pa-recipe-card { border: 1px solid rgba(148,163,184,0.32); border-radius: 12px; padding: 14px; background: rgba(248,250,252,0.76); display: flex; flex-direction: column; gap: 12px; min-height: 176px; }
 .pa-recipe-card__head { display: flex; justify-content: space-between; gap: 10px; align-items: flex-start; }
 .pa-recipe-card__sku { display: inline-flex; width: max-content; border-radius: 999px; padding: 3px 9px; background: rgba(15,23,42,0.08); font-size: 0.72rem; font-weight: 800; color: #334155; margin-bottom: 6px; }
 .pa-recipe-card__name { margin: 0; font-size: 0.96rem; line-height: 1.25; color: #0f172a; }
-.pa-recipe-card__meta { margin: 0; color: var(--muted, #64748b); font-size: 0.82rem; }
+.pa-recipe-card__meta { margin: 0; color: var(--muted, #64748b); font-size: 0.82rem; line-height: 1.35; }
 .pa-recipe-card__actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: auto; }
+@media (max-width: 780px) { .filter-grid { grid-template-columns: 1fr; } }
 </style>
 
 <section class="panel">
     <div class="panel-header">
         <div>
             <h2>Receitas (BOM)</h2>
-            <p class="panel-description">Cadastre e execute receitas com baixa automática de estoque.</p>
+            <p class="panel-description">Cadastre e execute receitas com baixa automatica de estoque.</p>
         </div>
         <div class="panel-actions">
             <a class="btn primary" href="<?= htmlspecialchars($url('receitas/nova'), ENT_QUOTES, 'UTF-8'); ?>">Nova receita</a>
@@ -53,60 +52,13 @@
                 <option value="none" <?= ($filters['active'] ?? '') === 'none' ? 'selected' : ''; ?>>Sem receita</option>
             </select>
         </label>
-        <label style="align-self:flex-end;">
+        <label>
+            <span>&nbsp;</span>
             <button class="btn primary" type="submit">Filtrar</button>
         </label>
     </form>
 
-    <div class="table-wrap">
-        <table class="data-table">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Nome</th>
-                    <th>SKU</th>
-                    <th>Rendimento</th>
-                    <th>Status</th>
-                    <th>Ações</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php if (!empty($recipes)): ?>
-                    <?php foreach ($recipes as $recipe): ?>
-                        <tr>
-                            <td><?= (int)$recipe['id']; ?></td>
-                            <td><?= htmlspecialchars($recipe['name'] ?? '', ENT_QUOTES, 'UTF-8'); ?></td>
-                            <td><?= htmlspecialchars($recipe['sku'] ?? '—', ENT_QUOTES, 'UTF-8'); ?></td>
-                            <td><?= number_format((float)($recipe['yield_qty'] ?? 0), 3, ',', '.'); ?> <?= htmlspecialchars($recipe['yield_unit'] ?? '', ENT_QUOTES, 'UTF-8'); ?></td>
-                            <td>
-                                <?php if ((int)($recipe['active'] ?? 1) === 1 && (int)($recipe['item_count'] ?? 0) <= 0): ?>
-                                    <span class="badge badge-warning">Revisao</span>
-                                <?php elseif ((int)($recipe['active'] ?? 1) === 1): ?>
-                                    <span class="badge badge-success">Ativa</span>
-                                <?php else: ?>
-                                    <span class="badge badge-muted">Inativa</span>
-                                <?php endif; ?>
-                            </td>
-                            <td>
-                                <a class="btn ghost" href="<?= htmlspecialchars($url('receitas/' . (int)$recipe['id']), ENT_QUOTES, 'UTF-8'); ?>">Detalhar</a>
-                                <a class="btn ghost" href="<?= htmlspecialchars($url('receitas/' . (int)$recipe['id'] . '/editar'), ENT_QUOTES, 'UTF-8'); ?>">Editar</a>
-                                <a class="btn ghost" href="<?= htmlspecialchars($url('receitas/' . (int)$recipe['id'] . '/executar'), ENT_QUOTES, 'UTF-8'); ?>">Executar</a>
-                                <a class="btn ghost" href="<?= htmlspecialchars($url('receitas/' . (int)$recipe['id'] . '/runs'), ENT_QUOTES, 'UTF-8'); ?>">Histórico</a>
-                            </td>
-                        </tr>
-                    <?php endforeach; ?>
-                <?php else: ?>
-                    <tr>
-                        <td colspan="6">Nenhuma receita encontrada.</td>
-                    </tr>
-                <?php endif; ?>
-            </tbody>
-        </table>
-    </div>
-</section>
-
-<section class="panel">
-    <div class="panel-header">
+    <div class="panel-header pa-recipe-section-header">
         <div>
             <h3>Produtos P.A cadastrados</h3>
             <p class="panel-description">Veja quais produtos acabados ja possuem receita, quais precisam cadastrar e quais precisam revisao.</p>
