@@ -268,6 +268,17 @@ $previewMatrixDefault = app_logo_matrix_values($logoTintPreviewHex);
                     <p class="field-hint">Quando ativado, um SKU liberado por exclus&atilde;o permanente pode ser usado no pr&oacute;ximo produto do mesmo tipo.</p>
                 </div>
 
+                <div class="field">
+                    <span class="field-label">Consumir MP automaticamente no mapa</span>
+                    <label class="switch" for="mapa-consume-recipe-mp">
+                        <input type="hidden" name="config[MAPA_CONSUME_RECIPE_MP]" value="0">
+                        <input type="checkbox" id="mapa-consume-recipe-mp" name="config[MAPA_CONSUME_RECIPE_MP]" value="1" <?= ($mapaConsumeRecipeMp ?? '1') === '1' ? 'checked' : ''; ?>>
+                        <span class="switch-track" aria-hidden="true"></span>
+                        <span class="switch-text" data-mapa-consume-mp-status><?= ($mapaConsumeRecipeMp ?? '1') === '1' ? 'Ativado' : 'Desativado'; ?></span>
+                    </label>
+                    <p class="field-hint">Quando ativado, toda entrada de estoque no mapa executa a receita do P.A. e baixa a mat&eacute;ria-prima automaticamente.</p>
+                </div>
+
                 <div class="preview-card" aria-live="polite">
                     <div>
                         <p class="preview-label">Prévia de produção antes de salvar</p>
@@ -2990,6 +3001,16 @@ $previewMatrixDefault = app_logo_matrix_values($logoTintPreviewHex);
             };
             reuseSkuToggle.addEventListener('change', syncReuseSkuStatus);
             syncReuseSkuStatus();
+        }
+
+        const mapaConsumeMpToggle = document.getElementById('mapa-consume-recipe-mp');
+        const mapaConsumeMpStatus = document.querySelector('[data-mapa-consume-mp-status]');
+        if (mapaConsumeMpToggle && mapaConsumeMpStatus) {
+            const syncMapaConsumeMpStatus = () => {
+                mapaConsumeMpStatus.textContent = mapaConsumeMpToggle.checked ? 'Ativado' : 'Desativado';
+            };
+            mapaConsumeMpToggle.addEventListener('change', syncMapaConsumeMpStatus);
+            syncMapaConsumeMpStatus();
         }
 
         const appearanceForm = document.querySelector('form[data-tab-panel="appearance"]');

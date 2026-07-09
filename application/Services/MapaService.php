@@ -369,17 +369,11 @@ class MapaService
             return false;
         }
 
-        if ($this->produtoPAComReceita($produtoId)) {
-            return true;
+        if ($this->config->get('MAPA_CONSUME_RECIPE_MP', '1') !== '1') {
+            return false;
         }
 
-        $raw = $input['consumir_receita'] ?? null;
-        if (is_bool($raw)) {
-            return $raw;
-        }
-
-        $value = strtolower(trim((string)$raw));
-        return in_array($value, ['1', 'true', 'on', 'yes', 'sim'], true);
+        return $this->produtoPAComReceita($produtoId);
     }
 
     private function produtoPAComReceita(int $produtoId): bool

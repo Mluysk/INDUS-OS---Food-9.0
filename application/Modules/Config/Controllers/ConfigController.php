@@ -228,6 +228,7 @@ class ConfigController extends Controller
             $estoqueBaixoMax = $estoqueBaixoMin;
         }
         $allowNegativeStock = $this->config->get('ALLOW_NEGATIVE_STOCK', '0') === '1' ? '1' : '0';
+        $mapaConsumeRecipeMp = $this->config->get('MAPA_CONSUME_RECIPE_MP', '1') === '1' ? '1' : '0';
         $financeiroAlertaVencimentoDias = (int)($this->config->get('FINANCEIRO_ALERTA_VENCIMENTO_DIAS', '7') ?: '7');
         if ($financeiroAlertaVencimentoDias < 0) {
             $financeiroAlertaVencimentoDias = 0;
@@ -285,6 +286,7 @@ class ConfigController extends Controller
             'performanceIncludeSaturday' => $performanceIncludeSaturday,
             'performanceIncludeSunday' => $performanceIncludeSunday,
             'allowNegativeStock' => $allowNegativeStock,
+            'mapaConsumeRecipeMp' => $mapaConsumeRecipeMp,
             'financeiroAlertaVencimentoDias' => $financeiroAlertaVencimentoDias,
             'listPageSizeOptions' => $listPageSizeOptions,
             'listPageSizeDefault' => $listPageSizeDefault,
@@ -573,6 +575,10 @@ class ConfigController extends Controller
         if ($activeTab === 'rules' || array_key_exists('PRODUCT_REUSE_DELETED_SKU', $data)) {
             $data['PRODUCT_REUSE_DELETED_SKU'] = isset($data['PRODUCT_REUSE_DELETED_SKU'])
                 && (string)$data['PRODUCT_REUSE_DELETED_SKU'] === '1' ? '1' : '0';
+        }
+        if ($activeTab === 'rules' || array_key_exists('MAPA_CONSUME_RECIPE_MP', $data)) {
+            $data['MAPA_CONSUME_RECIPE_MP'] = isset($data['MAPA_CONSUME_RECIPE_MP'])
+                && (string)$data['MAPA_CONSUME_RECIPE_MP'] === '1' ? '1' : '0';
         }
 
         if (isset($data['FINANCEIRO_ALERTA_VENCIMENTO_DIAS'])) {

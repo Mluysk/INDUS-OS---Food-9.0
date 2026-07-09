@@ -210,8 +210,6 @@ foreach ($datas as $diaKey => $info) {
         .mapa .choice label { margin: 0; font-size: 0.86rem; }
         .mapa .choice .choice-entrada { margin-left: 358px; }
         .mapa .choice input[type="radio"] { margin-right: 6px; accent-color: var(--primary); }
-        .mapa .consume-receita { margin-left: 12px; font-size: 0.85rem; color: var(--text-muted); display: inline-flex; align-items: center; gap: 6px; }
-        .mapa .consume-receita input { accent-color: var(--primary); }
         .mapa .nav-wrap { display: grid; grid-template-columns: 1fr; gap: 12px; align-items: stretch; }
         .mapa .nav-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 14px; box-shadow: var(--shadow-card); }
         .mapa .nav-dias-row { display: flex; gap: 10px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
@@ -425,7 +423,6 @@ foreach ($datas as $diaKey => $info) {
                 <div class="choice">
                     <label><input type="radio" name="tipo" value="planejado" checked> Produção</label>
                     <label class="choice-entrada"><input type="radio" name="tipo" value="estoque"> Entrada</label>
-                    <label class="consume-receita"><input type="checkbox" name="consumir_receita" value="1"> Consumir receita (baixar MP)</label>
                 </div>
                 <div class="hint hint-inline">
                     <span class="hint-item">
@@ -566,7 +563,6 @@ foreach ($datas as $diaKey => $info) {
                                                 <label for="producao-<?= (int)$linha['id']; ?>-<?= htmlspecialchars($dia, ENT_QUOTES, 'UTF-8'); ?>">Produção</label>
                                                 <div class="controls">
                                                     <input type="hidden" name="tipo" value="planejado">
-                                                    <input type="hidden" name="consumir_receita" value="0">
                                                     <input type="hidden" name="produto_id" value="<?= (int)$linha['id']; ?>">
                                                     <input type="hidden" name="data_referencia" value="<?= htmlspecialchars($dia, ENT_QUOTES, 'UTF-8'); ?>">
                                                     <input type="hidden" name="janela_inicio" value="<?= htmlspecialchars($janelaInicio, ENT_QUOTES, 'UTF-8'); ?>">
@@ -579,7 +575,6 @@ foreach ($datas as $diaKey => $info) {
                                                 <label for="entrada-<?= (int)$linha['id']; ?>-<?= htmlspecialchars($dia, ENT_QUOTES, 'UTF-8'); ?>">Entrada</label>
                                                 <div class="controls">
                                                     <input type="hidden" name="tipo" value="estoque">
-                                                    <input type="hidden" name="consumir_receita" value="0">
                                                     <input type="hidden" name="produto_id" value="<?= (int)$linha['id']; ?>">
                                                     <input type="hidden" name="data_referencia" value="<?= htmlspecialchars($dia, ENT_QUOTES, 'UTF-8'); ?>">
                                                     <input type="hidden" name="janela_inicio" value="<?= htmlspecialchars($janelaInicio, ENT_QUOTES, 'UTF-8'); ?>">
@@ -903,8 +898,7 @@ foreach ($datas as $diaKey => $info) {
                         `<form action="<?= htmlspecialchars($url('/mapa/entrada'), ENT_QUOTES, 'UTF-8'); ?>" method="post" class="mini-form">` +
                             `<label for="producao-${linha.id}-${dia}">Produção</label>` +
                             `<div class="controls">` +
-                                `<input type="hidden" name="tipo" value="planejado">
-                                                    <input type="hidden" name="consumir_receita" value="0">` +
+                                `<input type="hidden" name="tipo" value="planejado">` +
                                 `<input type="hidden" name="produto_id" value="${linha.id}">` +
                                 `<input type="hidden" name="data_referencia" value="${dia}">` +
                                 `<input type="hidden" name="janela_inicio" value="${janelaInicio}">` +
@@ -916,8 +910,7 @@ foreach ($datas as $diaKey => $info) {
                         `<form action="<?= htmlspecialchars($url('/mapa/entrada'), ENT_QUOTES, 'UTF-8'); ?>" method="post" class="mini-form">` +
                             `<label for="entrada-${linha.id}-${dia}">Entrada</label>` +
                             `<div class="controls">` +
-                                `<input type="hidden" name="tipo" value="estoque">
-                                                    <input type="hidden" name="consumir_receita" value="0">` +
+                                `<input type="hidden" name="tipo" value="estoque">` +
                                 `<input type="hidden" name="produto_id" value="${linha.id}">` +
                                 `<input type="hidden" name="data_referencia" value="${dia}">` +
                                 `<input type="hidden" name="janela_inicio" value="${janelaInicio}">` +
@@ -1110,7 +1103,6 @@ foreach ($datas as $diaKey => $info) {
                     quantidade: form.querySelector('#quantidade')?.value || '',
                     observacao: form.querySelector('#observacao')?.value || '',
                     tipo: form.querySelector('input[name="tipo"]:checked')?.value || 'planejado',
-                    consumirReceita: !!form.querySelector('input[name="consumir_receita"]')?.checked,
                 };
             };
 
@@ -1123,7 +1115,6 @@ foreach ($datas as $diaKey => $info) {
                 const quantidade = form.querySelector('#quantidade');
                 const obs = form.querySelector('#observacao');
                 const tipos = form.querySelectorAll('input[name="tipo"]');
-                const consumirReceita = form.querySelector('input[name="consumir_receita"]');
                 if (produto) produto.value = state.produto;
                 if (data) data.value = state.data;
                 if (quantidade) quantidade.value = state.quantidade;
@@ -1132,9 +1123,6 @@ foreach ($datas as $diaKey => $info) {
                     tipos.forEach((t) => {
                         t.checked = t.value === state.tipo;
                     });
-                }
-                if (consumirReceita) {
-                    consumirReceita.checked = !!state.consumirReceita;
                 }
             };
 
