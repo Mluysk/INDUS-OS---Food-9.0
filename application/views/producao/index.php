@@ -38,13 +38,13 @@
             <p class="muted">Resumo das quantidades planejadas no mapa diário e completo para os próximos dias.</p>
         </div>
         <div class="op-actions">
-            <a class="btn-primary" href="/producao/entradas">Entrada diária</a>
+            <a class="btn-primary" href="<?= htmlspecialchars($url('/producao/entradas'), ENT_QUOTES, 'UTF-8'); ?>">Entrada diária</a>
             <button class="btn-primary" form="op-date-form" type="submit">Imprimir relatório</button>
         </div>
     </div>
 
     <?php if (!empty($relatorioOp['datas'])): ?>
-        <form id="op-date-form" action="/producao/relatorio-op" method="get" target="_blank">
+        <form id="op-date-form" action="<?= htmlspecialchars($url('/producao/relatorio-op'), ENT_QUOTES, 'UTF-8'); ?>" method="get" target="_blank">
         <div class="table-wrap">
             <table class="op-table">
                 <thead>

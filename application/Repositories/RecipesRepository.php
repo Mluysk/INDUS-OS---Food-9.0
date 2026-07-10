@@ -32,6 +32,20 @@ class RecipesRepository extends BaseRepository
         return $row ?: null;
     }
 
+    public function deactivateLinkedToProduct(int $produtoId, ?int $recipeId = null): int
+    {
+        $conditions = ['produto_pa_id = :produto'];
+        $params = ['produto' => $produtoId];
+        if ($recipeId !== null && $recipeId > 0) {
+            $conditions[] = 'id = :recipe';
+            $params['recipe'] = $recipeId;
+        }
+
+        $sql = "UPDATE {$this->table} SET active = 0 WHERE active = 1 AND (" . implode(' OR ', $conditions) . ')';
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute($params);
+        return $stmt->rowCount();
+    }
     public function search(array $filters = []): array
     {
         $sql = "SELECT r.*, p.sku AS produto_pa_sku, p.nome AS produto_pa_nome,

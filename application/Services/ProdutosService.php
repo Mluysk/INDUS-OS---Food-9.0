@@ -3,19 +3,22 @@ namespace App\Services;
 
 use App\Repositories\ProdutosRepository;
 use App\Repositories\ProdutoComponentesRepository;
+use App\Repositories\RecipesRepository;
 use App\Services\ConfigService;
 
 class ProdutosService
 {
     private ProdutosRepository $produtos;
     private ProdutoComponentesRepository $componentes;
+    private RecipesRepository $recipes;
     private AuditService $audit;
     private ConfigService $config;
 
-    public function __construct(ProdutosRepository $produtos, ProdutoComponentesRepository $componentes, AuditService $audit, ConfigService $config)
+    public function __construct(ProdutosRepository $produtos, ProdutoComponentesRepository $componentes, RecipesRepository $recipes, AuditService $audit, ConfigService $config)
     {
         $this->produtos = $produtos;
         $this->componentes = $componentes;
+        $this->recipes = $recipes;
         $this->audit = $audit;
         $this->config = $config;
     }
@@ -103,11 +106,15 @@ class ProdutosService
         }
 
         $updated = $this->produtos->deactivate($id);
+        $deactivatedRecipes = $updated
+            ? $this->recipes->deactivateLinkedToProduct($id, (int)($produto['recipe_id'] ?? 0))
+            : 0;
         $statusPayload = [
             'sku' => $produto['sku'] ?? null,
             'nome' => $produto['nome'] ?? null,
             'is_ativo' => 0,
             'status' => 'desativado',
+            'receitas_inativadas' => $deactivatedRecipes,
         ];
         $this->audit->log($usuarioId, 'status', 'produtos', $id, $this->audit->withChanges($produto, $statusPayload));
         return $updated;

@@ -141,6 +141,11 @@ class RecipeService
             return null;
         }
 
+        $recipe = $this->getRecipe($recipeId);
+        if (!$recipe || empty($recipe['items'])) {
+            throw new \InvalidArgumentException('Entrada bloqueada: a receita vinculada esta em revisao e ainda nao possui insumos cadastrados. Complete a receita antes de consumir MP automaticamente no mapa.');
+        }
+
         return $this->runRecipe($recipeId, $producedQty, 0.0, 0.0, 'ADJUST', $mapaEntradaId, $userId);
     }
 
@@ -199,6 +204,7 @@ class RecipeService
         $items = $this->items->listByRecipe($recipeId);
         $summary = [];
         $total = 0.0;
+        $warnings = [];
 
         foreach ($items as $item) {
             $qtyBase = (float)($item['qty'] ?? 0);
@@ -208,21 +214,40 @@ class RecipeService
                 $qtyUsed *= (1 + ($lossPercent / 100));
             }
 
+            $recipeUnit = (string)($item['unit'] ?? '');
             $productUnit = (string)($item['product_unit'] ?? '');
-            $convertedQty = convertQty($qtyUsed, (string)$item['unit'], $productUnit);
-            $costUnit = $this->getCurrentCostUnit((int)$item['stock_product_id']);
-            $costTotal = $convertedQty * $costUnit;
-            $total += $costTotal;
+            $displayQty = $qtyUsed;
+            $displayUnit = $recipeUnit;
+            $costUnit = null;
+            $costTotal = null;
+            $conversionError = null;
+
+            try {
+                $displayQty = convertQty($qtyUsed, $recipeUnit, $productUnit);
+                $displayUnit = $productUnit;
+                $costUnit = $this->getCurrentCostUnit((int)$item['stock_product_id']);
+                $costTotal = $displayQty * $costUnit;
+                $total += $costTotal;
+            } catch (\InvalidArgumentException $e) {
+                $conversionError = $e->getMessage();
+                $warnings[] = sprintf(
+                    '%s: unidade da receita (%s) incompativel com a unidade do produto (%s).',
+                    (string)($item['nome'] ?? $item['sku'] ?? 'Ingrediente'),
+                    $recipeUnit !== '' ? $recipeUnit : '-',
+                    $productUnit !== '' ? $productUnit : '-'
+                );
+            }
 
             $summary[] = [
                 'stock_product_id' => (int)$item['stock_product_id'],
                 'sku' => $item['sku'] ?? null,
                 'nome' => $item['nome'] ?? null,
-                'qty_used' => $convertedQty,
-                'unit' => $productUnit,
+                'qty_used' => $displayQty,
+                'unit' => $displayUnit,
                 'cost_unit' => $costUnit,
                 'cost_total' => $costTotal,
                 'loss_percent' => $lossPercent,
+                'conversion_error' => $conversionError,
             ];
         }
 
@@ -231,6 +256,7 @@ class RecipeService
             'produced_qty' => $producedQty,
             'items' => $summary,
             'total_cost' => $total,
+            'warnings' => $warnings,
         ];
     }
 

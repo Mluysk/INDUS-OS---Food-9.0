@@ -46,7 +46,7 @@
             <h3>Produção do dia</h3>
             <p class="muted">Registre o produzido do dia para lançar a entrada no mapa diário e no mapa completo.</p>
         </div>
-        <a class="btn-primary" href="/producao/op">Voltar para produção</a>
+        <a class="btn-primary" href="<?= htmlspecialchars($url('/producao/op'), ENT_QUOTES, 'UTF-8'); ?>">Voltar para produção</a>
     </div>
 
     <div class="table-wrap">
@@ -71,7 +71,7 @@
                             </td>
                             <td class="qty <?= $estoqueVal <= 0 ? 'stock-alert' : ''; ?>"><?= number_format($estoqueVal, 2, ',', '.'); ?></td>
                             <td>
-                                <form class="op-form" action="/mapa/entrada" method="post">
+                                <form class="op-form" action="<?= htmlspecialchars($url('/mapa/entrada'), ENT_QUOTES, 'UTF-8'); ?>" method="post">
                                     <input type="hidden" name="produto_id" value="<?= (int)($produto['id'] ?? 0); ?>">
                                     <input type="hidden" name="data_referencia" value="<?= htmlspecialchars($today, ENT_QUOTES, 'UTF-8'); ?>">
                                     <input type="hidden" name="tipo" value="estoque">
