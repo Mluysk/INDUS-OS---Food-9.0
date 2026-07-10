@@ -21,6 +21,7 @@ foreach ($items as $simulationItem) {
         $simulationWeightIgnored++;
     }
 }
+$unitWeightKg = (float)$producedQty > 0 ? $simulationWeightKg / (float)$producedQty : 0.0;
 ?>
 <style>
 .panel { background: var(--surface, #fff); border-radius: 14px; padding: 18px; box-shadow: 0 10px 30px rgba(0,0,0,0.06); margin-bottom: 16px; }
@@ -35,7 +36,8 @@ foreach ($items as $simulationItem) {
 .sim-form { display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap; }
 .sim-form label { display: flex; flex-direction: column; gap: 6px; font-size: 0.82rem; color: var(--muted, #6b7280); }
 .sim-form input { border: 1px solid var(--border, #e5e7eb); border-radius: 10px; padding: 8px 10px; background: var(--surface-alt, #f8fafc); }
-.detail-yield-highlight { display: inline-flex; width: fit-content; max-width: 100%; align-items: center; gap: 14px; margin: 14px 0; padding: 13px 15px; border-left: 4px solid var(--primary, #dc2626); border-radius: 10px; background: rgba(var(--primary-rgb, 220,38,38),.08); }
+.detail-highlight-row { display: flex; align-items: center; gap: 12px; margin: 14px 0; flex-wrap: wrap; }
+.detail-yield-highlight { display: inline-flex; width: fit-content; max-width: 100%; align-items: center; gap: 14px; margin: 0; padding: 13px 15px; border-left: 4px solid var(--primary, #dc2626); border-radius: 10px; background: rgba(var(--primary-rgb, 220,38,38),.08); }
 .detail-yield-highlight span { color: var(--muted, #64748b); font-size: .78rem; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; }
 .detail-yield-highlight strong { color: var(--primary, #dc2626); font-size: 1.08rem; white-space: nowrap; }
 .simulation-totals { display: grid; grid-template-columns: repeat(2,minmax(220px,1fr)); gap: 14px; margin-top: 16px; }
@@ -100,9 +102,15 @@ foreach ($items as $simulationItem) {
         <?php endif; ?>
     </form>
 
-    <div class="detail-yield-highlight">
-        <span><?= $isSimulationAdjusted ? 'Rendimento simulado' : 'Rendimento da receita'; ?></span>
-        <strong><?= number_format($displayYieldQty, 3, ',', '.'); ?> <?= htmlspecialchars((string)($recipe['yield_unit'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></strong>
+    <div class="detail-highlight-row">
+        <div class="detail-yield-highlight">
+            <span><?= $isSimulationAdjusted ? 'Rendimento simulado' : 'Rendimento da receita'; ?></span>
+            <strong><?= number_format($displayYieldQty, 3, ',', '.'); ?> <?= htmlspecialchars((string)($recipe['yield_unit'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></strong>
+        </div>
+        <div class="detail-yield-highlight">
+            <span>Peso da unidade</span>
+            <strong><?= $unitWeightKg >= 1 ? number_format($unitWeightKg, 3, ',', '.') . ' kg' : number_format($unitWeightKg * 1000, 0, ',', '.') . ' g'; ?></strong>
+        </div>
     </div>
 
     <table class="data-table">
