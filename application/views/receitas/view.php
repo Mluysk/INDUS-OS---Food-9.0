@@ -21,7 +21,14 @@ foreach ($items as $simulationItem) {
         $simulationWeightIgnored++;
     }
 }
-$unitWeightKg = (float)$producedQty > 0 ? $simulationWeightKg / (float)$producedQty : 0.0;
+$paUnitWeightKg = isset($recipe['produto_pa_peso_liquido']) && $recipe['produto_pa_peso_liquido'] !== null
+    ? max(0.0, (float)$recipe['produto_pa_peso_liquido'])
+    : null;
+$expectedPaWeightKg = $paUnitWeightKg !== null ? $paUnitWeightKg * (float)$producedQty : null;
+$recipeLossKg = $expectedPaWeightKg !== null ? max(0.0, $simulationWeightKg - $expectedPaWeightKg) : null;
+$recipeLossPercent = $recipeLossKg !== null && $simulationWeightKg > 0
+    ? ($recipeLossKg / $simulationWeightKg) * 100
+    : null;
 ?>
 <style>
 .panel { background: var(--surface, #fff); border-radius: 14px; padding: 18px; box-shadow: 0 10px 30px rgba(0,0,0,0.06); margin-bottom: 16px; }
@@ -108,8 +115,15 @@ $unitWeightKg = (float)$producedQty > 0 ? $simulationWeightKg / (float)$produced
             <strong><?= number_format($displayYieldQty, 3, ',', '.'); ?> <?= htmlspecialchars((string)($recipe['yield_unit'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></strong>
         </div>
         <div class="detail-yield-highlight">
-            <span>Peso da unidade</span>
-            <strong><?= $unitWeightKg >= 1 ? number_format($unitWeightKg, 3, ',', '.') . ' kg' : number_format($unitWeightKg * 1000, 0, ',', '.') . ' g'; ?></strong>
+            <span>Peso da unidade (P.A.)</span>
+            <strong><?= $paUnitWeightKg === null ? 'Não cadastrado' : ($paUnitWeightKg >= 1 ? number_format($paUnitWeightKg, 3, ',', '.') . ' kg' : number_format($paUnitWeightKg * 1000, 0, ',', '.') . ' g'); ?></strong>
+        </div>
+        <div class="detail-yield-highlight">
+            <span>Perda da receita</span>
+            <strong><?= $recipeLossKg === null ? 'Peso do P.A. não cadastrado' : ($recipeLossKg >= 1 ? number_format($recipeLossKg, 3, ',', '.') . ' kg' : number_format($recipeLossKg * 1000, 0, ',', '.') . ' g'); ?></strong>
+            <?php if ($recipeLossPercent !== null): ?>
+                <small><?= number_format($recipeLossPercent, 2, ',', '.'); ?>%</small>
+            <?php endif; ?>
         </div>
     </div>
 

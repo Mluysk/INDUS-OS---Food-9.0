@@ -74,6 +74,9 @@ class RecipeService
             return null;
         }
         $recipe['items'] = $this->items->listByRecipe($id);
+        $produtoPaId = (int)($recipe['produto_pa_id'] ?? 0);
+        $produtoPa = $produtoPaId > 0 ? $this->produtos->find($produtoPaId) : null;
+        $recipe['produto_pa_peso_liquido'] = $produtoPa['peso_liquido'] ?? null;
         return $recipe;
     }
 
