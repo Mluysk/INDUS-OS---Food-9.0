@@ -60,6 +60,44 @@ if (!empty($filters['tipo'])) {
     <button class="print-button" type="button" onclick="window.print()">Imprimir</button>
 </header>
 
+<style>
+    .print-brand img {
+        width: auto !important;
+        height: var(--form-logo-size, 96px) !important;
+        min-width: 0;
+        max-width: none;
+        object-fit: contain;
+        object-position: left center;
+        transform: none;
+        transform-origin: left center;
+        margin: 0;
+        padding: 9px 0;
+        box-sizing: border-box;
+    }
+    .print-brand img.is-square-form-logo {
+        width: var(--form-logo-size, 96px) !important;
+        min-width: var(--form-logo-size, 96px);
+        max-width: var(--form-logo-size, 96px);
+        transform: scale(1.85);
+        transform-origin: left center;
+    }
+</style>
+<script>
+    (() => {
+        const logo = document.querySelector('.print-brand img');
+        if (!logo) return;
+        const classifyLogo = () => {
+            const width = Number(logo.naturalWidth || 0);
+            const height = Number(logo.naturalHeight || 0);
+            if (!width || !height) return;
+            const ratio = width / height;
+            logo.classList.toggle('is-square-form-logo', ratio >= 0.8 && ratio <= 1.25);
+        };
+        if (logo.complete) classifyLogo();
+        else logo.addEventListener('load', classifyLogo, { once: true });
+    })();
+</script>
+
 <?php if ($visual): ?>
     <style>
         .visual-catalog-filters {

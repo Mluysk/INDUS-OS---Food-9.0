@@ -168,6 +168,7 @@ class DashboardController extends Controller
         $orders = $this->resumoPedidosPorDia($start, $end);
         $movimentos = $this->resumoEntradasPorDia($start, $end);
         $mediasMapa = $this->mapaService->mediasConclusaoPorPeriodo($start, $end);
+        $diasSemProducao = $this->mapaService->diasSemProducao($start->format('Y-m-d'), $end->format('Y-m-d'));
 
         foreach ($window as $key => &$entry) {
             if (isset($orders[$key])) {
@@ -184,19 +185,30 @@ class DashboardController extends Controller
             $completionCalc = $orderedQty > 0 ? min(100, ($entry['producao'] / max($orderedQty, 1)) * 100) : 0;
             $completionFromMapa = $mediasMapa[$key] ?? null;
             $entry['completion'] = $completionFromMapa !== null ? (float)$completionFromMapa : round($completionCalc, 1);
+            $entry['sem_producao'] = isset($diasSemProducao[$key]);
+            $entry['sem_producao_motivo'] = $diasSemProducao[$key]['motivo'] ?? null;
 
-            $entry['tooltip'] = sprintf(
+            if ($entry['sem_producao']) {
+                $entry['completion'] = 0.0;
+            }
+
+            $entry['tooltip'] = $entry['sem_producao']
+                ? 'Sem produção · ' . (string)($entry['sem_producao_motivo'] ?? 'Motivo não informado')
+                : sprintf(
                 '%s pedidos · R$ %s · %s%% conclusão produção',
                 number_format($entry['count'], 0, ',', '.'),
                 number_format($entry['value'], 2, ',', '.'),
                 number_format($entry['completion'], 1, ',', '.')
-            );
+                );
             $entry['value_formatted'] = 'R$ ' . number_format($entry['value'], 2, ',', '.');
         }
 
         $completionValues = [];
         foreach ($window as $key => $item) {
             if (!$this->diaConsiderado($key, $includeSaturday, $includeSunday)) {
+                continue;
+            }
+            if (!empty($item['sem_producao'])) {
                 continue;
             }
             $completionValues[] = (float)($item['completion'] ?? 0);

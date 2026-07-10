@@ -68,6 +68,7 @@ abstract class Controller
             'logo_dark_size' => '57',
             'logo_compact_light_size' => '76',
             'logo_compact_dark_size' => '76',
+            'form_logo_size' => '96',
             'logo_light_offset_x' => '0',
             'logo_light_offset_y' => '0',
             'logo_dark_offset_x' => '0',
@@ -205,6 +206,7 @@ abstract class Controller
                 'logo_dark_size' => ['key' => 'THEME_LOGO_DARK_SIZE', 'min' => 24, 'max' => 140],
                 'logo_compact_light_size' => ['key' => 'THEME_LOGO_COMPACT_LIGHT_SIZE', 'min' => 16, 'max' => 120],
                 'logo_compact_dark_size' => ['key' => 'THEME_LOGO_COMPACT_DARK_SIZE', 'min' => 16, 'max' => 120],
+                'form_logo_size' => ['key' => 'FORM_LOGO_SIZE', 'min' => 24, 'max' => 240],
                 'portal_login_logo_light_size' => ['key' => 'PORTAL_LOGIN_LOGO_LIGHT_SIZE', 'min' => 24, 'max' => 180],
                 'portal_login_logo_dark_size' => ['key' => 'PORTAL_LOGIN_LOGO_DARK_SIZE', 'min' => 24, 'max' => 180],
             ];

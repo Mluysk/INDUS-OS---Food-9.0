@@ -29,6 +29,13 @@ $recipeLossKg = $expectedPaWeightKg !== null ? max(0.0, $simulationWeightKg - $e
 $recipeLossPercent = $recipeLossKg !== null && $simulationWeightKg > 0
     ? ($recipeLossKg / $simulationWeightKg) * 100
     : null;
+$paSalePrice = isset($recipe['produto_pa_preco']) && $recipe['produto_pa_preco'] !== null
+    ? max(0.0, (float)$recipe['produto_pa_preco'])
+    : null;
+$unitRecipeCost = (float)$producedQty > 0 ? (float)$totalCost / (float)$producedQty : null;
+$gainPercent = $paSalePrice !== null && $unitRecipeCost !== null && $unitRecipeCost > 0
+    ? (($paSalePrice - $unitRecipeCost) / $unitRecipeCost) * 100
+    : null;
 ?>
 <style>
 .panel { background: var(--surface, #fff); border-radius: 14px; padding: 18px; box-shadow: 0 10px 30px rgba(0,0,0,0.06); margin-bottom: 16px; }
@@ -123,6 +130,13 @@ $recipeLossPercent = $recipeLossKg !== null && $simulationWeightKg > 0
             <strong><?= $recipeLossKg === null ? 'Peso do P.A. não cadastrado' : ($recipeLossKg >= 1 ? number_format($recipeLossKg, 3, ',', '.') . ' kg' : number_format($recipeLossKg * 1000, 0, ',', '.') . ' g'); ?></strong>
             <?php if ($recipeLossPercent !== null): ?>
                 <small><?= number_format($recipeLossPercent, 2, ',', '.'); ?>%</small>
+            <?php endif; ?>
+        </div>
+        <div class="detail-yield-highlight">
+            <span>Ganho sobre o custo</span>
+            <strong><?= $gainPercent === null ? 'Preço/custo indisponível' : number_format($gainPercent, 2, ',', '.') . '%'; ?></strong>
+            <?php if ($paSalePrice !== null && $unitRecipeCost !== null): ?>
+                <small>Venda R$ <?= number_format($paSalePrice, 2, ',', '.'); ?> · Custo R$ <?= number_format($unitRecipeCost, 2, ',', '.'); ?></small>
             <?php endif; ?>
         </div>
     </div>

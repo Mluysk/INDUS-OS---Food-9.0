@@ -89,6 +89,7 @@ class ConfigController extends Controller
             'THEME_LOGO_DARK_SIZE' => $this->config->get('THEME_LOGO_DARK_SIZE', '57') ?: '57',
             'THEME_LOGO_COMPACT_LIGHT_SIZE' => $this->config->get('THEME_LOGO_COMPACT_LIGHT_SIZE', '76') ?: '76',
             'THEME_LOGO_COMPACT_DARK_SIZE' => $this->config->get('THEME_LOGO_COMPACT_DARK_SIZE', '76') ?: '76',
+            'FORM_LOGO_SIZE' => $this->config->get('FORM_LOGO_SIZE', '96') ?: '96',
             'THEME_LOGO_LIGHT_OFFSET_X' => $this->config->get('THEME_LOGO_LIGHT_OFFSET_X', '0') ?: '0',
             'THEME_LOGO_LIGHT_OFFSET_Y' => $this->config->get('THEME_LOGO_LIGHT_OFFSET_Y', '0') ?: '0',
             'THEME_LOGO_DARK_OFFSET_X' => $this->config->get('THEME_LOGO_DARK_OFFSET_X', '0') ?: '0',
@@ -436,6 +437,7 @@ class ConfigController extends Controller
             'THEME_LOGO_DARK_SIZE' => ['min' => 24, 'max' => 140],
             'THEME_LOGO_COMPACT_LIGHT_SIZE' => ['min' => 16, 'max' => 120],
             'THEME_LOGO_COMPACT_DARK_SIZE' => ['min' => 16, 'max' => 120],
+            'FORM_LOGO_SIZE' => ['min' => 24, 'max' => 240],
             'PORTAL_LOGIN_LOGO_LIGHT_SIZE' => ['min' => 24, 'max' => 180],
             'PORTAL_LOGIN_LOGO_DARK_SIZE' => ['min' => 24, 'max' => 180],
         ];

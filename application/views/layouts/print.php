@@ -17,6 +17,7 @@ $reportLogoFilterMatrix = (string)($sidebarLogo['filter_matrix'] ?? '');
             --muted: #52606d;
             --border: #d9dde4;
             --surface: #ffffff;
+            --form-logo-size: <?= max(24, min(240, (int)($theme['form_logo_size'] ?? 96))); ?>px;
         }
 
         * {
@@ -72,10 +73,15 @@ $reportLogoFilterMatrix = (string)($sidebarLogo['filter_matrix'] ?? '');
         }
 
         .print-header img {
-            height: 58px;
+            height: var(--form-logo-size) !important;
+            width: auto;
+            max-width: 100%;
             display: block;
             flex: 0 0 auto;
             object-fit: contain;
+            object-position: left center;
+            align-self: flex-start;
+            transform-origin: left center;
         }
 
         body.report-logo-filter-enabled .print-header img {

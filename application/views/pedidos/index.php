@@ -362,6 +362,7 @@
 <?php
     $dailyReportLogoPath = $sidebarLogo['path'] ?? ($theme['logo_light'] ?? 'img/logo.png');
     $dailyReportLogoFilterEnabled = !empty($sidebarLogo['filter_enabled']);
+    $dailyReportLogoSize = max(24, min(240, (int)($theme['form_logo_size'] ?? 96)));
     $dailyReportLogoFilterMatrix = (string)($sidebarLogo['filter_matrix'] ?? '');
     $dailyReportLogoFilterSvg = '';
     if ($dailyReportLogoFilterEnabled && $dailyReportLogoFilterMatrix !== '') {
@@ -375,6 +376,7 @@
         const tabs = document.querySelectorAll('.pedidos-tab');
         const panels = document.querySelectorAll('.pedidos-tab-panel');
         const reportLogo = <?= json_encode($asset($dailyReportLogoPath), JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE); ?>;
+        const reportLogoSize = <?= (int)$dailyReportLogoSize; ?>;
         const reportLogoFilterCss = <?= json_encode($dailyReportLogoFilterEnabled ? 'url(#dailyOutputLogoTintFilter)' : 'none'); ?>;
         const reportLogoFilterSvg = <?= json_encode($dailyReportLogoFilterSvg, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE); ?>;
 
@@ -440,7 +442,7 @@
                             display: block;
                             width: auto;
                             max-width: 190px;
-                            height: 54px;
+                            height: ${reportLogoSize}px;
                             object-fit: contain;
                             filter: ${reportLogoFilterCss};
                         }

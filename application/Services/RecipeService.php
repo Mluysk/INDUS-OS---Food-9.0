@@ -77,6 +77,7 @@ class RecipeService
         $produtoPaId = (int)($recipe['produto_pa_id'] ?? 0);
         $produtoPa = $produtoPaId > 0 ? $this->produtos->find($produtoPaId) : null;
         $recipe['produto_pa_peso_liquido'] = $produtoPa['peso_liquido'] ?? null;
+        $recipe['produto_pa_preco'] = $produtoPa['preco'] ?? null;
         return $recipe;
     }
 

@@ -1066,6 +1066,27 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
                 height: 13px;
                 stroke-width: 2.35;
             }
+            .product-status--image {
+                display: inline-grid;
+                place-items: center;
+                width: 24px;
+                height: 24px;
+                margin: 4px 0 0 5px;
+                padding: 0;
+                background: #fff1f2;
+                color: #e11d48;
+                border: 1px solid #fecdd3;
+                line-height: 1;
+                vertical-align: top;
+                box-shadow: 0 4px 10px rgba(225, 29, 72, 0.1);
+            }
+            .product-status--image .icon,
+            .product-status--image svg {
+                display: block;
+                width: 13px;
+                height: 13px;
+                stroke-width: 2.35;
+            }
             .product-info-modal.hidden { display: none !important; }
             .product-info-modal {
                 position: fixed;
@@ -1196,7 +1217,13 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
                                     <?= htmlspecialchars($produto['nome'], ENT_QUOTES, 'UTF-8'); ?>
                                     <?php $isActive = (int)($produto['is_ativo'] ?? 1) === 1; ?>
                                     <?php $isPortalVisible = (int)($produto['mostrar_portal'] ?? 1) === 1; ?>
+                                    <?php $hasProductImage = trim((string)($produto['imagem_path'] ?? '')) !== '' || trim((string)($produto['imagem_pronto_path'] ?? '')) !== ''; ?>
                                     <span class="product-status <?= $isActive ? 'is-active' : ''; ?>"><?= $isActive ? 'Ativo' : 'Inativo'; ?></span>
+                                    <?php if ($hasProductImage): ?>
+                                        <span class="product-status product-status--image" title="Produto com imagem" aria-label="Produto com imagem">
+                                            <span class="icon" data-lucide="image" aria-hidden="true"></span>
+                                        </span>
+                                    <?php endif; ?>
                                     <span class="product-status product-status--portal <?= $isPortalVisible ? '' : 'is-hidden'; ?>" title="<?= $isPortalVisible ? 'Aparece no portal' : 'Oculto no portal'; ?>" aria-label="<?= $isPortalVisible ? 'Aparece no portal' : 'Oculto no portal'; ?>">
                                         <span class="icon" data-lucide="<?= $isPortalVisible ? 'globe-2' : 'globe-lock'; ?>" aria-hidden="true"></span>
                                     </span>
@@ -1938,6 +1965,7 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
                 const itemId = Number(item.id || 0);
                 const isActive = Number(item.is_ativo ?? 1) === 1;
                 const isPortalVisible = Number(item.mostrar_portal ?? 1) === 1;
+                const hasProductImage = String(item.imagem_path || '').trim() !== '' || String(item.imagem_pronto_path || '').trim() !== '';
                 window.productInfoMap = window.productInfoMap || {};
                 const currentInfo = window.productInfoMap[itemId] || {};
                 window.productInfoMap[itemId] = {
@@ -1959,6 +1987,7 @@ $listPageSizeDefault = (int)($listPageSizeDefault ?? 15);
                         <td>${item.sku ?? ''}</td>
                         <td>${item.nome ?? ''}
                             <span class="product-status ${isActive ? 'is-active' : ''}">${isActive ? 'Ativo' : 'Inativo'}</span>
+                            ${hasProductImage ? `<span class="product-status product-status--image" title="Produto com imagem" aria-label="Produto com imagem"><span class="icon" data-lucide="image" aria-hidden="true"></span></span>` : ''}
                             <span class="product-status product-status--portal ${isPortalVisible ? '' : 'is-hidden'}" title="${isPortalVisible ? 'Aparece no portal' : 'Oculto no portal'}" aria-label="${isPortalVisible ? 'Aparece no portal' : 'Oculto no portal'}">
                                 <span class="icon" data-lucide="${isPortalVisible ? 'globe-2' : 'globe-lock'}" aria-hidden="true"></span>
                             </span>

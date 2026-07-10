@@ -54,6 +54,7 @@ $router->add('GET', '/pedidos/{id}/nota', [PedidosController::class, 'nota']);
 
 $router->add('GET', '/mapa', [MapaController::class, 'index']);
 $router->add('POST', '/mapa/entrada', [MapaController::class, 'registrarEntrada']);
+$router->add('POST', '/mapa/sem-producao', [MapaController::class, 'registrarSemProducao']);
 
 $router->add('GET', '/desempenho', [DesempenhoController::class, 'index']);
 $router->add('GET', '/meta', [DesempenhoController::class, 'index']);

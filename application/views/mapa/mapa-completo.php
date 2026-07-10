@@ -31,16 +31,16 @@ $fmtInt = static function ($num) {
         .mapa .year-btn.disabled { opacity: 0.35; pointer-events: none; box-shadow: none; }
         .mapa .year-label { font-weight: 800; letter-spacing: 0.08em; color: var(--text); display: inline-flex; align-items: center; gap: 6px; }
         .mapa .pill { display: inline-flex; align-items: center; gap: 8px; padding: 6px 10px; border-radius: 999px; background: var(--surface-alt); border: 1px solid var(--border); color: var(--text); font-size: 0.86rem; box-shadow: var(--shadow-soft); }
-        .mapa .pill.saldo { border-radius: 999px; }
-        .mapa .pill.saldo .swatch { border-radius: 50%; }
         .mapa .swatch { width: 10px; height: 10px; border-radius: 50%; display: inline-block; box-shadow: 0 0 0 1px rgba(0,0,0,0.08); flex-shrink: 0; }
         .mapa .swatch.saida { background: #fda4af; box-shadow: 0 0 0 1px rgba(225, 29, 72, 0.24); }
         .mapa .swatch.entrada { background: #bae6fd; box-shadow: 0 0 0 1px rgba(14, 165, 233, 0.24); }
         .mapa .swatch.producao { background: #e9d5ff; box-shadow: 0 0 0 1px rgba(168, 85, 247, 0.24); }
-        .mapa .swatch.saldo { background: #bbf7d0; box-shadow: 0 0 0 1px rgba(22, 163, 74, 0.18); }
-        .mapa .tab-bar { display: inline-flex; gap: 8px; background: var(--surface); border: 1px solid var(--border); padding: 6px; border-radius: 12px; box-shadow: var(--shadow-soft); }
-        .mapa .tab-btn { border: 1px solid var(--primary) !important; background: var(--primary) !important; color: #fff !important; padding: 10px 14px; border-radius: 10px; font-weight: 700; cursor: pointer; transition: all 0.15s ease; text-decoration: none; box-shadow: none; }
-        .mapa .tab-btn.active { background: var(--primary) !important; color: #fff !important; border-color: var(--primary) !important; box-shadow: none; }
+        .mapa .swatch.estoque-swatch { background: #bbf7d0; box-shadow: 0 0 0 1px rgba(22, 163, 74, 0.18); }
+        .mapa .tab-bar { display: inline-flex; gap: 12px; width: fit-content; background: var(--surface); border: 1px solid var(--border); padding: 6px; border-radius: 999px; box-shadow: var(--shadow-soft); }
+        .mapa .tab-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: 0 !important; background: transparent !important; color: var(--text-muted) !important; padding: 10px 20px; border-radius: 999px; font-weight: 600; cursor: pointer; transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease; text-decoration: none; box-shadow: none; }
+        .mapa .tab-btn svg { width: 17px; height: 17px; flex: 0 0 17px; }
+        .mapa .tab-btn:not(.active):hover { background: var(--surface-alt) !important; color: var(--text) !important; }
+        .mapa .tab-btn.active { background: var(--primary) !important; color: #fff !important; box-shadow: 0 6px 20px -12px var(--primary); }
         .mapa .status-chip { background: var(--surface-alt); border-radius: 12px; padding: 9px 12px; min-width: 150px; border: 1px solid var(--border); box-shadow: var(--shadow-soft); }
         .mapa .status-chip .status-label { font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text); }
         .mapa .status-chip .status-value { font-weight: 800; font-size: 1.1rem; color: var(--text); }
@@ -143,14 +143,14 @@ $fmtInt = static function ($num) {
                 <span class="pill"><span class="swatch saida"></span> Saídas</span>
                 <span class="pill"><span class="swatch producao"></span> Produção</span>
                 <span class="pill"><span class="swatch entrada"></span> Entrada</span>
-                <span class="pill saldo"><span class="swatch saldo"></span> Estoque</span>
+                <span class="pill"><span class="swatch estoque-swatch"></span> Estoque</span>
             </div>
         </div>
     </div>
 
     <div class="tab-bar">
-        <a class="tab-btn" href="<?= htmlspecialchars($url('/mapa'), ENT_QUOTES, 'UTF-8'); ?>">Mapa diário</a>
-        <a class="tab-btn active" href="<?= htmlspecialchars($url('/mapa?full=1#completo'), ENT_QUOTES, 'UTF-8'); ?>">Mapa completo</a>
+        <a class="tab-btn" href="<?= htmlspecialchars($url('/mapa'), ENT_QUOTES, 'UTF-8'); ?>"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01"/></svg><span>Mapa diário</span></a>
+        <a class="tab-btn active" href="<?= htmlspecialchars($url('/mapa?full=1#completo'), ENT_QUOTES, 'UTF-8'); ?>"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18M15 3v18"/></svg><span>Mapa completo</span></a>
     </div>
 
     <div class="compact-card">

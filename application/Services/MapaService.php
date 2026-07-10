@@ -39,7 +39,7 @@ class MapaService
         $this->recipes = $recipes;
     }
 
-    public function gerar(?string $referencia = null, ?string $inicio = null, bool $completo = false): array
+    public function gerar(?string $referencia = null, ?string $inicio = null, bool $completo = false, ?string $mes = null): array
     {
         $hoje = new DateTimeImmutable('today');
         $base = $hoje;
@@ -57,9 +57,17 @@ class MapaService
         $janelaFim = $inicioJanela->modify('+6 days');
 
         if ($completo) {
-            $anoRef = (int) $inicioJanela->format('Y');
-            $inicioJanela = $inicioJanela->setDate($anoRef, 1, 1);
-            $janelaFim = $inicioJanela->setDate($anoRef, 12, 31);
+            $mesRef = $mes && preg_match('/^\d{4}-\d{2}$/', $mes)
+                ? DateTimeImmutable::createFromFormat('!Y-m', $mes)
+                : false;
+            if ($mesRef instanceof DateTimeImmutable) {
+                $inicioJanela = $mesRef->modify('first day of this month');
+                $janelaFim = $mesRef->modify('last day of this month');
+            } else {
+                $anoRef = (int) $inicioJanela->format('Y');
+                $inicioJanela = $inicioJanela->setDate($anoRef, 1, 1);
+                $janelaFim = $inicioJanela->setDate($anoRef, 12, 31);
+            }
         }
         $hojeKey = $hoje->format('Y-m-d');
         $weekendLegacy = $this->config->get('PERFORMANCE_INCLUDE_WEEKENDS', '1') === '1';
@@ -95,10 +103,21 @@ class MapaService
         $entradas = $this->entradas->porJanela($janelaInicio, $janelaFim);
         $planejadas = $entradas['planejado'] ?? [];
         $entradasEstoque = $entradas['estoque'] ?? [];
-        $mediasDiarias = $this->calcularMediasDiarias($planejadas, $entradasEstoque, array_keys($datas), $includeSaturday, $includeSunday);
+        $diasSemProducao = $this->diasSemProducao($janelaInicio, $janelaFim);
+        foreach ($diasSemProducao as $dia => $registro) {
+            if (isset($datas[$dia])) {
+                $datas[$dia]['sem_producao'] = true;
+                $datas[$dia]['sem_producao_motivo'] = $registro['motivo'] ?? 'outro';
+            }
+        }
+        $mediasDiarias = $this->calcularMediasDiarias($planejadas, $entradasEstoque, array_keys($datas), $includeSaturday, $includeSunday, $diasSemProducao);
 
         $produtos = $this->produtos->all(['tipo' => 'PA']);
         usort($produtos, static fn($a, $b) => strnatcasecmp((string)($a['sku'] ?? ''), (string)($b['sku'] ?? '')));
+        $estoquesPorProduto = $this->estoquesResumidos(array_values(array_filter(array_map(
+            static fn(array $produto): int => (int)($produto['id'] ?? 0),
+            $produtos
+        ))));
 
         $lowMin = (int)($this->config->get('ESTOQUE_BAIXO_MIN', '4') ?: 4);
         $lowMax = (int)($this->config->get('ESTOQUE_BAIXO_MAX', '8') ?: 8);
@@ -116,12 +135,9 @@ class MapaService
             'baixos' => 0,
         ];
 
-        $mediaSomas = [];
-        $mediaContagens = [];
-
         foreach ($produtos as $produto) {
             $produtoId = (int)($produto['id'] ?? 0);
-            $estoque = $this->estoqueResumido($produtoId);
+            $estoque = $estoquesPorProduto[$produtoId] ?? ['estoque' => 0.0, 'reservado' => 0.0];
             $planejadoProduto = $planejadas[$produtoId] ?? [];
             $entradaEstoqueProduto = $entradasEstoque[$produtoId] ?? [];
 
@@ -135,14 +151,10 @@ class MapaService
                 $saidaDia = (float)($saidas[$produtoId][$dia] ?? 0);
                 $entradaPlanejada = (float)($planejadoProduto[$dia] ?? 0);
                 $entradaEstoqueDia = (float)($entradaEstoqueProduto[$dia] ?? 0);
-                $entradaEfetiva = $entradaEstoqueDia > 0 ? $entradaEstoqueDia : $entradaPlanejada;
+                $entradaEfetiva = $entradaEstoqueDia;
 
                 $temMovimentacao = $saidaDia !== 0.0 || $entradaPlanejada !== 0.0 || $entradaEstoqueDia !== 0.0;
                 $conclusaoProducao = $entradaPlanejada > 0 ? ($entradaEfetiva / $entradaPlanejada) * 100 : 0;
-                if ($entradaPlanejada > 0 && $this->diaConsiderado($dia, $includeSaturday, $includeSunday)) {
-                    $mediaSomas[$dia] = ($mediaSomas[$dia] ?? 0) + $conclusaoProducao;
-                    $mediaContagens[$dia] = ($mediaContagens[$dia] ?? 0) + 1;
-                }
 
                 // Se houver movimentação, recalculamos; caso contrário, apenas exibimos o
                 // último saldo movimentado sem criar efeito cascata.
@@ -200,9 +212,6 @@ class MapaService
 
         foreach (array_keys($datas) as $dia) {
             $mediaDia = $mediasDiarias[$dia] ?? 0.0;
-            if (($mediaContagens[$dia] ?? 0) > 0) {
-                $mediaDia = round(($mediaSomas[$dia] ?? 0) / $mediaContagens[$dia], 1);
-            }
             $mediasDiarias[$dia] = $mediaDia;
             $datas[$dia]['media_conclusao'] = $mediaDia;
 
@@ -210,7 +219,7 @@ class MapaService
             $mesKey = date('Y-m', $ts);
             $anoKey = date('Y', $ts);
 
-            if ($this->diaConsiderado($dia, $includeSaturday, $includeSunday)) {
+            if ($this->diaConsiderado($dia, $includeSaturday, $includeSunday) && !isset($diasSemProducao[$dia])) {
                 $mesSoma[$mesKey] = ($mesSoma[$mesKey] ?? 0) + $mediaDia;
                 $mesCount[$mesKey] = ($mesCount[$mesKey] ?? 0) + 1;
 
@@ -266,17 +275,17 @@ class MapaService
      * @param array $datas           Lista de datas (Y-m-d) a considerar
      * @return array<string,float>   Média percentual por dia
      */
-    public function calcularMediasDiarias(array $planejadas, array $entradasEstoque, array $datas, bool $includeSaturday = true, bool $includeSunday = true): array
+    public function calcularMediasDiarias(array $planejadas, array $entradasEstoque, array $datas, bool $includeSaturday = true, bool $includeSunday = true, array $diasSemProducao = []): array
     {
-        $somas = [];
-        $contagens = [];
+        $planejadoTotal = [];
+        $entradaTotal = [];
 
         foreach ($planejadas as $produtoId => $dias) {
             foreach ($dias as $dia => $planejado) {
                 if (!in_array($dia, $datas, true)) {
                     continue;
                 }
-                if (!$this->diaConsiderado($dia, $includeSaturday, $includeSunday)) {
+                if (isset($diasSemProducao[$dia])) {
                     continue;
                 }
                 $planejadoVal = (float)$planejado;
@@ -284,21 +293,22 @@ class MapaService
                     continue;
                 }
                 $entradaEstoque = (float)($entradasEstoque[$produtoId][$dia] ?? 0);
-                $entradaEfetiva = $entradaEstoque > 0 ? $entradaEstoque : $planejadoVal;
-                $percentual = ($entradaEfetiva / $planejadoVal) * 100;
-                $somas[$dia] = ($somas[$dia] ?? 0) + $percentual;
-                $contagens[$dia] = ($contagens[$dia] ?? 0) + 1;
+                $entradaEfetiva = $entradaEstoque;
+                $planejadoTotal[$dia] = ($planejadoTotal[$dia] ?? 0) + $planejadoVal;
+                $entradaTotal[$dia] = ($entradaTotal[$dia] ?? 0) + $entradaEfetiva;
             }
         }
 
         $medias = [];
         foreach ($datas as $dia) {
-            if (!$this->diaConsiderado($dia, $includeSaturday, $includeSunday)) {
+            if (isset($diasSemProducao[$dia])) {
                 $medias[$dia] = 0.0;
                 continue;
             }
-            $count = $contagens[$dia] ?? 0;
-            $medias[$dia] = $count > 0 ? round(($somas[$dia] ?? 0) / $count, 1) : 0.0;
+            $planejadoDia = (float)($planejadoTotal[$dia] ?? 0);
+            $medias[$dia] = $planejadoDia > 0
+                ? round(((float)($entradaTotal[$dia] ?? 0) / $planejadoDia) * 100, 1)
+                : 0.0;
         }
 
         return $medias;
@@ -411,7 +421,37 @@ class MapaService
         $planejadas = $entradas['planejado'] ?? [];
         $entradasEstoque = $entradas['estoque'] ?? [];
 
-        return $this->calcularMediasDiarias($planejadas, $entradasEstoque, $datas, $includeSaturday, $includeSunday);
+        $diasSemProducao = $this->diasSemProducao($inicio->format('Y-m-d'), $fim->format('Y-m-d'));
+        return $this->calcularMediasDiarias($planejadas, $entradasEstoque, $datas, $includeSaturday, $includeSunday, $diasSemProducao);
+    }
+
+    public function diasSemProducao(string $inicio, string $fim): array
+    {
+        $pdo = $this->entradas->getConnection();
+        $pdo->exec("CREATE TABLE IF NOT EXISTS mapa_dias_sem_producao (data_referencia DATE PRIMARY KEY, motivo VARCHAR(80) NOT NULL DEFAULT 'outro', usuario_id INT NULL, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP)");
+        $stmt = $pdo->prepare('SELECT data_referencia, motivo, usuario_id FROM mapa_dias_sem_producao WHERE data_referencia BETWEEN :inicio AND :fim');
+        $stmt->execute(['inicio' => $inicio, 'fim' => $fim]);
+        $result = [];
+        foreach ($stmt->fetchAll() as $row) {
+            $result[(string)$row['data_referencia']] = $row;
+        }
+        return $result;
+    }
+
+    public function definirDiaSemProducao(string $dia, bool $ativo, string $motivo, int $usuarioId): void
+    {
+        if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $dia)) {
+            throw new \InvalidArgumentException('Data inválida.');
+        }
+        $pdo = $this->entradas->getConnection();
+        $this->diasSemProducao($dia, $dia);
+        if (!$ativo) {
+            $stmt = $pdo->prepare('DELETE FROM mapa_dias_sem_producao WHERE data_referencia = :dia');
+            $stmt->execute(['dia' => $dia]);
+            return;
+        }
+        $stmt = $pdo->prepare("INSERT INTO mapa_dias_sem_producao (data_referencia, motivo, usuario_id) VALUES (:dia, :motivo, :usuario_id) ON DUPLICATE KEY UPDATE motivo = VALUES(motivo), usuario_id = VALUES(usuario_id), updated_at = CURRENT_TIMESTAMP");
+        $stmt->execute(['dia' => $dia, 'motivo' => $motivo ?: 'outro', 'usuario_id' => $usuarioId ?: null]);
     }
 
     private function diaConsiderado(string $dia, bool $includeSaturday, bool $includeSunday): bool
@@ -456,6 +496,28 @@ class MapaService
             'estoque' => (float)($row['estoque'] ?? 0),
             'reservado' => (float)($row['reservado'] ?? 0),
         ];
+    }
+
+    private function estoquesResumidos(array $produtoIds): array
+    {
+        if (!$produtoIds) {
+            return [];
+        }
+        $produtoIds = array_values(array_unique(array_map('intval', $produtoIds)));
+        $placeholders = implode(',', array_fill(0, count($produtoIds), '?'));
+        $stmt = $this->estoques->getConnection()->prepare(
+            "SELECT produto_id, COALESCE(SUM(quantidade), 0) AS estoque, COALESCE(SUM(reservado), 0) AS reservado "
+            ."FROM estoques WHERE produto_id IN ($placeholders) GROUP BY produto_id"
+        );
+        $stmt->execute($produtoIds);
+        $result = [];
+        foreach ($stmt->fetchAll() as $row) {
+            $result[(int)$row['produto_id']] = [
+                'estoque' => (float)($row['estoque'] ?? 0),
+                'reservado' => (float)($row['reservado'] ?? 0),
+            ];
+        }
+        return $result;
     }
 
     private function limitesPedidos(): array

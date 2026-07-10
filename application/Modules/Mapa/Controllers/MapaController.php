@@ -30,8 +30,14 @@ class MapaController extends Controller
             : null;
 
         $full = isset($_GET['full']) && (string)$_GET['full'] === '1';
+        $month = isset($_GET['month']) && preg_match('/^\d{4}-\d{2}$/', (string)$_GET['month'])
+            ? (string)$_GET['month']
+            : null;
+        if ($full && $month === null) {
+            $month = date('Y-m');
+        }
 
-        $mapa = $this->mapa->gerar($ref, $inicio, $full);
+        $mapa = $this->mapa->gerar($ref, $inicio, $full, $month);
 
         if ($this->wantsJson()) {
             $this->json($mapa);
@@ -71,15 +77,23 @@ class MapaController extends Controller
             $auditDetails['registro'] = $tipo === 'estoque' ? 'entrada_estoque' : 'planejamento_producao';
             $this->audit->log($userId, $auditAction, $auditEntity, null, $auditDetails);
             if ($this->wantsJson()) {
+                $message = $tipo === 'estoque' ? 'Entrada de estoque registrada' : 'Produção registrada para o mapa';
+                if (!empty($payload['live_quick'])) {
+                    $this->json(['message' => $message, 'saved' => true]);
+                    return;
+                }
                 $start = isset($payload['janela_inicio']) && preg_match('/^\d{4}-\d{2}-\d{2}$/', (string)$payload['janela_inicio'])
                     ? (string)$payload['janela_inicio']
                     : null;
                 $refDay = isset($payload['data_referencia']) && preg_match('/^\d{4}-\d{2}-\d{2}$/', (string)$payload['data_referencia'])
                     ? (string)$payload['data_referencia']
                     : null;
-                $mapa = $this->mapa->gerar($refDay, $start, $full);
+                $month = isset($payload['month']) && preg_match('/^\d{4}-\d{2}$/', (string)$payload['month'])
+                    ? (string)$payload['month']
+                    : null;
+                $mapa = $this->mapa->gerar($refDay, $start, $full, $month);
                 $this->json([
-                    'message' => $tipo === 'estoque' ? 'Entrada de estoque registrada' : 'Produção registrada para o mapa',
+                    'message' => $message,
                     'mapa' => $mapa,
                 ]);
                 return;
@@ -94,5 +108,22 @@ class MapaController extends Controller
         }
 
         $this->redirect($full ? '/mapa?full=1' : '/mapa');
+    }
+
+    public function registrarSemProducao(): void
+    {
+        $this->auth->ensureRole(['admin', 'gestor', 'producao']);
+        $payload = $this->input();
+        $dia = (string)($payload['data_referencia'] ?? '');
+        $ativo = !empty($payload['ativo']);
+        $motivo = trim((string)($payload['motivo'] ?? 'outro'));
+        $userId = (int)($this->auth->user()['id'] ?? 0);
+        try {
+            $this->mapa->definirDiaSemProducao($dia, $ativo, $motivo, $userId);
+            $this->audit->log($userId, $ativo ? 'create' : 'delete', 'mapa_sem_producao', null, ['data_referencia' => $dia, 'motivo' => $motivo, 'ativo' => $ativo]);
+            $this->json(['saved' => true, 'data_referencia' => $dia, 'ativo' => $ativo, 'motivo' => $motivo]);
+        } catch (\Throwable $e) {
+            $this->json(['message' => $e->getMessage()], 422);
+        }
     }
 }

@@ -106,6 +106,7 @@ class DesempenhoController extends Controller
         $plannedByDay = [];
         $estoqueByDay = [];
         $entradas = $this->entradas->porJanela($start->format('Y-m-d'), $end->format('Y-m-d'));
+        $diasSemProducao = $this->mapa->diasSemProducao($start->format('Y-m-d'), $end->format('Y-m-d'));
         foreach ($entradas['planejado'] ?? [] as $dias) {
             foreach ($dias as $dia => $qtd) {
                 $plannedByDay[$dia] = ($plannedByDay[$dia] ?? 0) + (float)$qtd;
@@ -127,6 +128,10 @@ class DesempenhoController extends Controller
             $planejado = (float)($plannedByDay[$key] ?? 0);
             $entrada = (float)($estoqueByDay[$key] ?? 0);
             $completion = $planejado > 0 ? round(min(100, ($entrada / $planejado) * 100), 1) : 0.0;
+            $semProducao = isset($diasSemProducao[$key]);
+            if ($semProducao) {
+                $completion = 0.0;
+            }
 
             $window[] = [
                 'date' => $key,
@@ -135,8 +140,10 @@ class DesempenhoController extends Controller
                 'planned' => $planejado,
                 'entrada' => $entrada,
                 'completion' => $completion,
+                'sem_producao' => $semProducao,
+                'sem_producao_motivo' => $diasSemProducao[$key]['motivo'] ?? null,
                 'today' => $key === $todayKey,
-                'tooltip' => sprintf(
+                'tooltip' => $semProducao ? 'Sem produção · ' . (string)($diasSemProducao[$key]['motivo'] ?? 'Motivo não informado') : sprintf(
                     'Planejado %s · Entrada %s · %s%%',
                     number_format($planejado, 0, ',', '.'),
                     number_format($entrada, 0, ',', '.'),
@@ -144,7 +151,7 @@ class DesempenhoController extends Controller
                 ),
             ];
 
-            if ($planejado > 0) {
+            if ($planejado > 0 && !$semProducao) {
                 $completionValues[] = $completion;
             }
         }
