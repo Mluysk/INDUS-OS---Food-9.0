@@ -35,9 +35,9 @@ foreach ($items as $simulationItem) {
 .sim-form { display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap; }
 .sim-form label { display: flex; flex-direction: column; gap: 6px; font-size: 0.82rem; color: var(--muted, #6b7280); }
 .sim-form input { border: 1px solid var(--border, #e5e7eb); border-radius: 10px; padding: 8px 10px; background: var(--surface-alt, #f8fafc); }
-.detail-yield-highlight { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin: 14px 0; padding: 13px 15px; border-left: 4px solid var(--primary, #dc2626); border-radius: 10px; background: rgba(var(--primary-rgb, 220,38,38),.08); }
+.detail-yield-highlight { display: inline-flex; width: fit-content; max-width: 100%; align-items: center; gap: 14px; margin: 14px 0; padding: 13px 15px; border-left: 4px solid var(--primary, #dc2626); border-radius: 10px; background: rgba(var(--primary-rgb, 220,38,38),.08); }
 .detail-yield-highlight span { color: var(--muted, #64748b); font-size: .78rem; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; }
-.detail-yield-highlight strong { color: var(--primary, #dc2626); font-size: 1.08rem; }
+.detail-yield-highlight strong { color: var(--primary, #dc2626); font-size: 1.08rem; white-space: nowrap; }
 .simulation-totals { display: grid; grid-template-columns: repeat(2,minmax(220px,1fr)); gap: 14px; margin-top: 16px; }
 .simulation-total-card { display: flex; align-items: center; justify-content: space-between; gap: 18px; padding: 17px 18px; border: 2px solid rgba(var(--primary-rgb, 220,38,38),.28); border-radius: 14px; background: linear-gradient(135deg, rgba(var(--primary-rgb, 220,38,38),.11), var(--surface, #fff) 75%); box-shadow: 0 10px 24px rgba(15,23,42,.08); }
 .simulation-total-card span { display: block; color: var(--muted, #64748b); font-size: .75rem; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; }
