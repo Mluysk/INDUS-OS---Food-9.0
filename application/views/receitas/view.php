@@ -3,6 +3,9 @@ $recipe = $recipe ?? [];
 $simulation = $simulation ?? [];
 $items = $simulation['items'] ?? [];
 $producedQty = $simulation['produced_qty'] ?? ($recipe['yield_qty'] ?? 0);
+$baseYieldQty = (float)($recipe['yield_qty'] ?? 0);
+$isSimulationAdjusted = isset($_GET['qty']) && (float)$_GET['qty'] > 0;
+$displayYieldQty = $isSimulationAdjusted ? (float)$producedQty : $baseYieldQty;
 $totalCost = $simulation['total_cost'] ?? 0;
 $warnings = $simulation['warnings'] ?? [];
 $simulationWeightKg = 0.0;
@@ -60,8 +63,8 @@ foreach ($items as $simulationItem) {
 
     <div class="card-grid" style="margin-top: 12px;">
         <div class="card">
-            <small>Rendimento</small>
-            <strong><?= number_format((float)($recipe['yield_qty'] ?? 0), 3, ',', '.'); ?> <?= htmlspecialchars($recipe['yield_unit'] ?? '', ENT_QUOTES, 'UTF-8'); ?></strong>
+            <small><?= $isSimulationAdjusted ? 'Rendimento simulado' : 'Rendimento'; ?></small>
+            <strong><?= number_format($displayYieldQty, 3, ',', '.'); ?> <?= htmlspecialchars($recipe['yield_unit'] ?? '', ENT_QUOTES, 'UTF-8'); ?></strong>
         </div>
         <div class="card">
             <small>Status</small>
@@ -92,11 +95,14 @@ foreach ($items as $simulationItem) {
             <input type="number" step="0.001" min="0.001" name="qty" value="<?= htmlspecialchars((string)$producedQty, ENT_QUOTES, 'UTF-8'); ?>">
         </label>
         <button class="btn primary" type="submit">Simular</button>
+        <?php if ($isSimulationAdjusted): ?>
+            <a class="btn ghost" href="<?= htmlspecialchars($url('receitas/' . (int)$recipe['id']), ENT_QUOTES, 'UTF-8'); ?>">Resetar simulação</a>
+        <?php endif; ?>
     </form>
 
     <div class="detail-yield-highlight">
-        <span>Rendimento da receita</span>
-        <strong><?= number_format((float)($recipe['yield_qty'] ?? 0), 3, ',', '.'); ?> <?= htmlspecialchars((string)($recipe['yield_unit'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></strong>
+        <span><?= $isSimulationAdjusted ? 'Rendimento simulado' : 'Rendimento da receita'; ?></span>
+        <strong><?= number_format($displayYieldQty, 3, ',', '.'); ?> <?= htmlspecialchars((string)($recipe['yield_unit'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></strong>
     </div>
 
     <table class="data-table">
