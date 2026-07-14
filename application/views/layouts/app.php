@@ -215,8 +215,8 @@ if ($titleSizePx < 16) {
 $brandTitleSize = $titleSizePx.'px';
 $brandTitleOffsetX = (int)($theme['title_offset_x'] ?? 0);
 $brandTitleOffsetY = (int)($theme['title_offset_y'] ?? 0);
-$brandTitleCalibratedX = $brandTitleOffsetX + 11;
-$brandTitleCalibratedY = $brandTitleOffsetY - 1;
+$brandTitleCalibratedX = $brandTitleOffsetX;
+$brandTitleCalibratedY = $brandTitleOffsetY;
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
