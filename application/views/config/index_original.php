@@ -723,10 +723,12 @@ $previewMatrixDefault = app_logo_matrix_values($logoTintPreviewHex);
                 <div class="theme-mode">
                     <label class="mode-option">
                         <input type="radio" name="config[THEME_MODE]" value="light" <?= $themeMode === 'light' ? 'checked' : ''; ?>>
+                        <span class="mode-option-icon" data-lucide="sun" aria-hidden="true"></span>
                         <span>Claro</span>
                     </label>
                     <label class="mode-option">
                         <input type="radio" name="config[THEME_MODE]" value="dark" <?= $themeMode === 'dark' ? 'checked' : ''; ?>>
+                        <span class="mode-option-icon" data-lucide="moon" aria-hidden="true"></span>
                         <span>Escuro</span>
                     </label>
                 </div>
@@ -1720,8 +1722,10 @@ $previewMatrixDefault = app_logo_matrix_values($logoTintPreviewHex);
     }
     .theme-mode {
         display: inline-flex;
-        gap: 12px;
-        padding: 8px;
+        width: fit-content;
+        max-width: 100%;
+        gap: 6px;
+        padding: 6px;
         border-radius: 12px;
         background: var(--surface-muted);
         border: 1px solid var(--border);
@@ -1776,6 +1780,11 @@ $previewMatrixDefault = app_logo_matrix_values($logoTintPreviewHex);
         gap: 6px;
         font-weight: 600;
         color: var(--text-muted);
+    }
+    .mode-option-icon {
+        width: 16px;
+        height: 16px;
+        flex: 0 0 16px;
     }
     .mode-option input {
         accent-color: var(--primary);
