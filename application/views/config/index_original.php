@@ -658,25 +658,27 @@ $previewMatrixDefault = app_logo_matrix_values($logoTintPreviewHex);
                 </div>
                 <div class="appearance-panel" data-appearance-panel="visual">
 
-            <div class="field">
-                <label for="theme-title">Título exibido no painel</label>
-                <input id="theme-title" name="config[THEME_APP_TITLE]" value="<?= htmlspecialchars($themeTitle, ENT_QUOTES, 'UTF-8'); ?>" placeholder="Nome do sistema">
-            </div>
-            <div class="field">
-                <label for="title-size-input">Tamanho do título (px)</label>
-                <div class="title-size-control">
-                    <input type="number" id="title-size-input" name="config[THEME_TITLE_SIZE]" min="16" max="64" step="1" value="<?= htmlspecialchars($titleSize, ENT_QUOTES, 'UTF-8'); ?>">
-                    <input type="range" id="title-size-range" min="16" max="64" step="1" value="<?= htmlspecialchars($titleSize, ENT_QUOTES, 'UTF-8'); ?>" aria-label="Selecionar tamanho do título">
+            <div class="title-settings-card">
+                <div class="field title-settings-card__name">
+                    <label for="theme-title">Título exibido no painel</label>
+                    <input id="theme-title" name="config[THEME_APP_TITLE]" value="<?= htmlspecialchars($themeTitle, ENT_QUOTES, 'UTF-8'); ?>" placeholder="Nome do sistema">
                 </div>
-                <p class="field-hint">Use a barra ou digite o valor desejado entre 16 e 64 pixels.</p>
-            </div>
-            <div class="field">
-                <span class="field-label">Ajuste do título</span>
-                <div class="pos-grid title-offset-grid">
-                    <label class="slider-label" for="title-offset-x">Posição X <output id="title-offset-x-val"><?= htmlspecialchars($titleOffsetX, ENT_QUOTES, 'UTF-8'); ?>px</output></label>
-                    <input type="range" id="title-offset-x" name="config[THEME_TITLE_OFFSET_X]" min="-80" max="80" value="<?= htmlspecialchars($titleOffsetX, ENT_QUOTES, 'UTF-8'); ?>">
-                    <label class="slider-label" for="title-offset-y">Posição Y <output id="title-offset-y-val"><?= htmlspecialchars($titleOffsetY, ENT_QUOTES, 'UTF-8'); ?>px</output></label>
-                    <input type="range" id="title-offset-y" name="config[THEME_TITLE_OFFSET_Y]" min="-80" max="80" value="<?= htmlspecialchars($titleOffsetY, ENT_QUOTES, 'UTF-8'); ?>">
+                <div class="field">
+                    <label for="title-size-input">Tamanho do título (px)</label>
+                    <div class="title-size-control">
+                        <input type="number" id="title-size-input" name="config[THEME_TITLE_SIZE]" min="16" max="64" step="1" value="<?= htmlspecialchars($titleSize, ENT_QUOTES, 'UTF-8'); ?>">
+                        <input type="range" id="title-size-range" min="16" max="64" step="1" value="<?= htmlspecialchars($titleSize, ENT_QUOTES, 'UTF-8'); ?>" aria-label="Selecionar tamanho do título">
+                    </div>
+                    <p class="field-hint">Use a barra ou digite o valor desejado entre 16 e 64 pixels.</p>
+                </div>
+                <div class="field">
+                    <span class="field-label">Ajuste do título</span>
+                    <div class="pos-grid title-offset-grid">
+                        <label class="slider-label" for="title-offset-x">Posição X <output id="title-offset-x-val"><?= htmlspecialchars($titleOffsetX, ENT_QUOTES, 'UTF-8'); ?>px</output></label>
+                        <input type="range" id="title-offset-x" name="config[THEME_TITLE_OFFSET_X]" min="-80" max="80" value="<?= htmlspecialchars($titleOffsetX, ENT_QUOTES, 'UTF-8'); ?>">
+                        <label class="slider-label" for="title-offset-y">Posição Y <output id="title-offset-y-val"><?= htmlspecialchars($titleOffsetY, ENT_QUOTES, 'UTF-8'); ?>px</output></label>
+                        <input type="range" id="title-offset-y" name="config[THEME_TITLE_OFFSET_Y]" min="-80" max="80" value="<?= htmlspecialchars($titleOffsetY, ENT_QUOTES, 'UTF-8'); ?>">
+                    </div>
                 </div>
             </div>
             <div class="field">
@@ -1549,6 +1551,45 @@ $previewMatrixDefault = app_logo_matrix_values($logoTintPreviewHex);
         display: flex;
         align-items: center;
         gap: 12px;
+    }
+    .title-settings-card {
+        display: grid;
+        grid-template-columns: minmax(210px, 0.9fr) minmax(280px, 1.1fr) minmax(300px, 1.2fr);
+        align-items: start;
+        gap: 16px;
+        padding: 16px;
+        border-radius: 18px;
+        border: 1px solid rgba(148, 163, 184, 0.25);
+        background: linear-gradient(145deg, rgba(248, 250, 252, 0.94), rgba(226, 232, 240, 0.72));
+        box-shadow: 0 22px 44px -34px rgba(15, 23, 42, 0.55);
+    }
+    .title-settings-card .field {
+        min-width: 0;
+        margin: 0;
+    }
+    .title-settings-card .field-hint {
+        margin-bottom: 0;
+    }
+    body.theme-dark .title-settings-card {
+        background: linear-gradient(145deg, rgba(23, 32, 50, 0.92), rgba(13, 20, 36, 0.88));
+        border-color: rgba(148, 163, 184, 0.35);
+        box-shadow: 0 22px 44px -30px rgba(3, 7, 18, 0.7);
+    }
+    @media (max-width: 1050px) {
+        .title-settings-card {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+        .title-settings-card__name {
+            grid-column: 1 / -1;
+        }
+    }
+    @media (max-width: 680px) {
+        .title-settings-card {
+            grid-template-columns: minmax(0, 1fr);
+        }
+        .title-settings-card__name {
+            grid-column: auto;
+        }
     }
     .title-size-control input[type="number"] {
         width: 92px;
