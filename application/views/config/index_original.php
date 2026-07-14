@@ -2159,8 +2159,9 @@ $previewMatrixDefault = app_logo_matrix_values($logoTintPreviewHex);
         const setTitleOffsetPreview = (axis, value) => {
             const parsed = parseInt(value, 10);
             const clamped = Number.isNaN(parsed) ? 0 : Math.max(-80, Math.min(80, parsed));
+            const calibration = axis === 'x' ? 33 : 0;
             const root = document.documentElement;
-            root.style.setProperty(axis === 'y' ? '--brand-title-y' : '--brand-title-x', `${clamped}px`);
+            root.style.setProperty(axis === 'y' ? '--brand-title-y' : '--brand-title-x', `${clamped + calibration}px`);
             storage.set('themePreviewActive', '1');
             storage.set(axis === 'y' ? 'themePreviewTitleOffsetY' : 'themePreviewTitleOffsetX', String(clamped));
         };

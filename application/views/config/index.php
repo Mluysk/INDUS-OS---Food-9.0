@@ -335,7 +335,7 @@ include __DIR__.'/audit_tab_patch.php';
         root.setProperty('--primary-dark', shadeHex(primary, -25));
         root.setProperty('--primary-soft', shadeHex(primary, 45));
         root.setProperty('--brand-title-size', `${Math.max(16, Math.min(64, titleSize))}px`);
-        root.setProperty('--brand-title-x', `${Math.max(-80, Math.min(80, titleX))}px`);
+        root.setProperty('--brand-title-x', `${Math.max(-80, Math.min(80, titleX)) + 33}px`);
         root.setProperty('--brand-title-y', `${Math.max(-80, Math.min(80, titleY))}px`);
 
         document.body.classList.toggle('theme-dark', mode === 'dark');
