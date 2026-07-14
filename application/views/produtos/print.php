@@ -29,6 +29,10 @@ if ($visual) {
 
 $now = (new DateTime('now', new DateTimeZone('America/Sao_Paulo')))->format('d/m/Y H:i');
 $logo = $asset($sidebarLogo['path'] ?? ($theme['logo_light'] ?? 'img/logo.png'));
+$notaDados = $nota ?? [];
+$empresaNome = trim((string)($notaDados['empresa'] ?? ($appName ?? 'IndusOS Food')));
+$empresaEndereco = trim((string)($notaDados['endereco'] ?? ''));
+$empresaContato = trim((string)($notaDados['contato'] ?? ''));
 
 $filterPills = [];
 if (!empty($filters['term'])) {
@@ -48,8 +52,28 @@ if (!empty($filters['tipo'])) {
 ?>
 <header class="print-header">
     <div class="print-brand">
-        <img src="<?= htmlspecialchars($logo, ENT_QUOTES, 'UTF-8'); ?>" alt="<?= htmlspecialchars($appName ?? 'IndusOS Food', ENT_QUOTES, 'UTF-8'); ?>">
-        <div>
+        <div class="product-brand-identity">
+            <img src="<?= htmlspecialchars($logo, ENT_QUOTES, 'UTF-8'); ?>" alt="<?= htmlspecialchars($appName ?? 'IndusOS Food', ENT_QUOTES, 'UTF-8'); ?>">
+            <div class="product-company-info">
+                <div class="product-company-info__row">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21h18"/><path d="M6 21V7l6-4 6 4v14"/><path d="M9 10h.01M9 14h.01M9 18h.01M15 10h.01M15 14h.01M15 18h.01"/></svg>
+                    <span><strong>Nome/Razão social:</strong> <?= htmlspecialchars($empresaNome, ENT_QUOTES, 'UTF-8'); ?></span>
+                </div>
+                <?php if ($empresaEndereco !== ''): ?>
+                    <div class="product-company-info__row">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 5-8 12-8 12S4 15 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+                        <span><strong>Endereço:</strong> <?= htmlspecialchars($empresaEndereco, ENT_QUOTES, 'UTF-8'); ?></span>
+                    </div>
+                <?php endif; ?>
+                <?php if ($empresaContato !== ''): ?>
+                    <div class="product-company-info__row">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.12.9.33 1.78.62 2.63a2 2 0 0 1-.45 2.11L8 9.73a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.85.29 1.73.5 2.63.62A2 2 0 0 1 22 16.92Z"/></svg>
+                        <span><strong>Contato:</strong> <?= htmlspecialchars($empresaContato, ENT_QUOTES, 'UTF-8'); ?></span>
+                    </div>
+                <?php endif; ?>
+            </div>
+        </div>
+        <div class="product-report-title">
             <h1><?= $simplified ? 'Catálogo simplificado de produtos' : 'Catálogo de produtos'; ?></h1>
             <p class="print-meta">Atualizado em <?= htmlspecialchars($now, ENT_QUOTES, 'UTF-8'); ?></p>
             <?php if ($filterPills): ?>
@@ -61,6 +85,40 @@ if (!empty($filters['tipo'])) {
 </header>
 
 <style>
+    .print-brand {
+        gap: 10px;
+    }
+    .product-brand-identity {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        min-width: 0;
+    }
+    .product-company-info {
+        display: grid;
+        gap: 5px;
+        min-width: 0;
+        color: var(--text);
+        font-size: 0.82rem;
+    }
+    .product-company-info__row {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        min-width: 0;
+    }
+    .product-company-info__row svg {
+        width: 16px;
+        height: 16px;
+        flex: 0 0 16px;
+        color: var(--brand);
+    }
+    .product-company-info__row span {
+        min-width: 0;
+    }
+    .product-report-title {
+        min-width: 0;
+    }
     .print-brand img {
         width: auto !important;
         height: var(--form-logo-size, 53px) !important;
@@ -82,6 +140,12 @@ if (!empty($filters['tipo'])) {
         margin-bottom: var(--square-form-logo-margin, 24px);
         transform: scale(1.85);
         transform-origin: left center;
+    }
+    @media (max-width: 680px) {
+        .product-brand-identity {
+            align-items: flex-start;
+            flex-direction: column;
+        }
     }
 </style>
 <script>
