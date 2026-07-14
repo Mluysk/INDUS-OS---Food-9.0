@@ -58,6 +58,21 @@ class ConfigService
             }
         }
 
+        // A sincronizacao apenas altera a prioridade de leitura da paleta.
+        // As preferencias pessoais continuam salvas e voltam a ser usadas
+        // automaticamente quando o administrador desativa a sincronizacao.
+        if (in_array($chave, ['THEME_PRIMARY_HEX', 'THEME_PRIMARY_NAME'], true) && $this->visualSyncEnabled()) {
+            $adminKey = $this->adminScopedKey($chave);
+            if ($adminKey !== null) {
+                $adminValue = $this->configuracoes->get($adminKey, null);
+                if ($adminValue !== null) {
+                    return $adminValue;
+                }
+            }
+
+            return $this->configuracoes->get($chave, $default);
+        }
+
         if ($this->isUserScoped($chave)) {
             $userKey = $this->userScopedKey($chave);
             if ($userKey !== null) {
@@ -71,18 +86,6 @@ class ConfigService
                     return $personalDefault;
                 }
             }
-        }
-
-        if (in_array($chave, ['THEME_PRIMARY_HEX', 'THEME_PRIMARY_NAME'], true) && $this->visualSyncEnabled()) {
-            $adminKey = $this->adminScopedKey($chave);
-            if ($adminKey !== null) {
-                $adminValue = $this->configuracoes->get($adminKey, null);
-                if ($adminValue !== null) {
-                    return $adminValue;
-                }
-            }
-
-            return $this->configuracoes->get($chave, $default);
         }
 
         return $this->configuracoes->get($chave, $default);
