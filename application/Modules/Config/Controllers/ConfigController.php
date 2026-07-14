@@ -846,6 +846,19 @@ class ConfigController extends Controller
             'is_ativo' => 1,
         ]);
 
+        $themeDefaults = $this->config->getConnection()->prepare(
+            'INSERT INTO configuracoes (chave, valor) VALUES (:chave, :valor) '
+            . 'ON DUPLICATE KEY UPDATE valor = valor'
+        );
+        $themeDefaults->execute([
+            'chave' => 'USER_'.(int)$userId.'_THEME_PRIMARY_HEX',
+            'valor' => '#DC2626',
+        ]);
+        $themeDefaults->execute([
+            'chave' => 'USER_'.(int)$userId.'_THEME_PRIMARY_NAME',
+            'valor' => 'Vermelho Energia',
+        ]);
+
         $this->audit->log($this->auth->id(), 'create', 'usuarios', (int)$userId, ['papel' => $papel]);
 
         if ($this->wantsJson()) {

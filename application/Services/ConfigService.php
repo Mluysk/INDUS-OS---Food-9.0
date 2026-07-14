@@ -60,10 +60,24 @@ class ConfigService
                 if ($userValue !== null) {
                     return $userValue;
                 }
+
+                $personalDefault = $this->personalThemeDefault($chave);
+                if ($personalDefault !== null) {
+                    return $personalDefault;
+                }
             }
         }
 
         return $this->configuracoes->get($chave, $default);
+    }
+
+    private function personalThemeDefault(string $chave): ?string
+    {
+        return match ($chave) {
+            'THEME_PRIMARY_HEX' => '#DC2626',
+            'THEME_PRIMARY_NAME' => 'Vermelho Energia',
+            default => null,
+        };
     }
 
     public function set(string $chave, string $valor): void
