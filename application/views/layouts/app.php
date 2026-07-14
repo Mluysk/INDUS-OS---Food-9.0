@@ -176,7 +176,7 @@ $notificationPopupSeconds = isset($theme['notification_popup_seconds']) ? (int)$
 $notificationPopupSeconds = max(1, min(30, $notificationPopupSeconds));
 $notificationPopupMs = $notificationPopupSeconds * 1000;
 $tagline = $appTagline ?? 'Sistema de Controle Industrial (SCI)';
-$titleColorize = ($theme['title_colorize'] ?? '0') === '1';
+$titleColorize = ($theme['title_colorize'] ?? '1') === '1';
 $logoTintEnabled = ($theme['logo_filter'] ?? '0') === '1';
 $logoSizing = [
     'light' => [

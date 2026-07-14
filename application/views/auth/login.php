@@ -57,7 +57,7 @@ if ($titleSize < 16) {
     $titleSize = 64;
 }
 $brandTitleStyle = 'font-size: '.$titleSize.'px;';
-if (($theme['title_colorize'] ?? '0') === '1') {
+if (($theme['title_colorize'] ?? '1') === '1') {
     $brandTitleStyle .= ' color: '.htmlspecialchars($primaryHex, ENT_QUOTES, 'UTF-8').';';
 }
 $paletteName = $theme['primary_name'] ?? '';

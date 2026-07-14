@@ -59,7 +59,7 @@ abstract class Controller
             'logo_compact_light' => 'uploads/branding/logosmalldark.png',
             'logo_compact_dark' => 'uploads/branding/logosmallwhite.png',
             'logo_footer' => 'uploads/branding/logo.png',
-            'title_colorize' => '0',
+            'title_colorize' => '1',
             'logo_filter' => '0',
             'title_size' => '26',
             'title_offset_x' => '0',

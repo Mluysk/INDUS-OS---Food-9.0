@@ -80,6 +80,7 @@ class ConfigService
         return match ($chave) {
             'THEME_PRIMARY_HEX' => '#DC2626',
             'THEME_PRIMARY_NAME' => 'Vermelho Energia',
+            'THEME_TITLE_COLORIZE' => '1',
             default => null,
         };
     }

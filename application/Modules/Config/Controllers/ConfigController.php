@@ -97,7 +97,7 @@ class ConfigController extends Controller
             'THEME_LOGO_COMPACT_LIGHT_OFFSET_Y' => $this->config->get('THEME_LOGO_COMPACT_LIGHT_OFFSET_Y', '0') ?: '0',
             'THEME_LOGO_COMPACT_DARK_OFFSET_X' => $this->config->get('THEME_LOGO_COMPACT_DARK_OFFSET_X', '0') ?: '0',
             'THEME_LOGO_COMPACT_DARK_OFFSET_Y' => $this->config->get('THEME_LOGO_COMPACT_DARK_OFFSET_Y', '0') ?: '0',
-            'THEME_TITLE_COLORIZE' => $this->config->get('THEME_TITLE_COLORIZE', '0') === '1' ? '1' : '0',
+            'THEME_TITLE_COLORIZE' => $this->config->get('THEME_TITLE_COLORIZE', '1') === '1' ? '1' : '0',
             'THEME_LOGO_FILTER' => $this->config->get('THEME_LOGO_FILTER', '0') === '1' ? '1' : '0',
             'PORTAL_LOGIN_LOGO_LIGHT' => $this->config->get('PORTAL_LOGIN_LOGO_LIGHT', $this->config->get('THEME_LOGO_LIGHT', 'uploads/branding/logodark.png')) ?: 'uploads/branding/logodark.png',
             'PORTAL_LOGIN_LOGO_DARK' => $this->config->get('PORTAL_LOGIN_LOGO_DARK', $this->config->get('THEME_LOGO_DARK', 'uploads/branding/logowhite.png')) ?: 'uploads/branding/logowhite.png',
@@ -857,6 +857,10 @@ class ConfigController extends Controller
         $themeDefaults->execute([
             'chave' => 'USER_'.(int)$userId.'_THEME_PRIMARY_NAME',
             'valor' => 'Vermelho Energia',
+        ]);
+        $themeDefaults->execute([
+            'chave' => 'USER_'.(int)$userId.'_THEME_TITLE_COLORIZE',
+            'valor' => '1',
         ]);
 
         $this->audit->log($this->auth->id(), 'create', 'usuarios', (int)$userId, ['papel' => $papel]);
