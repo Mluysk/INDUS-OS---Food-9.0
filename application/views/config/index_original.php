@@ -3289,6 +3289,8 @@ $previewMatrixDefault = app_logo_matrix_values($logoTintPreviewHex);
         const noteLogoCustomFields = document.querySelector('[data-note-logo-custom-fields]');
         const noteLogoPreview = document.getElementById('preview-note');
         const noteLogoPathInput = document.getElementById('note-logo');
+        const noteLogoFileInput = document.getElementById('note-logo-file');
+        let noteLogoObjectUrl = '';
         if (noteLogoCustomToggle && noteLogoCustomFields) {
             const syncNoteLogoMode = () => {
                 const enabled = noteLogoCustomToggle.checked;
@@ -3307,6 +3309,18 @@ $previewMatrixDefault = app_logo_matrix_values($logoTintPreviewHex);
             };
             noteLogoCustomToggle.addEventListener('change', syncNoteLogoMode);
             noteLogoPathInput?.addEventListener('input', syncNoteLogoMode);
+            noteLogoFileInput?.addEventListener('change', () => {
+                const file = noteLogoFileInput.files?.[0];
+                if (!file || !file.type.startsWith('image/') || !noteLogoPreview) {
+                    return;
+                }
+                if (noteLogoObjectUrl) {
+                    URL.revokeObjectURL(noteLogoObjectUrl);
+                }
+                noteLogoObjectUrl = URL.createObjectURL(file);
+                noteLogoPreview.src = noteLogoObjectUrl;
+                noteLogoPreview.addEventListener('load', applyLogoTint, { once: true });
+            });
             syncNoteLogoMode();
         }
 
