@@ -1574,7 +1574,7 @@ $previewMatrixDefault = app_logo_matrix_values($logoTintPreviewHex);
         padding: 16px;
         border-radius: 18px;
         border: 1px solid rgba(148, 163, 184, 0.25);
-        background: color-mix(in srgb, var(--primary) 9%, var(--surface));
+        background: #F5F5F5;
         box-shadow: 0 22px 44px -34px rgba(15, 23, 42, 0.55);
     }
     .title-settings-card .field {
@@ -1950,35 +1950,50 @@ $previewMatrixDefault = app_logo_matrix_values($logoTintPreviewHex);
         display: flex;
         align-items: center;
         justify-content: space-between;
-        gap: 18px;
-        padding: 16px 18px;
-        border: 1px solid rgba(148, 163, 184, 0.25);
-        border-radius: 18px;
-        background: linear-gradient(145deg, rgba(248, 250, 252, 0.94), rgba(226, 232, 240, 0.72));
-        box-shadow: 0 22px 44px -34px rgba(15, 23, 42, 0.55);
+        gap: 12px;
+        padding: 10px 12px;
+        border: 1px solid color-mix(in srgb, var(--primary) 12%, rgba(148, 163, 184, 0.24));
+        border-radius: 14px;
+        background: color-mix(in srgb, var(--primary) 4%, var(--surface));
+        box-shadow: 0 12px 26px -24px rgba(15, 23, 42, 0.45);
+    }
+    .visual-sync-card > div {
+        display: flex;
+        align-items: baseline;
+        gap: 8px;
+        min-width: 0;
     }
     .visual-sync-card strong {
         display: block;
         color: var(--text-title);
+        font-size: 0.9rem;
+        white-space: nowrap;
     }
     .visual-sync-card p {
-        margin: 5px 0 0;
+        margin: 0;
         color: var(--text-muted);
-        font-size: 0.86rem;
-        line-height: 1.4;
+        font-size: 0.76rem;
+        line-height: 1.3;
     }
     .visual-sync-card .switch {
         flex: 0 0 auto;
+        gap: 7px;
+        font-size: 0.8rem;
     }
     body.theme-dark .visual-sync-card {
-        background: linear-gradient(145deg, rgba(23, 32, 50, 0.92), rgba(13, 20, 36, 0.88));
-        border-color: rgba(148, 163, 184, 0.35);
-        box-shadow: 0 22px 44px -30px rgba(3, 7, 18, 0.7);
+        background: color-mix(in srgb, var(--primary) 5%, var(--surface));
+        border-color: color-mix(in srgb, var(--primary) 18%, rgba(148, 163, 184, 0.28));
+        box-shadow: 0 12px 26px -24px rgba(3, 7, 18, 0.65);
     }
     @media (max-width: 640px) {
         .visual-sync-card {
             align-items: flex-start;
             flex-direction: column;
+        }
+        .visual-sync-card > div {
+            align-items: flex-start;
+            flex-direction: column;
+            gap: 3px;
         }
     }
     .logo-field input[type="file"] {
