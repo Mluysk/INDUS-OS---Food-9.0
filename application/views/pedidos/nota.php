@@ -54,6 +54,17 @@ $clienteContato = trim(($cliente['telefone'] ?? '').' '.($cliente['email'] ?? ''
 $clienteEndereco = $formatEndereco($cliente);
 $notaDados = $nota ?? [];
 $notaLogo = $asset($notaDados['logo'] ?? ($theme['logo_light'] ?? 'img/logo.png'));
+$notaLogoScale = 1.0;
+$notaLogoRelativePath = str_replace(['..', '\\'], ['', '/'], ltrim((string)($notaDados['logo'] ?? ''), '/\\'));
+$notaLogoLocalPath = dirname(__DIR__, 3) . '/public/' . $notaLogoRelativePath;
+if ($notaLogoRelativePath !== '' && is_file($notaLogoLocalPath)) {
+    $notaLogoDimensions = @getimagesize($notaLogoLocalPath);
+    if (is_array($notaLogoDimensions) && ($notaLogoDimensions[1] ?? 0) > 0) {
+        $notaLogoAspect = $notaLogoDimensions[0] / $notaLogoDimensions[1];
+        $notaLogoScale = $notaLogoAspect <= 1.35 ? 1.8 : 1.0;
+    }
+}
+$notaLogoRenderSize = (int)round((int)($notaDados['logo_size'] ?? 66) * $notaLogoScale);
 $pixEnabled = isset($notaPixEnabled) ? (bool)$notaPixEnabled : (bool)($notaDados['pix_enabled'] ?? false);
 $pixKey = trim($notaPixKey ?? ($notaDados['pix_key'] ?? ''));
 $pixType = isset($notaPixType) ? (string)$notaPixType : (string)($notaDados['pix_type'] ?? 'cnpj');
@@ -155,7 +166,7 @@ if ($pixEnabled && $pixKey !== '') {
 }
 $pixQrUrl = $pixPayload !== '' ? 'https://quickchart.io/qr?size=200&margin=2&text=' . urlencode($pixPayload) : '';
 ?>
-<div class="nota-shell" style="--note-logo-size: <?= (int)($notaDados['logo_size'] ?? 66); ?>px; --note-logo-x: <?= (int)($notaDados['logo_offset_x'] ?? 0); ?>px; --note-logo-y: <?= (int)($notaDados['logo_offset_y'] ?? 0); ?>px;">
+<div class="nota-shell" style="--note-logo-size: <?= $notaLogoRenderSize; ?>px; --note-logo-x: <?= (int)($notaDados['logo_offset_x'] ?? 0); ?>px; --note-logo-y: <?= (int)($notaDados['logo_offset_y'] ?? 0); ?>px;">
     <div class="nota-head">
         <div class="nota-head__col">
             <div class="nota-logo">

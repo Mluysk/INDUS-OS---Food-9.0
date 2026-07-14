@@ -2899,10 +2899,11 @@ $previewMatrixDefault = app_logo_matrix_values($logoTintPreviewHex);
                 preview: '#preview-note',
                 min: 24,
                 max: 140,
+                squareScale: 1.8,
             },
         ];
 
-        const applyLogoSizeAndOffset = ({ size, x, y, output, outputX, outputY, preview, min, max, offsetMin = -80, offsetMax = 80, cssSize, cssX, cssY, baseX = 0, baseY = 0 }) => {
+        const applyLogoSizeAndOffset = ({ size, x, y, output, outputX, outputY, preview, min, max, offsetMin = -80, offsetMax = 80, cssSize, cssX, cssY, baseX = 0, baseY = 0, squareScale = 1 }) => {
             const sizeInput = document.querySelector(size);
             const offsetX = document.querySelector(x);
             const offsetY = document.querySelector(y);
@@ -2914,7 +2915,11 @@ $previewMatrixDefault = app_logo_matrix_values($logoTintPreviewHex);
                 return;
             }
             const sizeVal = clampNumber(parseInt(sizeInput.value || sizeInput.min || min, 10), min, max);
-            img.style.maxHeight = `${sizeVal}px`;
+            const aspectRatio = img.naturalWidth > 0 && img.naturalHeight > 0
+                ? img.naturalWidth / img.naturalHeight
+                : 1;
+            const visualScale = squareScale > 1 && aspectRatio <= 1.35 ? squareScale : 1;
+            img.style.maxHeight = `${Math.round(sizeVal * visualScale)}px`;
             if (outputEl) {
                 outputEl.textContent = `${sizeVal}px`;
             }
@@ -2924,9 +2929,6 @@ $previewMatrixDefault = app_logo_matrix_values($logoTintPreviewHex);
             const isPortalLoginLogo = preview.includes('portal-login');
             let previewXVal = xVal;
             if (isPortalLoginLogo && offsetX) {
-                const aspectRatio = img.naturalWidth > 0 && img.naturalHeight > 0
-                    ? img.naturalWidth / img.naturalHeight
-                    : 1;
                 const targetAvailableWidth = 1080 - 12;
                 const targetLogoWidth = Math.min(sizeVal * aspectRatio, targetAvailableWidth);
                 const horizontalLimit = Math.max(0, Math.floor((targetAvailableWidth - targetLogoWidth) / 2));
