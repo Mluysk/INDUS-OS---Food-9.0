@@ -19,8 +19,8 @@ $compactFallback = $themeDefaults['THEME_LOGO_COMPACT'] ?? 'uploads/branding/log
 $themeLogoCompactLight = $themeDefaults['THEME_LOGO_COMPACT_LIGHT'] ?? $compactFallback;
 $themeLogoCompactDark = $themeDefaults['THEME_LOGO_COMPACT_DARK'] ?? 'uploads/branding/logosmallwhite.png';
 $themeLogoFooter = $themeDefaults['THEME_LOGO_FOOTER'] ?? 'uploads/branding/logo.png';
-$logoLightSize = $themeDefaults['THEME_LOGO_LIGHT_SIZE'] ?? '57';
-$logoDarkSize = $themeDefaults['THEME_LOGO_DARK_SIZE'] ?? '57';
+$logoLightSize = $themeDefaults['THEME_LOGO_LIGHT_SIZE'] ?? '58';
+$logoDarkSize = $themeDefaults['THEME_LOGO_DARK_SIZE'] ?? '58';
 $logoCompactLightSize = $themeDefaults['THEME_LOGO_COMPACT_LIGHT_SIZE'] ?? '76';
 $logoCompactDarkSize = $themeDefaults['THEME_LOGO_COMPACT_DARK_SIZE'] ?? '76';
 $logoLightOffsetX = $themeDefaults['THEME_LOGO_LIGHT_OFFSET_X'] ?? '0';
@@ -2532,8 +2532,8 @@ $previewMatrixDefault = app_logo_matrix_values($logoTintPreviewHex);
                 cssSize: '--logo-light-height',
                 cssX: '--logo-light-x',
                 cssY: '--logo-light-y',
-                baseX: 2,
-                baseY: 8,
+                baseX: -2,
+                baseY: -12,
             },
             {
                 size: '#logo-dark-size',
@@ -2548,8 +2548,8 @@ $previewMatrixDefault = app_logo_matrix_values($logoTintPreviewHex);
                 cssSize: '--logo-dark-height',
                 cssX: '--logo-dark-x',
                 cssY: '--logo-dark-y',
-                baseX: 2,
-                baseY: 8,
+                baseX: -2,
+                baseY: -12,
             },
             {
                 size: '#logo-compact-light-size',

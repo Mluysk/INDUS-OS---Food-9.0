@@ -201,8 +201,8 @@ $logoSizing = [
     ],
 ];
 $logoCalibration = [
-    'light' => ['x' => 2, 'y' => 8],
-    'dark' => ['x' => 2, 'y' => 8],
+    'light' => ['x' => -2, 'y' => -12],
+    'dark' => ['x' => -2, 'y' => -12],
     'compact-light' => ['x' => -5, 'y' => 1],
     'compact-dark' => ['x' => -5, 'y' => 1],
 ];
