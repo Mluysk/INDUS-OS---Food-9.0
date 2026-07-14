@@ -70,8 +70,8 @@ if (!empty($filters['tipo'])) {
         object-position: left center;
         transform: none;
         transform-origin: left center;
-        margin: 0;
-        padding: 9px 0;
+        margin: 15px 0;
+        padding: 0;
         box-sizing: border-box;
     }
     .print-brand img.is-square-form-logo {
