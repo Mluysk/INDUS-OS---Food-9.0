@@ -1959,8 +1959,9 @@ $previewMatrixDefault = app_logo_matrix_values($logoTintPreviewHex);
     }
     .visual-sync-card > div {
         display: flex;
-        align-items: baseline;
-        gap: 8px;
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 2px;
         min-width: 0;
     }
     .visual-sync-card strong {
@@ -1972,8 +1973,8 @@ $previewMatrixDefault = app_logo_matrix_values($logoTintPreviewHex);
     .visual-sync-card p {
         margin: 0;
         color: var(--text-muted);
-        font-size: 0.76rem;
-        line-height: 1.3;
+        font-size: 0.68rem;
+        line-height: 1.2;
     }
     .visual-sync-card .switch {
         flex: 0 0 auto;
