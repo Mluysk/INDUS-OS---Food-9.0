@@ -1820,8 +1820,8 @@ foreach ($datas as $diaKey => $info) {
                             throw new Error(payload.message || 'Erro ao salvar');
                         }
                         activePane = paneSnapshot;
-                        const syncInBackground = () => fetchMapa({ start: windowSnapshot, full: paneSnapshot === 'completo', render: paneSnapshot === 'completo' }).then(() => {
-                                if (paneSnapshot === 'resumo') forceLiveCellUpdate(submittedProduct, submittedDay);
+                        const syncInBackground = () => fetchMapa({ start: windowSnapshot, full: paneSnapshot === 'completo', render: false }).then(() => {
+                                forceLiveCellUpdate(submittedProduct, submittedDay);
                                 tabButtons.forEach((btn) => btn.classList.toggle('active', btn.dataset.mapTab === paneSnapshot));
                                 panes.forEach((paneEl) => { paneEl.hidden = paneEl.dataset.mapPane !== paneSnapshot; });
                                 syncLiveUrl(paneSnapshot);
