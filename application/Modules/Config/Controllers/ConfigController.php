@@ -120,6 +120,7 @@ class ConfigController extends Controller
             'NOTE_FABRICA_EMAIL' => $this->config->get('NOTE_FABRICA_EMAIL', 'contato@indusos.com.br') ?: 'contato@indusos.com.br',
             'NOTE_FABRICA_SITE' => $this->config->get('NOTE_FABRICA_SITE', 'indusos.com.br') ?: 'indusos.com.br',
             'NOTE_LOGO' => trim((string)$this->config->get('NOTE_LOGO', '')),
+            'NOTE_LOGO_CUSTOM_ENABLED' => $this->config->get('NOTE_LOGO_CUSTOM_ENABLED', '0') === '1' ? '1' : '0',
             'NOTE_PIX_ENABLED' => $this->config->get('NOTE_PIX_ENABLED', '0') === '1' ? '1' : '0',
             'NOTE_PIX_KEY' => $this->config->get('NOTE_PIX_KEY', '') ?: '',
             'NOTE_PIX_KEY_TYPE' => $this->config->get('NOTE_PIX_KEY_TYPE', 'cnpj') ?: 'cnpj',
@@ -536,6 +537,7 @@ class ConfigController extends Controller
         ];
 
         $data['NOTE_PIX_ENABLED'] = isset($data['NOTE_PIX_ENABLED']) && $data['NOTE_PIX_ENABLED'] === '1' ? '1' : '0';
+        $data['NOTE_LOGO_CUSTOM_ENABLED'] = isset($data['NOTE_LOGO_CUSTOM_ENABLED']) && $data['NOTE_LOGO_CUSTOM_ENABLED'] === '1' ? '1' : '0';
 
         if (isset($data['NOTE_PIX_KEY_TYPE'])) {
             $pixType = strtolower(trim((string)$data['NOTE_PIX_KEY_TYPE']));

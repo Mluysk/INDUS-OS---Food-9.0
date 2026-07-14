@@ -70,7 +70,8 @@ $noteEmail = $noteDefaults['NOTE_FABRICA_EMAIL'] ?? 'contato@indusos.com.br';
 $noteSite = $noteDefaults['NOTE_FABRICA_SITE'] ?? 'indusos.com.br';
 $noteSidebarLogoPath = $logoFilter === '1' ? $themeLogoDark : $themeLogoLight;
 $noteCustomLogoPath = trim((string)($noteDefaults['NOTE_LOGO'] ?? ''));
-$noteLogoPath = $noteCustomLogoPath !== '' ? $noteCustomLogoPath : $noteSidebarLogoPath;
+$noteLogoCustomEnabled = ($noteDefaults['NOTE_LOGO_CUSTOM_ENABLED'] ?? '0') === '1';
+$noteLogoPath = $noteLogoCustomEnabled && $noteCustomLogoPath !== '' ? $noteCustomLogoPath : $noteSidebarLogoPath;
 $notePixEnabled = $noteDefaults['NOTE_PIX_ENABLED'] ?? '0';
 $notePixKey = $noteDefaults['NOTE_PIX_KEY'] ?? '';
 $notePixType = $noteDefaults['NOTE_PIX_KEY_TYPE'] ?? 'cnpj';
@@ -83,6 +84,7 @@ $logoCompactDarkUrl = $assetHelper($themeLogoCompactDark);
 $logoFooterUrl = $assetHelper($themeLogoFooter);
 $portalLoginLogoLightUrl = $assetHelper($portalLoginLogoLight);
 $portalLoginLogoDarkUrl = $assetHelper($portalLoginLogoDark);
+$noteSidebarLogoUrl = $assetHelper($noteSidebarLogoPath);
 $noteLogoUrl = $assetHelper($noteLogoPath);
 
 $portalSupport = $portalSupport ?? ($support ?? []);
@@ -1059,13 +1061,27 @@ $previewMatrixDefault = app_logo_matrix_values($logoTintPreviewHex);
                         <img src="<?= htmlspecialchars($noteLogoUrl, ENT_QUOTES, 'UTF-8'); ?>" alt="Pré-visualização logo nota" id="preview-note" data-preview-tint>
                     </div>
                 </div>
+                <div class="note-logo-mode">
+                    <div>
+                        <strong>Logo exclusiva da nota</strong>
+                        <p class="field-hint">Desativada, usa automaticamente a logo do sidebar.</p>
+                    </div>
+                    <label class="switch" for="note-logo-custom-enabled">
+                        <input type="hidden" name="config[NOTE_LOGO_CUSTOM_ENABLED]" value="0">
+                        <input type="checkbox" id="note-logo-custom-enabled" name="config[NOTE_LOGO_CUSTOM_ENABLED]" value="1" <?= $noteLogoCustomEnabled ? 'checked' : ''; ?>>
+                        <span class="switch-track" aria-hidden="true"></span>
+                        <span class="switch-text"><?= $noteLogoCustomEnabled ? 'Ativada' : 'Desativada'; ?></span>
+                    </label>
+                </div>
+                <div class="note-logo-custom-fields" data-note-logo-custom-fields <?= $noteLogoCustomEnabled ? '' : 'hidden'; ?>>
                 <label class="logo-label note-field-label" for="note-logo"><span data-lucide="link" aria-hidden="true"></span><span>Caminho logo da nota</span></label>
                 <input id="note-logo" name="config[NOTE_LOGO]" value="<?= htmlspecialchars($noteCustomLogoPath, ENT_QUOTES, 'UTF-8'); ?>" placeholder="Usando automaticamente a logo do sidebar">
                 <label class="upload-label" for="note-logo-file">
                     <span class="note-heading-icon"><span data-lucide="upload" aria-hidden="true"></span><span>Enviar logo exclusiva para a nota</span></span>
                     <input type="file" id="note-logo-file" name="note_logo_file" accept="image/*">
                 </label>
-                <p class="field-hint">Sem uma logo exclusiva, a nota acompanha automaticamente a logo e o filtro do sidebar.</p>
+                <p class="field-hint">A logo exclusiva também recebe o filtro de cor configurado para o sidebar.</p>
+                </div>
             </div>
 
             <div class="field">
@@ -1171,6 +1187,32 @@ $previewMatrixDefault = app_logo_matrix_values($logoTintPreviewHex);
     }
     .note-field-label svg {
         color: var(--primary);
+    }
+    .note-logo-mode {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 9px 10px;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        background: var(--surface);
+    }
+    .note-logo-mode strong {
+        color: var(--text-title);
+        font-size: 0.9rem;
+    }
+    .note-logo-mode .field-hint {
+        margin: 2px 0 0;
+        font-size: 0.74rem;
+    }
+    .note-logo-custom-fields {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+    .note-logo-custom-fields[hidden] {
+        display: none;
     }
     .note-title {
         margin-bottom: 6px;
@@ -3182,6 +3224,31 @@ $previewMatrixDefault = app_logo_matrix_values($logoTintPreviewHex);
         }
 
         installConfigAutosave();
+
+        const noteLogoCustomToggle = document.getElementById('note-logo-custom-enabled');
+        const noteLogoCustomFields = document.querySelector('[data-note-logo-custom-fields]');
+        const noteLogoPreview = document.getElementById('preview-note');
+        const noteLogoPathInput = document.getElementById('note-logo');
+        if (noteLogoCustomToggle && noteLogoCustomFields) {
+            const syncNoteLogoMode = () => {
+                const enabled = noteLogoCustomToggle.checked;
+                noteLogoCustomFields.hidden = !enabled;
+                const status = noteLogoCustomToggle.closest('.switch')?.querySelector('.switch-text');
+                if (status) {
+                    status.textContent = enabled ? 'Ativada' : 'Desativada';
+                }
+                if (noteLogoPreview) {
+                    const customPath = String(noteLogoPathInput?.value || '').trim();
+                    noteLogoPreview.src = enabled && customPath
+                        ? resolveAsset(customPath)
+                        : <?= json_encode($noteSidebarLogoUrl); ?>;
+                    applyLogoTint();
+                }
+            };
+            noteLogoCustomToggle.addEventListener('change', syncNoteLogoMode);
+            noteLogoPathInput?.addEventListener('input', syncNoteLogoMode);
+            syncNoteLogoMode();
+        }
 
         const reuseSkuToggle = document.getElementById('reuse-deleted-product-sku');
         const reuseSkuStatus = document.querySelector('[data-reuse-sku-status]');
