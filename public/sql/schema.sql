@@ -307,7 +307,7 @@ INSERT INTO configuracoes (chave, valor) VALUES
 ON DUPLICATE KEY UPDATE valor = VALUES(valor);
 
 INSERT INTO configuracoes (chave, valor) VALUES
- ('THEME_TITLE_SIZE','22'),
+ ('THEME_TITLE_SIZE','26'),
  ('THEME_TITLE_OFFSET_X','0'),
  ('THEME_TITLE_OFFSET_Y','0'),
  ('THEME_LOGO_LIGHT_SIZE','58'),

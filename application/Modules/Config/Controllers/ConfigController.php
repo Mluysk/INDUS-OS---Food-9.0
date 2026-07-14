@@ -73,7 +73,7 @@ class ConfigController extends Controller
         $themeDefaults = [
             'THEME_APP_TITLE' => $this->config->get('THEME_APP_TITLE', 'IndusOS Food') ?: 'IndusOS Food',
             'THEME_APP_TAGLINE' => $this->config->get('THEME_APP_TAGLINE', 'Sistema de Controle Industrial (SCI)') ?: 'Sistema de Controle Industrial (SCI)',
-            'THEME_TITLE_SIZE' => $this->config->get('THEME_TITLE_SIZE', '22') ?: '22',
+            'THEME_TITLE_SIZE' => $this->config->get('THEME_TITLE_SIZE', '26') ?: '26',
             'THEME_TITLE_OFFSET_X' => $this->config->get('THEME_TITLE_OFFSET_X', '0') ?: '0',
             'THEME_TITLE_OFFSET_Y' => $this->config->get('THEME_TITLE_OFFSET_Y', '0') ?: '0',
             'THEME_MODE' => strtolower($this->config->get('THEME_MODE', 'light') ?: 'light'),

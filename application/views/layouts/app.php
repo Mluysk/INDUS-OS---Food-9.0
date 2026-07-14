@@ -206,7 +206,7 @@ $logoCalibration = [
     'compact-light' => ['x' => -5, 'y' => 1],
     'compact-dark' => ['x' => -5, 'y' => 1],
 ];
-$titleSizePx = isset($theme['title_size']) ? (int)$theme['title_size'] : 22;
+$titleSizePx = isset($theme['title_size']) ? (int)$theme['title_size'] : 26;
 if ($titleSizePx < 16) {
     $titleSizePx = 16;
 } elseif ($titleSizePx > 64) {
@@ -486,7 +486,10 @@ $brandTitleCalibratedY = $brandTitleOffsetY;
             font-weight: 700;
             letter-spacing: -0.01em;
             color: var(--sidebar-text);
-            display: inline-flex;
+            display: flex;
+            justify-content: center;
+            width: 100%;
+            text-align: center;
             transform: translate(var(--brand-title-x, 0px), var(--brand-title-y, 0px));
         }
         .brand-title.colorized {

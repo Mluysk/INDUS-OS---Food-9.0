@@ -61,7 +61,7 @@ abstract class Controller
             'logo_footer' => 'uploads/branding/logo.png',
             'title_colorize' => '0',
             'logo_filter' => '0',
-            'title_size' => '22',
+            'title_size' => '26',
             'title_offset_x' => '0',
             'title_offset_y' => '0',
             'logo_light_size' => '58',
