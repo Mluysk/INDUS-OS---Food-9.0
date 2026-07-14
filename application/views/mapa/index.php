@@ -935,7 +935,7 @@ foreach ($datas as $diaKey => $info) {
                                             ?>
                                             <?php $compactHoje = !empty($compactDatas[$dia]['is_hoje']); ?>
                                             <td>
-                                                <div class="dia-card compact-day-card<?= $compactHoje ? ' hoje' : ''; ?>" data-dia="<?= htmlspecialchars($dia, ENT_QUOTES, 'UTF-8'); ?>">
+                                                <div class="dia-card compact-day-card<?= $compactHoje ? ' hoje' : ''; ?>" data-dia="<?= htmlspecialchars($dia, ENT_QUOTES, 'UTF-8'); ?>" data-produto="<?= (int)$linha['id']; ?>">
                                                     <div class="dia-head<?= $compactHoje ? ' hoje' : ''; ?>">
                                                         <div>
                                                             <span class="dia-date"><?= htmlspecialchars($compactDatas[$dia]['label'] ?? $dia, ENT_QUOTES, 'UTF-8'); ?></span>
@@ -1336,7 +1336,8 @@ foreach ($datas as $diaKey => $info) {
             const forceLiveCellUpdate = (produtoId, dia) => {
                 const linha = (mapaState.linhas || []).find((item) => String(item.id) === String(produtoId));
                 const celula = linha?.dias?.[dia];
-                const card = document.querySelector(`.dia-card[data-produto="${produtoId}"][data-dia="${dia}"]`);
+                const paneRoot = document.querySelector(`.map-pane[data-map-pane="${activePane}"]`);
+                const card = paneRoot?.querySelector(`.dia-card[data-produto="${produtoId}"][data-dia="${dia}"]`);
                 if (!linha || !celula || !card) return;
                 const values = {
                     saida: Number(celula.saida || 0),
@@ -1361,7 +1362,7 @@ foreach ($datas as $diaKey => $info) {
                 const dates = visibleDates();
                 const lastDay = dates[dates.length - 1] || dia;
                 const balance = Number(linha.dias?.[lastDay]?.estoque_final ?? linha.estoque ?? 0);
-                const balanceTarget = document.querySelector(`[data-product-card="${produtoId}"] .saldo strong`);
+                const balanceTarget = paneRoot?.querySelector(`[data-product-card="${produtoId}"] .saldo strong`);
                 if (balanceTarget) balanceTarget.textContent = fmtInt(balance);
                 applyStatus();
                 applyNavMedias();
@@ -1370,7 +1371,8 @@ foreach ($datas as $diaKey => $info) {
             const applyOptimisticCellUpdate = (produtoId, dia, tipo, quantidade) => {
                 const linha = (mapaState.linhas || []).find((item) => String(item.id) === String(produtoId));
                 const celula = linha?.dias?.[dia];
-                const card = document.querySelector(`.dia-card[data-produto="${produtoId}"][data-dia="${dia}"]`);
+                const paneRoot = document.querySelector(`.map-pane[data-map-pane="${activePane}"]`);
+                const card = paneRoot?.querySelector(`.dia-card[data-produto="${produtoId}"][data-dia="${dia}"]`);
                 if (!linha || !celula || !card) return;
                 const value = Number(quantidade || 0);
                 if (tipo === 'planejado') {
@@ -1391,7 +1393,7 @@ foreach ($datas as $diaKey => $info) {
                         nextCell.estoque_final = Number(nextCell.estoque_final || 0) + difference;
                         nextCell.estoque_pos_saida = Number(nextCell.estoque_pos_saida || 0) + difference;
                         nextCell.sobra = Number(nextCell.sobra || 0) + difference;
-                        const nextStock = document.querySelector(`.dia-card[data-produto="${produtoId}"][data-dia="${nextDay}"] .metric-chip.estoque .value`);
+                        const nextStock = paneRoot?.querySelector(`.dia-card[data-produto="${produtoId}"][data-dia="${nextDay}"] .metric-chip.estoque .value`);
                         if (nextStock) nextStock.textContent = fmtInt(nextCell.estoque_final);
                     });
                 }
@@ -1416,7 +1418,7 @@ foreach ($datas as $diaKey => $info) {
                 applyNavMedias();
                 const lastDay = dates[dates.length - 1] || dia;
                 const balanceValue = Number(linha.dias?.[lastDay]?.estoque_final ?? celula.estoque_final ?? 0);
-                const balanceBadge = document.querySelector(`[data-product-card="${produtoId}"] .saldo`);
+                const balanceBadge = paneRoot?.querySelector(`[data-product-card="${produtoId}"] .saldo`);
                 const balanceTarget = balanceBadge?.querySelector('strong');
                 if (balanceTarget) balanceTarget.textContent = fmtInt(balanceValue);
                 if (balanceBadge) {
@@ -1480,7 +1482,7 @@ foreach ($datas as $diaKey => $info) {
                         else if (estoque >= lowMin && estoque <= lowMax) estoqueClass = 'baixo';
                         const estoqueBadgeClass = `estoque ${estoqueClass !== 'ok' ? estoqueClass : ''}`.trim();
                         const hojeCls = info.is_hoje ? ' hoje' : '';
-                        return `<td><div class="dia-card compact-day-card${hojeCls}" data-dia="${dia}">`
+                        return `<td><div class="dia-card compact-day-card${hojeCls}" data-dia="${dia}" data-produto="${linha.id}">`
                             + `<div class="dia-head${hojeCls}"><div><span class="dia-date">${info.label || fmtDate(dia)}</span> <span class="dia-week">${info.semana || ''}</span></div>`
                             + `<div class="dia-progress"><span class="progress-label">Conclusão de produção</span><span class="progress-value">${Number(conclusao || 0).toFixed(1).replace('.', ',')}%</span></div></div>`
                             + `<div class="metrics-row">`
@@ -1805,9 +1807,7 @@ foreach ($datas as $diaKey => $info) {
                         submitBtn.disabled = true;
                         submitBtn.setAttribute('aria-busy', 'true');
                     }
-                    if (paneSnapshot === 'resumo') {
-                        applyOptimisticCellUpdate(submittedProduct, submittedDay, submittedType, submittedQuantity);
-                    }
+                    applyOptimisticCellUpdate(submittedProduct, submittedDay, submittedType, submittedQuantity);
                     if (submittedMonth) compactMonthCache.delete(submittedMonth);
                     fetch(form.action, {
                         method: 'POST',
