@@ -28,6 +28,7 @@ class ConfigService
 
     private const GLOBAL_THEME_KEYS = [
         'THEME_APP_TITLE',
+        'THEME_VISUAL_SYNC',
     ];
 
     public function __construct(ConfiguracoesRepository $configuracoes)
@@ -72,6 +73,18 @@ class ConfigService
             }
         }
 
+        if (in_array($chave, ['THEME_PRIMARY_HEX', 'THEME_PRIMARY_NAME'], true) && $this->visualSyncEnabled()) {
+            $adminKey = $this->adminScopedKey($chave);
+            if ($adminKey !== null) {
+                $adminValue = $this->configuracoes->get($adminKey, null);
+                if ($adminValue !== null) {
+                    return $adminValue;
+                }
+            }
+
+            return $this->configuracoes->get($chave, $default);
+        }
+
         return $this->configuracoes->get($chave, $default);
     }
 
@@ -83,6 +96,11 @@ class ConfigService
             'THEME_TITLE_COLORIZE' => '1',
             default => null,
         };
+    }
+
+    private function visualSyncEnabled(): bool
+    {
+        return $this->configuracoes->get('THEME_VISUAL_SYNC', '0') === '1';
     }
 
     public function set(string $chave, string $valor): void

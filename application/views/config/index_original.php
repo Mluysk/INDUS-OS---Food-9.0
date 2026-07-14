@@ -13,6 +13,7 @@ $titleOffsetX = $themeDefaults['THEME_TITLE_OFFSET_X'] ?? '0';
 $titleOffsetY = $themeDefaults['THEME_TITLE_OFFSET_Y'] ?? '0';
 $titleColorize = $themeDefaults['THEME_TITLE_COLORIZE'] ?? '1';
 $logoFilter = $themeDefaults['THEME_LOGO_FILTER'] ?? '0';
+$visualSync = $themeDefaults['THEME_VISUAL_SYNC'] ?? '0';
 $themeLogoLight = $themeDefaults['THEME_LOGO_LIGHT'] ?? 'uploads/branding/logodark.png';
 $themeLogoDark = $themeDefaults['THEME_LOGO_DARK'] ?? 'uploads/branding/logowhite.png';
 $compactFallback = $themeDefaults['THEME_LOGO_COMPACT'] ?? 'uploads/branding/logosmalldark.png';
@@ -840,6 +841,19 @@ $previewMatrixDefault = app_logo_matrix_values($logoTintPreviewHex);
                 </div>
             </div>
 
+            <div class="visual-sync-card">
+                <div>
+                    <strong>Sincronização de visual</strong>
+                    <p>Quando ativada, todos os usuários usam a paleta selecionada pelo administrador.</p>
+                </div>
+                <label class="switch" for="theme-visual-sync">
+                    <input type="hidden" name="config[THEME_VISUAL_SYNC]" value="0">
+                    <input type="checkbox" id="theme-visual-sync" name="config[THEME_VISUAL_SYNC]" value="1" <?= $visualSync === '1' ? 'checked' : ''; ?>>
+                    <span class="switch-track" aria-hidden="true"></span>
+                    <span class="switch-text"><?= $visualSync === '1' ? 'Ativada' : 'Desativada'; ?></span>
+                </label>
+            </div>
+
                 </div>
                 <div class="appearance-panel" data-appearance-panel="cards">
                     <div class="field">
@@ -1560,7 +1574,7 @@ $previewMatrixDefault = app_logo_matrix_values($logoTintPreviewHex);
         padding: 16px;
         border-radius: 18px;
         border: 1px solid rgba(148, 163, 184, 0.25);
-        background: linear-gradient(145deg, rgba(248, 250, 252, 0.94), rgba(226, 232, 240, 0.72));
+        background: color-mix(in srgb, var(--primary) 9%, var(--surface));
         box-shadow: 0 22px 44px -34px rgba(15, 23, 42, 0.55);
     }
     .title-settings-card .field {
@@ -1571,7 +1585,7 @@ $previewMatrixDefault = app_logo_matrix_values($logoTintPreviewHex);
         margin-bottom: 0;
     }
     body.theme-dark .title-settings-card {
-        background: linear-gradient(145deg, rgba(23, 32, 50, 0.92), rgba(13, 20, 36, 0.88));
+        background: color-mix(in srgb, var(--primary) 9%, var(--surface));
         border-color: rgba(148, 163, 184, 0.35);
         box-shadow: 0 22px 44px -30px rgba(3, 7, 18, 0.7);
     }
@@ -1931,6 +1945,41 @@ $previewMatrixDefault = app_logo_matrix_values($logoTintPreviewHex);
         border: 1px solid rgba(148, 163, 184, 0.25);
         background: linear-gradient(145deg, rgba(248, 250, 252, 0.94), rgba(226, 232, 240, 0.72));
         box-shadow: 0 22px 44px -34px rgba(15, 23, 42, 0.55);
+    }
+    .visual-sync-card {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 18px;
+        padding: 16px 18px;
+        border: 1px solid rgba(148, 163, 184, 0.25);
+        border-radius: 18px;
+        background: linear-gradient(145deg, rgba(248, 250, 252, 0.94), rgba(226, 232, 240, 0.72));
+        box-shadow: 0 22px 44px -34px rgba(15, 23, 42, 0.55);
+    }
+    .visual-sync-card strong {
+        display: block;
+        color: var(--text-title);
+    }
+    .visual-sync-card p {
+        margin: 5px 0 0;
+        color: var(--text-muted);
+        font-size: 0.86rem;
+        line-height: 1.4;
+    }
+    .visual-sync-card .switch {
+        flex: 0 0 auto;
+    }
+    body.theme-dark .visual-sync-card {
+        background: linear-gradient(145deg, rgba(23, 32, 50, 0.92), rgba(13, 20, 36, 0.88));
+        border-color: rgba(148, 163, 184, 0.35);
+        box-shadow: 0 22px 44px -30px rgba(3, 7, 18, 0.7);
+    }
+    @media (max-width: 640px) {
+        .visual-sync-card {
+            align-items: flex-start;
+            flex-direction: column;
+        }
     }
     .logo-field input[type="file"] {
         display: none;

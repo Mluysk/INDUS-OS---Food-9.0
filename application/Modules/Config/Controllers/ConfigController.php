@@ -99,6 +99,7 @@ class ConfigController extends Controller
             'THEME_LOGO_COMPACT_DARK_OFFSET_Y' => $this->config->get('THEME_LOGO_COMPACT_DARK_OFFSET_Y', '0') ?: '0',
             'THEME_TITLE_COLORIZE' => $this->config->get('THEME_TITLE_COLORIZE', '1') === '1' ? '1' : '0',
             'THEME_LOGO_FILTER' => $this->config->get('THEME_LOGO_FILTER', '0') === '1' ? '1' : '0',
+            'THEME_VISUAL_SYNC' => $this->config->get('THEME_VISUAL_SYNC', '0') === '1' ? '1' : '0',
             'PORTAL_LOGIN_LOGO_LIGHT' => $this->config->get('PORTAL_LOGIN_LOGO_LIGHT', $this->config->get('THEME_LOGO_LIGHT', 'uploads/branding/logodark.png')) ?: 'uploads/branding/logodark.png',
             'PORTAL_LOGIN_LOGO_DARK' => $this->config->get('PORTAL_LOGIN_LOGO_DARK', $this->config->get('THEME_LOGO_DARK', 'uploads/branding/logowhite.png')) ?: 'uploads/branding/logowhite.png',
             'PORTAL_LOGIN_LOGO_LIGHT_SIZE' => $this->config->get('PORTAL_LOGIN_LOGO_LIGHT_SIZE', '69') ?: '69',
@@ -419,6 +420,7 @@ class ConfigController extends Controller
 
         $data['THEME_TITLE_COLORIZE'] = isset($data['THEME_TITLE_COLORIZE']) && $data['THEME_TITLE_COLORIZE'] === '1' ? '1' : '0';
         $data['THEME_LOGO_FILTER'] = isset($data['THEME_LOGO_FILTER']) && $data['THEME_LOGO_FILTER'] === '1' ? '1' : '0';
+        $data['THEME_VISUAL_SYNC'] = isset($data['THEME_VISUAL_SYNC']) && $data['THEME_VISUAL_SYNC'] === '1' ? '1' : '0';
         $data['PORTAL_LOGIN_LOGO_FILTER'] = isset($data['PORTAL_LOGIN_LOGO_FILTER']) && $data['PORTAL_LOGIN_LOGO_FILTER'] === '1' ? '1' : '0';
 
         if (isset($data['THEME_TITLE_SIZE'])) {
