@@ -708,29 +708,31 @@ $previewMatrixDefault = app_logo_matrix_values($logoTintPreviewHex);
                     <p class="field-hint">Quando ativo, o nome do sistema utiliza a cor selecionada na paleta lateral.</p>
                 </div>
             </div>
-            <div class="field">
-                <span class="field-label">Filtro das logos</span>
-                <label class="switch" for="logo-colorize">
-                    <input type="hidden" name="config[THEME_LOGO_FILTER]" value="0">
-                    <input type="checkbox" id="logo-colorize" name="config[THEME_LOGO_FILTER]" value="1" <?= $logoFilter === '1' ? 'checked' : ''; ?>>
-                    <span class="switch-track" aria-hidden="true"></span>
-                    <span class="switch-text">Colorir logos com a paleta escolhida</span>
-                </label>
-                <p class="field-hint">Ative para harmonizar automaticamente as marcas com a cor primária do painel.</p>
-            </div>
-            <div class="field">
-                <span class="field-label">Tema base</span>
-                <div class="theme-mode">
-                    <label class="mode-option">
-                        <input type="radio" name="config[THEME_MODE]" value="light" <?= $themeMode === 'light' ? 'checked' : ''; ?>>
-                        <span class="mode-option-icon" data-lucide="sun" aria-hidden="true"></span>
-                        <span>Claro</span>
+            <div class="visual-options-row">
+                <div class="field">
+                    <span class="field-label">Filtro das logos</span>
+                    <label class="switch" for="logo-colorize">
+                        <input type="hidden" name="config[THEME_LOGO_FILTER]" value="0">
+                        <input type="checkbox" id="logo-colorize" name="config[THEME_LOGO_FILTER]" value="1" <?= $logoFilter === '1' ? 'checked' : ''; ?>>
+                        <span class="switch-track" aria-hidden="true"></span>
+                        <span class="switch-text">Colorir logos com a paleta escolhida</span>
                     </label>
-                    <label class="mode-option">
-                        <input type="radio" name="config[THEME_MODE]" value="dark" <?= $themeMode === 'dark' ? 'checked' : ''; ?>>
-                        <span class="mode-option-icon" data-lucide="moon" aria-hidden="true"></span>
-                        <span>Escuro</span>
-                    </label>
+                    <p class="field-hint">Ative para harmonizar automaticamente as marcas com a cor primária do painel.</p>
+                </div>
+                <div class="field">
+                    <span class="field-label">Tema base</span>
+                    <div class="theme-mode">
+                        <label class="mode-option">
+                            <input type="radio" name="config[THEME_MODE]" value="light" <?= $themeMode === 'light' ? 'checked' : ''; ?>>
+                            <span class="mode-option-icon" data-lucide="sun" aria-hidden="true"></span>
+                            <span>Claro</span>
+                        </label>
+                        <label class="mode-option">
+                            <input type="radio" name="config[THEME_MODE]" value="dark" <?= $themeMode === 'dark' ? 'checked' : ''; ?>>
+                            <span class="mode-option-icon" data-lucide="moon" aria-hidden="true"></span>
+                            <span>Escuro</span>
+                        </label>
+                    </div>
                 </div>
             </div>
             <div class="field">
@@ -1719,6 +1721,15 @@ $previewMatrixDefault = app_logo_matrix_values($logoTintPreviewHex);
     }
     .support-card .support-input-shell--textarea textarea {
         padding-left: 44px;
+    }
+    .visual-options-row {
+        display: flex;
+        align-items: flex-start;
+        gap: 19px;
+        flex-wrap: wrap;
+    }
+    .visual-options-row > .field {
+        margin: 0;
     }
     .theme-mode {
         display: inline-flex;
