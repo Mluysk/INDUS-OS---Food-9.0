@@ -1021,31 +1021,31 @@ $previewMatrixDefault = app_logo_matrix_values($logoTintPreviewHex);
             <p class="card-subtitle">Defina os dados exibidos na impressão de pedidos internos.</p>
 
             <div class="field">
-                <label for="note-nome">Nome/Razão social</label>
+                <label for="note-nome" class="note-field-label"><span data-lucide="factory" aria-hidden="true"></span><span>Nome/Razão social</span></label>
                 <input id="note-nome" name="config[NOTE_FABRICA_NOME]" value="<?= htmlspecialchars($noteNome, ENT_QUOTES, 'UTF-8'); ?>" placeholder="Fantasia ou razão social">
             </div>
 
             <div class="field">
-                <label for="note-doc">Documento</label>
+                <label for="note-doc" class="note-field-label"><span data-lucide="file-badge" aria-hidden="true"></span><span>Documento</span></label>
                 <input id="note-doc" name="config[NOTE_FABRICA_DOC]" value="<?= htmlspecialchars($noteDoc, ENT_QUOTES, 'UTF-8'); ?>" placeholder="CNPJ ou inscrição estadual">
             </div>
 
             <div class="field">
-                <label for="note-endereco">Endereço</label>
+                <label for="note-endereco" class="note-field-label"><span data-lucide="map-pin" aria-hidden="true"></span><span>Endereço</span></label>
                 <input id="note-endereco" name="config[NOTE_FABRICA_ENDERECO]" value="<?= htmlspecialchars($noteEndereco, ENT_QUOTES, 'UTF-8'); ?>" placeholder="Rua, número, bairro, cidade/UF">
             </div>
 
             <div class="field-grid">
                 <label class="field">
-                    Contato/telefone
+                    <span class="note-field-label"><span data-lucide="phone" aria-hidden="true"></span><span>Contato/telefone</span></span>
                     <input name="config[NOTE_FABRICA_CONTATO]" value="<?= htmlspecialchars($noteContato, ENT_QUOTES, 'UTF-8'); ?>" placeholder="(11) 3000-0000">
                 </label>
                 <label class="field">
-                    E-mail
+                    <span class="note-field-label"><span data-lucide="mail" aria-hidden="true"></span><span>E-mail</span></span>
                     <input name="config[NOTE_FABRICA_EMAIL]" value="<?= htmlspecialchars($noteEmail, ENT_QUOTES, 'UTF-8'); ?>" placeholder="contato@empresa.com">
                 </label>
                 <label class="field">
-                    Site
+                    <span class="note-field-label"><span data-lucide="globe" aria-hidden="true"></span><span>Site</span></span>
                     <input name="config[NOTE_FABRICA_SITE]" value="<?= htmlspecialchars($noteSite, ENT_QUOTES, 'UTF-8'); ?>" placeholder="www.suaempresa.com">
                 </label>
             </div>
@@ -1057,7 +1057,7 @@ $previewMatrixDefault = app_logo_matrix_values($logoTintPreviewHex);
                         <img src="<?= htmlspecialchars($noteLogoUrl, ENT_QUOTES, 'UTF-8'); ?>" alt="Pré-visualização logo nota" id="preview-note" data-preview-tint>
                     </div>
                 </div>
-                <label class="logo-label" for="note-logo">Caminho logo da nota</label>
+                <label class="logo-label note-field-label" for="note-logo"><span data-lucide="link" aria-hidden="true"></span><span>Caminho logo da nota</span></label>
                 <input id="note-logo" name="config[NOTE_LOGO]" value="<?= htmlspecialchars($noteLogoPath, ENT_QUOTES, 'UTF-8'); ?>" placeholder="uploads/branding/logodark.png">
                 <label class="upload-label" for="note-logo-file">
                     <span class="note-heading-icon"><span data-lucide="upload" aria-hidden="true"></span><span>Enviar novo arquivo</span></span>
@@ -1077,7 +1077,7 @@ $previewMatrixDefault = app_logo_matrix_values($logoTintPreviewHex);
             </div>
 
             <div class="field">
-                <label for="note-pix-type">Tipo da chave</label>
+                <label for="note-pix-type" class="note-field-label"><span data-lucide="key-round" aria-hidden="true"></span><span>Tipo da chave</span></label>
                 <select id="note-pix-type" name="config[NOTE_PIX_KEY_TYPE]">
                     <?php
                     $pixTypes = [
@@ -1096,7 +1096,7 @@ $previewMatrixDefault = app_logo_matrix_values($logoTintPreviewHex);
             </div>
 
             <div class="field">
-                <label for="note-pix-key">Chave PIX padrão</label>
+                <label for="note-pix-key" class="note-field-label"><span data-lucide="badge-dollar-sign" aria-hidden="true"></span><span>Chave PIX padrão</span></label>
                 <input id="note-pix-key" name="config[NOTE_PIX_KEY]" value="<?= htmlspecialchars($notePixKey, ENT_QUOTES, 'UTF-8'); ?>" placeholder="Insira a chave PIX a ser exibida">
                 <p class="field-hint">Você ainda pode ajustar a chave ou desativar o PIX ao imprimir cada nota.</p>
             </div>
@@ -1153,16 +1153,21 @@ $previewMatrixDefault = app_logo_matrix_values($logoTintPreviewHex);
         height: 16px;
     }
     .note-heading-icon,
-    .note-action-button {
+    .note-action-button,
+    .note-field-label {
         display: inline-flex;
         align-items: center;
         gap: 7px;
     }
     .note-heading-icon svg,
-    .note-action-button svg {
+    .note-action-button svg,
+    .note-field-label svg {
         width: 17px;
         height: 17px;
         flex: 0 0 17px;
+    }
+    .note-field-label svg {
+        color: var(--primary);
     }
     .note-title {
         margin-bottom: 6px;
