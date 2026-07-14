@@ -10,6 +10,10 @@ class AuthController extends Controller
         if (session_status() !== PHP_SESSION_ACTIVE) {
             session_start();
         }
+        if ($this->auth->check() && strtolower((string)($this->auth->user()['papel'] ?? '')) === 'cliente') {
+            $this->redirect('/portal');
+            return;
+        }
         $flash = $this->pullFlash();
         $shared = $this->buildSharedViewData();
 
@@ -54,7 +58,8 @@ class AuthController extends Controller
         }
 
         $this->setFlash('success', 'Bem-vindo, '.$usuario['nome'].'!');
-        $this->redirect('/dashboard');
+        $destination = strtolower((string)($usuario['papel'] ?? '')) === 'cliente' ? '/portal' : '/dashboard';
+        $this->redirect($destination);
     }
 
     public function logout(): void

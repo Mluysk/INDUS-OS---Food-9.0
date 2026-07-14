@@ -429,21 +429,11 @@ include __DIR__.'/index_settings_sections_patch.php';
     const hasPortalSession = () => Boolean(localStorage.getItem('portal-token'));
 
     const portalPaletteState = () => {
-        const cliente = readCliente();
-        const storedHex = normalizeHex(localStorage.getItem('portal-primary-hex'));
         const themeHex = systemThemeHex;
-        if (!hasPortalSession()) {
-            const systemMatch = portalPalette.find((item) => item.hex.toUpperCase() === themeHex.toUpperCase());
-            return {
-                hex: themeHex,
-                name: systemMatch?.name || 'Cor do sistema'
-            };
-        }
-        const hex = normalizeHex(cliente.portal_palette_hex || storedHex || themeHex) || '#2563EB';
-        const match = portalPalette.find((item) => item.hex.toUpperCase() === hex.toUpperCase());
+        const systemMatch = portalPalette.find((item) => item.hex.toUpperCase() === themeHex.toUpperCase());
         return {
-            hex,
-            name: cliente.portal_palette_name || localStorage.getItem('portal-primary-name') || match?.name || 'Cor personalizada'
+            hex: themeHex,
+            name: systemMatch?.name || 'Paleta do administrador'
         };
     };
 
@@ -477,7 +467,8 @@ include __DIR__.'/index_settings_sections_patch.php';
     };
 
     const applyPortalPalette = (hex, name = 'Cor personalizada', persist = true) => {
-        const normalized = normalizeHex(hex) || '#2563EB';
+        const normalized = systemThemeHex;
+        name = portalPaletteState().name;
         if (!persist) {
             localStorage.removeItem('portal-primary-hex');
             localStorage.removeItem('portal-primary-name');
