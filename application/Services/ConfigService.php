@@ -241,7 +241,18 @@ class ConfigService
     private function isPublicPortalRequest(): bool
     {
         $uri = $this->currentRequestPath();
-        return $uri === '/portal' || $uri === '/portal/registro';
+        if ($uri === '/portal' || $uri === '/portal/registro') {
+            return true;
+        }
+
+        if ($uri !== '/produtos/print') {
+            return false;
+        }
+
+        $mode = strtolower(trim((string)($_GET['modo'] ?? '')));
+        $shared = strtolower(trim((string)($_GET['compartilhar'] ?? $_GET['share'] ?? '')));
+
+        return $mode === 'visual' && in_array($shared, ['1', 'sim', 'true'], true);
     }
 
     private function currentRequestPath(): string
