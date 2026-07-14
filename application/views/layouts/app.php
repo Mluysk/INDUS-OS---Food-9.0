@@ -439,6 +439,11 @@ $brandTitleCalibratedY = $brandTitleOffsetY;
             align-items: center;
             gap: 12px;
         }
+        .sidebar:not(.collapsed) .brand-logos {
+            justify-content: center;
+            width: 100%;
+            text-align: center;
+        }
         .brand-logo-img {
             max-height: 50px;
             width: auto;
