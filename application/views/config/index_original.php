@@ -1587,6 +1587,10 @@ $previewMatrixDefault = app_logo_matrix_values($logoTintPreviewHex);
     .title-settings-card .field-hint {
         margin-bottom: 0;
     }
+    .title-settings-card__color .switch-text,
+    .title-settings-card__color .field-hint {
+        font-size: 74%;
+    }
     body.theme-dark .title-settings-card {
         background: color-mix(in srgb, var(--primary) 9%, var(--surface));
         border-color: rgba(148, 163, 184, 0.35);
