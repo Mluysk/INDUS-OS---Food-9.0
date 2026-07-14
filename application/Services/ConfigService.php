@@ -9,10 +9,10 @@ class ConfigService
 
     /**
      * Configuracoes visuais e atalhos sao pessoais por usuario logado.
-     * Logos do sistema principal continuam globais, pois representam a marca
-     * do ADM para todas as contas.
-     * O restante continua global para preservar regras de producao, estoque,
-     * nota, portal e demais parametros operacionais.
+     * Logos do sistema principal/formularios e o texto do titulo sao globais,
+     * pois representam a marca do ADM para todas as contas.
+     * As demais preferencias visuais sao pessoais. Regras de producao,
+     * estoque, nota, portal e outros parametros operacionais seguem globais.
      */
     private const USER_SCOPED_PREFIXES = [
         'THEME_',
@@ -24,6 +24,10 @@ class ConfigService
 
     private const GLOBAL_THEME_PREFIXES = [
         'THEME_LOGO_',
+    ];
+
+    private const GLOBAL_THEME_KEYS = [
+        'THEME_APP_TITLE',
     ];
 
     public function __construct(ConfiguracoesRepository $configuracoes)
@@ -179,6 +183,10 @@ class ConfigService
 
     private function isGlobalThemeKey(string $chave): bool
     {
+        if (in_array($chave, self::GLOBAL_THEME_KEYS, true)) {
+            return true;
+        }
+
         foreach (self::GLOBAL_THEME_PREFIXES as $prefix) {
             if (str_starts_with($chave, $prefix)) {
                 return true;
