@@ -3307,7 +3307,21 @@ $previewMatrixDefault = app_logo_matrix_values($logoTintPreviewHex);
                     applyLogoTint();
                 }
             };
-            noteLogoCustomToggle.addEventListener('change', syncNoteLogoMode);
+            noteLogoCustomToggle.addEventListener('change', () => {
+                if (noteLogoCustomToggle.checked) {
+                    if (noteLogoObjectUrl) {
+                        URL.revokeObjectURL(noteLogoObjectUrl);
+                        noteLogoObjectUrl = '';
+                    }
+                    if (noteLogoPathInput) {
+                        noteLogoPathInput.value = '';
+                    }
+                    if (noteLogoFileInput) {
+                        noteLogoFileInput.value = '';
+                    }
+                }
+                syncNoteLogoMode();
+            });
             noteLogoPathInput?.addEventListener('input', syncNoteLogoMode);
             noteLogoFileInput?.addEventListener('change', () => {
                 const file = noteLogoFileInput.files?.[0];
