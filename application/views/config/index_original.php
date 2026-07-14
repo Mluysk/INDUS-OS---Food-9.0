@@ -1067,19 +1067,19 @@ $previewMatrixDefault = app_logo_matrix_values($logoTintPreviewHex);
                         <div class="move-key-label">Ajuste da logo</div>
                         <label class="slider-label" for="note-logo-size">Tamanho <output id="note-logo-size-val"><?= htmlspecialchars($noteLogoSize, ENT_QUOTES, 'UTF-8'); ?>px</output></label>
                         <input type="range" id="note-logo-size" name="config[NOTE_LOGO_SIZE]" min="24" max="140" value="<?= htmlspecialchars($noteLogoSize, ENT_QUOTES, 'UTF-8'); ?>">
+                        <div class="note-logo-mode">
+                            <div>
+                                <strong>Logo exclusiva da nota</strong>
+                                <p class="field-hint">Desativada, usa automaticamente a logo do sidebar.</p>
+                            </div>
+                            <label class="switch" for="note-logo-custom-enabled">
+                                <input type="hidden" name="config[NOTE_LOGO_CUSTOM_ENABLED]" value="0">
+                                <input type="checkbox" id="note-logo-custom-enabled" name="config[NOTE_LOGO_CUSTOM_ENABLED]" value="1" <?= $noteLogoCustomEnabled ? 'checked' : ''; ?>>
+                                <span class="switch-track" aria-hidden="true"></span>
+                                <span class="switch-text"><?= $noteLogoCustomEnabled ? 'Ativada' : 'Desativada'; ?></span>
+                            </label>
+                        </div>
                     </div>
-                </div>
-                <div class="note-logo-mode">
-                    <div>
-                        <strong>Logo exclusiva da nota</strong>
-                        <p class="field-hint">Desativada, usa automaticamente a logo do sidebar.</p>
-                    </div>
-                    <label class="switch" for="note-logo-custom-enabled">
-                        <input type="hidden" name="config[NOTE_LOGO_CUSTOM_ENABLED]" value="0">
-                        <input type="checkbox" id="note-logo-custom-enabled" name="config[NOTE_LOGO_CUSTOM_ENABLED]" value="1" <?= $noteLogoCustomEnabled ? 'checked' : ''; ?>>
-                        <span class="switch-track" aria-hidden="true"></span>
-                        <span class="switch-text"><?= $noteLogoCustomEnabled ? 'Ativada' : 'Desativada'; ?></span>
-                    </label>
                 </div>
                 <div class="note-logo-custom-fields" data-note-logo-custom-fields <?= $noteLogoCustomEnabled ? '' : 'hidden'; ?>>
                 <label class="logo-label note-field-label" for="note-logo"><span data-lucide="link" aria-hidden="true"></span><span>Caminho logo da nota</span></label>
@@ -1240,6 +1240,9 @@ $previewMatrixDefault = app_logo_matrix_values($logoTintPreviewHex);
         border: 1px solid var(--border);
         border-radius: 12px;
         background: var(--surface);
+    }
+    .note-logo-tuning .note-logo-mode {
+        margin-top: auto;
     }
     .note-logo-mode strong {
         color: var(--text-title);
