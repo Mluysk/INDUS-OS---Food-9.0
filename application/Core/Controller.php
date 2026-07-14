@@ -153,6 +153,7 @@ abstract class Controller
             ],
         ];
         $quickActions = $quickActionDefaults;
+        $notaLogoOverride = '';
 
         try {
             /** @var ConfigService $configService */
@@ -254,6 +255,7 @@ abstract class Controller
             $nota['contato'] = $configService->get('NOTE_FABRICA_CONTATO', $nota['contato']) ?: $nota['contato'];
             $nota['email'] = $configService->get('NOTE_FABRICA_EMAIL', $nota['email']) ?: $nota['email'];
             $nota['site'] = $configService->get('NOTE_FABRICA_SITE', $nota['site']) ?: $nota['site'];
+            $notaLogoOverride = trim((string)$configService->get('NOTE_LOGO', ''));
             $pixEnabled = $configService->get('NOTE_PIX_ENABLED', '0') === '1';
             $pixKey = trim((string)$configService->get('NOTE_PIX_KEY', ''));
             $pixType = strtolower((string)$configService->get('NOTE_PIX_KEY_TYPE', 'cnpj'));
@@ -283,7 +285,7 @@ abstract class Controller
             'filter_enabled' => $sidebarLogoFilterEnabled,
             'filter_matrix' => self::logoFilterMatrix((string)($theme['primary_hex'] ?? '#5b616f')),
         ];
-        $nota['logo'] = $sidebarLogo['path'];
+        $nota['logo'] = $notaLogoOverride !== '' ? $notaLogoOverride : $sidebarLogo['path'];
 
         $basePath = rtrim($_SERVER['APP_BASE_PATH'] ?? '', '/');
         $urlBuilder = function (string $path = '') use ($basePath): string {

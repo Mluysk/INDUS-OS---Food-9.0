@@ -68,7 +68,9 @@ $noteEndereco = $noteDefaults['NOTE_FABRICA_ENDERECO'] ?? 'Rua Exemplo, 123 - Ba
 $noteContato = $noteDefaults['NOTE_FABRICA_CONTATO'] ?? '(11) 3000-0000';
 $noteEmail = $noteDefaults['NOTE_FABRICA_EMAIL'] ?? 'contato@indusos.com.br';
 $noteSite = $noteDefaults['NOTE_FABRICA_SITE'] ?? 'indusos.com.br';
-$noteLogoPath = $logoFilter === '1' ? $themeLogoDark : $themeLogoLight;
+$noteSidebarLogoPath = $logoFilter === '1' ? $themeLogoDark : $themeLogoLight;
+$noteCustomLogoPath = trim((string)($noteDefaults['NOTE_LOGO'] ?? ''));
+$noteLogoPath = $noteCustomLogoPath !== '' ? $noteCustomLogoPath : $noteSidebarLogoPath;
 $notePixEnabled = $noteDefaults['NOTE_PIX_ENABLED'] ?? '0';
 $notePixKey = $noteDefaults['NOTE_PIX_KEY'] ?? '';
 $notePixType = $noteDefaults['NOTE_PIX_KEY_TYPE'] ?? 'cnpj';
@@ -1058,8 +1060,12 @@ $previewMatrixDefault = app_logo_matrix_values($logoTintPreviewHex);
                     </div>
                 </div>
                 <label class="logo-label note-field-label" for="note-logo"><span data-lucide="link" aria-hidden="true"></span><span>Caminho logo da nota</span></label>
-                <input id="note-logo" value="<?= htmlspecialchars($noteLogoPath, ENT_QUOTES, 'UTF-8'); ?>" readonly>
-                <p class="field-hint">Sincronizada automaticamente com a logo e o filtro do sidebar.</p>
+                <input id="note-logo" name="config[NOTE_LOGO]" value="<?= htmlspecialchars($noteCustomLogoPath, ENT_QUOTES, 'UTF-8'); ?>" placeholder="Usando automaticamente a logo do sidebar">
+                <label class="upload-label" for="note-logo-file">
+                    <span class="note-heading-icon"><span data-lucide="upload" aria-hidden="true"></span><span>Enviar logo exclusiva para a nota</span></span>
+                    <input type="file" id="note-logo-file" name="note_logo_file" accept="image/*">
+                </label>
+                <p class="field-hint">Sem uma logo exclusiva, a nota acompanha automaticamente a logo e o filtro do sidebar.</p>
             </div>
 
             <div class="field">
