@@ -1574,7 +1574,7 @@ $previewMatrixDefault = app_logo_matrix_values($logoTintPreviewHex);
         padding: 16px;
         border-radius: 18px;
         border: 1px solid rgba(148, 163, 184, 0.25);
-        background: #F5F5F5;
+        background: color-mix(in srgb, #F5F5F5 74%, #FFFFFF 26%);
         box-shadow: 0 22px 44px -34px rgba(15, 23, 42, 0.55);
     }
     .title-settings-card .field {
