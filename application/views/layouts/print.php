@@ -84,7 +84,8 @@ $reportLogoFilterMatrix = (string)($sidebarLogo['filter_matrix'] ?? '');
             transform-origin: left center;
         }
 
-        body.report-logo-filter-enabled .print-header img {
+        body.report-logo-filter-enabled .print-header img,
+        body.report-logo-filter-enabled .nota-logo img {
             filter: url(#reportLogoTintFilter);
             -webkit-filter: url(#reportLogoTintFilter);
         }

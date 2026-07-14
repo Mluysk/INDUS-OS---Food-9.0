@@ -119,7 +119,9 @@ class ConfigController extends Controller
             'NOTE_FABRICA_CONTATO' => $this->config->get('NOTE_FABRICA_CONTATO', '(11) 3000-0000') ?: '(11) 3000-0000',
             'NOTE_FABRICA_EMAIL' => $this->config->get('NOTE_FABRICA_EMAIL', 'contato@indusos.com.br') ?: 'contato@indusos.com.br',
             'NOTE_FABRICA_SITE' => $this->config->get('NOTE_FABRICA_SITE', 'indusos.com.br') ?: 'indusos.com.br',
-            'NOTE_LOGO' => $this->config->get('NOTE_LOGO', $themeDefaults['THEME_LOGO_LIGHT']) ?: $themeDefaults['THEME_LOGO_LIGHT'],
+            'NOTE_LOGO' => $themeDefaults['THEME_LOGO_FILTER'] === '1'
+                ? $themeDefaults['THEME_LOGO_DARK']
+                : $themeDefaults['THEME_LOGO_LIGHT'],
             'NOTE_PIX_ENABLED' => $this->config->get('NOTE_PIX_ENABLED', '0') === '1' ? '1' : '0',
             'NOTE_PIX_KEY' => $this->config->get('NOTE_PIX_KEY', '') ?: '',
             'NOTE_PIX_KEY_TYPE' => $this->config->get('NOTE_PIX_KEY_TYPE', 'cnpj') ?: 'cnpj',
@@ -339,7 +341,6 @@ class ConfigController extends Controller
                 'THEME_LOGO_FOOTER' => 'logo_footer_file',
                 'PORTAL_LOGIN_LOGO_LIGHT' => 'portal_login_logo_light_file',
                 'PORTAL_LOGIN_LOGO_DARK' => 'portal_login_logo_dark_file',
-                'NOTE_LOGO' => 'note_logo_file',
             ];
 
             $uploadDir = dirname(__DIR__, 4).'/public/uploads/branding';
@@ -501,7 +502,6 @@ class ConfigController extends Controller
             'THEME_LOGO_FOOTER',
             'PORTAL_LOGIN_LOGO_LIGHT',
             'PORTAL_LOGIN_LOGO_DARK',
-            'NOTE_LOGO',
         ];
 
         foreach ($logoKeys as $logoKey) {
