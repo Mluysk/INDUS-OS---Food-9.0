@@ -206,7 +206,7 @@ $logoCalibration = [
     'compact-light' => ['x' => -5, 'y' => 1],
     'compact-dark' => ['x' => -5, 'y' => 1],
 ];
-$titleSizePx = isset($theme['title_size']) ? (int)$theme['title_size'] : 26;
+$titleSizePx = isset($theme['title_size']) ? (int)$theme['title_size'] : 22;
 if ($titleSizePx < 16) {
     $titleSizePx = 16;
 } elseif ($titleSizePx > 64) {

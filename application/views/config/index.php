@@ -323,7 +323,7 @@ include __DIR__.'/audit_tab_patch.php';
         const databaseMode = String(<?= json_encode($themeMode ?? 'light'); ?> || 'light').toLowerCase() === 'dark' ? 'dark' : 'light';
         const storedMode = String(localStorage.getItem('theme') || '').toLowerCase();
         const mode = ['light', 'dark'].includes(storedMode) ? storedMode : databaseMode;
-        const titleSize = parseInt(<?= json_encode($titleSize ?? '24'); ?>, 10) || 24;
+        const titleSize = parseInt(<?= json_encode($titleSize ?? '22'); ?>, 10) || 22;
         const titleX = parseInt(<?= json_encode($titleOffsetX ?? '0'); ?>, 10) || 0;
         const titleY = parseInt(<?= json_encode($titleOffsetY ?? '0'); ?>, 10) || 0;
         const root = document.documentElement.style;
