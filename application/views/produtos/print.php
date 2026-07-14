@@ -63,7 +63,7 @@ if (!empty($filters['tipo'])) {
 <style>
     .print-brand img {
         width: auto !important;
-        height: var(--form-logo-size, 96px) !important;
+        height: var(--form-logo-size, 53px) !important;
         min-width: 0;
         max-width: none;
         object-fit: contain;
@@ -75,11 +75,11 @@ if (!empty($filters['tipo'])) {
         box-sizing: border-box;
     }
     .print-brand img.is-square-form-logo {
-        width: var(--form-logo-size, 96px) !important;
-        min-width: var(--form-logo-size, 96px);
-        max-width: var(--form-logo-size, 96px);
-        margin-top: var(--square-form-logo-margin, 42px);
-        margin-bottom: var(--square-form-logo-margin, 42px);
+        width: var(--form-logo-size, 53px) !important;
+        min-width: var(--form-logo-size, 53px);
+        max-width: var(--form-logo-size, 53px);
+        margin-top: var(--square-form-logo-margin, 24px);
+        margin-bottom: var(--square-form-logo-margin, 24px);
         transform: scale(1.85);
         transform-origin: left center;
     }

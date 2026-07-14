@@ -17,7 +17,7 @@ $reportLogoFilterMatrix = (string)($sidebarLogo['filter_matrix'] ?? '');
             --muted: #52606d;
             --border: #d9dde4;
             --surface: #ffffff;
-            --form-logo-size: <?= max(24, min(240, (int)($theme['form_logo_size'] ?? 96))); ?>px;
+            --form-logo-size: 53px;
         }
 
         * {

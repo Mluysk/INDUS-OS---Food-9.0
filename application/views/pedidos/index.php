@@ -362,7 +362,7 @@
 <?php
     $dailyReportLogoPath = $sidebarLogo['path'] ?? ($theme['logo_light'] ?? 'img/logo.png');
     $dailyReportLogoFilterEnabled = !empty($sidebarLogo['filter_enabled']);
-    $dailyReportLogoSize = max(24, min(240, (int)($theme['form_logo_size'] ?? 96)));
+    $dailyReportLogoSize = 53;
     $dailyReportLogoFilterMatrix = (string)($sidebarLogo['filter_matrix'] ?? '');
     $dailyReportLogoFilterSvg = '';
     if ($dailyReportLogoFilterEnabled && $dailyReportLogoFilterMatrix !== '') {

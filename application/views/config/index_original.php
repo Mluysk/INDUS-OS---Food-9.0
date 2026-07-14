@@ -23,7 +23,6 @@ $logoLightSize = $themeDefaults['THEME_LOGO_LIGHT_SIZE'] ?? '57';
 $logoDarkSize = $themeDefaults['THEME_LOGO_DARK_SIZE'] ?? '57';
 $logoCompactLightSize = $themeDefaults['THEME_LOGO_COMPACT_LIGHT_SIZE'] ?? '76';
 $logoCompactDarkSize = $themeDefaults['THEME_LOGO_COMPACT_DARK_SIZE'] ?? '76';
-$formLogoSize = $themeDefaults['FORM_LOGO_SIZE'] ?? '96';
 $logoLightOffsetX = $themeDefaults['THEME_LOGO_LIGHT_OFFSET_X'] ?? '0';
 $logoLightOffsetY = $themeDefaults['THEME_LOGO_LIGHT_OFFSET_Y'] ?? '0';
 $logoDarkOffsetX = $themeDefaults['THEME_LOGO_DARK_OFFSET_X'] ?? '0';
@@ -699,11 +698,6 @@ $previewMatrixDefault = app_logo_matrix_values($logoTintPreviewHex);
                     <span class="switch-text">Colorir logos com a paleta escolhida</span>
                 </label>
                 <p class="field-hint">Ative para harmonizar automaticamente as marcas com a cor primária do painel.</p>
-            </div>
-            <div class="field">
-                <label class="slider-label" for="form-logo-size">Tamanho da logo dos formulários e relatórios <output id="form-logo-size-val"><?= htmlspecialchars($formLogoSize, ENT_QUOTES, 'UTF-8'); ?>px</output></label>
-                <input type="range" id="form-logo-size" name="config[FORM_LOGO_SIZE]" min="24" max="240" step="1" value="<?= htmlspecialchars($formLogoSize, ENT_QUOTES, 'UTF-8'); ?>">
-                <p class="field-hint">Define o tamanho geral da logo nos formulários, catálogos e relatórios impressos.</p>
             </div>
             <div class="field">
                 <span class="field-label">Tema base</span>
@@ -2043,8 +2037,6 @@ $previewMatrixDefault = app_logo_matrix_values($logoTintPreviewHex);
         const titleOffsetY = document.getElementById('title-offset-y');
         const titleOffsetXVal = document.getElementById('title-offset-x-val');
         const titleOffsetYVal = document.getElementById('title-offset-y-val');
-        const formLogoSizeInput = document.getElementById('form-logo-size');
-        const formLogoSizeOutput = document.getElementById('form-logo-size-val');
         const alertaInput = document.getElementById('alerta');
         const unitsInput = document.getElementById('metric-units');
         const lowMinInput = document.getElementById('low-min');
@@ -2216,16 +2208,6 @@ $previewMatrixDefault = app_logo_matrix_values($logoTintPreviewHex);
             };
             titleOffsetY.addEventListener('input', syncY);
             syncY();
-        }
-
-        if (formLogoSizeInput && formLogoSizeOutput) {
-            const syncFormLogoSize = () => {
-                const value = Math.min(240, Math.max(24, Number(formLogoSizeInput.value || 96)));
-                formLogoSizeInput.value = String(value);
-                formLogoSizeOutput.textContent = `${value}px`;
-            };
-            formLogoSizeInput.addEventListener('input', syncFormLogoSize);
-            syncFormLogoSize();
         }
 
         const toRgb = (hex) => {
