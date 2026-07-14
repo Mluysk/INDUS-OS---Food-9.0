@@ -2532,7 +2532,7 @@ $previewMatrixDefault = app_logo_matrix_values($logoTintPreviewHex);
                 cssSize: '--logo-light-height',
                 cssX: '--logo-light-x',
                 cssY: '--logo-light-y',
-                baseX: -2,
+                baseX: 3,
                 baseY: -12,
             },
             {
@@ -2548,7 +2548,7 @@ $previewMatrixDefault = app_logo_matrix_values($logoTintPreviewHex);
                 cssSize: '--logo-dark-height',
                 cssX: '--logo-dark-x',
                 cssY: '--logo-dark-y',
-                baseX: -2,
+                baseX: 3,
                 baseY: -12,
             },
             {
