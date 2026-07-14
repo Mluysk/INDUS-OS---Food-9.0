@@ -64,7 +64,7 @@ if ($notaLogoRelativePath !== '' && is_file($notaLogoLocalPath)) {
         $notaLogoScale = $notaLogoAspect <= 1.35 ? 1.8 : 1.0;
     }
 }
-$notaLogoRenderSize = (int)round((int)($notaDados['logo_size'] ?? 66) * $notaLogoScale);
+$notaLogoRenderSize = (int)round((int)($notaDados['logo_size'] ?? 43) * $notaLogoScale);
 $pixEnabled = isset($notaPixEnabled) ? (bool)$notaPixEnabled : (bool)($notaDados['pix_enabled'] ?? false);
 $pixKey = trim($notaPixKey ?? ($notaDados['pix_key'] ?? ''));
 $pixType = isset($notaPixType) ? (string)$notaPixType : (string)($notaDados['pix_type'] ?? 'cnpj');
@@ -166,7 +166,7 @@ if ($pixEnabled && $pixKey !== '') {
 }
 $pixQrUrl = $pixPayload !== '' ? 'https://quickchart.io/qr?size=200&margin=2&text=' . urlencode($pixPayload) : '';
 ?>
-<div class="nota-shell" style="--note-logo-size: <?= $notaLogoRenderSize; ?>px; --note-logo-x: <?= (int)($notaDados['logo_offset_x'] ?? 0); ?>px; --note-logo-y: <?= (int)($notaDados['logo_offset_y'] ?? 0); ?>px;">
+<div class="nota-shell" style="--note-logo-size: <?= $notaLogoRenderSize; ?>px;">
     <div class="nota-head">
         <div class="nota-head__col">
             <div class="nota-logo">
@@ -323,7 +323,8 @@ $pixQrUrl = $pixPayload !== '' ? 'https://quickchart.io/qr?size=200&margin=2&tex
     .nota-head__box { border: 1px solid var(--nota-border); padding: 8px 10px; width: 100%; }
     .nota-head__box .row { display:flex; justify-content: space-between; gap: 12px; font-weight: 600; font-size:12px; }
     .nota-head__box .label { color: var(--nota-muted); }
-    .nota-logo img { height: var(--note-logo-size, 66px); object-fit: contain; transform: translate(var(--note-logo-x, 0), var(--note-logo-y, 0)); }
+    .nota-logo { display:flex; align-items:center; justify-content:center; align-self:center; flex:0 0 auto; }
+    .nota-logo img { display:block; height: var(--note-logo-size, 43px); width:auto; object-fit:contain; object-position:center; }
     .nota-empresa h1 { margin:0; font-size: 16px; letter-spacing: 0.02em; }
     .nota-empresa p { margin:2px 0; }
     .nota-block { display:grid; grid-template-columns:1fr 1fr; border:2px solid var(--nota-border); border-top:none; padding:10px; gap:10px; }

@@ -121,9 +121,7 @@ class ConfigController extends Controller
             'NOTE_FABRICA_SITE' => $this->config->get('NOTE_FABRICA_SITE', 'indusos.com.br') ?: 'indusos.com.br',
             'NOTE_LOGO' => trim((string)$this->config->get('NOTE_LOGO', '')),
             'NOTE_LOGO_CUSTOM_ENABLED' => $this->config->get('NOTE_LOGO_CUSTOM_ENABLED', '0') === '1' ? '1' : '0',
-            'NOTE_LOGO_SIZE' => $this->config->get('NOTE_LOGO_SIZE', '66') ?: '66',
-            'NOTE_LOGO_OFFSET_X' => $this->config->get('NOTE_LOGO_OFFSET_X', '0') ?: '0',
-            'NOTE_LOGO_OFFSET_Y' => $this->config->get('NOTE_LOGO_OFFSET_Y', '0') ?: '0',
+            'NOTE_LOGO_SIZE' => $this->config->get('NOTE_LOGO_SIZE', '43') ?: '43',
             'NOTE_PIX_ENABLED' => $this->config->get('NOTE_PIX_ENABLED', '0') === '1' ? '1' : '0',
             'NOTE_PIX_KEY' => $this->config->get('NOTE_PIX_KEY', '') ?: '',
             'NOTE_PIX_KEY_TYPE' => $this->config->get('NOTE_PIX_KEY_TYPE', 'cnpj') ?: 'cnpj',
@@ -469,8 +467,6 @@ class ConfigController extends Controller
             'PORTAL_LOGIN_LOGO_LIGHT_OFFSET_Y',
             'PORTAL_LOGIN_LOGO_DARK_OFFSET_X',
             'PORTAL_LOGIN_LOGO_DARK_OFFSET_Y',
-            'NOTE_LOGO_OFFSET_X',
-            'NOTE_LOGO_OFFSET_Y',
         ];
 
         foreach ($logoOffsetKeys as $key) {

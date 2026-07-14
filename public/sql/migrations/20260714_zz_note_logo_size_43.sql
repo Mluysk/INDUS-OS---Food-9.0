@@ -1,0 +1,5 @@
+INSERT INTO configuracoes (chave, valor) VALUES
+    ('NOTE_LOGO_SIZE', '43'),
+    ('NOTE_LOGO_OFFSET_X', '0'),
+    ('NOTE_LOGO_OFFSET_Y', '0')
+ON DUPLICATE KEY UPDATE valor = VALUES(valor);
