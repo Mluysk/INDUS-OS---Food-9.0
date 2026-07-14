@@ -70,7 +70,7 @@ if (!empty($filters['tipo'])) {
         object-position: left center;
         transform: none;
         transform-origin: left center;
-        margin: 9px 0;
+        margin: 6px 0;
         padding: 0;
         box-sizing: border-box;
     }
@@ -78,8 +78,8 @@ if (!empty($filters['tipo'])) {
         width: var(--form-logo-size, 96px) !important;
         min-width: var(--form-logo-size, 96px);
         max-width: var(--form-logo-size, 96px);
-        margin-top: var(--square-form-logo-margin, 50px);
-        margin-bottom: var(--square-form-logo-margin, 50px);
+        margin-top: var(--square-form-logo-margin, 47px);
+        margin-bottom: var(--square-form-logo-margin, 47px);
         transform: scale(1.85);
         transform-origin: left center;
     }
@@ -97,7 +97,7 @@ if (!empty($filters['tipo'])) {
             logo.classList.toggle('is-square-form-logo', isSquare);
             if (isSquare) {
                 const scaleOverflow = logo.offsetHeight * ((1.85 - 1) / 2);
-                logo.style.setProperty('--square-form-logo-margin', `${9 + scaleOverflow}px`);
+                logo.style.setProperty('--square-form-logo-margin', `${6 + scaleOverflow}px`);
             } else {
                 logo.style.removeProperty('--square-form-logo-margin');
             }
