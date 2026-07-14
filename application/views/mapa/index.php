@@ -1068,7 +1068,9 @@ foreach ($datas as $diaKey => $info) {
                 }
             };
 
-            const fmtInt = (num) => new Intl.NumberFormat('pt-BR', {minimumFractionDigits: 0, maximumFractionDigits: 0}).format(Number(num || 0));
+            const integerFormatter = new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+            const decimalFormatter = new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+            const fmtInt = (num) => integerFormatter.format(Number(num || 0));
             const fmtDate = (dia) => {
                 const [y, m, d] = dia.split('-');
                 return `${d}/${m}`;
@@ -1569,7 +1571,7 @@ foreach ($datas as $diaKey => $info) {
                     const key = el.dataset.statusPct;
                     if (!key) return;
                     const pct = Math.max(0, Math.min(100, (segs[key] || 0) / total * 100));
-                    el.textContent = `${new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(pct)}%`;
+                    el.textContent = `${decimalFormatter.format(pct)}%`;
                 });
             };
 
@@ -1964,23 +1966,22 @@ foreach ($datas as $diaKey => $info) {
             };
 
             const renderAll = () => {
-                renderRange();
                 if (activePane === 'resumo') {
+                    renderRange();
                     if (initialDailyMarkup) {
                         initialDailyMarkup = false;
                     } else {
                         renderTabela();
                     }
-                }
-                applyStatus();
-                applyNavMedias();
-                bindFeriados();
-                bindForms();
-                focusToday();
-                applyFullMode();
-                if (activePane === 'completo') {
+                    applyNavMedias();
+                    bindFeriados();
+                    bindForms();
+                    focusToday();
+                } else {
                     renderCompact();
                 }
+                applyStatus();
+                applyFullMode();
             };
 
             const setLiveBusy = (busy) => {
