@@ -206,6 +206,15 @@ foreach ($datas as $diaKey => $info) {
         .mapa .status-percentage-dot.ok { background: #86efac; }
         .mapa .table-wrap { overflow-x: auto; }
         .mapa tbody tr { content-visibility: auto; contain-intrinsic-size: 170px; }
+        .mapa .map-pane[data-map-pane="completo"] .compact-table {
+            contain: layout paint;
+            overscroll-behavior: contain auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        .mapa .map-pane[data-map-pane="completo"] tbody tr {
+            content-visibility: auto;
+            contain-intrinsic-size: 170px;
+        }
         .mapa .map-pane[data-map-pane="resumo"] .table-wrap,
         .mapa .map-pane[data-map-pane="resumo"] .nav-dias {
             contain: layout paint;
@@ -226,6 +235,14 @@ foreach ($datas as $diaKey => $info) {
         .mapa.is-scrolling .map-pane[data-map-pane="resumo"] .metric-chip,
         .mapa.is-scrolling .map-pane[data-map-pane="resumo"] .mini-form,
         .mapa.is-scrolling .map-pane[data-map-pane="resumo"] .nav-chip {
+            transition: none !important;
+            box-shadow: none !important;
+        }
+        .mapa.is-scrolling .map-pane[data-map-pane="completo"] .dia-card,
+        .mapa.is-scrolling .map-pane[data-map-pane="completo"] .produto-card,
+        .mapa.is-scrolling .map-pane[data-map-pane="completo"] .metric-chip,
+        .mapa.is-scrolling .map-pane[data-map-pane="completo"] .mini-form,
+        .mapa.is-scrolling .map-pane[data-map-pane="completo"] .compact-th {
             transition: none !important;
             box-shadow: none !important;
         }
@@ -1025,6 +1042,19 @@ foreach ($datas as $diaKey => $info) {
             let fullRendered = false;
             let compactRenderToken = 0;
             const compactMonthCache = new Map();
+            const compactMonthCacheLimit = 3;
+            const rememberCompactMonth = (month, payload) => {
+                compactMonthCache.delete(month);
+                compactMonthCache.set(month, payload);
+                while (compactMonthCache.size > compactMonthCacheLimit) {
+                    compactMonthCache.delete(compactMonthCache.keys().next().value);
+                }
+                return payload;
+            };
+            const cachedCompactMonth = (month) => {
+                if (!compactMonthCache.has(month)) return null;
+                return rememberCompactMonth(month, compactMonthCache.get(month));
+            };
             let initialDailyMarkup = true;
             let compactYear = (mapaState.base || mapaState.hoje || new Date().toISOString().slice(0, 10)).slice(0, 4);
             let compactMonth = (mapaState.hoje || mapaState.base || new Date().toISOString().slice(0, 10)).slice(0, 7);
@@ -1072,7 +1102,7 @@ foreach ($datas as $diaKey => $info) {
                         root.classList.remove('is-scrolling');
                     }, 140);
                 };
-                document.querySelectorAll('.map-pane[data-map-pane="resumo"] .table-wrap, .map-pane[data-map-pane="resumo"] .nav-dias').forEach((el) => {
+                document.querySelectorAll('.map-pane[data-map-pane="resumo"] .table-wrap, .map-pane[data-map-pane="resumo"] .nav-dias, .map-pane[data-map-pane="completo"] .compact-table').forEach((el) => {
                     el.addEventListener('scroll', markScrolling, { passive: true });
                 });
             };
@@ -1139,7 +1169,7 @@ foreach ($datas as $diaKey => $info) {
                     else delete feriados[dia];
                 });
                 localStorage.setItem('mapaFeriados', JSON.stringify(feriados));
-                if (payload.full) compactMonthCache.set(params.month || compactMonth, payload);
+                if (payload.full) rememberCompactMonth(params.month || compactMonth, payload);
                 preferHoje(mapaState);
                 fullMode = !!(mapaState.full);
                 windowSize = Math.max(1, visibleDates().length);
@@ -1474,7 +1504,7 @@ foreach ($datas as $diaKey => $info) {
                 };
 
                 const token = ++compactRenderToken;
-                const initialCount = Math.min(2, linhas.length);
+                const initialCount = Math.min(1, linhas.length);
                 wrap.innerHTML = `<div class="compact-grid"><table><thead><tr>${header.join('')}</tr></thead><tbody>${linhas.slice(0, initialCount).map(rowMarkupCompact).join('')}</tbody></table></div>`;
                 fullRendered = true;
                 if (yearLabel) yearLabel.textContent = compactYear;
@@ -1488,13 +1518,17 @@ foreach ($datas as $diaKey => $info) {
                 let index = initialCount;
                 const appendCompactRows = () => {
                     if (token !== compactRenderToken || !tbody?.isConnected || index >= linhas.length) return;
-                    const end = Math.min(index + 2, linhas.length);
+                    if (document.querySelector('.mapa')?.classList.contains('is-scrolling')) {
+                        window.setTimeout(appendCompactRows, 120);
+                        return;
+                    }
+                    const end = Math.min(index + 1, linhas.length);
                     tbody.insertAdjacentHTML('beforeend', linhas.slice(index, end).map(rowMarkupCompact).join(''));
                     Array.from(tbody.querySelectorAll('form.mini-form')).filter((form) => form.dataset.mapaSubmitBound !== '1').forEach(handleSubmit);
                     index = end;
                     if (index < linhas.length) {
-                        if ('requestIdleCallback' in window) window.requestIdleCallback(appendCompactRows, { timeout: 700 });
-                        else window.setTimeout(appendCompactRows, 32);
+                        if ('requestIdleCallback' in window) window.requestIdleCallback(appendCompactRows, { timeout: 1200 });
+                        else window.setTimeout(appendCompactRows, 48);
                     }
                 };
                 if (index < linhas.length) window.setTimeout(appendCompactRows, 0);
@@ -1987,7 +2021,8 @@ foreach ($datas as $diaKey => $info) {
             };
 
             const prefetchCompactMonth = async (month = compactMonth, force = false) => {
-                if (!force && compactMonthCache.has(month)) return compactMonthCache.get(month);
+                const cached = !force ? cachedCompactMonth(month) : null;
+                if (cached) return cached;
                 const qs = new URLSearchParams({ full: '1', month, start: `${month}-01`, _live: `${Date.now()}-${Math.random().toString(16).slice(2)}` });
                 const response = await fetch(`${mapaUrl}?${qs}`, {
                     method: 'GET',
@@ -2001,8 +2036,7 @@ foreach ($datas as $diaKey => $info) {
                     else delete feriados[dia];
                 });
                 localStorage.setItem('mapaFeriados', JSON.stringify(feriados));
-                compactMonthCache.set(month, payload);
-                return payload;
+                return rememberCompactMonth(month, payload);
             };
 
             const loadWindow = async (direction) => {
@@ -2097,7 +2131,7 @@ foreach ($datas as $diaKey => $info) {
             loadRemainingDailyRows();
             switchPane(activePane);
             if (fullMode) {
-                compactMonthCache.set(compactMonth, mapaState);
+                rememberCompactMonth(compactMonth, mapaState);
             } else {
                 window.setTimeout(() => prefetchCompactMonth(compactMonth).catch(() => {}), 0);
             }
