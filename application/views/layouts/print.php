@@ -222,7 +222,7 @@ $reportLogoFilterMatrix = (string)($sidebarLogo['filter_matrix'] ?? '');
         }
 
         .nota-logo img {
-            height: var(--note-logo-size, 53px) !important;
+            height: var(--note-logo-size, 66px) !important;
             transform: translate(var(--note-logo-x, 0), var(--note-logo-y, 0)) !important;
         }
 

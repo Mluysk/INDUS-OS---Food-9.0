@@ -121,7 +121,7 @@ class ConfigController extends Controller
             'NOTE_FABRICA_SITE' => $this->config->get('NOTE_FABRICA_SITE', 'indusos.com.br') ?: 'indusos.com.br',
             'NOTE_LOGO' => trim((string)$this->config->get('NOTE_LOGO', '')),
             'NOTE_LOGO_CUSTOM_ENABLED' => $this->config->get('NOTE_LOGO_CUSTOM_ENABLED', '0') === '1' ? '1' : '0',
-            'NOTE_LOGO_SIZE' => $this->config->get('NOTE_LOGO_SIZE', '53') ?: '53',
+            'NOTE_LOGO_SIZE' => $this->config->get('NOTE_LOGO_SIZE', '66') ?: '66',
             'NOTE_LOGO_OFFSET_X' => $this->config->get('NOTE_LOGO_OFFSET_X', '0') ?: '0',
             'NOTE_LOGO_OFFSET_Y' => $this->config->get('NOTE_LOGO_OFFSET_Y', '0') ?: '0',
             'NOTE_PIX_ENABLED' => $this->config->get('NOTE_PIX_ENABLED', '0') === '1' ? '1' : '0',

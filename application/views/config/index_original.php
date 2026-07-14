@@ -72,7 +72,7 @@ $noteSidebarLogoPath = $logoFilter === '1' ? $themeLogoDark : $themeLogoLight;
 $noteCustomLogoPath = trim((string)($noteDefaults['NOTE_LOGO'] ?? ''));
 $noteLogoCustomEnabled = ($noteDefaults['NOTE_LOGO_CUSTOM_ENABLED'] ?? '0') === '1';
 $noteLogoPath = $noteLogoCustomEnabled && $noteCustomLogoPath !== '' ? $noteCustomLogoPath : $noteSidebarLogoPath;
-$noteLogoSize = $noteDefaults['NOTE_LOGO_SIZE'] ?? '53';
+$noteLogoSize = $noteDefaults['NOTE_LOGO_SIZE'] ?? '66';
 $noteLogoOffsetX = $noteDefaults['NOTE_LOGO_OFFSET_X'] ?? '0';
 $noteLogoOffsetY = $noteDefaults['NOTE_LOGO_OFFSET_Y'] ?? '0';
 $notePixEnabled = $noteDefaults['NOTE_PIX_ENABLED'] ?? '0';
