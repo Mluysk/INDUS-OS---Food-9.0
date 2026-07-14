@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Documentação de Uso - IndusOS Food</title>
+  <style>
+    body { font-family: Arial, sans-serif; line-height: 1.6; margin: 0; padding: 0; background: #f7f8fb; color: #1f2937; }
+    .container { max-width: 1100px; margin: 0 auto; padding: 32px 20px 60px; }
+    .card { background: #fff; border-radius: 12px; padding: 24px; margin-bottom: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.06); }
+    h1, h2, h3 { color: #0f172a; }
+    h1 { font-size: 2rem; margin-bottom: 8px; }
+    h2 { font-size: 1.35rem; margin-top: 24px; border-bottom: 2px solid #e5e7eb; padding-bottom: 8px; }
+    ul { padding-left: 20px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+    th, td { border: 1px solid #e5e7eb; padding: 10px; text-align: left; }
+    th { background: #f3f4f6; }
+    .badge { display: inline-block; background: #dc2626; color: #fff; padding: 4px 8px; border-radius: 999px; font-size: 0.85rem; margin-bottom: 12px; }
+    .note { background: #eff6ff; border-left: 4px solid #2563eb; padding: 12px; border-radius: 6px; }
+    .warning { background: #fff7ed; border-left: 4px solid #f59e0b; padding: 12px; border-radius: 6px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <div class="badge">Documentação profissional</div>
+      <h1>Documentação de Uso - IndusOS Food</h1>
+      <p>Este manual tem como objetivo orientar clientes, usuários operacionais, gestores e equipes de suporte no uso do sistema IndusOS Food, com foco em processos industriais, controle de estoque, produção, pedidos e relacionamento com clientes.</p>
+      <p><strong>Versão:</strong> 1.0<br /><strong>Aplicação:</strong> ERP para indústria alimentícia<br /><strong>Público-alvo:</strong> clientes, supervisores, operação, logística, financeiro e administração</p>
+    </div>
+
+    <div class="card">
+      <h2>1. Objetivo do sistema</h2>
+      <p>O IndusOS Food foi desenvolvido para apoiar as operações de uma indústria com foco em:</p>
+      <ul>
+        <li>Gestão de clientes e parceiros;</li>
+        <li>Cadastro e controle de produtos;</li>
+        <li>Gestão de estoque e validade;</li>
+        <li>Planejamento e execução de produção;</li>
+        <li>Controle de pedidos e entregas;</li>
+        <li>Expedição e logística interna;</li>
+        <li>Relatórios operacionais e financeiros;</li>
+        <li>Portal do cliente para consulta e pedidos.</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h2>2. Público-alvo e papéis</h2>
+      <table>
+        <thead>
+          <tr><th>Perfil</th><th>Responsabilidade</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Administrador</td><td>Configuração geral, usuários, permissões e parametrização do sistema.</td></tr>
+          <tr><td>Operação</td><td>Controle de produção, estoque, ordens e fluxo produtivo.</td></tr>
+          <tr><td>Logística</td><td>Separação, expedição e acompanhamento de pedidos.</td></tr>
+          <tr><td>Financeiro</td><td>Controle de títulos, valores, cobrança e acompanhamento financeiro.</td></tr>
+          <tr><td>Cliente</td><td>Acesso ao portal, consulta de catálogo, montagem de pedido e histórico.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <h2>3. Acesso ao sistema</h2>
+      <ol>
+        <li>Acesse a URL do ambiente do sistema.</li>
+        <li>Entre na tela de login.</li>
+        <li>Informe e-mail, CPF/CNPJ ou usuário cadastrado.</li>
+        <li>Informe a senha.</li>
+        <li>Clique em <strong>Entrar</strong>.</li>
+      </ol>
+      <div class="note">Recomendação: sempre utilize credenciais pessoais e proteja a senha com boas práticas de segurança.</div>
+    </div>
+
+    <div class="card">
+      <h2>4. Primeiros passos após o login</h2>
+      <ul>
+        <li>Verifique se os dados da empresa, clientes e produtos estão atualizados.</li>
+        <li>Confirme se os usuários possuem as permissões corretas.</li>
+        <li>Valide o estoque inicial e as principais listas de produtos.</li>
+        <li>Teste um pedido simples para confirmar o fluxo completo.</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h2>5. Módulos principais</h2>
+
+      <h3>5.1 Clientes</h3>
+      <p>Permite cadastrar clientes, manter dados cadastrais, histórico e relacionamento comercial.</p>
+      <ul>
+        <li>Cadastrar novo cliente;</li>
+        <li>Atualizar dados fiscais e comerciais;</li>
+        <li>Associar condições de venda e observações.</li>
+      </ul>
+
+      <h3>5.2 Produtos</h3>
+      <p>Centraliza o cadastro de itens, unidades, SKU, validade e composição do produto.</p>
+      <ul>
+        <li>Cadastrar produtos;</li>
+        <li>Definir unidade de medida;</li>
+        <li>Associar receitas e componentes.</li>
+      </ul>
+
+      <h3>5.3 Estoque</h3>
+      <p>Controle de entradas, saídas, reservas, lotes e validade.</p>
+      <ul>
+        <li>Registrar entradas;</li>
+        <li>Registrar saídas;</li>
+        <li>Reservar estoque para pedidos ou produção;</li>
+        <li>Monitorar vencimento e alertas.</li>
+      </ul>
+
+      <h3>5.4 Produção</h3>
+      <p>Gere ordens de produção, planejamento e folga de produção.</p>
+      <ul>
+        <li>Criar ordem de produção;</li>
+        <li>Iniciar produção;</li>
+        <li>Finalizar produção e registrar lote/validade;</li>
+        <li>Controlar rendimento e consumo de componentes.</li>
+      </ul>
+
+      <h3>5.5 Pedidos</h3>
+      <p>Fluxo comercial para emissão e acompanhamento de pedidos.</p>
+      <ul>
+        <li>Registrar pedido de cliente;</li>
+        <li>Informar itens e valores;</li>
+        <li>Atualizar status do pedido;</li>
+        <li>Gerar backorder quando houver falta de estoque.</li>
+      </ul>
+
+      <h3>5.6 Expedição</h3>
+      <p>Organiza a separação e saída de pedidos para o cliente.</p>
+      <ul>
+        <li>Separar itens por pedido;</li>
+        <li>Confirmar quantidade;</li>
+        <li>Acompanhar status de transporte e entrega.</li>
+      </ul>
+
+      <h3>5.7 Financeiro</h3>
+      <p>Controle financeiro do relacionamento com clientes e fornecedores.</p>
+      <ul>
+        <li>Acompanhar títulos;</li>
+        <li>Monitorar pagamentos e vencimentos;</li>
+        <li>Organizar cobrança e controle financeiro.</li>
+      </ul>
+
+      <h3>5.8 Relatórios</h3>
+      <p>Apresenta métricas e informações para tomada de decisão.</p>
+      <ul>
+        <li>Relatórios de estoque;</li>
+        <li>Relatórios de produção;</li>
+        <li>Relatórios de saída e vendas;</li>
+        <li>Indicadores operacionais.</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h2>6. Fluxo operacional recomendado</h2>
+      <ol>
+        <li>Cadastro ou atualização de cliente;</li>
+        <li>Cadastro ou revisão de produto;</li>
+        <li>Registro de estoque disponível;</li>
+        <li>Criação de pedido;</li>
+        <li>Reserva de estoque e geração de produção, se necessário;</li>
+        <li>Separação e expedição;</li>
+        <li>Registro financeiro e acompanhamento.</li>
+      </ol>
+      <div class="warning">Este fluxo é o padrão recomendado para garantir rastreabilidade e controle da operação industrial.</div>
+    </div>
+
+    <div class="card">
+      <h2>7. Portal do cliente</h2>
+      <p>O portal permite ao cliente acessar informações e realizar ações específicas com autonomia.</p>
+      <ul>
+        <li>Cadastro e autenticação;</li>
+        <li>Consulta ao catálogo;</li>
+        <li>Montagem de carrinho;</li>
+        <li>Criação de pedido integrado;</li>
+        <li>Acompanhamento de histórico de compras.</li>
+      </ul>
+      <p>Para o cliente, o portal reduz o custo operacional e melhora a experiência de compra.</p>
+    </div>
+
+    <div class="card">
+      <h2>8. Boas práticas de uso</h2>
+      <ul>
+        <li>Atualize cadastros com frequência;</li>
+        <li>Registre entradas e saídas imediatamente;</li>
+        <li>Revise estoque com validade próxima;</li>
+        <li>Use o módulo de produção para organizar a operação;</li>
+        <li>Mantenha os usuários com permissões adequadas;</li>
+        <li>Realize backup periódico das informações.</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h2>9. Segurança e responsabilidade</h2>
+      <ul>
+        <li>Não compartilhe senhas;</li>
+        <li>Atualize senhas periodicamente;</li>
+        <li>Desative acessos de usuários que não atuam mais na operação;</li>
+        <li>Verifique logs e auditoria sempre que houver divergência;</li>
+        <li>Use acesso restrito para funções sensíveis.</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h2>10. Suporte e atendimento</h2>
+      <p>Em caso de dúvidas, falhas operacionais ou necessidade de ajustes, o usuário deve registrar:</p>
+      <ul>
+        <li>Descrição do problema;</li>
+        <li>Data e hora;</li>
+        <li>Módulo afetado;</li>
+        <li>Usuário envolvido;</li>
+        <li>Prints ou evidências, quando possível.</li>
+      </ul>
+      <p>O atendimento deve priorizar problemas que impactem produção, estoque, pedidos e entregas.</p>
+    </div>
+
+    <div class="card">
+      <h2>11. Perguntas frequentes</h2>
+      <h3>Como registrar uma entrada de estoque?</h3>
+      <p>Utilize o módulo de estoque, informe o produto, quantidade, lote, validade e tipo de movimento.</p>
+      <h3>O que fazer se houver falta de estoque para um pedido?</h3>
+      <p>O sistema pode gerar backorder e criar ordem de produção, conforme a configuração do fluxo.</p>
+      <h3>Como acompanhar a produção?</h3>
+      <p>Acompanhe as ordens de produção pelo módulo de produção e verifique o status atualizado.</p>
+      <h3>Como acessar o portal do cliente?</h3>
+      <p>Use o endereço do portal do cliente e autentique-se com as credenciais disponibilizadas.</p>
+    </div>
+
+    <div class="card">
+      <h2>12. Conclusão</h2>
+      <p>O IndusOS Food é uma solução pensada para dar suporte à operação industrial com controle, rastreabilidade e visão integrada dos processos. Seu uso correto contribui diretamente para eficiência, redução de erros e melhoria da gestão comercial e operacional.</p>
+      <p>Para obter o melhor resultado, o uso deve ser contínuo, com atualização de cadastros, acompanhamento de estoque e validação regular dos processos.</p>
+    </div>
+  </div>
+</body>
+</html>
