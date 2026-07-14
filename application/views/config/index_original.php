@@ -212,7 +212,7 @@ $previewMatrixDefault = app_logo_matrix_values($logoTintPreviewHex);
         <button type="button" class="tab-button" data-tab="users" aria-selected="false">Usuários</button>
         <button type="button" class="tab-button" data-tab="admin" aria-selected="false">Admin</button>
         <button type="button" class="tab-button tab-button--with-icon" data-tab="appearance" aria-selected="false"><span data-lucide="palette" aria-hidden="true"></span><span>Personalização visual</span></button>
-        <button type="button" class="tab-button" data-tab="nota" aria-selected="false">Nota</button>
+        <button type="button" class="tab-button tab-button--with-icon" data-tab="nota" aria-selected="false"><span data-lucide="receipt-text" aria-hidden="true"></span><span>Nota</span></button>
     </nav>
 
     <div class="tab-panels">
@@ -1017,7 +1017,7 @@ $previewMatrixDefault = app_logo_matrix_values($logoTintPreviewHex);
 
         <form class="card tab-panel" data-tab-panel="nota" method="post" enctype="multipart/form-data" action="<?= htmlspecialchars($url('config/save'), ENT_QUOTES, 'UTF-8'); ?>">
             <input type="hidden" name="active_tab" value="nota">
-            <h2>Nota e identificação da fábrica</h2>
+            <h2 class="module-section-title note-title"><span class="module-section-title-icon" aria-hidden="true"><span data-lucide="receipt-text"></span></span><span>Nota e identificação da fábrica</span></h2>
             <p class="card-subtitle">Defina os dados exibidos na impressão de pedidos internos.</p>
 
             <div class="field">
@@ -1052,7 +1052,7 @@ $previewMatrixDefault = app_logo_matrix_values($logoTintPreviewHex);
 
             <div class="logo-field">
                 <div class="logo-preview light">
-                    <header>Logo da nota</header>
+                    <header class="note-heading-icon"><span data-lucide="image" aria-hidden="true"></span><span>Logo da nota</span></header>
                     <div class="preview-body">
                         <img src="<?= htmlspecialchars($noteLogoUrl, ENT_QUOTES, 'UTF-8'); ?>" alt="Pré-visualização logo nota" id="preview-note" data-preview-tint>
                     </div>
@@ -1060,13 +1060,13 @@ $previewMatrixDefault = app_logo_matrix_values($logoTintPreviewHex);
                 <label class="logo-label" for="note-logo">Caminho logo da nota</label>
                 <input id="note-logo" name="config[NOTE_LOGO]" value="<?= htmlspecialchars($noteLogoPath, ENT_QUOTES, 'UTF-8'); ?>" placeholder="uploads/branding/logodark.png">
                 <label class="upload-label" for="note-logo-file">
-                    <span>Enviar novo arquivo</span>
+                    <span class="note-heading-icon"><span data-lucide="upload" aria-hidden="true"></span><span>Enviar novo arquivo</span></span>
                     <input type="file" id="note-logo-file" name="note_logo_file" accept="image/*">
                 </label>
             </div>
 
             <div class="field">
-                <span class="field-label">Pagamento via PIX</span>
+                <span class="field-label note-heading-icon"><span data-lucide="qr-code" aria-hidden="true"></span><span>Pagamento via PIX</span></span>
                 <label class="switch" for="note-pix-enabled">
                     <input type="hidden" name="config[NOTE_PIX_ENABLED]" value="0">
                     <input type="checkbox" id="note-pix-enabled" name="config[NOTE_PIX_ENABLED]" value="1" <?= $notePixEnabled === '1' ? 'checked' : ''; ?>>
@@ -1103,7 +1103,7 @@ $previewMatrixDefault = app_logo_matrix_values($logoTintPreviewHex);
 
             <?php render_config_edit_password_field($configEditPasswordRequired); ?>
             <footer class="form-footer">
-                <button type="submit" class="btn-primary">Salvar dados da nota</button>
+                <button type="submit" class="btn-primary note-action-button"><span data-lucide="save" aria-hidden="true"></span><span>Salvar dados da nota</span></button>
             </footer>
         </form>
     </div>
@@ -1151,6 +1151,24 @@ $previewMatrixDefault = app_logo_matrix_values($logoTintPreviewHex);
     .tab-button--with-icon svg {
         width: 16px;
         height: 16px;
+    }
+    .note-heading-icon,
+    .note-action-button {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+    }
+    .note-heading-icon svg,
+    .note-action-button svg {
+        width: 17px;
+        height: 17px;
+        flex: 0 0 17px;
+    }
+    .note-title {
+        margin-bottom: 6px;
+    }
+    form[data-tab-panel="nota"] > .card-subtitle {
+        margin: 0 0 6px;
     }
     .tab-button.active {
         background: var(--primary);
