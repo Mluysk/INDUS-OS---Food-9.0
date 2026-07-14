@@ -78,6 +78,8 @@ if (!empty($filters['tipo'])) {
         width: var(--form-logo-size, 96px) !important;
         min-width: var(--form-logo-size, 96px);
         max-width: var(--form-logo-size, 96px);
+        margin-top: var(--square-form-logo-margin, 56px);
+        margin-bottom: var(--square-form-logo-margin, 56px);
         transform: scale(1.85);
         transform-origin: left center;
     }
@@ -91,7 +93,14 @@ if (!empty($filters['tipo'])) {
             const height = Number(logo.naturalHeight || 0);
             if (!width || !height) return;
             const ratio = width / height;
-            logo.classList.toggle('is-square-form-logo', ratio >= 0.8 && ratio <= 1.25);
+            const isSquare = ratio >= 0.8 && ratio <= 1.25;
+            logo.classList.toggle('is-square-form-logo', isSquare);
+            if (isSquare) {
+                const scaleOverflow = logo.offsetHeight * ((1.85 - 1) / 2);
+                logo.style.setProperty('--square-form-logo-margin', `${15 + scaleOverflow}px`);
+            } else {
+                logo.style.removeProperty('--square-form-logo-margin');
+            }
         };
         if (logo.complete) classifyLogo();
         else logo.addEventListener('load', classifyLogo, { once: true });
