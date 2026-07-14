@@ -613,8 +613,24 @@ $previewMatrixDefault = app_logo_matrix_values($logoTintPreviewHex);
 
         <form class="card tab-panel" data-tab-panel="appearance" method="post" enctype="multipart/form-data" action="<?= htmlspecialchars($url('config/save'), ENT_QUOTES, 'UTF-8'); ?>">
             <input type="hidden" name="active_tab" value="appearance">
-            <h2>Personalização Visual</h2>
-            <p class="card-subtitle">Ajuste o título, logos e a paleta neutra usada pelo painel.</p>
+            <div class="appearance-heading">
+                <div>
+                    <h2>Personalização Visual</h2>
+                    <p class="card-subtitle">Ajuste o título, logos e a paleta neutra usada pelo painel.</p>
+                </div>
+                <div class="visual-sync-card">
+                    <div>
+                        <strong>Sincronização de visual</strong>
+                        <p>Quando ativada, todos os usuários usam a paleta selecionada pelo administrador.</p>
+                    </div>
+                    <label class="switch" for="theme-visual-sync">
+                        <input type="hidden" name="config[THEME_VISUAL_SYNC]" value="0">
+                        <input type="checkbox" id="theme-visual-sync" name="config[THEME_VISUAL_SYNC]" value="1" <?= $visualSync === '1' ? 'checked' : ''; ?>>
+                        <span class="switch-track" aria-hidden="true"></span>
+                        <span class="switch-text"><?= $visualSync === '1' ? 'Ativada' : 'Desativada'; ?></span>
+                    </label>
+                </div>
+            </div>
 
             <div class="appearance-subtabs" role="tablist" aria-label="Seções de personalização">
                 <button type="button" class="appearance-subtab active" data-appearance-tab="geral" aria-selected="true">Geral</button>
@@ -681,16 +697,16 @@ $previewMatrixDefault = app_logo_matrix_values($logoTintPreviewHex);
                         <input type="range" id="title-offset-y" name="config[THEME_TITLE_OFFSET_Y]" min="-80" max="80" value="<?= htmlspecialchars($titleOffsetY, ENT_QUOTES, 'UTF-8'); ?>">
                     </div>
                 </div>
-            </div>
-            <div class="field">
-                <span class="field-label">Cor do título</span>
-                <label class="switch" for="title-colorize">
-                    <input type="hidden" name="config[THEME_TITLE_COLORIZE]" value="0">
-                    <input type="checkbox" id="title-colorize" name="config[THEME_TITLE_COLORIZE]" value="1" <?= $titleColorize === '1' ? 'checked' : ''; ?>>
-                    <span class="switch-track" aria-hidden="true"></span>
-                    <span class="switch-text">Aplicar a cor da paleta ao título</span>
-                </label>
-                <p class="field-hint">Quando ativo, o nome do sistema utiliza a cor selecionada na paleta lateral.</p>
+                <div class="field title-settings-card__color">
+                    <span class="field-label">Cor do título</span>
+                    <label class="switch" for="title-colorize">
+                        <input type="hidden" name="config[THEME_TITLE_COLORIZE]" value="0">
+                        <input type="checkbox" id="title-colorize" name="config[THEME_TITLE_COLORIZE]" value="1" <?= $titleColorize === '1' ? 'checked' : ''; ?>>
+                        <span class="switch-track" aria-hidden="true"></span>
+                        <span class="switch-text">Aplicar a cor da paleta ao título</span>
+                    </label>
+                    <p class="field-hint">Quando ativo, o nome do sistema utiliza a cor selecionada na paleta lateral.</p>
+                </div>
             </div>
             <div class="field">
                 <span class="field-label">Filtro das logos</span>
@@ -839,19 +855,6 @@ $previewMatrixDefault = app_logo_matrix_values($logoTintPreviewHex);
                         </div>
                     </div>
                 </div>
-            </div>
-
-            <div class="visual-sync-card">
-                <div>
-                    <strong>Sincronização de visual</strong>
-                    <p>Quando ativada, todos os usuários usam a paleta selecionada pelo administrador.</p>
-                </div>
-                <label class="switch" for="theme-visual-sync">
-                    <input type="hidden" name="config[THEME_VISUAL_SYNC]" value="0">
-                    <input type="checkbox" id="theme-visual-sync" name="config[THEME_VISUAL_SYNC]" value="1" <?= $visualSync === '1' ? 'checked' : ''; ?>>
-                    <span class="switch-track" aria-hidden="true"></span>
-                    <span class="switch-text"><?= $visualSync === '1' ? 'Ativada' : 'Desativada'; ?></span>
-                </label>
             </div>
 
                 </div>
@@ -1568,7 +1571,7 @@ $previewMatrixDefault = app_logo_matrix_values($logoTintPreviewHex);
     }
     .title-settings-card {
         display: grid;
-        grid-template-columns: minmax(210px, 0.9fr) minmax(280px, 1.1fr) minmax(300px, 1.2fr);
+        grid-template-columns: minmax(190px, 0.85fr) minmax(240px, 1fr) minmax(270px, 1.1fr) minmax(250px, 1fr);
         align-items: start;
         gap: 16px;
         padding: 16px;
@@ -1946,11 +1949,22 @@ $previewMatrixDefault = app_logo_matrix_values($logoTintPreviewHex);
         background: linear-gradient(145deg, rgba(248, 250, 252, 0.94), rgba(226, 232, 240, 0.72));
         box-shadow: 0 22px 44px -34px rgba(15, 23, 42, 0.55);
     }
+    .appearance-heading {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 20px;
+    }
+    .appearance-heading > div:first-child {
+        min-width: 0;
+    }
     .visual-sync-card {
         display: flex;
         align-items: center;
         justify-content: space-between;
         gap: 12px;
+        width: min(100%, 430px);
+        flex: 0 1 430px;
         padding: 10px 12px;
         border: 1px solid color-mix(in srgb, var(--primary) 12%, rgba(148, 163, 184, 0.24));
         border-radius: 14px;
@@ -1987,9 +2001,15 @@ $previewMatrixDefault = app_logo_matrix_values($logoTintPreviewHex);
         box-shadow: 0 12px 26px -24px rgba(3, 7, 18, 0.65);
     }
     @media (max-width: 640px) {
+        .appearance-heading {
+            flex-direction: column;
+            gap: 10px;
+        }
         .visual-sync-card {
             align-items: flex-start;
             flex-direction: column;
+            width: 100%;
+            flex-basis: auto;
         }
         .visual-sync-card > div {
             align-items: flex-start;
