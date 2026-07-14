@@ -211,7 +211,7 @@ $previewMatrixDefault = app_logo_matrix_values($logoTintPreviewHex);
         <button type="button" class="tab-button" data-tab="performance" aria-selected="false">Desempenho</button>
         <button type="button" class="tab-button" data-tab="users" aria-selected="false">Usuários</button>
         <button type="button" class="tab-button" data-tab="admin" aria-selected="false">Admin</button>
-        <button type="button" class="tab-button" data-tab="appearance" aria-selected="false">Personalização visual</button>
+        <button type="button" class="tab-button tab-button--with-icon" data-tab="appearance" aria-selected="false"><span data-lucide="palette" aria-hidden="true"></span><span>Personalização visual</span></button>
         <button type="button" class="tab-button" data-tab="nota" aria-selected="false">Nota</button>
     </nav>
 
@@ -615,7 +615,7 @@ $previewMatrixDefault = app_logo_matrix_values($logoTintPreviewHex);
             <input type="hidden" name="active_tab" value="appearance">
             <div class="appearance-heading">
                 <div>
-                    <h2>Personalização Visual</h2>
+                    <h2 class="appearance-title"><span data-lucide="palette" aria-hidden="true"></span><span>Personalização Visual</span></h2>
                     <p class="card-subtitle">Ajuste o título, logos e a paleta neutra usada pelo painel.</p>
                 </div>
                 <div class="visual-sync-card">
@@ -1142,6 +1142,15 @@ $previewMatrixDefault = app_logo_matrix_values($logoTintPreviewHex);
         color: var(--text-muted);
         cursor: pointer;
         transition: background 0.2s ease, color 0.2s ease;
+    }
+    .tab-button--with-icon {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+    }
+    .tab-button--with-icon svg {
+        width: 16px;
+        height: 16px;
     }
     .tab-button.active {
         background: var(--primary);
@@ -1981,6 +1990,16 @@ $previewMatrixDefault = app_logo_matrix_values($logoTintPreviewHex);
     }
     .appearance-heading > div:first-child {
         min-width: 0;
+    }
+    .appearance-title {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+    }
+    .appearance-title svg {
+        width: 22px;
+        height: 22px;
+        color: var(--primary);
     }
     .visual-sync-card {
         display: flex;
