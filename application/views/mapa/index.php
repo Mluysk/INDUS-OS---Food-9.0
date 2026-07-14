@@ -1313,10 +1313,13 @@ foreach ($datas as $diaKey => $info) {
                 const appendBatch = () => {
                     if (activePane !== 'resumo' || index >= lines.length) return;
                     const end = Math.min(index + 6, lines.length);
+                    const addedCount = end - index;
                     tbody.insertAdjacentHTML('beforeend', lines.slice(index, end).map((line) => rowMarkup(line, dates)).join(''));
                     index = end;
                     tbody.dataset.initialCount = String(index);
-                    tbody.querySelectorAll('tr[data-produto] form:not([data-mapa-submit-bound="1"])').forEach(handleSubmit);
+                    Array.from(tbody.rows).slice(-addedCount).forEach((row) => {
+                        row.querySelectorAll('form:not([data-mapa-submit-bound="1"])').forEach(handleSubmit);
+                    });
                     if (index < lines.length) {
                         if ('requestIdleCallback' in window) {
                             window.requestIdleCallback(appendBatch, { timeout: 500 });
@@ -1523,8 +1526,11 @@ foreach ($datas as $diaKey => $info) {
                         return;
                     }
                     const end = Math.min(index + 1, linhas.length);
+                    const addedCount = end - index;
                     tbody.insertAdjacentHTML('beforeend', linhas.slice(index, end).map(rowMarkupCompact).join(''));
-                    Array.from(tbody.querySelectorAll('form.mini-form')).filter((form) => form.dataset.mapaSubmitBound !== '1').forEach(handleSubmit);
+                    Array.from(tbody.rows).slice(-addedCount).forEach((row) => {
+                        row.querySelectorAll('form.mini-form:not([data-mapa-submit-bound="1"])').forEach(handleSubmit);
+                    });
                     index = end;
                     if (index < linhas.length) {
                         if ('requestIdleCallback' in window) window.requestIdleCallback(appendCompactRows, { timeout: 1200 });
@@ -1972,7 +1978,7 @@ foreach ($datas as $diaKey => $info) {
                 bindForms();
                 focusToday();
                 applyFullMode();
-                if (activePane === 'completo' || fullRendered) {
+                if (activePane === 'completo') {
                     renderCompact();
                 }
             };
