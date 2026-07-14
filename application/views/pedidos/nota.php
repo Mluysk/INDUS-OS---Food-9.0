@@ -155,7 +155,7 @@ if ($pixEnabled && $pixKey !== '') {
 }
 $pixQrUrl = $pixPayload !== '' ? 'https://quickchart.io/qr?size=200&margin=2&text=' . urlencode($pixPayload) : '';
 ?>
-<div class="nota-shell">
+<div class="nota-shell" style="--note-logo-size: <?= (int)($notaDados['logo_size'] ?? 53); ?>px; --note-logo-x: <?= (int)($notaDados['logo_offset_x'] ?? 0); ?>px; --note-logo-y: <?= (int)($notaDados['logo_offset_y'] ?? 0); ?>px;">
     <div class="nota-head">
         <div class="nota-head__col">
             <div class="nota-logo">
@@ -312,7 +312,7 @@ $pixQrUrl = $pixPayload !== '' ? 'https://quickchart.io/qr?size=200&margin=2&tex
     .nota-head__box { border: 1px solid var(--nota-border); padding: 8px 10px; width: 100%; }
     .nota-head__box .row { display:flex; justify-content: space-between; gap: 12px; font-weight: 600; font-size:12px; }
     .nota-head__box .label { color: var(--nota-muted); }
-    .nota-logo img { height: 48px; object-fit: contain; }
+    .nota-logo img { height: var(--note-logo-size, 53px); object-fit: contain; transform: translate(var(--note-logo-x, 0), var(--note-logo-y, 0)); }
     .nota-empresa h1 { margin:0; font-size: 16px; letter-spacing: 0.02em; }
     .nota-empresa p { margin:2px 0; }
     .nota-block { display:grid; grid-template-columns:1fr 1fr; border:2px solid var(--nota-border); border-top:none; padding:10px; gap:10px; }

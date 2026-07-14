@@ -72,6 +72,9 @@ $noteSidebarLogoPath = $logoFilter === '1' ? $themeLogoDark : $themeLogoLight;
 $noteCustomLogoPath = trim((string)($noteDefaults['NOTE_LOGO'] ?? ''));
 $noteLogoCustomEnabled = ($noteDefaults['NOTE_LOGO_CUSTOM_ENABLED'] ?? '0') === '1';
 $noteLogoPath = $noteLogoCustomEnabled && $noteCustomLogoPath !== '' ? $noteCustomLogoPath : $noteSidebarLogoPath;
+$noteLogoSize = $noteDefaults['NOTE_LOGO_SIZE'] ?? '53';
+$noteLogoOffsetX = $noteDefaults['NOTE_LOGO_OFFSET_X'] ?? '0';
+$noteLogoOffsetY = $noteDefaults['NOTE_LOGO_OFFSET_Y'] ?? '0';
 $notePixEnabled = $noteDefaults['NOTE_PIX_ENABLED'] ?? '0';
 $notePixKey = $noteDefaults['NOTE_PIX_KEY'] ?? '';
 $notePixType = $noteDefaults['NOTE_PIX_KEY_TYPE'] ?? 'cnpj';
@@ -1061,6 +1064,7 @@ $previewMatrixDefault = app_logo_matrix_values($logoTintPreviewHex);
                         <img src="<?= htmlspecialchars($noteLogoUrl, ENT_QUOTES, 'UTF-8'); ?>" alt="Pré-visualização logo nota" id="preview-note" data-preview-tint>
                     </div>
                 </div>
+                <div class="note-logo-settings-row">
                 <div class="note-logo-mode">
                     <div>
                         <strong>Logo exclusiva da nota</strong>
@@ -1072,6 +1076,18 @@ $previewMatrixDefault = app_logo_matrix_values($logoTintPreviewHex);
                         <span class="switch-track" aria-hidden="true"></span>
                         <span class="switch-text"><?= $noteLogoCustomEnabled ? 'Ativada' : 'Desativada'; ?></span>
                     </label>
+                </div>
+                <div class="note-logo-tuning logo-tuners">
+                    <div class="move-key-label">Ajuste da logo</div>
+                    <label class="slider-label" for="note-logo-size">Tamanho <output id="note-logo-size-val"><?= htmlspecialchars($noteLogoSize, ENT_QUOTES, 'UTF-8'); ?>px</output></label>
+                    <input type="range" id="note-logo-size" name="config[NOTE_LOGO_SIZE]" min="24" max="140" value="<?= htmlspecialchars($noteLogoSize, ENT_QUOTES, 'UTF-8'); ?>">
+                    <div class="pos-grid">
+                        <label class="slider-label" for="note-logo-x">Posição X <output id="note-logo-x-val"><?= htmlspecialchars($noteLogoOffsetX, ENT_QUOTES, 'UTF-8'); ?>px</output></label>
+                        <input type="range" id="note-logo-x" name="config[NOTE_LOGO_OFFSET_X]" min="-80" max="80" value="<?= htmlspecialchars($noteLogoOffsetX, ENT_QUOTES, 'UTF-8'); ?>">
+                        <label class="slider-label" for="note-logo-y">Posição Y <output id="note-logo-y-val"><?= htmlspecialchars($noteLogoOffsetY, ENT_QUOTES, 'UTF-8'); ?>px</output></label>
+                        <input type="range" id="note-logo-y" name="config[NOTE_LOGO_OFFSET_Y]" min="-80" max="80" value="<?= htmlspecialchars($noteLogoOffsetY, ENT_QUOTES, 'UTF-8'); ?>">
+                    </div>
+                </div>
                 </div>
                 <div class="note-logo-custom-fields" data-note-logo-custom-fields <?= $noteLogoCustomEnabled ? '' : 'hidden'; ?>>
                 <label class="logo-label note-field-label" for="note-logo"><span data-lucide="link" aria-hidden="true"></span><span>Caminho logo da nota</span></label>
@@ -1198,6 +1214,19 @@ $previewMatrixDefault = app_logo_matrix_values($logoTintPreviewHex);
         border-radius: 12px;
         background: var(--surface);
     }
+    .note-logo-settings-row {
+        display: grid;
+        grid-template-columns: minmax(280px, 1fr) minmax(360px, 1fr);
+        align-items: stretch;
+        gap: 14px;
+    }
+    .note-logo-tuning {
+        margin-top: 0;
+        padding: 9px 10px;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        background: var(--surface);
+    }
     .note-logo-mode strong {
         color: var(--text-title);
         font-size: 0.9rem;
@@ -1213,6 +1242,11 @@ $previewMatrixDefault = app_logo_matrix_values($logoTintPreviewHex);
     }
     .note-logo-custom-fields[hidden] {
         display: none;
+    }
+    @media (max-width: 800px) {
+        .note-logo-settings-row {
+            grid-template-columns: minmax(0, 1fr);
+        }
     }
     .note-title {
         margin-bottom: 6px;
@@ -2840,6 +2874,17 @@ $previewMatrixDefault = app_logo_matrix_values($logoTintPreviewHex);
                 max: 180,
                 offsetMin: -534,
                 offsetMax: 534,
+            },
+            {
+                size: '#note-logo-size',
+                x: '#note-logo-x',
+                y: '#note-logo-y',
+                output: '#note-logo-size-val',
+                outputX: '#note-logo-x-val',
+                outputY: '#note-logo-y-val',
+                preview: '#preview-note',
+                min: 24,
+                max: 140,
             },
         ];
 

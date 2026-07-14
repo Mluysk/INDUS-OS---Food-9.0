@@ -48,6 +48,9 @@ abstract class Controller
             'logo' => 'uploads/branding/logodark.png',
             'pix_enabled' => false,
             'pix_key' => '',
+            'logo_size' => '53',
+            'logo_offset_x' => '0',
+            'logo_offset_y' => '0',
         ];
         $theme = [
             'mode' => 'light',
@@ -258,6 +261,9 @@ abstract class Controller
             $nota['site'] = $configService->get('NOTE_FABRICA_SITE', $nota['site']) ?: $nota['site'];
             $notaLogoOverride = trim((string)$configService->get('NOTE_LOGO', ''));
             $notaLogoCustomEnabled = $configService->get('NOTE_LOGO_CUSTOM_ENABLED', '0') === '1';
+            $nota['logo_size'] = (string)max(24, min(140, (int)$configService->get('NOTE_LOGO_SIZE', '53')));
+            $nota['logo_offset_x'] = (string)max(-80, min(80, (int)$configService->get('NOTE_LOGO_OFFSET_X', '0')));
+            $nota['logo_offset_y'] = (string)max(-80, min(80, (int)$configService->get('NOTE_LOGO_OFFSET_Y', '0')));
             $pixEnabled = $configService->get('NOTE_PIX_ENABLED', '0') === '1';
             $pixKey = trim((string)$configService->get('NOTE_PIX_KEY', ''));
             $pixType = strtolower((string)$configService->get('NOTE_PIX_KEY_TYPE', 'cnpj'));

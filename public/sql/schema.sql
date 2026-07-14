@@ -389,6 +389,9 @@ INSERT INTO configuracoes (chave, valor) VALUES
 ('NOTE_FABRICA_SITE','indusos.com.br'),
  ('NOTE_LOGO','img/logo.png'),
  ('NOTE_LOGO_CUSTOM_ENABLED','0'),
+ ('NOTE_LOGO_SIZE','53'),
+ ('NOTE_LOGO_OFFSET_X','0'),
+ ('NOTE_LOGO_OFFSET_Y','0'),
  ('NOTE_PIX_ENABLED','0'),
  ('NOTE_PIX_KEY',''),
  ('NOTE_PIX_KEY_TYPE','cnpj')
