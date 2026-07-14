@@ -615,7 +615,7 @@ $previewMatrixDefault = app_logo_matrix_values($logoTintPreviewHex);
             <input type="hidden" name="active_tab" value="appearance">
             <div class="appearance-heading">
                 <div>
-                    <h2 class="appearance-title"><span data-lucide="palette" aria-hidden="true"></span><span>Personalização Visual</span></h2>
+                    <h2 class="module-section-title appearance-title"><span class="module-section-title-icon" aria-hidden="true"><span data-lucide="palette"></span></span><span>Personalização Visual</span></h2>
                     <p class="card-subtitle">Ajuste o título, logos e a paleta neutra usada pelo painel.</p>
                 </div>
                 <div class="visual-sync-card">
@@ -1992,14 +1992,10 @@ $previewMatrixDefault = app_logo_matrix_values($logoTintPreviewHex);
         min-width: 0;
     }
     .appearance-title {
-        display: flex;
-        align-items: center;
-        gap: 9px;
+        margin-bottom: 6px;
     }
-    .appearance-title svg {
-        width: 22px;
-        height: 22px;
-        color: var(--primary);
+    .appearance-heading .card-subtitle {
+        margin: 0 0 6px;
     }
     .visual-sync-card {
         display: flex;
