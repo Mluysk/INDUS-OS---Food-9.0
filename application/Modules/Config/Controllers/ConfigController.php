@@ -101,13 +101,13 @@ class ConfigController extends Controller
             'THEME_LOGO_FILTER' => $this->config->get('THEME_LOGO_FILTER', '0') === '1' ? '1' : '0',
             'PORTAL_LOGIN_LOGO_LIGHT' => $this->config->get('PORTAL_LOGIN_LOGO_LIGHT', $this->config->get('THEME_LOGO_LIGHT', 'uploads/branding/logodark.png')) ?: 'uploads/branding/logodark.png',
             'PORTAL_LOGIN_LOGO_DARK' => $this->config->get('PORTAL_LOGIN_LOGO_DARK', $this->config->get('THEME_LOGO_DARK', 'uploads/branding/logowhite.png')) ?: 'uploads/branding/logowhite.png',
-            'PORTAL_LOGIN_LOGO_LIGHT_SIZE' => $this->config->get('PORTAL_LOGIN_LOGO_LIGHT_SIZE', '60') ?: '60',
-            'PORTAL_LOGIN_LOGO_DARK_SIZE' => $this->config->get('PORTAL_LOGIN_LOGO_DARK_SIZE', '60') ?: '60',
+            'PORTAL_LOGIN_LOGO_LIGHT_SIZE' => $this->config->get('PORTAL_LOGIN_LOGO_LIGHT_SIZE', '69') ?: '69',
+            'PORTAL_LOGIN_LOGO_DARK_SIZE' => $this->config->get('PORTAL_LOGIN_LOGO_DARK_SIZE', '69') ?: '69',
             'PORTAL_LOGIN_LOGO_LIGHT_OFFSET_X' => $this->config->get('PORTAL_LOGIN_LOGO_LIGHT_OFFSET_X', '0') ?: '0',
             'PORTAL_LOGIN_LOGO_LIGHT_OFFSET_Y' => $this->config->get('PORTAL_LOGIN_LOGO_LIGHT_OFFSET_Y', '0') ?: '0',
             'PORTAL_LOGIN_LOGO_DARK_OFFSET_X' => $this->config->get('PORTAL_LOGIN_LOGO_DARK_OFFSET_X', '0') ?: '0',
             'PORTAL_LOGIN_LOGO_DARK_OFFSET_Y' => $this->config->get('PORTAL_LOGIN_LOGO_DARK_OFFSET_Y', '0') ?: '0',
-            'PORTAL_LOGIN_LOGO_FILTER' => $this->config->get('PORTAL_LOGIN_LOGO_FILTER', '0') === '1' ? '1' : '0',
+            'PORTAL_LOGIN_LOGO_FILTER' => $this->config->get('PORTAL_LOGIN_LOGO_FILTER', '1') === '1' ? '1' : '0',
             'NOTIFICATION_POPUP_SECONDS' => $this->config->get('NOTIFICATION_POPUP_SECONDS', '3') ?: '3',
         ];
 

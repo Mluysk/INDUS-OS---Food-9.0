@@ -1,0 +1,5 @@
+INSERT INTO configuracoes (chave, valor) VALUES
+    ('PORTAL_LOGIN_LOGO_LIGHT_SIZE', '69'),
+    ('PORTAL_LOGIN_LOGO_DARK_SIZE', '69'),
+    ('PORTAL_LOGIN_LOGO_FILTER', '1')
+ON DUPLICATE KEY UPDATE valor = VALUES(valor);

@@ -78,13 +78,13 @@ abstract class Controller
             'logo_compact_dark_offset_y' => '0',
             'portal_login_logo_light' => 'uploads/branding/logodark.png',
             'portal_login_logo_dark' => 'uploads/branding/logowhite.png',
-            'portal_login_logo_light_size' => '60',
-            'portal_login_logo_dark_size' => '60',
+            'portal_login_logo_light_size' => '69',
+            'portal_login_logo_dark_size' => '69',
             'portal_login_logo_light_offset_x' => '0',
             'portal_login_logo_light_offset_y' => '0',
             'portal_login_logo_dark_offset_x' => '0',
             'portal_login_logo_dark_offset_y' => '0',
-            'portal_login_logo_filter' => '0',
+            'portal_login_logo_filter' => '1',
             'notification_popup_seconds' => '3',
         ];
         $quickActionDefaults = [
