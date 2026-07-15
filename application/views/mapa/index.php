@@ -1906,7 +1906,7 @@ foreach ($datas as $diaKey => $info) {
                 };
             };
 
-            const clearBulkForm = () => {
+            const clearBulkForm = (preservedType = null) => {
                 const form = document.querySelector('.mapa .form-card');
                 if (!form) return;
                 const produto = form.querySelector('#produto_id');
@@ -1915,6 +1915,7 @@ foreach ($datas as $diaKey => $info) {
                 const quantidade = form.querySelector('#quantidade');
                 const obs = form.querySelector('#observacao');
                 const tipos = form.querySelectorAll('input[name="tipo"]');
+                const selectedType = preservedType || form.querySelector('input[name="tipo"]:checked')?.value || 'planejado';
                 if (produto) {
                     produto.value = '';
                     produto.dispatchEvent(new Event('change'));
@@ -1924,7 +1925,7 @@ foreach ($datas as $diaKey => $info) {
                 if (quantidade) quantidade.value = '';
                 if (obs) obs.value = '';
                 if (tipos?.length) {
-                    tipos.forEach((t) => { t.checked = t.value === 'planejado'; });
+                    tipos.forEach((t) => { t.checked = t.value === selectedType; });
                 }
                 form.querySelector('input[name="consumir_receita"]')?.removeAttribute('checked');
                 const consume = form.querySelector('input[name="consumir_receita"]');
@@ -2056,7 +2057,7 @@ foreach ($datas as $diaKey => $info) {
                                 }
                             }).catch((err) => showToast(err.message || 'Erro ao sincronizar o mapa', 'error'));
                         window.setTimeout(syncInBackground, 250);
-                        if (bulkSnapshot) clearBulkForm();
+                        if (bulkSnapshot) clearBulkForm(bulkSnapshot.tipo);
                         showToast(payload.message || 'Salvo');
                     }).catch((err) => {
                         showToast(err.message || 'Erro ao registrar', 'error');
