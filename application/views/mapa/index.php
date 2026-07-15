@@ -288,6 +288,8 @@ foreach ($datas as $diaKey => $info) {
         .mapa .form-card .form-row-full { grid-column: 1 / -1; }
         .mapa .form-card .form-row-actions { grid-column: 1 / -1; }
         .mapa .map-card-filter { margin: 12px 0; padding: 14px; border: 1px solid var(--border); border-radius: 16px; background: var(--surface); display: grid; grid-template-columns: minmax(0, 1fr) minmax(210px, 0.34fr) auto; gap: 10px; align-items: end; }
+        .mapa .map-card-filter__title { grid-column: 1 / -1; display: flex; align-items: center; gap: 9px; margin: 0 0 4px; color: var(--text); font-size: 1.05rem; font-weight: 850; letter-spacing: -0.01em; }
+        .mapa .map-card-filter__title .quick-entry-icon svg { width: 22px; height: 22px; }
         .mapa .map-card-filter__field { display: grid; gap: 6px; margin: 0; }
         .mapa .map-card-filter__label { display: inline-flex; align-items: center; gap: 7px; margin: 0; font-size: 0.84rem; font-weight: 800; color: var(--text); }
         .mapa .map-card-filter__label svg { width: 17px; height: 17px; color: var(--primary); }
@@ -721,10 +723,15 @@ foreach ($datas as $diaKey => $info) {
     </script>
 
     <section class="map-card-filter" aria-label="Busca rápida nos produtos do mapa">
+        <h3 class="map-card-filter__title">
+            <span class="quick-entry-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8.5" cy="10" r="5"></circle><path d="m12.3 13.8 3.1 3.1"></path><path d="m19 2-5 8h4l-2 7 6-9h-4l1-6Z"></path></svg>
+            </span>
+            <span>Busca rápida</span>
+        </h3>
         <label class="map-card-filter__field" for="map-card-search">
             <span class="map-card-filter__label">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>
-                Busca rápida
+                Produto
             </span>
             <span class="map-card-filter__control">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>
