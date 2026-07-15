@@ -178,6 +178,9 @@ foreach ($datas as $diaKey => $info) {
         .mapa .compact-th .feriado-toggle { width: 100%; box-sizing: border-box; justify-content: flex-start; padding: 9px 14px; border-radius: 12px; }
         .mapa .compact-th small { color: var(--text-muted); font-size: 0.78rem; }
         .mapa .compact-th .compact-media { display: inline-flex; align-items: center; justify-content: center; justify-self: center; padding: 4px 10px; border-radius: 12px; background: linear-gradient(135deg, rgba(11,116,255,0.08), rgba(11,116,255,0.16)); color: #0b74ff; font-weight: 800; font-size: 0.82rem; border: 1px solid rgba(11,116,255,0.22); box-shadow: 0 6px 14px rgba(11,116,255,0.12); white-space: nowrap; }
+        .mapa .map-product-column-title { min-height: 72px; display: grid; place-content: center; justify-items: center; gap: 7px; padding: 7px; color: var(--text); font-size: 0.82rem; font-weight: 850; text-transform: uppercase; letter-spacing: 0.035em; }
+        .mapa .map-product-column-title__icon { width: 32px; height: 32px; display: grid; place-items: center; border-radius: 10px; background: color-mix(in srgb, var(--primary) 14%, transparent); color: var(--primary); }
+        .mapa .map-product-column-title__icon svg { width: 18px; height: 18px; }
         .mapa .compact-cell { display: grid; gap: 8px; min-width: 360px; padding: 10px; border: 1px solid var(--border); border-radius: 14px; background: var(--surface); box-shadow: var(--shadow-soft); }
         .mapa .compact-cell.hoje { background: linear-gradient(180deg, rgba(11,116,255,0.05), rgba(11,116,255,0.02)); border-color: rgba(11,116,255,0.28); box-shadow: 0 10px 24px rgba(11,116,255,0.12); }
         .mapa .compact-status { margin-top: 12px; padding: 10px 12px; border-radius: 14px; background: var(--surface-alt); border: 1px solid var(--border); box-shadow: var(--shadow-soft); display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
@@ -765,7 +768,7 @@ foreach ($datas as $diaKey => $info) {
             <table>
                 <thead>
                     <tr>
-                        <th class="col-produto">Produto</th>
+                        <th class="col-produto"><span class="map-product-column-title"><span class="map-product-column-title__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"></path><path d="m3.3 7 8.7 5 8.7-5M12 22V12"></path></svg></span><span>Produto</span></span></th>
                         <?php foreach ($visibleDatas as $dia => $info): $isHoje = !empty($info['is_hoje']); ?>
                             <th class="<?= $isHoje ? 'dia-col-hoje' : ''; ?>">
                                     <div class="dia-header<?= $isHoje ? ' hoje' : ''; ?>" data-dia-header="<?= htmlspecialchars($dia, ENT_QUOTES, 'UTF-8'); ?>">
@@ -981,7 +984,7 @@ foreach ($datas as $diaKey => $info) {
                     $fmtInt = static function ($num) {
                         return number_format((float)$num, 0, ',', '.');
                     };
-                    $compactHeader = '<th class="compact-prod">Produto</th>';
+                    $compactHeader = '<th class="compact-prod"><span class="map-product-column-title"><span class="map-product-column-title__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"></path><path d="m3.3 7 8.7 5 8.7-5M12 22V12"></path></svg></span><span>Produto</span></span></th>';
                     foreach (array_keys($compactDatas) as $dia) {
                         $info = $compactDatas[$dia];
                         $mediaDia = number_format((float)($info['media_conclusao'] ?? 0), 1, ',', '');
@@ -1409,7 +1412,7 @@ foreach ($datas as $diaKey => $info) {
                 if (!nav || !headRow || !tbody) return;
 
                 nav.innerHTML = datas.map((dia) => navChipMarkup(dia, mapaState.datas[dia])).join('');
-                headRow.innerHTML = '<th class="col-produto">Produto</th>' + datas.map((dia) => headerCellMarkup(dia, mapaState.datas[dia])).join('');
+                headRow.innerHTML = '<th class="col-produto"><span class="map-product-column-title"><span class="map-product-column-title__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"></path><path d="m3.3 7 8.7 5 8.7-5M12 22V12"></path></svg></span><span>Produto</span></span></th>' + datas.map((dia) => headerCellMarkup(dia, mapaState.datas[dia])).join('');
 
                 const lines = filteredDailyLines();
                 const initialCount = Math.min(3, lines.length);
@@ -1633,7 +1636,7 @@ foreach ($datas as $diaKey => $info) {
                     wrap.innerHTML = `<div class="compact-empty">Nenhum registro para ${compactMonth}. Ajuste o mês ou adicione lançamentos.</div>`;
                     return;
                 }
-                const header = ['<th class="compact-prod">Produto</th>'];
+                const header = ['<th class="compact-prod"><span class="map-product-column-title"><span class="map-product-column-title__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"></path><path d="m3.3 7 8.7 5 8.7-5M12 22V12"></path></svg></span><span>Produto</span></span></th>'];
                 datas.forEach((dia) => {
                     const info = data.datas[dia] || {};
                     const media = Number(info.media_conclusao || 0).toFixed(1).replace('.', ',');
