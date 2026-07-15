@@ -210,10 +210,15 @@ foreach ($datas as $diaKey => $info) {
             contain: layout paint;
             overscroll-behavior: contain auto;
             -webkit-overflow-scrolling: touch;
+            scroll-behavior: auto;
+            scrollbar-gutter: stable;
         }
         .mapa .map-pane[data-map-pane="completo"] tbody tr {
             content-visibility: auto;
             contain-intrinsic-size: 170px;
+        }
+        .mapa .map-pane[data-map-pane="completo"] .compact-day-card {
+            contain: layout paint style;
         }
         .mapa .map-pane[data-map-pane="resumo"] .table-wrap,
         .mapa .map-pane[data-map-pane="resumo"] .nav-dias {
@@ -246,6 +251,22 @@ foreach ($datas as $diaKey => $info) {
             transition: none !important;
             box-shadow: none !important;
         }
+        .mapa.is-scrolling .map-pane[data-map-pane="completo"] .compact-grid tbody,
+        .mapa.is-scrolling .map-pane[data-map-pane="completo"] .compact-grid thead {
+            pointer-events: none;
+        }
+        .mapa.is-scrolling .map-pane[data-map-pane="completo"] .compact-day-card,
+        .mapa.is-scrolling .map-pane[data-map-pane="completo"] .compact-th {
+            background-image: none !important;
+            background-color: var(--surface) !important;
+        }
+        .mapa.is-scrolling .map-pane[data-map-pane="completo"] .metric-chip.saida { background: #f9b4c0 !important; }
+        .mapa.is-scrolling .map-pane[data-map-pane="completo"] .metric-chip.producao { background: #d8c2ff !important; }
+        .mapa.is-scrolling .map-pane[data-map-pane="completo"] .metric-chip.entrada { background: #bfe5ff !important; }
+        .mapa.is-scrolling .map-pane[data-map-pane="completo"] .metric-chip.estoque { background: #b4f0cc !important; }
+        .mapa.is-scrolling .map-pane[data-map-pane="completo"] .metric-chip.estoque.negativo { background: #f9b4c0 !important; }
+        .mapa.is-scrolling .map-pane[data-map-pane="completo"] .metric-chip.estoque.zerado { background: #fde68a !important; }
+        .mapa.is-scrolling .map-pane[data-map-pane="completo"] .metric-chip.estoque.baixo { background: #fdba74 !important; }
         .mapa .hint { color: var(--text-muted); font-size: 0.9rem; margin: 0; }
         .mapa .form-card { position: relative; z-index: 30; overflow: visible; background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 14px; box-shadow: var(--shadow-card); display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 0.75fr) minmax(0, 0.75fr) minmax(0, 2.2fr); gap: 6px; align-items: end; }
         .mapa .form-card-title { grid-column: 1 / 4; display: flex; align-items: center; gap: 9px; margin: 0 0 4px; color: var(--text); font-size: 1.05rem; font-weight: 850; letter-spacing: -0.01em; transform: translateY(-16px); }
@@ -1102,7 +1123,7 @@ foreach ($datas as $diaKey => $info) {
                     window.clearTimeout(timeoutId);
                     timeoutId = window.setTimeout(() => {
                         root.classList.remove('is-scrolling');
-                    }, 140);
+                    }, 220);
                 };
                 document.querySelectorAll('.map-pane[data-map-pane="resumo"] .table-wrap, .map-pane[data-map-pane="resumo"] .nav-dias, .map-pane[data-map-pane="completo"] .compact-table').forEach((el) => {
                     el.addEventListener('scroll', markScrolling, { passive: true });
