@@ -179,8 +179,8 @@ foreach ($datas as $diaKey => $info) {
         .mapa .compact-th small { color: var(--text-muted); font-size: 0.78rem; }
         .mapa .compact-th .compact-media { display: inline-flex; align-items: center; justify-content: center; justify-self: center; padding: 4px 10px; border-radius: 12px; background: linear-gradient(135deg, rgba(11,116,255,0.08), rgba(11,116,255,0.16)); color: #0b74ff; font-weight: 800; font-size: 0.82rem; border: 1px solid rgba(11,116,255,0.22); box-shadow: 0 6px 14px rgba(11,116,255,0.12); white-space: nowrap; }
         .mapa .map-product-column-title { min-height: 72px; display: grid; place-content: center; justify-items: center; gap: 7px; padding: 7px; color: var(--text); font-size: 0.82rem; font-weight: 850; text-transform: uppercase; letter-spacing: 0.035em; }
-        .mapa .map-product-column-title__icon { width: 32px; height: 32px; display: grid; place-items: center; border-radius: 10px; background: color-mix(in srgb, var(--primary) 14%, transparent); color: var(--primary); }
-        .mapa .map-product-column-title__icon svg { width: 18px; height: 18px; }
+        .mapa .map-product-column-title__icon { width: 39px; height: 39px; display: grid; place-items: center; border-radius: 12px; background: #e2e8f0; color: #64748b; }
+        .mapa .map-product-column-title__icon svg { width: 22px; height: 22px; }
         .mapa .compact-cell { display: grid; gap: 8px; min-width: 360px; padding: 10px; border: 1px solid var(--border); border-radius: 14px; background: var(--surface); box-shadow: var(--shadow-soft); }
         .mapa .compact-cell.hoje { background: linear-gradient(180deg, rgba(11,116,255,0.05), rgba(11,116,255,0.02)); border-color: rgba(11,116,255,0.28); box-shadow: 0 10px 24px rgba(11,116,255,0.12); }
         .mapa .compact-status { margin-top: 12px; padding: 10px 12px; border-radius: 14px; background: var(--surface-alt); border: 1px solid var(--border); box-shadow: var(--shadow-soft); display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
