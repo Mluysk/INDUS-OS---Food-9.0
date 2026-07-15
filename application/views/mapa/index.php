@@ -217,6 +217,10 @@ foreach ($datas as $diaKey => $info) {
         .mapa .map-pane[data-map-pane="completo"] * {
             box-shadow: none !important;
         }
+        .mapa .map-pane[data-map-pane="resumo"],
+        .mapa .map-pane[data-map-pane="resumo"] * {
+            box-shadow: none !important;
+        }
         .mapa .map-pane[data-map-pane="completo"] tbody tr {
             content-visibility: auto;
             contain-intrinsic-size: 170px;
