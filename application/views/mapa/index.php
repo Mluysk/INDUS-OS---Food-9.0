@@ -1073,6 +1073,7 @@ foreach ($datas as $diaKey => $info) {
             let compactRowsObserver = null;
             let dailyRenderToken = 0;
             let dailyRowsObserver = null;
+            let dailyScrollHandler = null;
             const compactMonthCache = new Map();
             const compactMonthCacheLimit = 3;
             const rememberCompactMonth = (month, payload) => {
@@ -1349,6 +1350,10 @@ foreach ($datas as $diaKey => $info) {
                 let index = Number(tbody.dataset.initialCount || tbody.querySelectorAll('tr[data-produto]').length || 0);
                 dailyRowsObserver?.disconnect();
                 dailyRowsObserver = null;
+                if (dailyScrollHandler) {
+                    window.removeEventListener('scroll', dailyScrollHandler);
+                    dailyScrollHandler = null;
+                }
                 const token = ++dailyRenderToken;
                 tbody.querySelector('[data-daily-row-sentinel]')?.remove();
                 if (index >= lines.length) return;
@@ -1379,6 +1384,10 @@ foreach ($datas as $diaKey => $info) {
                     if (index >= lines.length) {
                         dailyRowsObserver?.disconnect();
                         dailyRowsObserver = null;
+                        if (dailyScrollHandler) {
+                            window.removeEventListener('scroll', dailyScrollHandler);
+                            dailyScrollHandler = null;
+                        }
                         sentinel.remove();
                     } else {
                         window.requestAnimationFrame(() => {
@@ -1389,8 +1398,21 @@ foreach ($datas as $diaKey => $info) {
                 if ('IntersectionObserver' in window) {
                     dailyRowsObserver = new IntersectionObserver((entries) => {
                         if (entries.some((entry) => entry.isIntersecting)) appendBatch();
-                    }, { root: null, rootMargin: '700px 0px', threshold: 0 });
+                    }, { root: null, rootMargin: '1400px 0px', threshold: 0 });
                     dailyRowsObserver.observe(sentinel);
+                    let dailyScrollTicking = false;
+                    dailyScrollHandler = () => {
+                        if (dailyScrollTicking || token !== dailyRenderToken || !sentinel.isConnected) return;
+                        dailyScrollTicking = true;
+                        window.requestAnimationFrame(() => {
+                            dailyScrollTicking = false;
+                            if (sentinel.isConnected && sentinel.getBoundingClientRect().top < window.innerHeight + 1400) {
+                                appendBatch();
+                            }
+                        });
+                    };
+                    window.addEventListener('scroll', dailyScrollHandler, { passive: true });
+                    window.setTimeout(dailyScrollHandler, 0);
                 } else {
                     const appendFallbackRows = () => {
                         appendBatch();
