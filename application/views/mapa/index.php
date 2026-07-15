@@ -1070,6 +1070,7 @@ foreach ($datas as $diaKey => $info) {
             let activePane = fullMode || window.location.hash === '#completo' ? 'completo' : 'resumo';
             let fullRendered = false;
             let compactRenderToken = 0;
+            let compactRowsObserver = null;
             const compactMonthCache = new Map();
             const compactMonthCacheLimit = 3;
             const rememberCompactMonth = (month, payload) => {
@@ -1540,8 +1541,14 @@ foreach ($datas as $diaKey => $info) {
                 };
 
                 const token = ++compactRenderToken;
-                const initialCount = Math.min(1, linhas.length);
-                wrap.innerHTML = `<div class="compact-grid"><table><thead><tr>${header.join('')}</tr></thead><tbody>${linhas.slice(0, initialCount).map(rowMarkupCompact).join('')}</tbody></table></div>`;
+                compactRowsObserver?.disconnect();
+                compactRowsObserver = null;
+                const initialCount = Math.min(2, linhas.length);
+                const hasRemainingRows = initialCount < linhas.length;
+                const sentinelMarkup = hasRemainingRows
+                    ? `<tr data-compact-row-sentinel><td colspan="${datas.length + 1}" style="height:1px;padding:0;border:0;"></td></tr>`
+                    : '';
+                wrap.innerHTML = `<div class="compact-grid"><table><thead><tr>${header.join('')}</tr></thead><tbody>${linhas.slice(0, initialCount).map(rowMarkupCompact).join('')}${sentinelMarkup}</tbody></table></div>`;
                 fullRendered = true;
                 if (yearLabel) yearLabel.textContent = compactYear;
                 const hojeTh = wrap.querySelector('.compact-grid th.hoje');
@@ -1552,25 +1559,56 @@ foreach ($datas as $diaKey => $info) {
                 const tbody = wrap.querySelector('.compact-grid tbody');
                 tbody?.querySelectorAll('form.mini-form').forEach(handleSubmit);
                 let index = initialCount;
+                const sentinel = tbody?.querySelector('[data-compact-row-sentinel]');
                 const appendCompactRows = () => {
                     if (token !== compactRenderToken || !tbody?.isConnected || index >= linhas.length) return;
                     if (document.querySelector('.mapa')?.classList.contains('is-scrolling')) {
                         window.setTimeout(appendCompactRows, 120);
                         return;
                     }
-                    const end = Math.min(index + 1, linhas.length);
+                    const end = Math.min(index + 2, linhas.length);
                     const addedCount = end - index;
-                    tbody.insertAdjacentHTML('beforeend', linhas.slice(index, end).map(rowMarkupCompact).join(''));
-                    Array.from(tbody.rows).slice(-addedCount).forEach((row) => {
+                    if (sentinel?.isConnected) {
+                        sentinel.insertAdjacentHTML('beforebegin', linhas.slice(index, end).map(rowMarkupCompact).join(''));
+                    }
+                    const addedRows = [];
+                    let previousRow = sentinel?.previousElementSibling;
+                    for (let i = 0; i < addedCount && previousRow; i += 1) {
+                        addedRows.unshift(previousRow);
+                        previousRow = previousRow.previousElementSibling;
+                    }
+                    addedRows.forEach((row) => {
                         row.querySelectorAll('form.mini-form:not([data-mapa-submit-bound="1"])').forEach(handleSubmit);
                     });
                     index = end;
-                    if (index < linhas.length) {
-                        if ('requestIdleCallback' in window) window.requestIdleCallback(appendCompactRows, { timeout: 1200 });
-                        else window.setTimeout(appendCompactRows, 48);
+                    if (index >= linhas.length) {
+                        compactRowsObserver?.disconnect();
+                        compactRowsObserver = null;
+                        sentinel?.remove();
+                    } else {
+                        window.requestAnimationFrame(() => {
+                            if (sentinel?.isConnected && sentinel.getBoundingClientRect().top < window.innerHeight + 700) {
+                                appendCompactRows();
+                            }
+                        });
                     }
                 };
-                if (index < linhas.length) window.setTimeout(appendCompactRows, 0);
+                if (sentinel && index < linhas.length) {
+                    if ('IntersectionObserver' in window) {
+                        compactRowsObserver = new IntersectionObserver((entries) => {
+                            if (entries.some((entry) => entry.isIntersecting)) appendCompactRows();
+                        }, { root: null, rootMargin: '700px 0px', threshold: 0 });
+                        compactRowsObserver.observe(sentinel);
+                    } else {
+                        const appendFallbackRows = () => {
+                            appendCompactRows();
+                            if (token === compactRenderToken && index < linhas.length) {
+                                window.setTimeout(appendFallbackRows, 64);
+                            }
+                        };
+                        window.setTimeout(appendFallbackRows, 0);
+                    }
+                }
             };
 
             const applyStatus = () => {
