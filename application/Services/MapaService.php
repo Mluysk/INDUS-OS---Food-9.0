@@ -186,6 +186,7 @@ class MapaService
                 'id' => $produtoId,
                 'sku' => $produto['sku'] ?? '—',
                 'nome' => $produto['nome'] ?? '',
+                'categoria' => $produto['categoria'] ?? '',
                 'estoque' => $estoque['estoque'],
                 'reservado' => $estoque['reservado'],
                 'dias' => $diasLinha,

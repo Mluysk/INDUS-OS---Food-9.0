@@ -1,6 +1,11 @@
 <?php
 $datas = $mapa['datas'] ?? [];
 $linhas = $mapa['linhas'] ?? [];
+$mapaCategorias = array_values(array_unique(array_filter(array_map(
+    static fn(array $linha): string => trim((string)($linha['categoria'] ?? '')),
+    $linhas
+), static fn(string $categoria): bool => $categoria !== '')));
+sort($mapaCategorias, SORT_NATURAL | SORT_FLAG_CASE);
 $initialDailyLimit = 3;
 $initialDailyLines = array_slice($linhas, 0, $initialDailyLimit);
 $hoje = $mapa['hoje'] ?? date('Y-m-d');
@@ -282,6 +287,15 @@ foreach ($datas as $diaKey => $info) {
         .mapa .quick-entry-icon svg { width: 21px; height: 21px; }
         .mapa .form-card .form-row-full { grid-column: 1 / -1; }
         .mapa .form-card .form-row-actions { grid-column: 1 / -1; }
+        .mapa .map-card-filter { margin: 12px 0; padding: 14px; border: 1px solid var(--border); border-radius: 16px; background: var(--surface); display: grid; grid-template-columns: minmax(0, 1fr) minmax(210px, 0.34fr) auto; gap: 10px; align-items: end; }
+        .mapa .map-card-filter__field { display: grid; gap: 6px; margin: 0; }
+        .mapa .map-card-filter__label { display: inline-flex; align-items: center; gap: 7px; margin: 0; font-size: 0.84rem; font-weight: 800; color: var(--text); }
+        .mapa .map-card-filter__label svg { width: 17px; height: 17px; color: var(--primary); }
+        .mapa .map-card-filter__control { position: relative; display: block; }
+        .mapa .map-card-filter__control > svg { position: absolute; left: 12px; top: 50%; width: 18px; height: 18px; color: var(--text-muted); transform: translateY(-50%); pointer-events: none; }
+        .mapa .map-card-filter__control input,
+        .mapa .map-card-filter__control select { min-height: 42px; margin: 0; padding-left: 40px !important; }
+        .mapa .map-card-filter__meta { min-height: 42px; display: inline-flex; align-items: center; justify-content: center; padding: 0 14px; border: 1px solid var(--border); border-radius: 12px; background: var(--surface-alt); color: var(--text-muted); font-size: 0.86rem; font-weight: 750; white-space: nowrap; }
         .mapa label { display: block; font-weight: 800; color: var(--text); margin-bottom: 6px; font-size: 1rem; }
         .mapa input[type="text"], .mapa input[type="number"], .mapa input[type="date"], .mapa select, .mapa textarea { width: 100%; border: 1px solid var(--border); background: var(--surface-alt); color: var(--text); border-radius: 10px; padding: 9px 10px; box-sizing: border-box; }
         .mapa .map-product-search { position: relative; }
@@ -475,6 +489,8 @@ foreach ($datas as $diaKey => $info) {
             .mapa .registro-meta > .choice { transform: none; }
             .mapa .registro-meta > .hint { transform: none; }
             .mapa .form-card .actions { position: static; margin-top: 12px; }
+            .mapa .map-card-filter { grid-template-columns: 1fr; }
+            .mapa .map-card-filter__meta { justify-content: flex-start; }
         }
         @media (max-width: 620px) {
             .mapa .registro-meta > .hint { flex-direction: column; }
@@ -696,6 +712,35 @@ foreach ($datas as $diaKey => $info) {
             }, true);
         })();
     </script>
+
+    <section class="map-card-filter" aria-label="Busca rápida nos produtos do mapa">
+        <label class="map-card-filter__field" for="map-card-search">
+            <span class="map-card-filter__label">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>
+                Busca rápida
+            </span>
+            <span class="map-card-filter__control">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>
+                <input id="map-card-search" type="search" autocomplete="off" placeholder="Buscar por nome ou código do produto">
+            </span>
+        </label>
+        <label class="map-card-filter__field" for="map-card-category">
+            <span class="map-card-filter__label">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18"></path><path d="M7 12h10"></path><path d="M10 18h4"></path></svg>
+                Categoria
+            </span>
+            <span class="map-card-filter__control">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 7h-9"></path><path d="M14 17H5"></path><circle cx="17" cy="17" r="3"></circle><circle cx="7" cy="7" r="3"></circle></svg>
+                <select id="map-card-category">
+                    <option value="">Todas as categorias</option>
+                    <?php foreach ($mapaCategorias as $categoria): ?>
+                        <option value="<?= htmlspecialchars($categoria, ENT_QUOTES, 'UTF-8'); ?>"><?= htmlspecialchars($categoria, ENT_QUOTES, 'UTF-8'); ?></option>
+                    <?php endforeach; ?>
+                </select>
+            </span>
+        </label>
+        <div class="map-card-filter__meta" id="map-card-filter-count" aria-live="polite"><?= count($linhas); ?> produtos</div>
+    </section>
 
     <div class="grid-card">
         <div class="table-wrap">
@@ -1104,6 +1149,22 @@ foreach ($datas as $diaKey => $info) {
             const integerFormatter = new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
             const decimalFormatter = new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
             const fmtInt = (num) => integerFormatter.format(Number(num || 0));
+            const mapCardSearch = document.getElementById('map-card-search');
+            const mapCardCategory = document.getElementById('map-card-category');
+            const mapCardFilterCount = document.getElementById('map-card-filter-count');
+            const normalizeMapFilter = (value) => String(value || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
+            const filteredDailyLines = () => {
+                const term = normalizeMapFilter(mapCardSearch?.value);
+                const category = normalizeMapFilter(mapCardCategory?.value);
+                return (mapaState.linhas || []).filter((linha) => {
+                    const text = normalizeMapFilter(`${linha.sku || ''} ${linha.nome || ''}`);
+                    const itemCategory = normalizeMapFilter(linha.categoria || '');
+                    return (!term || text.includes(term)) && (!category || itemCategory === category);
+                });
+            };
+            const updateMapCardFilterCount = (count) => {
+                if (mapCardFilterCount) mapCardFilterCount.textContent = `${count} ${count === 1 ? 'produto' : 'produtos'}`;
+            };
             const fmtDate = (dia) => {
                 const [y, m, d] = dia.split('-');
                 return `${d}/${m}`;
@@ -1332,19 +1393,20 @@ foreach ($datas as $diaKey => $info) {
                 nav.innerHTML = datas.map((dia) => navChipMarkup(dia, mapaState.datas[dia])).join('');
                 headRow.innerHTML = '<th class="col-produto">Produto</th>' + datas.map((dia) => headerCellMarkup(dia, mapaState.datas[dia])).join('');
 
-                const lines = mapaState.linhas || [];
+                const lines = filteredDailyLines();
                 const initialCount = Math.min(3, lines.length);
                 const linhasHtml = lines.slice(0, initialCount).map((linha) => rowMarkup(linha, datas)).join('');
 
-                tbody.innerHTML = linhasHtml || `<tr><td class="col-produto" colspan="${1 + datas.length}" style="text-align:center; padding: 28px 12px;">Nenhum produto acabado cadastrado ainda.</td></tr>`;
+                tbody.innerHTML = linhasHtml || `<tr><td class="col-produto" colspan="${1 + datas.length}" style="text-align:center; padding: 28px 12px;">Nenhum produto encontrado para esta busca.</td></tr>`;
                 tbody.dataset.initialCount = String(initialCount);
+                updateMapCardFilterCount(lines.length);
                 window.setTimeout(loadRemainingDailyRows, 0);
             };
 
             const loadRemainingDailyRows = () => {
                 if (activePane !== 'resumo') return;
                 const tbody = document.querySelector('.mapa .map-pane[data-map-pane="resumo"] tbody');
-                const lines = mapaState.linhas || [];
+                const lines = filteredDailyLines();
                 const dates = visibleDates();
                 if (!tbody || !dates.length) return;
                 let index = Number(tbody.dataset.initialCount || tbody.querySelectorAll('tr[data-produto]').length || 0);
@@ -1421,6 +1483,19 @@ foreach ($datas as $diaKey => $info) {
                     window.setTimeout(appendFallbackRows, 0);
                 }
             };
+
+            let mapCardFilterTimer = 0;
+            const applyMapCardFilters = () => {
+                window.clearTimeout(mapCardFilterTimer);
+                mapCardFilterTimer = window.setTimeout(() => {
+                    if (activePane !== 'resumo') return;
+                    renderTabela();
+                    bindFeriados();
+                    bindForms();
+                }, 90);
+            };
+            mapCardSearch?.addEventListener('input', applyMapCardFilters);
+            mapCardCategory?.addEventListener('change', applyMapCardFilters);
 
             const forceLiveCellUpdate = (produtoId, dia) => {
                 const linha = (mapaState.linhas || []).find((item) => String(item.id) === String(produtoId));
