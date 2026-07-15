@@ -290,7 +290,7 @@ foreach ($datas as $diaKey => $info) {
         .mapa .quick-entry-icon svg { width: 21px; height: 21px; }
         .mapa .form-card .form-row-full { grid-column: 1 / -1; }
         .mapa .form-card .form-row-actions { grid-column: 1 / -1; }
-        .mapa .map-card-filter { margin: 12px 0; padding: 14px; border: 1px solid var(--border); border-radius: 16px; background: var(--surface); display: grid; grid-template-columns: minmax(0, 1fr) minmax(210px, 0.34fr); gap: 10px; align-items: end; }
+        .mapa .map-card-filter { margin: 12px 0; padding: 14px; border: 1px solid var(--border); border-radius: 16px; background: var(--surface); display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; align-items: end; }
         .mapa .map-card-filter__header { grid-column: 1 / -1; display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; margin: 0 0 4px; }
         .mapa .map-card-filter__title { display: flex; align-items: center; gap: 9px; margin: 0; color: var(--text); font-size: 1.05rem; font-weight: 850; letter-spacing: -0.01em; }
         .mapa .map-card-filter__title .map-search-title-icon { position: relative; overflow: visible; }
