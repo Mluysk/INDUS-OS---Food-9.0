@@ -1,7 +1,7 @@
 <?php
 $datas = $mapa['datas'] ?? [];
 $linhas = $mapa['linhas'] ?? [];
-$initialDailyLimit = 12;
+$initialDailyLimit = 3;
 $initialDailyLines = array_slice($linhas, 0, $initialDailyLimit);
 $hoje = $mapa['hoje'] ?? date('Y-m-d');
 $base = $mapa['base'] ?? $hoje;
@@ -1071,6 +1071,8 @@ foreach ($datas as $diaKey => $info) {
             let fullRendered = false;
             let compactRenderToken = 0;
             let compactRowsObserver = null;
+            let dailyRenderToken = 0;
+            let dailyRowsObserver = null;
             const compactMonthCache = new Map();
             const compactMonthCacheLimit = 3;
             const rememberCompactMonth = (month, payload) => {
@@ -1329,9 +1331,13 @@ foreach ($datas as $diaKey => $info) {
                 nav.innerHTML = datas.map((dia) => navChipMarkup(dia, mapaState.datas[dia])).join('');
                 headRow.innerHTML = '<th class="col-produto">Produto</th>' + datas.map((dia) => headerCellMarkup(dia, mapaState.datas[dia])).join('');
 
-                const linhasHtml = (mapaState.linhas || []).map((linha) => rowMarkup(linha, datas)).join('');
+                const lines = mapaState.linhas || [];
+                const initialCount = Math.min(3, lines.length);
+                const linhasHtml = lines.slice(0, initialCount).map((linha) => rowMarkup(linha, datas)).join('');
 
                 tbody.innerHTML = linhasHtml || `<tr><td class="col-produto" colspan="${1 + datas.length}" style="text-align:center; padding: 28px 12px;">Nenhum produto acabado cadastrado ainda.</td></tr>`;
+                tbody.dataset.initialCount = String(initialCount);
+                window.setTimeout(loadRemainingDailyRows, 0);
             };
 
             const loadRemainingDailyRows = () => {
@@ -1341,26 +1347,57 @@ foreach ($datas as $diaKey => $info) {
                 const dates = visibleDates();
                 if (!tbody || !dates.length) return;
                 let index = Number(tbody.dataset.initialCount || tbody.querySelectorAll('tr[data-produto]').length || 0);
+                dailyRowsObserver?.disconnect();
+                dailyRowsObserver = null;
+                const token = ++dailyRenderToken;
+                tbody.querySelector('[data-daily-row-sentinel]')?.remove();
                 if (index >= lines.length) return;
+                const sentinel = document.createElement('tr');
+                sentinel.dataset.dailyRowSentinel = '1';
+                sentinel.innerHTML = `<td colspan="${dates.length + 1}" style="height:1px;padding:0;border:0;"></td>`;
+                tbody.appendChild(sentinel);
                 const appendBatch = () => {
-                    if (activePane !== 'resumo' || index >= lines.length) return;
-                    const end = Math.min(index + 6, lines.length);
+                    if (token !== dailyRenderToken || activePane !== 'resumo' || !sentinel.isConnected || index >= lines.length) return;
+                    if (document.querySelector('.mapa')?.classList.contains('is-scrolling')) {
+                        window.setTimeout(appendBatch, 120);
+                        return;
+                    }
+                    const end = Math.min(index + 3, lines.length);
                     const addedCount = end - index;
-                    tbody.insertAdjacentHTML('beforeend', lines.slice(index, end).map((line) => rowMarkup(line, dates)).join(''));
+                    sentinel.insertAdjacentHTML('beforebegin', lines.slice(index, end).map((line) => rowMarkup(line, dates)).join(''));
                     index = end;
                     tbody.dataset.initialCount = String(index);
-                    Array.from(tbody.rows).slice(-addedCount).forEach((row) => {
+                    const addedRows = [];
+                    let previousRow = sentinel.previousElementSibling;
+                    for (let i = 0; i < addedCount && previousRow; i += 1) {
+                        addedRows.unshift(previousRow);
+                        previousRow = previousRow.previousElementSibling;
+                    }
+                    addedRows.forEach((row) => {
                         row.querySelectorAll('form:not([data-mapa-submit-bound="1"])').forEach(handleSubmit);
                     });
-                    if (index < lines.length) {
-                        if ('requestIdleCallback' in window) {
-                            window.requestIdleCallback(appendBatch, { timeout: 500 });
-                        } else {
-                            window.setTimeout(appendBatch, 24);
-                        }
+                    if (index >= lines.length) {
+                        dailyRowsObserver?.disconnect();
+                        dailyRowsObserver = null;
+                        sentinel.remove();
+                    } else {
+                        window.requestAnimationFrame(() => {
+                            if (sentinel.isConnected && sentinel.getBoundingClientRect().top < window.innerHeight + 700) appendBatch();
+                        });
                     }
                 };
-                window.setTimeout(appendBatch, 0);
+                if ('IntersectionObserver' in window) {
+                    dailyRowsObserver = new IntersectionObserver((entries) => {
+                        if (entries.some((entry) => entry.isIntersecting)) appendBatch();
+                    }, { root: null, rootMargin: '700px 0px', threshold: 0 });
+                    dailyRowsObserver.observe(sentinel);
+                } else {
+                    const appendFallbackRows = () => {
+                        appendBatch();
+                        if (token === dailyRenderToken && index < lines.length) window.setTimeout(appendFallbackRows, 64);
+                    };
+                    window.setTimeout(appendFallbackRows, 0);
+                }
             };
 
             const forceLiveCellUpdate = (produtoId, dia) => {
