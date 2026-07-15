@@ -212,13 +212,17 @@ foreach ($datas as $diaKey => $info) {
             -webkit-overflow-scrolling: touch;
             scroll-behavior: auto;
             scrollbar-gutter: stable;
+            touch-action: pan-x pan-y;
+            overflow-anchor: none;
         }
         .mapa .map-pane[data-map-pane="completo"] tbody tr {
             content-visibility: auto;
             contain-intrinsic-size: 170px;
         }
         .mapa .map-pane[data-map-pane="completo"] .compact-day-card {
+            content-visibility: auto;
             contain: layout paint style;
+            contain-intrinsic-size: 418px 230px;
         }
         .mapa .map-pane[data-map-pane="resumo"] .table-wrap,
         .mapa .map-pane[data-map-pane="resumo"] .nav-dias {
