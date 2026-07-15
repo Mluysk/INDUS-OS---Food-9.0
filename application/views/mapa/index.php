@@ -290,8 +290,9 @@ foreach ($datas as $diaKey => $info) {
         .mapa .quick-entry-icon svg { width: 21px; height: 21px; }
         .mapa .form-card .form-row-full { grid-column: 1 / -1; }
         .mapa .form-card .form-row-actions { grid-column: 1 / -1; }
-        .mapa .map-card-filter { margin: 12px 0; padding: 14px; border: 1px solid var(--border); border-radius: 16px; background: var(--surface); display: grid; grid-template-columns: minmax(0, 1fr) minmax(210px, 0.34fr) auto; gap: 10px; align-items: end; }
-        .mapa .map-card-filter__title { grid-column: 1 / -1; display: flex; align-items: center; gap: 9px; margin: 0 0 4px; color: var(--text); font-size: 1.05rem; font-weight: 850; letter-spacing: -0.01em; }
+        .mapa .map-card-filter { margin: 12px 0; padding: 14px; border: 1px solid var(--border); border-radius: 16px; background: var(--surface); display: grid; grid-template-columns: minmax(0, 1fr) minmax(210px, 0.34fr); gap: 10px; align-items: end; }
+        .mapa .map-card-filter__header { grid-column: 1 / -1; display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; margin: 0 0 4px; }
+        .mapa .map-card-filter__title { display: flex; align-items: center; gap: 9px; margin: 0; color: var(--text); font-size: 1.05rem; font-weight: 850; letter-spacing: -0.01em; }
         .mapa .map-card-filter__title .map-search-title-icon { position: relative; overflow: visible; }
         .mapa .map-card-filter__title .map-search-title-icon > svg { width: 21px; height: 21px; }
         .mapa .map-search-title-icon__bolt { position: absolute; right: -4px; bottom: -3px; width: 16px; height: 16px; display: grid; place-items: center; border: 2px solid var(--surface); border-radius: 999px; background: var(--primary); color: #fff; }
@@ -310,7 +311,7 @@ foreach ($datas as $diaKey => $info) {
         .mapa .map-card-filter__control select:focus-visible { border: 0 !important; outline: 0 !important; box-shadow: none !important; }
         .mapa .map-card-filter__control input::selection { background: color-mix(in srgb, var(--primary) 18%, transparent); color: var(--text); }
         .mapa .map-card-filter__control input::placeholder { color: var(--text-muted); opacity: 0.85; }
-        .mapa .map-card-filter__meta { min-height: 42px; display: inline-flex; align-items: center; justify-content: center; padding: 0 14px; border: 1px solid var(--border); border-radius: 12px; background: var(--surface-alt); color: var(--text-muted); font-size: 0.86rem; font-weight: 750; white-space: nowrap; }
+        .mapa .map-card-filter__meta { min-height: 34px; display: inline-flex; align-items: center; justify-content: center; padding: 0 12px; border: 1px solid var(--border); border-radius: 12px; background: var(--surface-alt); color: var(--text-muted); font-size: 0.86rem; font-weight: 750; white-space: nowrap; }
         .mapa label { display: block; font-weight: 800; color: var(--text); margin-bottom: 6px; font-size: 1rem; }
         .mapa input[type="text"], .mapa input[type="number"], .mapa input[type="date"], .mapa select, .mapa textarea { width: 100%; border: 1px solid var(--border); background: var(--surface-alt); color: var(--text); border-radius: 10px; padding: 9px 10px; box-sizing: border-box; }
         .mapa .map-product-search { position: relative; }
@@ -729,13 +730,16 @@ foreach ($datas as $diaKey => $info) {
     </script>
 
     <section class="map-card-filter" aria-label="Busca rápida nos produtos do mapa">
-        <h3 class="map-card-filter__title">
-            <span class="quick-entry-icon map-search-title-icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="10.5" cy="10.5" r="6.5"></circle><path d="m16 16 4.2 4.2"></path></svg>
-                <span class="map-search-title-icon__bolt"><svg viewBox="0 0 12 12" stroke-linejoin="round"><path d="M7.2 1 2.8 6.4h3L5 11l4.4-5.8h-3L7.2 1Z"></path></svg></span>
-            </span>
-            <span>Busca rápida</span>
-        </h3>
+        <div class="map-card-filter__header">
+            <h3 class="map-card-filter__title">
+                <span class="quick-entry-icon map-search-title-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="10.5" cy="10.5" r="6.5"></circle><path d="m16 16 4.2 4.2"></path></svg>
+                    <span class="map-search-title-icon__bolt"><svg viewBox="0 0 12 12" stroke-linejoin="round"><path d="M7.2 1 2.8 6.4h3L5 11l4.4-5.8h-3L7.2 1Z"></path></svg></span>
+                </span>
+                <span>Busca rápida</span>
+            </h3>
+            <div class="map-card-filter__meta" id="map-card-filter-count" aria-live="polite"><?= count($linhas); ?> produtos</div>
+        </div>
         <label class="map-card-filter__field" for="map-card-search">
             <span class="map-card-filter__label">
                 Produto
@@ -760,7 +764,6 @@ foreach ($datas as $diaKey => $info) {
                 </select>
             </span>
         </label>
-        <div class="map-card-filter__meta" id="map-card-filter-count" aria-live="polite"><?= count($linhas); ?> produtos</div>
     </section>
 
     <div class="grid-card">
