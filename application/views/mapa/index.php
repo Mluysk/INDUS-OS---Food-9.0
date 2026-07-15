@@ -291,10 +291,17 @@ foreach ($datas as $diaKey => $info) {
         .mapa .map-card-filter__field { display: grid; gap: 6px; margin: 0; }
         .mapa .map-card-filter__label { display: inline-flex; align-items: center; gap: 7px; margin: 0; font-size: 0.84rem; font-weight: 800; color: var(--text); }
         .mapa .map-card-filter__label svg { width: 17px; height: 17px; color: var(--primary); }
-        .mapa .map-card-filter__control { position: relative; display: block; }
-        .mapa .map-card-filter__control > svg { position: absolute; left: 12px; top: 50%; width: 18px; height: 18px; color: var(--text-muted); transform: translateY(-50%); pointer-events: none; }
+        .mapa .map-card-filter__control { display: inline-flex; align-items: center; gap: 0.62rem; min-height: 42px; padding: 0.55rem 1.05rem; border: 1px solid var(--border-muted, var(--border)); border-radius: 999px; background: var(--surface); color: var(--text-muted); transition: border-color 0.18s ease, box-shadow 0.18s ease, color 0.18s ease; }
+        .mapa .map-card-filter__control:focus-within { border-color: var(--primary); color: var(--primary); box-shadow: var(--primary-glow, 0 0 0 3px rgba(var(--primary-rgb), 0.20)) !important; }
+        .mapa .map-card-filter__control > svg { position: static; width: 19px; height: 19px; flex: 0 0 19px; color: currentColor; transform: none; pointer-events: none; stroke-width: 2.2; }
         .mapa .map-card-filter__control input,
-        .mapa .map-card-filter__control select { min-height: 42px; margin: 0; padding-left: 40px !important; }
+        .mapa .map-card-filter__control select { width: 100%; min-width: 0; min-height: 0; margin: 0; padding: 0 !important; border: 0 !important; outline: 0 !important; background: transparent !important; color: var(--text); font-weight: 800; box-shadow: none !important; }
+        .mapa .map-card-filter__control input:focus,
+        .mapa .map-card-filter__control input:focus-visible,
+        .mapa .map-card-filter__control select:focus,
+        .mapa .map-card-filter__control select:focus-visible { border: 0 !important; outline: 0 !important; box-shadow: none !important; }
+        .mapa .map-card-filter__control input::selection { background: color-mix(in srgb, var(--primary) 18%, transparent); color: var(--text); }
+        .mapa .map-card-filter__control input::placeholder { color: var(--text-muted); opacity: 0.85; }
         .mapa .map-card-filter__meta { min-height: 42px; display: inline-flex; align-items: center; justify-content: center; padding: 0 14px; border: 1px solid var(--border); border-radius: 12px; background: var(--surface-alt); color: var(--text-muted); font-size: 0.86rem; font-weight: 750; white-space: nowrap; }
         .mapa label { display: block; font-weight: 800; color: var(--text); margin-bottom: 6px; font-size: 1rem; }
         .mapa input[type="text"], .mapa input[type="number"], .mapa input[type="date"], .mapa select, .mapa textarea { width: 100%; border: 1px solid var(--border); background: var(--surface-alt); color: var(--text); border-radius: 10px; padding: 9px 10px; box-sizing: border-box; }
