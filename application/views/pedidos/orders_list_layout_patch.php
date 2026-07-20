@@ -374,7 +374,7 @@ foreach (($pedidos ?? []) as $pedido) {
         padding: 0;
         border: 1px solid #fca5a5;
         border-radius: 9px;
-        background: #fff1f2;
+        background: color(srgb 0.986274 0.914902 0.914902);
         color: #ef2929;
         cursor: pointer;
     }
