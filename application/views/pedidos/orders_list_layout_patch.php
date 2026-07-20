@@ -460,19 +460,19 @@ foreach (($pedidos ?? []) as $pedido) {
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        width: 40px;
-        height: 40px;
+        width: 43px;
+        height: 43px;
         border: 1px solid #fca5a5;
         border-radius: 9px;
         background: color(srgb 0.986274 0.914902 0.914902);
         color: #ef2929;
-        flex: 0 0 40px;
+        flex: 0 0 43px;
     }
 
     .pedido-info-icon svg {
         display: block;
-        width: 24px;
-        height: 24px;
+        width: 27px;
+        height: 27px;
         margin: 0;
         stroke-width: 2.5;
     }
