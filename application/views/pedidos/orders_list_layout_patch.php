@@ -365,25 +365,31 @@ foreach (($pedidos ?? []) as $pedido) {
     #panel-lista-pedidos .pedido-info-btn {
         position: relative;
         display: inline-flex;
-        flex: 0 0 28px;
+        flex: 0 0 36px;
         align-items: center;
         justify-content: center;
-        width: 28px;
-        min-width: 28px;
-        height: 28px;
-        min-height: 28px;
+        width: 36px;
+        min-width: 36px;
+        height: 36px;
+        min-height: 36px;
         padding: 0;
-        border: 1px solid color-mix(in srgb, var(--primary, #dc2626) 28%, transparent);
-        border-radius: 9px;
-        background: color-mix(in srgb, var(--primary, #dc2626) 10%, #fff);
-        color: var(--primary, #dc2626);
+        border: 1px solid #fca5a5;
+        border-radius: 10px;
+        background: #fff5f5;
+        color: #ef2929;
         cursor: pointer;
+        transition: background-color 0.16s ease, border-color 0.16s ease;
     }
 
     #panel-lista-pedidos .pedido-info-btn svg {
-        width: 12px;
-        height: 12px;
-        stroke-width: 2.6;
+        width: 16px;
+        height: 16px;
+        stroke-width: 2;
+    }
+
+    #panel-lista-pedidos .pedido-info-btn:hover {
+        border-color: #f87171;
+        background: #fee2e2;
     }
 
     #panel-lista-pedidos .pix-inline {
@@ -715,7 +721,7 @@ foreach (($pedidos ?? []) as $pedido) {
         button.dataset.tooltip = 'Informações';
         button.setAttribute('aria-label', 'Informações');
         button.setAttribute('title', 'Informações');
-        button.innerHTML = '<span data-lucide="info" aria-hidden="true"></span>';
+        button.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="8.5"></circle><path d="M12 10.5v5"></path><circle cx="12" cy="7.5" r="0.75" fill="currentColor" stroke="none"></circle></svg>';
         button.addEventListener('click', () => openInfoModal(pedidoId));
         group.appendChild(button);
     };
