@@ -357,8 +357,7 @@ foreach (($pedidos ?? []) as $pedido) {
         transform: translateX(-50%) translateY(0);
     }
 
-    #panel-lista-pedidos .pedido-icon-btn:hover,
-    #panel-lista-pedidos .pedido-info-btn:hover {
+    #panel-lista-pedidos .pedido-icon-btn:hover {
         filter: brightness(0.98);
     }
 
@@ -378,7 +377,6 @@ foreach (($pedidos ?? []) as $pedido) {
         background: #fff1f2;
         color: #ef2929;
         cursor: pointer;
-        transition: background-color 0.16s ease, border-color 0.16s ease;
     }
 
     #panel-lista-pedidos .pedido-info-btn svg {
@@ -388,11 +386,6 @@ foreach (($pedidos ?? []) as $pedido) {
         height: 12px;
         margin: 0;
         stroke-width: 2.5;
-    }
-
-    #panel-lista-pedidos .pedido-info-btn:hover {
-        border-color: #f87171;
-        background: #fee2e2;
     }
 
     #panel-lista-pedidos .pix-inline {
