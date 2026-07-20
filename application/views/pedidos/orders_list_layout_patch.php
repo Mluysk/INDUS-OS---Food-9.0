@@ -374,8 +374,8 @@ foreach (($pedidos ?? []) as $pedido) {
         min-height: 28px;
         padding: 0;
         border: 1px solid #fca5a5;
-        border-radius: 10px;
-        background: #fff5f5;
+        border-radius: 9px;
+        background: #fff1f2;
         color: #ef2929;
         cursor: pointer;
         transition: background-color 0.16s ease, border-color 0.16s ease;
@@ -387,7 +387,7 @@ foreach (($pedidos ?? []) as $pedido) {
         width: 12px;
         height: 12px;
         margin: 0;
-        stroke-width: 2;
+        stroke-width: 2.5;
     }
 
     #panel-lista-pedidos .pedido-info-btn:hover {
