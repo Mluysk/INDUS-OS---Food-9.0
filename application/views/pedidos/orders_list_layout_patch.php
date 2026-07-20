@@ -365,13 +365,13 @@ foreach (($pedidos ?? []) as $pedido) {
     #panel-lista-pedidos .pedido-info-btn {
         position: relative;
         display: inline-flex;
-        flex: 0 0 36px;
+        flex: 0 0 28px;
         align-items: center;
         justify-content: center;
-        width: 36px;
-        min-width: 36px;
-        height: 36px;
-        min-height: 36px;
+        width: 28px;
+        min-width: 28px;
+        height: 28px;
+        min-height: 28px;
         padding: 0;
         border: 1px solid #fca5a5;
         border-radius: 10px;
