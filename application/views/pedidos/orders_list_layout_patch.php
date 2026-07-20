@@ -384,8 +384,8 @@ foreach (($pedidos ?? []) as $pedido) {
     #panel-lista-pedidos .pedido-info-btn svg {
         display: block;
         flex: 0 0 auto;
-        width: 16px;
-        height: 16px;
+        width: 12px;
+        height: 12px;
         margin: 0;
         stroke-width: 2;
     }
