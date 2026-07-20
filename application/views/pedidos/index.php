@@ -1,3 +1,15 @@
+<style>
+    #panel-lista-pedidos .pedido-review-hovercard { position: relative; display: inline-flex; justify-content: center; }
+    #panel-lista-pedidos .pedido-review-hovercard .pedido-status-badge { cursor: help; }
+    #panel-lista-pedidos .pedido-review-items { position: absolute; z-index: 120; top: calc(100% + 10px); left: 50%; display: grid; width: min(330px, 80vw); gap: 8px; padding: 14px; border: 1px solid #fecaca; border-radius: 14px; background: #fff; box-shadow: 0 18px 45px rgba(15, 23, 42, .18); color: #0f172a; text-align: left; visibility: hidden; opacity: 0; pointer-events: none; transform: translate(-50%, 5px); transition: opacity .14s ease, transform .14s ease, visibility .14s ease; }
+    #panel-lista-pedidos .pedido-review-items::before { content: ''; position: absolute; left: 50%; top: -7px; width: 12px; height: 12px; border-top: 1px solid #fecaca; border-left: 1px solid #fecaca; background: #fff; transform: translateX(-50%) rotate(45deg); }
+    #panel-lista-pedidos .pedido-review-items > b { color: #b91c1c; font-size: .78rem; letter-spacing: .06em; text-transform: uppercase; }
+    #panel-lista-pedidos .pedido-review-items > span { display: grid; gap: 3px; padding: 9px 10px; border: 1px solid #fee2e2; border-radius: 10px; background: #fff7f7; }
+    #panel-lista-pedidos .pedido-review-items strong { color: #b91c1c; }
+    #panel-lista-pedidos .pedido-review-items small { color: #64748b; line-height: 1.4; }
+    #panel-lista-pedidos .pedido-review-hovercard:hover .pedido-review-items,
+    #panel-lista-pedidos .pedido-review-hovercard:focus-within .pedido-review-items { visibility: visible; opacity: 1; transform: translate(-50%, 0); }
+</style>
 <section class="panel pedidos-tabs-card">
     <div class="pedidos-tabs-header">
         <div>
@@ -97,6 +109,10 @@
                                 'cancelado' => ['icon' => 'circle-x', 'label' => 'cancelado'],
                             ];
                             $statusInfo = $statusMeta[$status] ?? ['icon' => 'circle-dot', 'label' => $status];
+                            $statusMeta['separando'] = ['icon' => 'package-open', 'label' => 'separando'];
+                            $statusMeta['separacao'] = ['icon' => 'package-check', 'label' => 'separado'];
+                            $statusMeta['revisao'] = ['icon' => 'alert-triangle', 'label' => 'revisão'];
+                            $statusInfo = $statusMeta[$status] ?? ['icon' => 'circle-dot', 'label' => $status];
                             $clienteLabel = $clienteMap[(int)($pedido['cliente_id'] ?? 0)]['nome_fantasia']
                                 ?? ($clienteMap[(int)($pedido['cliente_id'] ?? 0)]['razao_social'] ?? ($pedido['cliente_id'] ?? '-'));
                             $pedidoCodigo = (string)($pedido['codigo'] ?? '-');
@@ -117,15 +133,21 @@
                                 <td><?= htmlspecialchars($pedidoCodigo, ENT_QUOTES, 'UTF-8'); ?></td>
                                 <td><?= htmlspecialchars($clienteLabel, ENT_QUOTES, 'UTF-8'); ?></td>
                                 <td>
-                                    <span class="badge pedido-status-badge <?= $statusClass; ?>" data-status="<?= htmlspecialchars($status, ENT_QUOTES, 'UTF-8'); ?>">
-                                        <span class="pedido-status-icon" data-lucide="<?= htmlspecialchars($statusInfo['icon'], ENT_QUOTES, 'UTF-8'); ?>" aria-hidden="true"></span>
+                                    <?php $itensRevisao = $status === 'revisao' ? ($revisoesPicking[(int)$pedido['id']] ?? []) : []; ?>
+                                    <div class="pedido-review-hovercard">
+                                    <span class="badge pedido-status-badge <?= $statusClass; ?>" data-status="<?= htmlspecialchars($status, ENT_QUOTES, 'UTF-8'); ?>"<?= $itensRevisao ? ' tabindex="0" aria-describedby="pedido-review-popup-'.((int)$pedido['id']).'"' : ''; ?>>
+                                        <?php if ($status === 'revisao'): ?><span class="pedido-status-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M10.3 3.6 2.2 18a2 2 0 0 0 1.8 3h16a2 2 0 0 0 1.8-3L13.7 3.6a2 2 0 0 0-3.4 0Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg></span><?php else: ?><span class="pedido-status-icon" data-lucide="<?= htmlspecialchars($statusInfo['icon'], ENT_QUOTES, 'UTF-8'); ?>" aria-hidden="true"></span><?php endif; ?>
                                         <span class="pedido-status-text"><?= htmlspecialchars($statusInfo['label'], ENT_QUOTES, 'UTF-8'); ?></span>
                                     </span>
+                                    <?php if ($itensRevisao): ?>
+                                        <div class="pedido-review-items" id="pedido-review-popup-<?= (int)$pedido['id']; ?>" role="tooltip"><b>Informações da revisão</b><?php foreach ($itensRevisao as $itemRevisao): ?><span><strong>✕ <?= htmlspecialchars((string)($itemRevisao['nome'] ?? 'Produto'), ENT_QUOTES, 'UTF-8'); ?></strong><small>Motivo: <?= ($itemRevisao['picking_motivo'] ?? '') === 'falta_produto' ? 'Falta de produto' : 'Erro interno'; ?><?php if (($itemRevisao['picking_motivo'] ?? '') === 'falta_produto'): ?> · Novo valor: <?= number_format((float)($itemRevisao['picking_novo_valor'] ?? 0), 4, ',', '.'); ?><?php endif; ?><br><?= htmlspecialchars((string)($itemRevisao['picking_observacao'] ?? 'Sem observação'), ENT_QUOTES, 'UTF-8'); ?></small></span><?php endforeach; ?></div>
+                                    <?php endif; ?>
+                                    </div>
                                 </td>
                                 <td>R$ <?= number_format($pedidoTotal, 2, ',', '.'); ?></td>
                                 <td><?= htmlspecialchars($pedidoCreated, ENT_QUOTES, 'UTF-8'); ?></td>
                                 <td class="action-cell">
-                                    <?php $podeAprovar = !in_array($status, ['producao','separacao','expedicao','faturado','cancelado'], true); ?>
+                                    <?php $podeAprovar = !in_array($status, ['producao','separando','separacao','revisao','expedicao','faturado','cancelado'], true); ?>
                                     <div class="action-group pedido-actions">
                                         <div class="pedido-action-buttons">
                                             <?php if ($podeAprovar): ?>

@@ -6,6 +6,7 @@ use App\Services\PedidosService;
 use App\Services\ConfigService;
 use App\Services\ClientesService;
 use App\Services\ProdutosService;
+use App\Repositories\PedidoItensRepository;
 use InvalidArgumentException;
 
 class PedidosController extends Controller
@@ -14,6 +15,7 @@ class PedidosController extends Controller
     private ConfigService $config;
     private ClientesService $clientes;
     private ProdutosService $produtos;
+    private PedidoItensRepository $pedidoItens;
 
     public function __construct(
         \App\Core\Container $container,
@@ -22,13 +24,15 @@ class PedidosController extends Controller
         PedidosService $pedidos,
         ConfigService $config,
         ClientesService $clientes,
-        ProdutosService $produtos
+        ProdutosService $produtos,
+        PedidoItensRepository $pedidoItens
     ) {
         parent::__construct($container, $auth, $audit);
         $this->pedidos = $pedidos;
         $this->config = $config;
         $this->clientes = $clientes;
         $this->produtos = $produtos;
+        $this->pedidoItens = $pedidoItens;
     }
 
     public function index(): void
@@ -56,6 +60,11 @@ class PedidosController extends Controller
             $saidaLojas = array_values(array_intersect($saidaLojas, $lojasDisponiveisIds));
         }
         $saidaDia = $this->pedidos->gerarSaidaDoDia($saidaData, $saidaLojas);
+        $revisoesPicking = [];
+        foreach ($lista as $pedidoLista) {
+            if (strtolower((string)($pedidoLista['status'] ?? '')) !== 'revisao') continue;
+            $revisoesPicking[(int)$pedidoLista['id']] = array_values(array_filter($this->pedidoItens->listarPorPedido((int)$pedidoLista['id']), static fn(array $item): bool => ($item['picking_status'] ?? '') === 'x'));
+        }
 
         if ($this->wantsJson()) {
             $this->json($lista);
@@ -71,6 +80,7 @@ class PedidosController extends Controller
             'notePixKey' => $notePixKey,
             'saidaDia' => $saidaDia,
             'saidaLojasDisponiveis' => $saidaLojasDisponiveis,
+            'revisoesPicking' => $revisoesPicking,
         ], [
             'title' => 'Pedidos',
             'activeMenu' => 'pedidos',
