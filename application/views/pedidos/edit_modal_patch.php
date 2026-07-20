@@ -2,14 +2,18 @@
     <div class="pedido-edit-backdrop" data-edit-close></div>
     <div class="pedido-edit-dialog" role="dialog" aria-modal="true" aria-labelledby="pedido-edit-title">
         <div class="pedido-edit-head">
-            <div>
+            <div class="pedido-edit-heading">
+                <span class="pedido-alert-triangle" aria-hidden="true">!</span>
+                <div>
                 <p class="muted" style="margin:0; font-size:0.85rem;">Editar pedido</p>
                 <h3 id="pedido-edit-title">Atualize os dados do pedido</h3>
+                </div>
             </div>
             <button type="button" class="button ghost" data-edit-close aria-label="Fechar">x</button>
         </div>
 
         <form id="pedido-edit-form" class="form-grid">
+            <section class="pedido-review-panel" id="pedido-review-panel" hidden><div class="pedido-review-panel__head"><span class="pedido-alert-triangle" aria-hidden="true">!</span><div><strong>Informações da revisão</strong><small>Confira as inconformidades antes de concluir.</small></div></div><div class="pedido-review-panel__items" data-review-items></div></section>
             <input type="hidden" name="pedido_id" value="">
             <label>
                 Cliente
@@ -112,6 +116,7 @@
 
             <p class="pedido-edit-feedback" aria-live="polite"></p>
             <div class="form-actions pedido-edit-actions">
+                <button type="button" class="button pedido-reviewed-btn" id="pedido-reviewed-btn" hidden><span data-lucide="badge-check"></span>Revisado</button>
                 <button type="submit" class="button button-primary">Salvar alterações</button>
                 <button type="button" class="button ghost" data-edit-close>Cancelar</button>
             </div>
@@ -125,6 +130,8 @@
     .pedido-edit-backdrop { position: absolute; inset: 0; background: rgba(15, 23, 42, 0.42); backdrop-filter: blur(2px); }
     .pedido-edit-dialog { position: relative; width: min(1180px, 96vw); max-height: 90vh; overflow-y: auto; padding: 22px; border-radius: 18px; background: var(--surface-elevated, #fff); color: var(--text-primary, #0f172a); box-shadow: 0 22px 70px rgba(15, 23, 42, 0.22); }
     .pedido-edit-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 16px; }
+    .pedido-edit-heading { display: flex; align-items: center; gap: 12px; }
+    .pedido-alert-triangle { display: grid; place-items: center; flex: 0 0 43px; width: 43px; height: 43px; padding-top: 10px; box-sizing: border-box; clip-path: polygon(50% 0, 100% 100%, 0 100%); background: #dc2626; color: #fff; font-size: 24px; font-weight: 950; line-height: 1; }
     .pedido-edit-head h3 { margin: 4px 0 0; }
     .pedido-edit-items { grid-column: 1 / -1; display: grid; gap: 12px; padding: 16px; border: 1px solid var(--border, #e5e7eb); border-radius: 14px; background: var(--surface-alt, #f8fafc); }
     .pedido-edit-item-entry { display: grid; grid-template-columns: minmax(112px, .55fr) minmax(260px, 1.55fr) minmax(110px, .55fr) minmax(110px, .55fr) minmax(120px, .62fr) minmax(120px, .62fr) auto; gap: 8px; align-items: end; }
@@ -183,6 +190,8 @@
     .pedido-edit-feedback[data-state="error"] { color: var(--danger-strong, #dc2626); }
     .pedido-edit-feedback[data-state="success"] { color: var(--success-strong, #047857); }
     .pedido-edit-actions { grid-column: 1 / -1; gap: 10px; }
+    .pedido-reviewed-btn{display:inline-flex;align-items:center;gap:8px;background:#059669!important;border-color:#059669!important;color:#fff!important}.pedido-reviewed-btn[hidden]{display:none!important}.pedido-reviewed-btn svg{width:18px;height:18px}
+    .pedido-review-panel{grid-column:1/-1;padding:16px;border:1px solid #fecaca;border-radius:16px;background:#fff7f7}.pedido-review-panel[hidden]{display:none!important}.pedido-review-panel__head{display:flex;align-items:center;gap:10px;margin-bottom:12px}.pedido-review-panel__head div{display:grid}.pedido-review-panel__head small{color:var(--text-muted)}.pedido-review-panel__items{display:grid;gap:8px}.pedido-review-entry{display:grid;grid-template-columns:minmax(160px,1fr) repeat(2,minmax(110px,.45fr));gap:10px;padding:11px;border:1px solid #fecaca;border-radius:12px;background:#fff}.pedido-review-entry strong{color:#b91c1c}.pedido-review-entry span{display:grid;gap:3px}.pedido-review-entry small{color:var(--text-muted)}@media(max-width:700px){.pedido-review-entry{grid-template-columns:1fr}}
     @media (max-width: 980px) { .pedido-edit-item-entry, .pedido-edit-grid .item-row { grid-template-columns: repeat(2, minmax(180px, 1fr)); padding: 10px 0; border-bottom: 1px solid var(--border, #e5e7eb); } .pedido-edit-grid .item-row--head { display: none; } }
     @media (max-width: 760px) { .pedido-edit-summary, .pedido-edit-frete-row { grid-template-columns: 1fr; } }
     @media (max-width: 640px) { .pedido-edit-modal { padding: 12px; } .pedido-edit-dialog { padding: 16px; } .pedido-edit-item-entry, .pedido-edit-grid .item-row { grid-template-columns: 1fr; } }
@@ -207,6 +216,8 @@
         const freightToggle = document.getElementById('pedido-edit-frete-ativo');
         const freightInput = document.getElementById('pedido-edit-frete-valor');
         const feedback = modal?.querySelector('.pedido-edit-feedback');
+        const reviewedButton = document.getElementById('pedido-reviewed-btn');
+        const reviewPanel = document.getElementById('pedido-review-panel');
         const headRow = grid?.querySelector('.item-row--head');
         const pagamentosValidos = ['PIX','Dinheiro','Cartão de crédito','Cartão de débito','Boleto','TED','Transferência bancária','Depósito bancário','Cheque','Vale alimentação','Vale refeição','A prazo','Outros'];
 
@@ -390,6 +401,8 @@
             const itens = payload.itens || [];
             const freteValor = Number(pedido.frete_valor || 0);
             form.querySelector('input[name="pedido_id"]').value = pedido.id || '';
+            reviewedButton.hidden = String(pedido.status || '').toLowerCase() !== 'revisao';
+            const inconformes=itens.filter(item=>String(item.picking_status||'')==='x');reviewPanel.hidden=!inconformes.length;reviewPanel.querySelector('[data-review-items]').innerHTML=inconformes.map(item=>`<div class="pedido-review-entry"><span><strong>✕ ${escapeHtml(item.nome||item.produto_nome||'Produto')}</strong><small>${escapeHtml(item.picking_motivo==='falta_produto'?'Falta de produto':'Erro interno')} · ${escapeHtml(item.picking_observacao||'Sem observação')}</small></span><span><small>Valor atual</small><b>${Number(item.quantidade||0).toLocaleString('pt-BR',{maximumFractionDigits:4})}</b></span><span><small>Novo valor</small><b>${item.picking_motivo==='falta_produto'?Number(item.picking_novo_valor||0).toLocaleString('pt-BR',{maximumFractionDigits:4}):'Não se aplica'}</b></span></div>`).join('');
             form.querySelector('select[name="cliente_id"]').value = pedido.cliente_id || '';
             const pagamento = pagamentosValidos.includes(pedido.forma_pagto) ? pedido.forma_pagto : 'PIX';
             const pagamentoSelect = form.querySelector('select[name="forma_pagto"]');
@@ -453,6 +466,7 @@
         addButton.addEventListener('click', addSearchItem);
         freightToggle.addEventListener('change', computeTotal);
         freightInput.addEventListener('input', computeTotal);
+        reviewedButton?.addEventListener('click',async()=>{const pedidoId=form.querySelector('input[name="pedido_id"]').value;if(!pedidoId||!confirm('Confirmar que o pedido foi revisado e devolvê-lo como aprovado?'))return;reviewedButton.disabled=true;setFeedback('Concluindo revisão...');try{const response=await fetch(`${basePedidos}/${pedidoId}/revisado`,{method:'POST',headers:{'Accept':'application/json','X-Requested-With':'XMLHttpRequest'}}),data=await response.json().catch(()=>({}));if(!response.ok)throw new Error(data.message||'Não foi possível concluir a revisão.');setFeedback(data.message,'success');window.appLiveSaved?.({message:data.message,source:'pedidos'});setTimeout(closeModal,350)}catch(error){setFeedback(error.message,'error')}finally{reviewedButton.disabled=false}});
 
         form.addEventListener('submit', (event) => {
             event.preventDefault();
