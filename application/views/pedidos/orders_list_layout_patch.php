@@ -460,17 +460,21 @@ foreach (($pedidos ?? []) as $pedido) {
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        width: 42px;
-        height: 42px;
-        border-radius: 14px;
-        background: color-mix(in srgb, var(--primary, #dc2626) 12%, #fff);
-        color: var(--primary, #dc2626);
-        flex: 0 0 42px;
+        width: 28px;
+        height: 28px;
+        border: 1px solid #fca5a5;
+        border-radius: 9px;
+        background: color(srgb 0.986274 0.914902 0.914902);
+        color: #ef2929;
+        flex: 0 0 28px;
     }
 
     .pedido-info-icon svg {
-        width: 20px;
-        height: 20px;
+        display: block;
+        width: 12px;
+        height: 12px;
+        margin: 0;
+        stroke-width: 2.5;
     }
 
     .pedido-info-title {
@@ -619,7 +623,7 @@ foreach (($pedidos ?? []) as $pedido) {
         modal.innerHTML = `
             <div class="pedido-info-dialog" role="dialog" aria-modal="true" aria-labelledby="pedido-info-title">
                 <div class="pedido-info-header">
-                    <span class="pedido-info-icon"><span data-lucide="info" aria-hidden="true"></span></span>
+                    <span class="pedido-info-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4"></path><path d="M12 8h.01"></path></svg></span>
                     <div>
                         <h3 class="pedido-info-title" id="pedido-info-title">Informações do pedido</h3>
                         <p class="pedido-info-subtitle" data-info-subtitle>Detalhes de criação</p>
