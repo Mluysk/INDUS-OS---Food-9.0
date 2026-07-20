@@ -3,7 +3,7 @@
     <div class="pedido-edit-dialog" role="dialog" aria-modal="true" aria-labelledby="pedido-edit-title">
         <div class="pedido-edit-head">
             <div class="pedido-edit-heading">
-                <span class="pedido-alert-triangle" aria-hidden="true">!</span>
+                <span class="pedido-edit-pencil" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L8 18l-4 1 1-4Z"></path></svg></span>
                 <div>
                 <p class="muted" style="margin:0; font-size:0.85rem;">Editar pedido</p>
                 <h3 id="pedido-edit-title">Atualize os dados do pedido</h3>
@@ -131,6 +131,8 @@
     .pedido-edit-dialog { position: relative; width: min(1180px, 96vw); max-height: 90vh; overflow-y: auto; padding: 22px; border-radius: 18px; background: var(--surface-elevated, #fff); color: var(--text-primary, #0f172a); box-shadow: 0 22px 70px rgba(15, 23, 42, 0.22); }
     .pedido-edit-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 16px; }
     .pedido-edit-heading { display: flex; align-items: center; gap: 12px; }
+    .pedido-edit-pencil { display: grid; place-items: center; flex: 0 0 43px; width: 43px; height: 43px; border: 1px solid #fca5a5; border-radius: 12px; background: color(srgb 0.986274 0.914902 0.914902); color: #dc2626; box-sizing: border-box; }
+    .pedido-edit-pencil svg { display: block; width: 25px; height: 25px; }
     .pedido-alert-triangle { display: grid; place-items: center; flex: 0 0 43px; width: 43px; height: 43px; padding-top: 10px; box-sizing: border-box; clip-path: polygon(50% 0, 100% 100%, 0 100%); background: #dc2626; color: #fff; font-size: 24px; font-weight: 950; line-height: 1; }
     .pedido-edit-head h3 { margin: 4px 0 0; }
     .pedido-edit-items { grid-column: 1 / -1; display: grid; gap: 12px; padding: 16px; border: 1px solid var(--border, #e5e7eb); border-radius: 14px; background: var(--surface-alt, #f8fafc); }
