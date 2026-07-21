@@ -4011,9 +4011,22 @@ $catalogoPayload = json_encode(array_map(static function ($produto) use ($asset)
             const itemsMarkup = itens.map(item => { const qty=Number(item.quantidade||0), price=Number(item.preco_unit??item.preco??0); return `<tr><td>${dashboardEscape(item.sku || item.produto_id || '-')}</td><td>${dashboardEscape(item.nome || item.produto_nome || 'Produto')}</td><td>${qty.toLocaleString('pt-BR',{maximumFractionDigits:2})}</td><td>${formatCurrency(price * qty)}</td></tr>`; }).join('');
             const manifestMarkup = romaneio ? `<dl><div><dt>Número</dt><dd>${dashboardEscape(romaneio.romaneio || `#${romaneio.id}`)}</dd></div><div><dt>Expedição</dt><dd>${dashboardEscape(formatDateTime(romaneio.data_expedicao))}</dd></div><div><dt>Volumes</dt><dd>${Number(romaneio.volumes||0)}</dd></div><div><dt>Peso total</dt><dd>${Number(romaneio.peso_total||0).toLocaleString('pt-BR',{maximumFractionDigits:3})} kg</dd></div><div><dt>Transportadora</dt><dd>${dashboardEscape(romaneio.transportadora || 'Não informada')}</dd></div><div><dt>Motorista</dt><dd>${dashboardEscape(romaneio.motorista_nome || 'Não informado')}</dd></div></dl>` : '<div class="portal-order-detail__empty">O romaneio ainda não foi gerado.</div>';
             orderDetail.innerHTML = `<div class="portal-order-detail__head"><div><h3>Pedido ${dashboardEscape(pedido.codigo || `#${pedidoId}`)}</h3><p>Detalhes, documentos e histórico completo.</p></div><div class="portal-order-detail__actions"><button type="button" class="portal-btn portal-btn--ghost" data-order-detail-back><svg viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg>Voltar</button><button type="button" class="portal-btn portal-btn--primary" data-order-detail-pdf><svg viewBox="0 0 24 24"><path d="M6 9V2h9l3 3v4M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2M6 14h12v8H6z"/></svg>PDF</button></div></div><div class="portal-order-detail__summary"><div><span>Status</span><strong>${dashboardEscape(pedido.status_label || orderStatusLabels[statusKey] || pedido.status || '-')}</strong></div><div><span>Criado em</span><strong>${dashboardEscape(formatDateTime(pedido.created_at))}</strong></div><div><span>Frete</span><strong>${Number(pedido.frete_valor||0)>0?formatCurrency(pedido.frete_valor):'Sem frete'}</strong></div><div><span>Total</span><strong>${formatCurrency(pedido.total||0)}</strong></div></div><div class="portal-order-detail__grid"><section class="portal-order-detail__card"><h4>Produtos do pedido</h4><table class="portal-order-detail__table"><thead><tr><th>Código</th><th>Produto</th><th>Qtd.</th><th>Subtotal</th></tr></thead><tbody>${itemsMarkup}</tbody></table></section><section class="portal-order-detail__card portal-order-detail__manifest"><h4>Romaneio</h4>${manifestMarkup}</section></div><section class="portal-order-detail__card portal-order-history"><h4>Histórico de ajustes e motivos</h4>${historyMarkup}</section>`;
+            const pedidoPdfButton = orderDetail.querySelector('[data-order-detail-pdf]');
+            if (pedidoPdfButton) {
+                pedidoPdfButton.dataset.orderDocument = 'nota';
+                pedidoPdfButton.removeAttribute('data-order-detail-pdf');
+                if (pedidoPdfButton.lastChild) pedidoPdfButton.lastChild.textContent = 'PDF do pedido';
+                if (romaneio) {
+                    const romaneioPdfButton = pedidoPdfButton.cloneNode(true);
+                    romaneioPdfButton.dataset.orderDocument = 'romaneio';
+                    if (romaneioPdfButton.lastChild) romaneioPdfButton.lastChild.textContent = 'PDF do romaneio';
+                    pedidoPdfButton.after(romaneioPdfButton);
+                }
+            }
             orderDetail.querySelector('[data-order-detail-back]')?.addEventListener('click', () => setActiveTab('pedidos'));
-            orderDetail.querySelector('[data-order-detail-pdf]')?.addEventListener('click', async (event) => {
+            orderDetail.querySelectorAll('[data-order-document]').forEach(documentButton => documentButton.addEventListener('click', async (event) => {
                 const button = event.currentTarget;
+                const documentType = button.dataset.orderDocument === 'romaneio' ? 'romaneio' : 'nota';
                 const popup = window.open('', '_blank');
                 if (!popup) {
                     setFeedback(ordersFeedback, 'Permita a abertura de pop-ups para visualizar o PDF.', 'error');
@@ -4023,7 +4036,7 @@ $catalogoPayload = json_encode(array_map(static function ($produto) use ($asset)
                 popup.document.close();
                 button.setAttribute('disabled', 'disabled');
                 try {
-                    const noteResponse = await fetch(`${basePath}/api/pedidos/${pedidoId}/nota`, {
+                    const noteResponse = await fetch(`${basePath}/api/pedidos/${pedidoId}/${documentType}`, {
                         cache: 'no-store',
                         headers: {'Authorization': `Bearer ${state.token}`, 'Accept': 'text/html'},
                     });
@@ -4032,7 +4045,7 @@ $catalogoPayload = json_encode(array_map(static function ($produto) use ($asset)
                         leaveApp();
                         return;
                     }
-                    if (!noteResponse.ok) throw new Error('Não foi possível gerar o PDF deste pedido.');
+                    if (!noteResponse.ok) throw new Error(documentType === 'romaneio' ? 'Não foi possível abrir o romaneio.' : 'Não foi possível gerar o PDF deste pedido.');
                     const noteHtml = await noteResponse.text();
                     popup.document.open();
                     popup.document.write(noteHtml);
@@ -4044,7 +4057,7 @@ $catalogoPayload = json_encode(array_map(static function ($produto) use ($asset)
                 } finally {
                     button.removeAttribute('disabled');
                 }
-            });
+            }));
             setFeedback(ordersFeedback, 'Detalhes carregados com sucesso.', 'success');
         } catch (error) {
             setActiveTab('pedidos');

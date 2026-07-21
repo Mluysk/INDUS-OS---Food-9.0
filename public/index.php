@@ -146,6 +146,7 @@ $router->add('GET', '/api/pedidos', [PedidosApiController::class, 'index']);
 $router->add('POST', '/api/pedidos', [PedidosApiController::class, 'store']);
 $router->add('GET', '/api/pedidos/{id}', [PedidosApiController::class, 'show']);
 $router->add('GET', '/api/pedidos/{id}/nota', [PedidosApiController::class, 'nota']);
+$router->add('GET', '/api/pedidos/{id}/romaneio', [PedidosApiController::class, 'romaneio']);
 $router->add('PATCH', '/api/pedidos/{id}', [PedidosApiController::class, 'update']);
 $router->add('PATCH', '/api/pedidos/{id}/status', [PedidosApiController::class, 'updateStatus']);
 

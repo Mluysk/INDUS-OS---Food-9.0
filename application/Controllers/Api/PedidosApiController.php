@@ -148,6 +148,32 @@ class PedidosApiController extends Controller
         ]);
     }
 
+    public function romaneio($id): void
+    {
+        $decoded = $this->ensureJwt();
+        $pedidoId = (int)$id;
+        $clienteId = (int)($decoded['cliente_id'] ?? $decoded['sub'] ?? 0);
+        $detalhePedido = $this->pedidos->detalhar($pedidoId);
+        $pedido = $detalhePedido['pedido'] ?? null;
+        if ($pedidoId <= 0 || !$pedido || $clienteId <= 0 || (int)($pedido['cliente_id'] ?? 0) !== $clienteId) {
+            $this->json(['message' => 'Pedido não encontrado.'], 404);
+            return;
+        }
+        $expedicoes = $this->container->get(\App\Repositories\ExpedicoesRepository::class)->all(['pedido_id' => $pedidoId]);
+        if (!$expedicoes) {
+            $this->json(['message' => 'O romaneio deste pedido ainda não foi gerado.'], 404);
+            return;
+        }
+        usort($expedicoes, static fn(array $a, array $b): int => (int)($b['id'] ?? 0) <=> (int)($a['id'] ?? 0));
+        $detalhe = $this->container->get(\App\Services\ExpedicaoService::class)->detalheConcluido((int)$expedicoes[0]['id']);
+        $this->audit->log((int)($decoded['sub'] ?? $clienteId), 'documento', 'pedidos', $pedidoId, [
+            'documento' => 'romaneio_portal', 'romaneio' => $detalhe['expedicao']['romaneio'] ?? null, 'origem' => 'portal',
+        ]);
+        $this->render('expedicao/romaneio_print', $detalhe, [
+            'title' => 'Romaneio ' . ($detalhe['expedicao']['romaneio'] ?? ''), 'layout' => 'layouts/print',
+        ]);
+    }
+
     public function update($id): void
     {
         $decoded = $this->ensureJwt();
