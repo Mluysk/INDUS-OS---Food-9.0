@@ -235,12 +235,15 @@ foreach (($pedidos ?? []) as $pedido) {
         border-radius: 999px;
         color: var(--primary, #dc2626);
         background: color-mix(in srgb, var(--primary, #dc2626) 12%, #fff);
+        line-height: 0;
     }
 
     #panel-lista-pedidos .pedido-status-icon svg,
     #panel-lista-pedidos .pedido-status-icon[data-lucide] {
+        display: block;
         width: 15px;
         height: 15px;
+        margin: 0;
         stroke-width: 2.4;
     }
 
