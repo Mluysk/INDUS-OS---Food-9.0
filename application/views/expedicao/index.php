@@ -37,6 +37,7 @@ $dataBr = static function ($value): string {
 .expedicao-date{display:inline-grid;gap:2px;white-space:nowrap}.expedicao-date strong{font-size:.9rem;font-weight:500;color:var(--text)}.expedicao-date small{font-size:.74rem;color:var(--text-muted);font-weight:650}
 .expedicao-completed-sort{display:inline-flex;align-items:center;gap:.38rem;border:0;padding:0;background:transparent;color:inherit;font:inherit;font-weight:inherit;text-transform:inherit;letter-spacing:inherit;cursor:pointer}.expedicao-completed-sort span{color:var(--primary);font-size:.9rem;line-height:1}.expedicao-completed-sort:hover,.expedicao-completed-sort:focus-visible{color:var(--primary);outline:0}
 .expedicao-completed-sort{font-weight:800}.expedicao-completed-sort>span{display:inline-flex;align-items:center;justify-content:center;width:21px;height:21px;border-radius:999px;background:var(--surface-muted,#eef2f7);color:var(--text-muted,#64748b);font-size:.78rem;line-height:1;transition:color .2s ease,background .2s ease}.expedicao-completed-sort:hover{color:inherit}.expedicao-completed-sort:hover>span,.expedicao-completed-sort>span.active{color:var(--primary);background:color-mix(in srgb,var(--primary) 12%,#fff)}
+.expedicao-panel[data-tab-panel="concluidos"] .expedicao-table thead th{font-size:10.6px!important}
 .expedicao-completed-search__box>.search-clear-button svg{width:9.62px!important;height:9.62px!important}
 </style>
 
