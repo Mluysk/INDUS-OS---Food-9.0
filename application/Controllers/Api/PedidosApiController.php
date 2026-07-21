@@ -91,7 +91,98 @@ class PedidosApiController extends Controller
         $pedido = $detalhe['pedido'];
         $pedido['status_label'] = $pedido['status_label'] ?? $this->pedidos->statusLabel($pedido['status'] ?? null);
         $detalhe['pedido'] = $pedido;
+        $db = $this->container->get(\App\Repositories\PedidosRepository::class)->getConnection();
+        $romaneioStmt = $db->prepare('SELECT id, romaneio, data_separacao, data_expedicao, volumes, peso_total, transportadora, motorista_nome, responsavel_expedicao_nome FROM expedicoes WHERE pedido_id = :pedido_id ORDER BY id DESC LIMIT 1');
+        $romaneioStmt->execute(['pedido_id' => (int)$id]);
+        $detalhe['romaneio'] = $romaneioStmt->fetch() ?: null;
+
+        $historicoStmt = $db->prepare("SELECT acao, detalhes, created_at FROM audit_logs WHERE entidade = 'pedidos' AND entidade_id = :pedido_id AND acao IN ('create', 'update', 'status', 'expedir') ORDER BY id DESC");
+        $historicoStmt->execute(['pedido_id' => (int)$id]);
+        $detalhe['historico'] = array_map(static function (array $registro): array {
+            $dados = json_decode((string)($registro['detalhes'] ?? ''), true);
+            $dados = is_array($dados) ? $dados : [];
+            return [
+                'acao' => (string)($registro['acao'] ?? ''),
+                'created_at' => $registro['created_at'] ?? null,
+                'motivo' => $dados['observacao'] ?? $dados['justificativa'] ?? $dados['motivo_label'] ?? $dados['motivo'] ?? null,
+                'origem' => $dados['origem'] ?? null,
+                'mudancas' => is_array($dados['mudancas'] ?? null) ? $dados['mudancas'] : [],
+            ];
+        }, $historicoStmt->fetchAll());
         $this->json($detalhe);
+    }
+
+    public function update($id): void
+    {
+        $decoded = $this->ensureJwt();
+        $pedidoId = (int)$id;
+        $clienteId = (int)($decoded['cliente_id'] ?? $decoded['sub'] ?? 0);
+        $detalhe = $this->pedidos->detalhar($pedidoId);
+        $pedido = $detalhe['pedido'] ?? null;
+
+        if (!$pedido || $clienteId <= 0 || (int)($pedido['cliente_id'] ?? 0) !== $clienteId) {
+            $this->json(['message' => 'Pedido não encontrado.'], 404);
+            return;
+        }
+        if (!in_array(strtolower((string)($pedido['status'] ?? '')), ['novo', 'aprovacao'], true)) {
+            $this->json(['message' => 'Este pedido não pode mais ser editado porque já está em processamento.'], 422);
+            return;
+        }
+
+        $payload = json_decode(file_get_contents('php://input'), true) ?: [];
+        $atuais = [];
+        foreach (($detalhe['itens'] ?? []) as $item) {
+            $produtoId = (int)($item['produto_id'] ?? 0);
+            if ($produtoId > 0) {
+                $atuais[$produtoId] = $item;
+            }
+        }
+        $produtosRepo = $this->container->get(\App\Repositories\ProdutosRepository::class);
+        $itens = [];
+        $incluidos = [];
+        foreach (($payload['itens'] ?? []) as $item) {
+            $produtoId = (int)($item['produto_id'] ?? 0);
+            $quantidade = (float)($item['quantidade'] ?? 0);
+            if ($produtoId <= 0 || $quantidade <= 0 || isset($incluidos[$produtoId])) {
+                continue;
+            }
+            $produto = $produtosRepo->find($produtoId);
+            if (!$produto
+                || (int)($produto['is_ativo'] ?? 1) !== 1
+                || (int)($produto['mostrar_portal'] ?? 1) !== 1
+                || strtoupper((string)($produto['tipo'] ?? 'PA')) !== 'PA') {
+                continue;
+            }
+            $precoUnitario = isset($atuais[$produtoId])
+                ? (float)($atuais[$produtoId]['preco_unit'] ?? 0)
+                : (float)($produto['preco'] ?? 0);
+            $itens[] = [
+                'produto_id' => $produtoId,
+                'quantidade' => $quantidade,
+                'preco_unit' => $precoUnitario,
+            ];
+            $incluidos[$produtoId] = true;
+        }
+        if (!$itens) {
+            $this->json(['message' => 'Mantenha pelo menos um item com quantidade válida.'], 422);
+            return;
+        }
+
+        try {
+            $resultado = $this->pedidos->atualizarPedido(
+                $pedidoId,
+                $clienteId,
+                $itens,
+                $payload['observacoes'] ?? ($pedido['observacoes'] ?? null),
+                (int)($decoded['sub'] ?? $clienteId),
+                $pedido['forma_pagto'] ?? null
+            );
+        } catch (\InvalidArgumentException $exception) {
+            $this->json(['message' => $exception->getMessage()], 422);
+            return;
+        }
+
+        $this->json(['message' => 'Pedido atualizado com sucesso.', 'pedido' => $resultado['pedido'] ?? $resultado]);
     }
 
     public function updateStatus($id): void

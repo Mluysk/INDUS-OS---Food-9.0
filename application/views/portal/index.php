@@ -134,6 +134,10 @@ if ($supportWhatsapp !== '') {
             <p class="portal-app__subtitle">Monte seu pedido com disponibilidade FEFO e acompanhe a confirmação em tempo real.</p>
         </div>
         <div class="portal-app__header-links" role="group" aria-label="Atalhos do portal">
+            <button type="button" class="portal-app__link" data-portal-jump="dashboard">
+                <span class="portal-app__link-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><path d="M14 18h7M17.5 14.5v7"/></svg></span>
+                <span class="portal-app__link-text">Dashboard</span>
+            </button>
             <button type="button" class="portal-app__link" data-portal-jump="novo-pedido">
                 <span class="portal-app__link-icon" aria-hidden="true">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
@@ -158,17 +162,21 @@ if ($supportWhatsapp !== '') {
     </div>
 
     <nav class="portal-app__nav" role="tablist" aria-label="Navegação do portal do cliente">
+        <button type="button" class="portal-tab is-active" data-portal-tab-trigger="dashboard" aria-controls="portal-tab-dashboard" aria-selected="true">Dashboard</button>
         <button type="button" class="portal-tab" data-portal-tab-trigger="pedidos" aria-controls="portal-tab-pedidos" aria-selected="false">Pedidos</button>
-        <button type="button" class="portal-tab is-active" data-portal-tab-trigger="novo-pedido" aria-controls="portal-tab-novo" aria-selected="true">Fazer novo pedido</button>
+        <button type="button" class="portal-tab" data-portal-tab-trigger="novo-pedido" aria-controls="portal-tab-novo" aria-selected="false">Novo pedido</button>
         <button type="button" class="portal-tab" data-portal-tab-trigger="suporte" aria-controls="portal-tab-suporte" aria-selected="false">Suporte</button>
     </nav>
 
     <div class="portal-app__panels">
+        <section class="portal-panel" id="portal-tab-dashboard" data-portal-tab-panel="dashboard">
+            <div class="portal-dashboard" data-portal-dashboard><div class="portal-dashboard__loading">Carregando seu desempenho...</div></div>
+        </section>
         <section class="portal-panel" id="portal-tab-pedidos" data-portal-tab-panel="pedidos" hidden>
             <div class="portal-orders-card">
                 <div class="portal-orders-card__head">
                     <div>
-                        <h3>Pedidos recentes</h3>
+                        <h3 class="portal-orders-title"><span class="portal-orders-title__icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/><path d="m15 16 2 2 4-4"/></svg></span>Pedidos recentes</h3>
                         <p>Acompanhe a produção, separação e expedição das suas solicitações.</p>
                     </div>
                     <div class="portal-orders-card__actions">
@@ -197,7 +205,17 @@ if ($supportWhatsapp !== '') {
             </div>
         </section>
 
-        <section class="portal-panel" id="portal-tab-novo" data-portal-tab-panel="novo-pedido">
+        <section class="portal-panel" id="portal-tab-editar-pedido" data-portal-tab-panel="editar-pedido" hidden>
+            <div class="portal-order-editor" data-portal-order-editor>
+                <div class="portal-order-editor__loading">Carregando pedido...</div>
+            </div>
+        </section>
+
+        <section class="portal-panel" id="portal-tab-detalhe-pedido" data-portal-tab-panel="detalhe-pedido" hidden>
+            <div class="portal-order-detail" data-portal-order-detail><div class="portal-order-detail__loading">Carregando pedido...</div></div>
+        </section>
+
+        <section class="portal-panel" id="portal-tab-novo" data-portal-tab-panel="novo-pedido" hidden>
             <div class="portal-app__grid">
                 <div class="portal-catalog-card">
                     <div class="portal-catalog-card__head">
@@ -304,10 +322,10 @@ if ($supportWhatsapp !== '') {
                         <li data-support-kind="email"><strong>E-mail:</strong> <a href="mailto:<?= htmlspecialchars($supportEmail, ENT_QUOTES, 'UTF-8'); ?>"><?= htmlspecialchars($supportEmail, ENT_QUOTES, 'UTF-8'); ?></a></li>
                     <?php endif; ?>
                     <?php if ($supportTelefone !== ''): ?>
-                        <li data-support-kind="phone"><strong>Telefone:</strong> <a href="tel:<?= htmlspecialchars($phoneHref ?: $supportTelefone, ENT_QUOTES, 'UTF-8'); ?>"><?= htmlspecialchars($supportTelefone, ENT_QUOTES, 'UTF-8'); ?></a></li>
+                        <li data-support-kind="phone"><span class="portal-support-card__item-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.69 2.8a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.33 1.85.56 2.81.69A2 2 0 0 1 22 16.92Z"/></svg></span><strong>Telefone:</strong> <a href="tel:<?= htmlspecialchars($phoneHref ?: $supportTelefone, ENT_QUOTES, 'UTF-8'); ?>"><?= htmlspecialchars($supportTelefone, ENT_QUOTES, 'UTF-8'); ?></a></li>
                     <?php endif; ?>
                     <?php if ($supportWhatsapp !== ''): ?>
-                        <li data-support-kind="whatsapp"><strong>WhatsApp:</strong>
+                        <li data-support-kind="whatsapp"><span class="portal-support-card__item-icon" aria-hidden="true"><svg class="portal-whatsapp-icon" viewBox="0 0 16 16"><path d="M13.601 2.326A7.854 7.854 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.933 7.933 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93a7.898 7.898 0 0 0-2.327-5.607ZM7.994 15.521a6.573 6.573 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.25a6.568 6.568 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.557 6.557 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592Zm3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.066-.315-.099-.445.099-.133.197-.514.646-.63.775-.116.133-.232.15-.43.05-.197-.1-.836-.308-1.592-.984-.59-.525-.986-1.173-1.102-1.371-.116-.2-.013-.306.087-.405.09-.088.197-.232.296-.346.1-.116.133-.2.198-.33.066-.133.033-.25-.017-.35-.05-.099-.445-1.084-.61-1.47-.16-.389-.323-.335-.445-.34-.116-.006-.247-.006-.38-.006-.133 0-.35.05-.534.25-.182.2-.696.68-.696 1.66s.713 1.931.812 2.064c.099.133 1.404 2.137 3.4 2.997.476.205.847.328 1.136.42.478.152.913.13 1.257.079.383-.058 1.17-.48 1.336-.943.164-.462.164-.86.116-.943-.05-.082-.182-.132-.38-.23Z"/></svg></span><strong>WhatsApp:</strong>
                             <?php if ($whatsHref !== ''): ?>
                                 <a href="<?= htmlspecialchars($whatsHref, ENT_QUOTES, 'UTF-8'); ?>" target="_blank" rel="noopener"><?= htmlspecialchars($supportWhatsapp, ENT_QUOTES, 'UTF-8'); ?></a>
                             <?php else: ?>
@@ -316,18 +334,18 @@ if ($supportWhatsapp !== '') {
                         </li>
                     <?php endif; ?>
                     <?php if ($supportHorario !== ''): ?>
-                        <li><strong>Horário:</strong> <?= htmlspecialchars($supportHorario, ENT_QUOTES, 'UTF-8'); ?></li>
+                        <li data-support-kind="hours"><span class="portal-support-card__item-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span><strong>Horário:</strong> <?= htmlspecialchars($supportHorario, ENT_QUOTES, 'UTF-8'); ?></li>
                     <?php endif; ?>
                 </ul>
                 <div class="portal-support-card__actions">
                     <?php if ($whatsHref !== ''): ?>
-                        <a class="portal-support-card__action portal-support-card__action--primary" href="<?= htmlspecialchars($whatsHref, ENT_QUOTES, 'UTF-8'); ?>" target="_blank" rel="noopener">Enviar WhatsApp</a>
+                        <a class="portal-support-card__action portal-support-card__action--primary" href="<?= htmlspecialchars($whatsHref, ENT_QUOTES, 'UTF-8'); ?>" target="_blank" rel="noopener"><svg class="portal-whatsapp-icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M13.601 2.326A7.854 7.854 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.933 7.933 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93a7.898 7.898 0 0 0-2.327-5.607ZM7.994 15.521a6.573 6.573 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.25a6.568 6.568 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.557 6.557 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592Zm3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.066-.315-.099-.445.099-.133.197-.514.646-.63.775-.116.133-.232.15-.43.05-.197-.1-.836-.308-1.592-.984-.59-.525-.986-1.173-1.102-1.371-.116-.2-.013-.306.087-.405.09-.088.197-.232.296-.346.1-.116.133-.2.198-.33.066-.133.033-.25-.017-.35-.05-.099-.445-1.084-.61-1.47-.16-.389-.323-.335-.445-.34-.116-.006-.247-.006-.38-.006-.133 0-.35.05-.534.25-.182.2-.696.68-.696 1.66s.713 1.931.812 2.064c.099.133 1.404 2.137 3.4 2.997.476.205.847.328 1.136.42.478.152.913.13 1.257.079.383-.058 1.17-.48 1.336-.943.164-.462.164-.86.116-.943-.05-.082-.182-.132-.38-.23Z"/></svg><span>Enviar WhatsApp</span></a>
                     <?php endif; ?>
                     <?php if ($supportEmail !== ''): ?>
-                        <a class="portal-support-card__action" href="mailto:<?= htmlspecialchars($supportEmail, ENT_QUOTES, 'UTF-8'); ?>">Enviar e-mail</a>
+                        <a class="portal-support-card__action" href="mailto:<?= htmlspecialchars($supportEmail, ENT_QUOTES, 'UTF-8'); ?>"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg><span>Enviar e-mail</span></a>
                     <?php endif; ?>
                     <?php if ($supportTelefone !== ''): ?>
-                        <a class="portal-support-card__action" href="tel:<?= htmlspecialchars($phoneHref ?: $supportTelefone, ENT_QUOTES, 'UTF-8'); ?>">Ligar</a>
+                        <a class="portal-support-card__action" href="tel:<?= htmlspecialchars($phoneHref ?: $supportTelefone, ENT_QUOTES, 'UTF-8'); ?>"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.69 2.8a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.33 1.85.56 2.81.69A2 2 0 0 1 22 16.92Z"/></svg><span>Ligar</span></a>
                     <?php endif; ?>
                 </div>
                 <?php if ($supportMensagem !== ''): ?>
@@ -362,13 +380,13 @@ if ($supportWhatsapp !== '') {
             <h3 id="portal-welcome-title">Boas-vindas!</h3>
             <p class="portal-welcome__lead">Olá, <strong data-welcome-name>Cliente</strong>. Seu painel personalizado está pronto para receber novos pedidos.</p>
             <ul class="portal-welcome__tips">
-                <li>Confira o catálogo atualizado na aba <strong>Fazer novo pedido</strong>.</li>
+                <li>Confira o catálogo atualizado na aba <strong>Novo pedido</strong>.</li>
                 <li>Acompanhe o status das solicitações em <strong>Pedidos</strong>.</li>
                 <li>Precisa de ajuda? Acesse <strong>Suporte</strong> para falar com nossa equipe.</li>
             </ul>
             <div class="portal-welcome__footer">
                 <button type="button" class="portal-btn portal-btn--ghost" data-welcome-dismiss>Explorar depois</button>
-                <button type="button" class="portal-btn portal-btn--primary" data-welcome-go="novo-pedido">Fazer novo pedido</button>
+                <button type="button" class="portal-btn portal-btn--primary" data-welcome-go="novo-pedido">Novo pedido</button>
             </div>
         </div>
     </div>
@@ -1357,6 +1375,8 @@ if ($supportWhatsapp !== '') {
     }
 
     .portal-product {
+        content-visibility: auto;
+        contain-intrinsic-size: 320px 430px;
         border: 1px solid rgba(148, 163, 184, 0.18);
         border-radius: 18px;
         padding: 1.2rem 1.4rem;
@@ -1950,6 +1970,99 @@ if ($supportWhatsapp !== '') {
         height: 1rem;
     }
 
+    .portal-orders-action--icon {
+        box-sizing: border-box;
+        position: relative;
+        width: 39px;
+        min-width: 39px;
+        max-width: 39px;
+        height: 39px;
+        min-height: 39px;
+        max-height: 39px;
+        padding: 0;
+        justify-content: center;
+        flex: 0 0 39px;
+        border: 0;
+        border-radius: 12px;
+        background: var(--surface-muted, #f3f4f6);
+        color: var(--portal-text, #020617);
+        line-height: 1;
+    }
+
+    .portal-orders-action--icon svg {
+        width: 16px;
+        height: 16px;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 2.25;
+    }
+
+    .portal-orders-action--icon:hover:not([disabled]) {
+        background: var(--surface-muted, #f3f4f6);
+        color: var(--portal-text, #020617);
+        filter: brightness(.98);
+        transform: none;
+    }
+
+    .portal-orders-action--icon::after {
+        content: attr(data-tooltip);
+        position: absolute;
+        left: 50%;
+        bottom: calc(100% + 8px);
+        transform: translateX(-50%) translateY(4px);
+        padding: 7px 10px;
+        border-radius: 8px;
+        background: #111827;
+        color: #fff;
+        font-size: .72rem;
+        font-weight: 700;
+        line-height: 1;
+        white-space: nowrap;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity .16s ease, transform .16s ease;
+        z-index: 40;
+    }
+
+    .portal-orders-action--icon:hover::after,
+    .portal-orders-action--icon:focus-visible::after {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
+
+    .portal-orders-title {
+        display: flex;
+        align-items: center;
+        gap: 11px;
+    }
+
+    .portal-orders-title__icon {
+        display: inline-grid;
+        place-items: center;
+        width: 42px;
+        height: 42px;
+        flex: 0 0 42px;
+        border: 1px solid color-mix(in srgb, var(--primary) 28%, transparent);
+        border-radius: 14px;
+        background: color-mix(in srgb, var(--primary) 10%, transparent);
+        color: var(--primary);
+    }
+
+    .portal-orders-title__icon svg {
+        width: 22px;
+        height: 22px;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+    }
+
+    .portal-order-editor{display:grid;gap:16px;padding:22px;border:1px solid var(--portal-card-border);border-radius:24px;background:var(--portal-card-bg);box-shadow:0 24px 62px -42px rgba(15,23,42,.5)}
+    .portal-order-editor__head{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}.portal-order-editor__title{display:flex;align-items:center;gap:11px}.portal-order-editor__title-icon{display:grid;place-items:center;width:42px;height:42px;border-radius:14px;background:color-mix(in srgb,var(--primary) 11%,transparent);color:var(--primary)}.portal-order-editor__title-icon svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}.portal-order-editor__title h3{margin:0}.portal-order-editor__title p{margin:3px 0 0;color:var(--portal-muted)}.portal-order-editor__back{display:inline-flex;align-items:center;gap:7px}.portal-order-editor__back svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:2.2}.portal-order-editor__items{display:grid;gap:9px}.portal-order-editor__item{display:grid;grid-template-columns:minmax(0,1fr) 130px auto;align-items:center;gap:12px;padding:12px;border:1px solid var(--portal-card-border);border-radius:14px}.portal-order-editor__item strong,.portal-order-editor__item small{display:block}.portal-order-editor__item small{margin-top:3px;color:var(--portal-muted)}.portal-order-editor__item input{width:100%;min-height:42px;border:1px solid var(--portal-card-border);border-radius:11px;padding:8px 10px;background:var(--portal-card-bg);color:var(--portal-text);font-weight:800}.portal-order-editor__remove{display:grid;place-items:center;width:38px;height:38px;border:1px solid #fecaca;border-radius:11px;background:#fff1f2;color:#dc2626;cursor:pointer}.portal-order-editor__remove svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:2}.portal-order-editor__footer{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding-top:12px;border-top:1px solid var(--portal-card-border)}.portal-order-editor__total strong{font-size:1.2rem}.portal-order-editor__loading{padding:32px;text-align:center;color:var(--portal-muted)}@media(max-width:620px){.portal-order-editor{padding:15px;border-radius:18px}.portal-order-editor__head{align-items:stretch;flex-direction:column}.portal-order-editor__back{justify-content:center}.portal-order-editor__item{grid-template-columns:minmax(0,1fr) 82px}.portal-order-editor__remove{grid-column:2;justify-self:end}.portal-order-editor__footer{align-items:stretch;flex-direction:column}.portal-order-editor__footer .portal-btn{width:100%;justify-content:center}}
+    .portal-order-editor__meta{display:flex;gap:8px;flex-wrap:wrap}.portal-order-editor__meta span{padding:7px 10px;border-radius:999px;background:color-mix(in srgb,var(--primary) 8%,transparent);color:var(--portal-text);font-size:.78rem;font-weight:800}.portal-order-editor__section{display:grid;gap:10px;padding:16px;border:1px solid var(--portal-card-border);border-radius:17px;background:color-mix(in srgb,var(--portal-card-bg) 96%,var(--primary) 4%)}.portal-order-editor__section-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}.portal-order-editor__section h4{margin:0}.portal-order-editor__search{position:relative;display:flex;align-items:center;min-width:min(100%,360px)}.portal-order-editor__search>svg{position:absolute;left:13px;width:17px;height:17px;fill:none;stroke:var(--portal-muted);stroke-width:2;pointer-events:none}.portal-order-editor__search input{width:100%;min-height:44px;padding:9px 42px;border:1px solid var(--portal-card-border);border-radius:12px;background:var(--portal-card-bg);color:var(--portal-text)}.portal-order-editor__search:focus-within>svg{stroke:var(--primary)}.portal-order-editor__clear{position:absolute;right:7px;display:grid;place-items:center;width:30px;height:30px;border:0;border-radius:9px;background:transparent;color:var(--portal-muted);cursor:pointer}.portal-order-editor__catalog{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;max-height:228px;overflow:auto}.portal-order-editor__product{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:9px;padding:10px 11px;border:1px solid var(--portal-card-border);border-radius:12px;background:var(--portal-card-bg)}.portal-order-editor__product strong,.portal-order-editor__product small{display:block}.portal-order-editor__product small{margin-top:2px;color:var(--portal-muted)}.portal-order-editor__add{display:grid;place-items:center;width:34px;height:34px;border:1px solid color-mix(in srgb,var(--primary) 30%,transparent);border-radius:10px;background:color-mix(in srgb,var(--primary) 10%,transparent);color:var(--primary);cursor:pointer}.portal-order-editor__add svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2.3}.portal-order-editor__empty{grid-column:1/-1;padding:18px;text-align:center;color:var(--portal-muted)}.portal-order-editor__notes{display:grid;gap:7px}.portal-order-editor__notes label{font-weight:800}.portal-order-editor__notes textarea{min-height:96px;resize:vertical;padding:12px;border:1px solid var(--portal-card-border);border-radius:12px;background:var(--portal-card-bg);color:var(--portal-text)}.portal-order-editor__summary{display:flex;align-items:center;gap:18px;flex-wrap:wrap}.portal-order-editor__summary span{display:grid;gap:2px;color:var(--portal-muted);font-size:.78rem}.portal-order-editor__summary strong{color:var(--portal-text);font-size:1.05rem}.portal-order-editor__actions{display:flex;gap:9px;flex-wrap:wrap}@media(max-width:720px){.portal-order-editor__catalog{grid-template-columns:1fr}}@media(max-width:620px){.portal-order-editor{padding:15px;border-radius:18px}.portal-order-editor__head{align-items:stretch;flex-direction:column}.portal-order-editor__back{justify-content:center}.portal-order-editor__section{padding:12px}.portal-order-editor__search{min-width:100%}.portal-order-editor__item{grid-template-columns:minmax(0,1fr) 82px}.portal-order-editor__remove{grid-column:2;justify-self:end}.portal-order-editor__footer,.portal-order-editor__actions{align-items:stretch;flex-direction:column}.portal-order-editor__footer .portal-btn,.portal-order-editor__actions .portal-btn{width:100%;justify-content:center}}
+    .portal-order-builder{display:grid;gap:18px}.portal-order-builder__title strong{display:block;color:var(--portal-text);font-size:1.05rem}.portal-order-builder__title p{margin:2px 0 0;color:var(--portal-muted)}.portal-order-builder__entry{display:grid;grid-template-columns:minmax(96px,.42fr) minmax(250px,1.45fr) minmax(110px,.52fr) minmax(110px,.5fr) minmax(130px,.62fr) minmax(140px,.65fr) minmax(145px,auto);gap:12px;align-items:end}.portal-order-builder__field{position:relative;display:flex;flex-direction:column;gap:6px;min-width:0;color:var(--portal-muted);font-weight:700}.portal-order-builder__field input,.portal-order-builder__readonly{box-sizing:border-box;width:100%;min-height:46px;padding:10px 14px;border:1px solid var(--portal-card-border);border-radius:12px;background:var(--portal-card-bg);color:var(--portal-text);font-weight:800}.portal-order-builder__readonly{display:flex;align-items:center;background:rgba(249,250,251,.8);white-space:nowrap}.portal-order-builder__code{justify-content:center;color:var(--portal-muted)}.portal-order-builder__suggestions{position:absolute;z-index:50;top:calc(100% + 6px);left:0;right:0;max-height:260px;overflow:auto;margin:0;padding:6px;list-style:none;border:1px solid var(--portal-card-border);border-radius:12px;background:var(--portal-card-bg);box-shadow:0 18px 38px rgba(15,23,42,.14)}.portal-order-builder__suggestions:empty{display:none}.portal-order-builder__suggestions button{width:100%;padding:10px 12px;border:0;border-radius:9px;background:transparent;color:var(--portal-text);text-align:left;font-weight:800;cursor:pointer}.portal-order-builder__suggestions button:hover{background:rgba(249,250,251,.9)}.portal-order-builder__suggestions small{display:block;margin-top:2px;color:var(--portal-muted);font-weight:600}.portal-order-builder__add{min-height:46px;justify-content:center;white-space:nowrap}.portal-order-builder__list h4{margin:0 0 12px}.portal-order-builder__table{overflow:hidden;border:1px solid var(--portal-card-border);border-radius:14px;background:var(--portal-card-bg);box-shadow:0 12px 28px rgba(15,23,42,.06)}.portal-order-builder__head,.portal-order-editor__item{display:grid;grid-template-columns:minmax(92px,.42fr) minmax(240px,1.55fr) minmax(120px,.52fr) minmax(108px,.48fr) minmax(125px,.58fr) minmax(130px,.6fr) 52px;gap:11px;align-items:center}.portal-order-builder__head{min-height:46px;padding:0 16px;background:rgba(249,250,251,.8);color:var(--portal-muted);font-size:.78rem;font-weight:800;letter-spacing:.04em;text-transform:uppercase;border-bottom:1px solid var(--portal-card-border)}.portal-order-editor__items{display:grid;gap:0}.portal-order-editor__item{min-height:58px;padding:9px 16px;border:0;border-bottom:1px solid var(--portal-card-border);border-radius:0}.portal-order-editor__item:last-child{border-bottom:0}.portal-order-editor__item>span{min-width:0;font-weight:800}.portal-order-editor__item-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.portal-order-editor__item input{min-height:38px;padding:7px 10px;border-radius:10px}.portal-order-editor__item-subtotal{font-weight:900}.portal-order-editor__empty-list{padding:16px;color:var(--portal-muted)}@media(max-width:1180px){.portal-order-builder__entry{grid-template-columns:repeat(3,minmax(160px,1fr))}}@media(max-width:980px){.portal-order-builder__entry{grid-template-columns:1fr 1fr}.portal-order-builder__table{overflow-x:auto}.portal-order-builder__head,.portal-order-editor__item{min-width:940px}}@media(max-width:640px){.portal-order-builder__entry{grid-template-columns:1fr}.portal-order-builder__add{width:100%}}
+
     .portal-orders-action--confirm {
         background: rgba(22, 163, 74, 0.16);
         border-color: rgba(22, 163, 74, 0.42);
@@ -1989,6 +2102,153 @@ if ($supportWhatsapp !== '') {
         color: rgba(254, 215, 170, 0.92);
     }
 
+    .portal-order-editor form { display: grid; gap: 18px; }
+    .portal-order-editor__summary {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(130px, 1fr));
+        gap: 10px;
+        flex: 1 1 520px;
+    }
+    .portal-order-editor__summary > span {
+        position: relative;
+        display: grid;
+        gap: 5px;
+        min-height: 78px;
+        padding: 13px 15px;
+        overflow: hidden;
+        border: 1px solid var(--portal-card-border);
+        border-radius: 15px;
+        background: rgba(249, 250, 251, 0.86);
+        color: var(--portal-muted);
+        font-size: .78rem;
+        font-weight: 750;
+    }
+    .portal-order-editor__summary-icon {
+        position: absolute;
+        top: 12px;
+        right: 13px;
+        z-index: 1;
+        display: grid;
+        place-items: center;
+        width: 30px;
+        height: 30px;
+        border: 1px solid color-mix(in srgb, var(--primary) 18%, var(--portal-card-border));
+        border-radius: 10px;
+        background: color-mix(in srgb, var(--primary) 7%, var(--portal-card-bg));
+        color: color-mix(in srgb, var(--primary) 68%, var(--portal-muted));
+    }
+    .portal-order-editor__summary-icon svg {
+        width: 15px;
+        height: 15px;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 2.1;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+    }
+    .portal-order-editor__summary > span::after {
+        content: '';
+        position: absolute;
+        right: -18px;
+        bottom: -24px;
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        background: color-mix(in srgb, var(--primary) 8%, transparent);
+    }
+    .portal-order-editor__summary > span::before {
+        content: '';
+        position: absolute;
+        top: 14px;
+        right: 15px;
+        z-index: 2;
+        width: 19px;
+        height: 19px;
+        background: color-mix(in srgb, var(--primary) 62%, var(--portal-muted));
+        -webkit-mask: center / contain no-repeat;
+        mask: center / contain no-repeat;
+    }
+    .portal-order-editor__summary > span:nth-child(1)::before {
+        -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' d='m7.5 4.27 9 5.15M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16ZM3.3 7 12 12l8.7-5M12 22V12'/%3E%3C/svg%3E");
+        mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' d='m7.5 4.27 9 5.15M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16ZM3.3 7 12 12l8.7-5M12 22V12'/%3E%3C/svg%3E");
+    }
+    .portal-order-editor__summary > span:nth-child(2)::before {
+        -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='none' stroke='black' stroke-width='2' stroke-linecap='round' d='M4 9h16M4 15h16M10 3 8 21m8-18-2 18'/%3E%3C/svg%3E");
+        mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='none' stroke='black' stroke-width='2' stroke-linecap='round' d='M4 9h16M4 15h16M10 3 8 21m8-18-2 18'/%3E%3C/svg%3E");
+    }
+    .portal-order-editor__summary > span:nth-child(3)::before {
+        background: var(--primary);
+        -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' d='M2 10h20M16 15h.01M4 5h16a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2Z'/%3E%3C/svg%3E");
+        mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' d='M2 10h20M16 15h.01M4 5h16a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2Z'/%3E%3C/svg%3E");
+    }
+    .portal-order-editor__summary > span strong {
+        position: relative;
+        z-index: 1;
+        color: var(--portal-text);
+        font-size: 1.28rem;
+        font-weight: 900;
+        line-height: 1.05;
+        font-variant-numeric: tabular-nums;
+    }
+    .portal-order-editor__summary > span:last-child {
+        border-color: color-mix(in srgb, var(--primary) 30%, var(--portal-card-border));
+        background: color-mix(in srgb, var(--primary) 9%, var(--portal-card-bg));
+        color: color-mix(in srgb, var(--primary) 76%, var(--portal-text));
+    }
+    .portal-order-editor__summary > span:last-child strong {
+        color: var(--primary);
+        font-size: 1.42rem;
+    }
+    .portal-order-editor__summary > span:last-child .portal-order-editor__summary-icon {
+        border-color: color-mix(in srgb, var(--primary) 30%, transparent);
+        background: color-mix(in srgb, var(--primary) 13%, var(--portal-card-bg));
+        color: var(--primary);
+    }
+    [data-theme="dark"] .portal-order-editor__summary > span { background: rgba(30, 41, 59, .72); }
+    @media (max-width: 760px) {
+        .portal-order-editor__summary { grid-template-columns: 1fr; width: 100%; }
+        .portal-order-editor__summary > span { min-height: 70px; }
+    }
+    .portal-order-builder__add {
+        border: 0;
+        background: rgba(249, 250, 251, 0.8);
+        color: #0f172a;
+        font-weight: 800;
+    }
+    .portal-order-builder__add:not(:disabled):hover { background: rgba(241, 245, 249, 0.95); color: #0f172a; }
+    [data-theme="dark"] .portal-order-builder__readonly,
+    [data-theme="dark"] .portal-order-builder__head,
+    [data-theme="dark"] .portal-order-builder__add { background: rgba(30, 41, 59, 0.7); color: #e2e8f0; }
+
+    /* Mesmo acabamento final dos botões da lista principal de Pedidos. */
+    html body .portal-orders-action.portal-orders-action--icon {
+        border: 0;
+        background: rgba(249, 250, 251, 0.8);
+        color: #0f172a;
+        box-shadow: none;
+    }
+
+    html body .portal-orders-action.portal-orders-action--icon:hover:not([disabled]),
+    html body .portal-orders-action.portal-orders-action--icon:focus-visible {
+        border: 0;
+        background: rgba(249, 250, 251, 0.8);
+        color: #0f172a;
+        box-shadow: none;
+        filter: brightness(.98);
+        transform: none;
+    }
+
+    [data-theme="dark"] .portal-orders-action.portal-orders-action--icon {
+        background: rgba(30, 41, 59, 0.7);
+        color: #e2e8f0;
+    }
+
+    [data-theme="dark"] .portal-orders-action.portal-orders-action--icon:hover:not([disabled]),
+    [data-theme="dark"] .portal-orders-action.portal-orders-action--icon:focus-visible {
+        background: rgba(30, 41, 59, 0.7);
+        color: #e2e8f0;
+    }
+
     .portal-orders-status {
         display: inline-flex;
         align-items: center;
@@ -1997,6 +2257,8 @@ if ($supportWhatsapp !== '') {
         font-size: 0.78rem;
         padding: 0.25rem 0.75rem;
         border-radius: 999px;
+        border: 0 !important;
+        box-shadow: none !important;
     }
 
     .portal-orders-status::before {
@@ -2008,39 +2270,50 @@ if ($supportWhatsapp !== '') {
     }
 
     .portal-orders-status--novo {
-        background: rgba(37, 99, 235, 0.14);
-        color: rgba(30, 64, 175, 0.92);
+        background: rgba(37, 99, 235, 0.14) !important;
+        color: #1e40af !important;
     }
 
     .portal-orders-status--aprovacao {
-        background: rgba(217, 119, 6, 0.14);
-        color: rgba(180, 83, 9, 0.95);
+        background: rgba(217, 119, 6, 0.14) !important;
+        color: #b45309 !important;
     }
+    .portal-orders-status--aprovacao::before{width:18px!important;height:18px!important;border-radius:0!important;background-color:transparent!important;background-repeat:no-repeat!important;background-position:center!important;background-size:18px 18px!important;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23b45309' stroke-width='2.1' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 6v6l3.64 1.82'/%3E%3Cpath d='M21.92 13.27A10 10 0 1 0 13.27 21.92'/%3E%3Cpath d='M16 19h6M19 16v6'/%3E%3C/svg%3E")!important}
 
     .portal-orders-status--producao {
-        background: rgba(34, 197, 94, 0.16);
-        color: rgba(22, 163, 74, 0.95);
+        background: rgba(34, 197, 94, 0.16) !important;
+        color: #15803d !important;
     }
+    .portal-orders-status--producao::before{width:16px!important;height:16px!important;border-radius:0!important;background-color:transparent!important;background-repeat:no-repeat!important;background-position:center!important;background-size:16px 16px!important;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2315803d' stroke-width='2.3' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Cpath d='m8 12 2.7 2.7L16.5 9'/%3E%3C/svg%3E")!important}
 
     .portal-orders-status--separacao {
-        background: rgba(168, 85, 247, 0.16);
-        color: rgba(126, 34, 206, 0.9);
+        background: #d1fae5 !important;
+        color: #047857 !important;
     }
+    .portal-orders-status--separando{background:rgba(168,85,247,.16)!important;color:#7e22ce!important}
+    .portal-orders-status--separando::before{width:18px!important;height:18px!important;border-radius:0!important;background-color:transparent!important;background-repeat:no-repeat!important;background-position:center!important;background-size:18px 18px!important;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%237e22ce' stroke-width='2.1' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m16.5 9.4-9-5.2'/%3E%3Cpath d='M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z'/%3E%3Cpath d='M3.3 7 12 12l8.7-5'/%3E%3Cpath d='M12 22V12'/%3E%3C/svg%3E")!important}
+    .portal-orders-status--separacao::before{width:18px!important;height:18px!important;border-radius:0!important;background-color:transparent!important;background-repeat:no-repeat!important;background-position:center!important;background-size:18px 18px!important;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2.2 21 7v10l-9 4.8L3 17V7l9-4.8Z' fill='%23047857'/%3E%3Cpath d='M3.7 7.2 12 11.6l8.3-4.4M12 11.6v9.1M8.2 4.3l8.5 4.6' fill='none' stroke='%23a7f3d0' stroke-width='1.35' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='m7.4 15.1 2.7 2.7 6.3-6.2' fill='none' stroke='%23fff' stroke-width='2.33' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")!important}
 
     .portal-orders-status--expedicao {
-        background: rgba(14, 165, 233, 0.16);
-        color: rgba(3, 105, 161, 0.9);
+        background: rgba(14, 165, 233, 0.16) !important;
+        color: #0369a1 !important;
     }
+    .portal-orders-status--expedicao::before{width:18px!important;height:18px!important;border-radius:0!important;background-color:transparent!important;background-repeat:no-repeat!important;background-position:center!important;background-size:18px 18px!important;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230369a1' stroke-width='2.1' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M10 17h4V5H2v12h3'/%3E%3Cpath d='M14 9h4l4 4v4h-3'/%3E%3Ccircle cx='7.5' cy='17.5' r='2.5'/%3E%3Ccircle cx='16.5' cy='17.5' r='2.5'/%3E%3C/svg%3E")!important}
 
     .portal-orders-status--faturado {
-        background: rgba(22, 163, 74, 0.16);
-        color: #15803d;
+        background: rgba(22, 163, 74, 0.16) !important;
+        color: #15803d !important;
     }
+    .portal-orders-status--faturado::before{width:16px!important;height:16px!important;border-radius:0!important;background-color:transparent!important;background-repeat:no-repeat!important;background-position:center!important;background-size:16px 16px!important;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2315803d' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 13h4l2 3h4l2-3h4'/%3E%3Cpath d='m5 5-2 15h18L19 5'/%3E%3Cpath d='M12 3v9M9 9l3 3 3-3'/%3E%3C/svg%3E")!important}
 
     .portal-orders-status--cancelado {
-        background: rgba(220, 38, 38, 0.16);
-        color: #b91c1c;
+        background: rgba(220, 38, 38, 0.16) !important;
+        color: #b91c1c !important;
     }
+    .portal-orders-status--revisao{background:rgba(220,38,38,.10)!important;color:#b91c1c!important}
+    .portal-orders-status--revisao::before{width:18px!important;height:18px!important;border-radius:0!important;background-color:transparent!important;background-repeat:no-repeat!important;background-position:center!important;background-size:18px 18px!important;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23dc2626' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M10.3 3.6 2.2 18a2 2 0 0 0 1.8 3h16a2 2 0 0 0 1.8-3L13.7 3.6a2 2 0 0 0-3.4 0Z'/%3E%3Cpath d='M12 9v4'/%3E%3Cpath d='M12 17h.01'/%3E%3C/svg%3E")!important}
+    .portal-orders-status--aprovacao::before,.portal-orders-status--separando::before,.portal-orders-status--separacao::before,.portal-orders-status--expedicao::before,.portal-orders-status--revisao::before{width:16px!important;height:16px!important;background-size:16px 16px!important}
+    .portal-orders-status--separacao::before{width:19px!important;height:19px!important;background-size:19px 19px!important}
 
     .portal-visually-hidden {
         position: absolute;
@@ -2199,6 +2472,46 @@ if ($supportWhatsapp !== '') {
     .portal-support-card__list li[data-support-kind="whatsapp"]::after { content: 'W'; }
     .portal-support-card__list li:not([data-support-kind])::after { content: 'H'; }
 
+    .portal-support-card__list li[data-support-kind="phone"]::after,
+    .portal-support-card__list li[data-support-kind="whatsapp"]::after,
+    .portal-support-card__list li[data-support-kind="hours"]::after { content: none; }
+
+    .portal-support-card__item-icon {
+        position: absolute;
+        left: 0.82rem;
+        top: 0.78rem;
+        width: 30px;
+        height: 30px;
+        display: grid;
+        place-items: center;
+        color: var(--primary, #2563eb);
+        z-index: 1;
+    }
+
+    .portal-support-card__item-icon svg {
+        width: 17px;
+        height: 17px;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+    }
+
+    .portal-support-card__item-icon svg.portal-whatsapp-icon,
+    .portal-support-card__action svg.portal-whatsapp-icon {
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+    }
+
+    .portal-whatsapp-icon .portal-whatsapp-handset {
+        fill: currentColor;
+        stroke: none;
+    }
+
     .portal-support-card__list strong {
         display: block;
         color: var(--text, #0f172a);
@@ -2238,6 +2551,18 @@ if ($supportWhatsapp !== '') {
         text-decoration: none;
         font-weight: 900;
         box-shadow: 0 14px 28px -24px color-mix(in srgb, var(--primary, #2563eb) 72%, transparent);
+        gap: 0.45rem;
+    }
+
+    .portal-support-card__action svg {
+        width: 17px;
+        height: 17px;
+        flex: 0 0 17px;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
     }
 
     .portal-support-card__action--primary {
@@ -2253,6 +2578,34 @@ if ($supportWhatsapp !== '') {
         background: color-mix(in srgb, var(--primary, #2563eb) 5%, #ffffff);
         color: var(--portal-muted);
         line-height: 1.45;
+    }
+
+    html[data-theme="dark"] body .portal-support-card__list li {
+        border-color: color-mix(in srgb, var(--primary, #3b82f6) 26%, rgba(148, 163, 184, 0.22));
+        background: color-mix(in srgb, var(--primary, #3b82f6) 7%, #111827);
+        color: #cbd5e1;
+    }
+
+    html[data-theme="dark"] body .portal-support-card__list li::before {
+        background: color-mix(in srgb, var(--primary, #3b82f6) 18%, #172033);
+        box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--primary, #3b82f6) 38%, transparent);
+    }
+
+    html[data-theme="dark"] body .portal-support-card__list strong,
+    html[data-theme="dark"] body .portal-support-card__list a {
+        color: #f1f5f9;
+    }
+
+    html[data-theme="dark"] body .portal-support-card__action:not(.portal-support-card__action--primary) {
+        border-color: color-mix(in srgb, var(--primary, #3b82f6) 32%, rgba(148, 163, 184, 0.3));
+        background: color-mix(in srgb, var(--primary, #3b82f6) 10%, #111827);
+        color: color-mix(in srgb, var(--primary, #3b82f6) 72%, #ffffff);
+    }
+
+    html[data-theme="dark"] body .portal-support-card__foot {
+        border: 1px solid color-mix(in srgb, var(--primary, #3b82f6) 22%, rgba(148, 163, 184, 0.2));
+        background: color-mix(in srgb, var(--primary, #3b82f6) 6%, #111827);
+        color: #cbd5e1;
     }
 
     .portal-cart-card h3 {
@@ -2790,6 +3143,62 @@ if ($supportWhatsapp !== '') {
             max-height: calc(100vh - 2rem);
         }
     }
+
+    .portal-dashboard{display:grid;gap:18px}.portal-dashboard__hero,.portal-dashboard__section{padding:22px;border:1px solid var(--portal-card-border);border-radius:24px;background:var(--portal-card-bg);box-shadow:0 26px 54px -42px rgba(15,23,42,.55)}.portal-dashboard__hero{display:flex;align-items:center;justify-content:space-between;gap:18px;background:linear-gradient(135deg,color-mix(in srgb,var(--primary) 10%,var(--portal-card-bg)),var(--portal-card-bg))}.portal-dashboard__eyebrow{display:flex;align-items:center;gap:7px;color:var(--primary);font-size:.76rem;font-weight:900;text-transform:uppercase;letter-spacing:.08em}.portal-dashboard__hero h3{margin:6px 0;font-size:1.55rem}.portal-dashboard__hero p,.portal-dashboard__section-head p{margin:0;color:var(--portal-muted)}.portal-dashboard__refresh{display:inline-flex;align-items:center;gap:7px}.portal-dashboard__refresh svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:2}.portal-dashboard__loading,.portal-dashboard__empty{padding:34px;text-align:center;color:var(--portal-muted);border:1px dashed var(--portal-card-border);border-radius:20px}.portal-dashboard__periods{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.portal-dashboard__metric{position:relative;overflow:hidden;padding:17px;border:1px solid var(--portal-card-border);border-radius:19px;background:var(--portal-card-bg)}.portal-dashboard__metric::after{content:'';position:absolute;width:72px;height:72px;right:-28px;top:-30px;border-radius:50%;background:color-mix(in srgb,var(--primary) 10%,transparent)}.portal-dashboard__metric-label{display:flex;align-items:center;justify-content:space-between;gap:8px;color:var(--portal-muted);font-size:.78rem;font-weight:850;text-transform:uppercase}.portal-dashboard__metric strong{display:block;margin:11px 0 4px;font-size:1.42rem}.portal-dashboard__metric small{color:var(--portal-muted)}.portal-dashboard__delta{display:inline-flex;align-items:center;gap:4px;padding:4px 7px;border-radius:999px;font-size:.72rem;font-weight:900}.portal-dashboard__delta.up{color:#15803d;background:#dcfce7}.portal-dashboard__delta.down{color:#b91c1c;background:#fee2e2}.portal-dashboard__delta.neutral{color:#64748b;background:#e2e8f0}.portal-dashboard__grid{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(300px,.75fr);gap:18px}.portal-dashboard__section-head{display:flex;justify-content:space-between;gap:14px;align-items:flex-start;margin-bottom:18px}.portal-dashboard__section-head h4{margin:0 0 4px;font-size:1.05rem}.portal-dashboard__summary{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:18px}.portal-dashboard__summary div{padding:12px;border-radius:14px;background:color-mix(in srgb,var(--primary) 5%,var(--portal-card-bg));border:1px solid color-mix(in srgb,var(--primary) 14%,var(--portal-card-border))}.portal-dashboard__summary span{display:block;color:var(--portal-muted);font-size:.72rem;text-transform:uppercase;font-weight:850}.portal-dashboard__summary strong{display:block;margin-top:5px;font-size:1.05rem}.portal-dashboard__bars{height:210px;display:flex;align-items:flex-end;gap:9px;padding-top:22px}.portal-dashboard__bar-item{flex:1;min-width:0;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:7px}.portal-dashboard__bar-value{font-size:.68rem;font-weight:850;color:var(--portal-muted)}.portal-dashboard__bar{width:min(34px,72%);min-height:5px;border-radius:9px 9px 4px 4px;background:linear-gradient(180deg,color-mix(in srgb,var(--primary) 72%,#fff),var(--primary));box-shadow:0 12px 24px -16px var(--primary);transition:height .25s ease}.portal-dashboard__bar-label{font-size:.68rem;color:var(--portal-muted);text-transform:uppercase}.portal-dashboard__donut-wrap{display:grid;place-items:center;gap:14px}.portal-dashboard__donut{--value:0;width:160px;height:160px;display:grid;place-items:center;border-radius:50%;background:conic-gradient(var(--primary) calc(var(--value)*1%),color-mix(in srgb,var(--primary) 12%,var(--portal-card-border)) 0);position:relative}.portal-dashboard__donut::before{content:'';position:absolute;inset:17px;border-radius:50%;background:var(--portal-card-bg)}.portal-dashboard__donut-content{position:relative;text-align:center}.portal-dashboard__donut-content strong{display:block;font-size:1.45rem}.portal-dashboard__donut-content span{color:var(--portal-muted);font-size:.72rem}.portal-dashboard__ranking{display:grid;gap:10px}.portal-dashboard__product{display:grid;grid-template-columns:32px minmax(0,1fr) auto;gap:11px;align-items:center;padding:11px;border:1px solid var(--portal-card-border);border-radius:14px}.portal-dashboard__rank{width:30px;height:30px;display:grid;place-items:center;border-radius:10px;background:color-mix(in srgb,var(--primary) 12%,transparent);color:var(--primary);font-weight:950}.portal-dashboard__product-name{min-width:0}.portal-dashboard__product-name strong,.portal-dashboard__product-name small{display:block}.portal-dashboard__product-name strong{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.portal-dashboard__product-name small{margin-top:3px;color:var(--portal-muted)}.portal-dashboard__product-total{text-align:right}.portal-dashboard__product-total strong,.portal-dashboard__product-total small{display:block}.portal-dashboard__product-total small{margin-top:3px;color:var(--portal-muted)}html[data-theme="dark"] body .portal-dashboard__delta.up{background:rgba(22,163,74,.2);color:#86efac}html[data-theme="dark"] body .portal-dashboard__delta.down{background:rgba(220,38,38,.2);color:#fca5a5}html[data-theme="dark"] body .portal-dashboard__delta.neutral{background:rgba(100,116,139,.24);color:#cbd5e1}@media(max-width:1050px){.portal-dashboard__periods{grid-template-columns:repeat(2,1fr)}.portal-dashboard__grid{grid-template-columns:1fr}}@media(max-width:620px){.portal-dashboard__hero{align-items:flex-start;flex-direction:column}.portal-dashboard__periods,.portal-dashboard__summary{grid-template-columns:1fr}.portal-dashboard__hero,.portal-dashboard__section{padding:16px}.portal-dashboard__bars{gap:4px}.portal-dashboard__bar-value{display:none}}
+    .portal-dashboard__pagination{display:grid;grid-template-columns:minmax(120px,1fr) auto minmax(250px,1fr);align-items:center;gap:12px;margin-top:16px;padding-top:16px;border-top:1px solid var(--portal-card-border);color:var(--portal-muted);font-size:.82rem;font-weight:800}.portal-dashboard__pagination-pages,.portal-dashboard__pagination-size{display:flex;align-items:center;justify-content:center;gap:8px;white-space:nowrap}.portal-dashboard__pagination-size{justify-content:flex-end}.portal-dashboard__page-btn,.portal-dashboard__page-input,.portal-dashboard__page-size{height:38px;min-height:38px;border:1px solid var(--portal-card-border);border-radius:999px;background:var(--portal-card-bg);color:var(--portal-text);font-weight:850}.portal-dashboard__page-btn{display:grid;place-items:center;min-width:38px;padding:7px 12px;cursor:pointer}.portal-dashboard__page-btn:hover{border-color:var(--primary);color:var(--primary)}.portal-dashboard__page-btn.active{border-color:var(--primary);background:var(--primary);color:#fff}.portal-dashboard__page-input{width:68px;padding:7px 10px;text-align:center}.portal-dashboard__page-size{box-sizing:border-box;width:calc(3ch + 42px);min-width:calc(3ch + 42px);max-width:calc(3ch + 42px);padding:7px 30px 7px 11px}.portal-dashboard__page-ellipsis{min-width:22px;text-align:center}@media(max-width:820px){.portal-dashboard__pagination{grid-template-columns:1fr}.portal-dashboard__pagination-pages,.portal-dashboard__pagination-size{justify-content:flex-start;flex-wrap:wrap}}
+    .portal-dashboard__ranking-title,.portal-dashboard__evolution-title{display:flex;align-items:center;gap:11px}.portal-dashboard__ranking-title-icon,.portal-dashboard__evolution-title-icon{display:inline-grid;place-items:center;width:42px;height:42px;flex:0 0 42px;border:1px solid color-mix(in srgb,var(--primary) 28%,transparent);border-radius:14px;background:color-mix(in srgb,var(--primary) 10%,transparent);color:var(--primary)}.portal-dashboard__ranking-title-icon svg,.portal-dashboard__evolution-title-icon svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+    .portal-dashboard__bar-delta{display:inline-flex;align-items:center;justify-content:center;min-width:42px;padding:3px 6px;border-radius:999px;font-size:.62rem;font-weight:900;line-height:1}.portal-dashboard__bar-delta.up{color:#15803d;background:#dcfce7}.portal-dashboard__bar-delta.down{color:#b91c1c;background:#fee2e2}.portal-dashboard__bar-delta.neutral{color:#64748b;background:#e2e8f0}html[data-theme="dark"] body .portal-dashboard__bar-delta.up{color:#86efac;background:rgba(22,163,74,.2)}html[data-theme="dark"] body .portal-dashboard__bar-delta.down{color:#fca5a5;background:rgba(220,38,38,.2)}html[data-theme="dark"] body .portal-dashboard__bar-delta.neutral{color:#cbd5e1;background:rgba(100,116,139,.24)}
+    .portal-dashboard__evolution-nav{display:inline-flex;align-items:center;gap:5px;padding:4px;border:1px solid var(--portal-card-border);border-radius:999px;background:var(--portal-card-bg)}.portal-dashboard__evolution-nav button{display:grid;place-items:center;width:32px;height:32px;padding:0;border:0;border-radius:50%;background:transparent;color:var(--portal-text);cursor:pointer}.portal-dashboard__evolution-nav button:hover{background:color-mix(in srgb,var(--primary) 10%,transparent);color:var(--primary)}.portal-dashboard__evolution-nav svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2.3;stroke-linecap:round;stroke-linejoin:round}.portal-dashboard__evolution-nav strong{min-width:72px;text-align:center;color:var(--portal-text);font-size:.72rem;text-transform:uppercase}@media(max-width:620px){.portal-dashboard__evolution-nav{margin-top:8px}.portal-dashboard__bars{overflow-x:auto}.portal-dashboard__bar-item{min-width:42px}}
+    .portal-dashboard__summary>div{display:grid;grid-template-columns:38px minmax(0,1fr);grid-template-rows:auto auto;column-gap:10px;align-items:center}.portal-dashboard__summary>div>span:not(.portal-dashboard__summary-icon),.portal-dashboard__summary>div>strong{grid-column:2}.portal-dashboard__summary-icon{grid-column:1;grid-row:1/3;display:grid!important;place-items:center;width:38px;height:38px;margin:0!important;border:1px solid color-mix(in srgb,var(--primary) 26%,transparent);border-radius:12px;background:color-mix(in srgb,var(--primary) 10%,transparent);color:var(--primary)!important}.portal-dashboard__summary-icon svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2.1;stroke-linecap:round;stroke-linejoin:round}
+    .portal-dashboard__chart-tooltip{position:fixed;z-index:2200;width:min(330px,calc(100vw - 24px));padding:14px;border:1px solid var(--portal-card-border);border-radius:16px;background:var(--portal-card-bg);color:var(--portal-text);box-shadow:0 22px 55px rgba(15,23,42,.22);pointer-events:none;opacity:0;visibility:hidden;transform:translateY(6px);transition:opacity .14s ease,transform .14s ease,visibility .14s ease}.portal-dashboard__chart-tooltip.is-visible{opacity:1;visibility:visible;transform:translateY(0)}.portal-dashboard__tooltip-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:11px}.portal-dashboard__tooltip-head strong{font-size:.88rem;text-transform:capitalize}.portal-dashboard__tooltip-status{display:inline-flex;align-items:center;gap:5px;padding:5px 8px;border-radius:999px;font-size:.67rem;font-weight:900}.portal-dashboard__tooltip-status.up{color:#15803d;background:#dcfce7}.portal-dashboard__tooltip-status.down{color:#b91c1c;background:#fee2e2}.portal-dashboard__tooltip-status.neutral{color:#64748b;background:#e2e8f0}.portal-dashboard__tooltip-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.portal-dashboard__tooltip-item{padding:9px;border:1px solid var(--portal-card-border);border-radius:11px;background:color-mix(in srgb,var(--primary) 4%,var(--portal-card-bg))}.portal-dashboard__tooltip-item span{display:block;color:var(--portal-muted);font-size:.63rem;font-weight:800;text-transform:uppercase}.portal-dashboard__tooltip-item strong{display:block;margin-top:4px;font-size:.82rem}.portal-dashboard__tooltip-item.positive strong{color:#15803d}.portal-dashboard__tooltip-item.negative strong{color:#b91c1c}html[data-theme="dark"] body .portal-dashboard__tooltip-status.up{color:#86efac;background:rgba(22,163,74,.2)}html[data-theme="dark"] body .portal-dashboard__tooltip-status.down{color:#fca5a5;background:rgba(220,38,38,.2)}html[data-theme="dark"] body .portal-dashboard__tooltip-status.neutral{color:#cbd5e1;background:rgba(100,116,139,.24)}
+    .portal-dashboard__bars.is-daily{justify-content:flex-start;overflow-x:auto;overscroll-behavior-inline:contain;scrollbar-width:thin;scrollbar-color:color-mix(in srgb,var(--primary) 38%,#fff) color-mix(in srgb,var(--primary) 7%,#fff);padding-bottom:8px}.portal-dashboard__bars.is-daily::-webkit-scrollbar{height:9px}.portal-dashboard__bars.is-daily::-webkit-scrollbar-track{border-radius:999px;background:color-mix(in srgb,var(--primary) 7%,#fff)}.portal-dashboard__bars.is-daily::-webkit-scrollbar-thumb{border:2px solid color-mix(in srgb,var(--primary) 7%,#fff);border-radius:999px;background:color-mix(in srgb,var(--primary) 38%,#fff)}.portal-dashboard__bars.is-daily::-webkit-scrollbar-thumb:hover{background:color-mix(in srgb,var(--primary) 58%,#fff)}.portal-dashboard__bars.is-daily .portal-dashboard__bar-item{flex:0 0 54px;min-width:54px}.portal-dashboard__bars.is-daily .portal-dashboard__bar-label{font-size:.64rem}
+    .portal-dashboard__tooltip-metric{display:flex!important;align-items:center;justify-content:space-between;gap:6px}.portal-dashboard__tooltip-metric-delta{display:inline-flex;padding:3px 5px;border-radius:999px;font-size:.6rem;font-weight:900}.portal-dashboard__tooltip-metric-delta.up{color:#15803d;background:#dcfce7}.portal-dashboard__tooltip-metric-delta.down{color:#b91c1c;background:#fee2e2}.portal-dashboard__tooltip-metric-delta.neutral{color:#64748b;background:#e2e8f0}
+    .portal-dashboard__hero-actions{display:flex;align-items:center;justify-content:flex-end;gap:9px;flex-wrap:wrap}.portal-dashboard__order-btn{display:inline-flex;align-items:center;gap:8px}.portal-dashboard__order-btn svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2.1;stroke-linecap:round;stroke-linejoin:round}@media(max-width:620px){.portal-dashboard__hero-actions{width:100%;display:grid;grid-template-columns:1fr 1fr}.portal-dashboard__hero-actions .portal-btn{justify-content:center;width:100%}}
+    .portal-dashboard__product-nav-group{display:flex;align-items:center;justify-content:flex-end;gap:7px;flex-wrap:wrap}.portal-dashboard__product-nav-group .portal-dashboard__evolution-nav strong{min-width:68px}.portal-dashboard__product-nav-group .portal-dashboard__product-month-nav strong{min-width:78px}@media(max-width:720px){.portal-dashboard__product-nav-group{width:100%;justify-content:flex-start}}
+    .portal-dashboard__delta.portal-dashboard__evolution-average{min-height:32px;padding:5px 9px;font-size:.907rem;line-height:1}
+    .portal-dashboard__empty>strong,.portal-dashboard__empty>span{display:block}.portal-dashboard__empty>strong{margin-bottom:6px;color:var(--portal-text);font-size:1rem}.portal-dashboard__empty>.portal-btn{display:inline-flex;margin-top:14px}
+    .portal-dashboard__product-mode{display:inline-flex;align-items:center;gap:4px;padding:4px;border:1px solid var(--portal-card-border);border-radius:999px;background:var(--portal-card-bg)}.portal-dashboard__product-mode button{min-height:32px;padding:6px 12px;border:0;border-radius:999px;background:transparent;color:var(--portal-muted);font-size:.72rem;font-weight:900;cursor:pointer}.portal-dashboard__product-mode button.is-active{background:var(--primary);color:#fff;box-shadow:0 10px 22px -16px var(--primary)}
+    .portal-dashboard__product-delta{display:inline-flex!important;align-items:center;justify-content:center;width:max-content;margin:4px 0 0 auto!important;padding:4px 7px;border-radius:999px;font-size:.66rem!important;font-weight:900}.portal-dashboard__product-delta.up{color:#15803d!important;background:#dcfce7}.portal-dashboard__product-delta.down{color:#b91c1c!important;background:#fee2e2}.portal-dashboard__product-delta.neutral{color:#64748b!important;background:#e2e8f0}html[data-theme="dark"] body .portal-dashboard__product-delta.up{color:#86efac!important;background:rgba(22,163,74,.2)}html[data-theme="dark"] body .portal-dashboard__product-delta.down{color:#fca5a5!important;background:rgba(220,38,38,.2)}html[data-theme="dark"] body .portal-dashboard__product-delta.neutral{color:#cbd5e1!important;background:rgba(100,116,139,.24)}
+    @media(max-width:620px){
+        html body #portal-tab-dashboard,html body .portal-dashboard,html body .portal-dashboard>*{box-sizing:border-box;min-width:0;max-width:100%}
+        html body .portal-dashboard{gap:12px;width:100%;overflow:hidden}
+        html body .portal-dashboard__hero,html body .portal-dashboard__section{width:100%;padding:15px;border-radius:18px;overflow:hidden}
+        html body .portal-dashboard__hero{gap:14px}
+        html body .portal-dashboard__hero h3{font-size:1.28rem;line-height:1.18}
+        html body .portal-dashboard__hero p{font-size:.82rem;line-height:1.4}
+        html body .portal-dashboard__hero-actions{grid-template-columns:1fr;width:100%;gap:7px}
+        html body .portal-dashboard__hero-actions .portal-btn{min-width:0;min-height:42px;padding-inline:10px}
+        html body .portal-dashboard__periods{grid-template-columns:1fr;gap:8px}
+        html body .portal-dashboard__metric{padding:14px;border-radius:15px}
+        html body .portal-dashboard__metric strong{font-size:1.22rem}
+        html body .portal-dashboard__grid{grid-template-columns:minmax(0,1fr);gap:12px}
+        html body .portal-dashboard__section-head{flex-direction:column;align-items:stretch;gap:10px;margin-bottom:14px}
+        html body .portal-dashboard__section-head>div:first-child{min-width:0}
+        html body .portal-dashboard__ranking-title,html body .portal-dashboard__evolution-title{gap:9px;font-size:.98rem;line-height:1.25}
+        html body .portal-dashboard__ranking-title-icon,html body .portal-dashboard__evolution-title-icon{width:38px;height:38px;flex-basis:38px;border-radius:12px}
+        html body .portal-dashboard__delta.portal-dashboard__evolution-average{align-self:flex-start;max-width:100%;white-space:normal;font-size:.78rem}
+        html body .portal-dashboard__evolution-nav{align-self:flex-start;max-width:100%}
+        html body .portal-dashboard__summary{grid-template-columns:1fr;gap:7px}
+        html body .portal-dashboard__summary>div{width:100%;padding:11px}
+        html body .portal-dashboard__bars{width:100%;height:220px;overflow-x:auto;overflow-y:hidden;padding-bottom:10px}
+        html body .portal-dashboard__bars .portal-dashboard__bar-item{flex:0 0 52px;min-width:52px}
+        html body .portal-dashboard__donut{width:142px;height:142px}
+        html body .portal-dashboard__product-nav-group{display:grid;grid-template-columns:1fr;width:100%;gap:7px}
+        html body .portal-dashboard__product-mode{display:grid;grid-template-columns:1fr 1fr;width:100%}
+        html body .portal-dashboard__product-year-nav,html body .portal-dashboard__product-month-nav{display:grid;grid-template-columns:32px minmax(0,1fr) 32px;width:100%;box-sizing:border-box}
+        html body .portal-dashboard__product-nav-group .portal-dashboard__evolution-nav strong{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+        html body .portal-dashboard__product{grid-template-columns:32px minmax(0,1fr);gap:9px;padding:10px}
+        html body .portal-dashboard__product-name strong{white-space:normal;overflow-wrap:anywhere;line-height:1.2}
+        html body .portal-dashboard__product-total{grid-column:2;display:flex;align-items:center;justify-content:space-between;gap:8px;text-align:left}
+        html body .portal-dashboard__product-delta{margin:0!important;flex:0 0 auto}
+        html body .portal-dashboard__pagination{grid-template-columns:1fr;gap:10px;overflow:visible}
+        html body .portal-dashboard__pagination-pages,html body .portal-dashboard__pagination-size{justify-content:flex-start;max-width:100%;overflow-x:auto;padding-bottom:3px}
+        html body .portal-dashboard__pagination>span{font-size:.76rem}
+        html body .portal-dashboard__chart-tooltip{width:calc(100vw - 20px);padding:11px;border-radius:14px}
+        html body .portal-dashboard__tooltip-grid{grid-template-columns:1fr;gap:6px}
+        html body .portal-dashboard__tooltip-head{align-items:flex-start;flex-direction:column}
+    }
+.portal-order-detail{background:#fff;border:1px solid #e5e7eb;border-radius:24px;padding:28px;box-shadow:0 18px 45px rgba(15,23,42,.08);color:#172033}.portal-order-detail__head{display:flex;justify-content:space-between;gap:20px;align-items:flex-start;margin-bottom:24px}.portal-order-detail__head h3{margin:0 0 6px;font-size:25px}.portal-order-detail__head p{margin:0;color:#64748b}.portal-order-detail__actions{display:flex;gap:10px;flex-wrap:wrap}.portal-order-detail__actions svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2}.portal-order-detail__summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:22px}.portal-order-detail__summary div,.portal-order-detail__card{border:1px solid #e5e7eb;border-radius:16px;background:#f8fafc;padding:16px}.portal-order-detail__summary span{display:block;color:#64748b;font-size:12px;font-weight:700;text-transform:uppercase;margin-bottom:7px}.portal-order-detail__summary strong{font-size:16px}.portal-order-detail__grid{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(280px,.8fr);gap:18px}.portal-order-detail__card{background:#fff}.portal-order-detail__card h4{margin:0 0 14px;font-size:17px}.portal-order-detail__table{width:100%;border-collapse:collapse}.portal-order-detail__table th,.portal-order-detail__table td{text-align:left;padding:11px 8px;border-bottom:1px solid #edf0f4}.portal-order-detail__table th{font-size:12px;color:#64748b;text-transform:uppercase}.portal-order-detail__table td:last-child,.portal-order-detail__table th:last-child{text-align:right}.portal-order-detail__manifest dl{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:0}.portal-order-detail__manifest dt{color:#64748b;font-size:12px}.portal-order-detail__manifest dd{margin:3px 0 0;font-weight:700}.portal-order-history{margin-top:18px}.portal-order-history__item{display:grid;grid-template-columns:12px 1fr;gap:12px;padding:10px 0}.portal-order-history__dot{width:10px;height:10px;border-radius:50%;background:var(--portal-primary,#2563eb);margin-top:6px}.portal-order-history__item strong{display:block}.portal-order-history__item small{color:#64748b}.portal-order-history__reason{margin:5px 0 0;color:#334155}.portal-order-detail__empty{color:#64748b;padding:8px 0}.portal-orders-action--icon svg{fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}@media(max-width:800px){.portal-order-detail{padding:18px;border-radius:18px}.portal-order-detail__head{display:block}.portal-order-detail__actions{margin-top:16px}.portal-order-detail__summary{grid-template-columns:1fr 1fr}.portal-order-detail__grid{grid-template-columns:1fr}.portal-order-detail__table{font-size:13px}}@media print{body *{visibility:hidden!important}.portal-order-detail,.portal-order-detail *{visibility:visible!important}.portal-order-detail{position:absolute;inset:0;width:100%;box-shadow:none;border:0;padding:0}.portal-order-detail__actions{display:none!important}.portal-order-detail__grid{grid-template-columns:1fr}.portal-order-detail__card{break-inside:avoid}}
 </style>
 <?php
 $catalogoPayload = json_encode(array_map(static function ($produto) use ($asset) {
@@ -2810,6 +3219,8 @@ $catalogoPayload = json_encode(array_map(static function ($produto) use ($asset)
 ?>
 <script>
     const catalogo = <?= $catalogoPayload ?>;
+    const catalogoCompleto = catalogo.slice();
+    const portalClientGroups = <?= json_encode(array_values($portalClientGroups ?? []), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP); ?>;
     const basePath = <?= json_encode($basePath ?: '') ?>;
 
     const state = {
@@ -2843,8 +3254,11 @@ $catalogoPayload = json_encode(array_map(static function ($produto) use ($asset)
     const portalTabPanels = document.querySelectorAll('[data-portal-tab-panel]');
     const portalHeaderJumps = document.querySelectorAll('[data-portal-jump]');
     const ordersTableBody = document.getElementById('portal-orders-body');
+    const dashboardContainer = document.querySelector('[data-portal-dashboard]');
     const ordersFeedback = document.getElementById('portal-orders-feedback');
     const ordersRefreshButton = document.getElementById('portal-orders-refresh');
+    const orderEditor = document.querySelector('[data-portal-order-editor]');
+    const orderDetail = document.querySelector('[data-portal-order-detail]');
     const productsListContainer = document.getElementById('portal-products-list');
     const imageLightbox = document.getElementById('portal-image-lightbox');
     const imageLightboxImg = imageLightbox?.querySelector('img');
@@ -2872,8 +3286,19 @@ $catalogoPayload = json_encode(array_map(static function ($produto) use ($asset)
     const orderModalTitle = orderModal?.querySelector('#order-success-title');
     const modalDismissTriggers = orderModal ? orderModal.querySelectorAll('[data-modal-dismiss]') : [];
     let lastFocusedElement = null;
-    let activeTab = 'novo-pedido';
+    let activeTab = 'dashboard';
+    let catalogNeedsRender = true;
     let pedidosCarregados = false;
+    let pedidosAtualizando = false;
+    let pedidosSignature = '';
+    let dashboardCarregado = false;
+    let dashboardAtualizando = false;
+    let dashboardOrdersCache = [];
+    let dashboardProductPage = 1;
+    let dashboardProductPerPage = 9;
+    let dashboardEvolutionMode = 0;
+    let dashboardProductMonthOffset = 0;
+    let dashboardProductPeriodMode = 'month';
 
     const formatCurrency = (value) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
     const formatWeight = (value) => {
@@ -3165,7 +3590,7 @@ $catalogoPayload = json_encode(array_map(static function ($produto) use ($asset)
         if (normalised === 'app') {
             portalAppSection?.removeAttribute('hidden');
             portalHero?.setAttribute('hidden', '');
-            const nextTab = preferredTab || 'pedidos';
+            const nextTab = preferredTab || 'dashboard';
             setActiveTab(nextTab);
         } else {
             portalAppSection?.setAttribute('hidden', '');
@@ -3185,6 +3610,7 @@ $catalogoPayload = json_encode(array_map(static function ($produto) use ($asset)
             }
             mobileThemeColor.content = systemPrimary;
             pedidosCarregados = false;
+            pedidosSignature = '';
             renderPedidos([]);
             setFeedback(ordersFeedback, '', '');
             const nextTab = preferredTab || 'novo-pedido';
@@ -3255,7 +3681,7 @@ $catalogoPayload = json_encode(array_map(static function ($produto) use ($asset)
         { value: 'novo', label: 'Recebido' },
         { value: 'aprovacao', label: 'Em aprovação' },
         { value: 'producao', label: 'Aprovado' },
-        { value: 'separacao', label: 'Em separação' },
+        { value: 'separacao', label: 'Separado' },
         { value: 'expedicao', label: 'Em transporte' },
         { value: 'faturado', label: 'Pedido recebido' },
         { value: 'cancelado', label: 'Cancelado' },
@@ -3264,8 +3690,9 @@ $catalogoPayload = json_encode(array_map(static function ($produto) use ($asset)
     const orderStatusLabels = {
         novo: 'Recebido',
         aprovacao: 'Em aprovação',
+        separando: 'Em separação',
         producao: 'Aprovado',
-        separacao: 'Em separação',
+        separacao: 'Separado',
         expedicao: 'Em transporte',
         faturado: 'Pedido recebido',
         cancelado: 'Cancelado',
@@ -3285,7 +3712,8 @@ $catalogoPayload = json_encode(array_map(static function ($produto) use ($asset)
         novo: 'Recebemos seu pedido e estamos validando a disponibilidade em estoque.',
         aprovacao: defaultOrderLead,
         producao: 'Pedido aprovado! Os itens necessários já estão seguindo para produção.',
-        separacao: 'Estamos separando seu pedido conforme o critério FEFO para garantir a melhor validade.',
+        separando: 'Seu pedido está em separação. Alguns produtos ainda aguardam conferência.',
+        separacao: 'Seu pedido foi separado e conferido. Agora ele está pronto para seguir para a expedição.',
         expedicao: 'Seu pedido está em transporte. Assim que houver rastreamento disponível, enviaremos por e-mail.',
         faturado: 'Pedido concluído! Obrigado pela parceria.',
         cancelado: 'Este pedido foi cancelado. Em caso de dúvidas, fale com nossa equipe de suporte.',
@@ -3366,6 +3794,7 @@ $catalogoPayload = json_encode(array_map(static function ($produto) use ($asset)
             const dataCriacao = formatDateTime(pedido.created_at ?? pedido.createdAt ?? pedido.created_at);
             const showReceipt = receiptEligibleStatuses.has(statusKey) && statusKey !== 'faturado';
             const receiptAttributes = showReceipt ? '' : 'hidden';
+            const editButton = ['novo','aprovacao'].includes(statusKey) ? `<button type="button" class="portal-orders-action portal-orders-action--icon" data-order-edit="${pedido.id}" data-tooltip="Editar" aria-label="Editar pedido" title="Editar"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"></path><path d="m15 5 4 4"></path></svg></button>` : '';
             row.innerHTML = `
                 <td><strong>${codigo}</strong></td>
                 <td>
@@ -3375,9 +3804,9 @@ $catalogoPayload = json_encode(array_map(static function ($produto) use ($asset)
                 <td>${dataCriacao}</td>
                 <td class="portal-orders-table__actions">
                     <div class="portal-orders-actions">
-                        <button type="button" class="portal-orders-action" data-order-view="${pedido.id}">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5c-5 0-9.27 3.11-11 7.5C2.73 16.89 7 20 12 20s9.27-3.11 11-7.5C21.27 8.11 17 5 12 5Zm0 12a4.5 4.5 0 1 1 0-9 4.5 4.5 0 0 1 0 9Zm0-7.2A2.7 2.7 0 1 0 14.7 12 2.7 2.7 0 0 0 12 9.8Z"/></svg>
-                            <span>Ver detalhes</span>
+                        ${editButton}
+                        <button type="button" class="portal-orders-action portal-orders-action--icon" data-order-view="${pedido.id}" data-tooltip="Ver pedido" aria-label="Ver pedido completo">
+                            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z"></path><circle cx="12" cy="12" r="2.7"></circle></svg>
                         </button>
                         <button type="button" class="portal-orders-action portal-orders-action--confirm" data-order-received="${pedido.id}" data-status="${statusKey}" ${receiptAttributes}>
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.285 6.708a1 1 0 0 0-1.414-1.415L9 15.164l-3.87-3.87a1 1 0 1 0-1.415 1.414l4.577 4.577a1 1 0 0 0 1.414 0l10.579-10.577Z"/></svg>
@@ -3392,6 +3821,7 @@ $catalogoPayload = json_encode(array_map(static function ($produto) use ($asset)
             `;
             ordersTableBody.appendChild(row);
         });
+        ordersTableBody.querySelectorAll('[data-order-edit]').forEach((button) => button.addEventListener('click', () => abrirEditorPedido(Number(button.dataset.orderEdit))));
         ordersTableBody.querySelectorAll('[data-order-view]').forEach((button) => {
             button.addEventListener('click', (event) => {
                 const pedidoId = Number(event.currentTarget.dataset.orderView);
@@ -3547,6 +3977,8 @@ $catalogoPayload = json_encode(array_map(static function ($produto) use ($asset)
             return;
         }
         setFeedback(ordersFeedback, 'Carregando detalhes do pedido…');
+        setActiveTab('detalhe-pedido');
+        orderDetail.innerHTML = '<div class="portal-order-detail__loading">Carregando pedido...</div>';
         try {
             const response = await fetch(`${basePath}/api/pedidos/${pedidoId}`, {
                 headers: {
@@ -3565,40 +3997,295 @@ $catalogoPayload = json_encode(array_map(static function ($produto) use ($asset)
             const json = await response.json();
             const pedido = json.pedido || {};
             const itens = Array.isArray(json.itens) ? json.itens : [];
-            const statusKey = String(pedido.status ?? '').toLowerCase();
-            const itensNormalizados = itens.map((item) => ({
-                id: item.produto_id ?? item.id ?? 0,
-                nome: item.nome ?? item.produto_nome ?? '',
-                sku: item.sku ?? item.produto_id ?? '',
-                quantidade: Number(item.quantidade ?? 0),
-                preco: Number(item.preco_unit ?? item.preco ?? 0),
-                unidade: item.unidade ?? '',
-            }));
-            const totalPedido = Number(pedido.total ?? itensNormalizados.reduce((totalizador, item) => totalizador + ((Number(item.quantidade ?? 0)) * (Number(item.preco ?? 0))), 0));
-            const resumo = {
-                pedidoId,
-                codigo: pedido.codigo ?? null,
-                createdAt: pedido.created_at ?? pedido.createdAt ?? pedido.created ?? null,
-                total: Number.isFinite(totalPedido) ? totalPedido : 0,
-                itens: itensNormalizados,
-                backorder: Array.isArray(json.backorder) ? json.backorder : [],
-                status: statusKey,
-                statusLabel: pedido.status_label ?? orderStatusLabels[statusKey] ?? '',
-                title: 'Detalhes do pedido',
-            };
-            showOrderSuccessModal(resumo);
+            const statusKey = String(pedido.status || '').toLowerCase();
+            const romaneio = json.romaneio || null;
+            const historico = Array.isArray(json.historico) ? json.historico : [];
+            const actionLabels = {create:'Pedido criado',update:'Pedido ajustado',status:'Status atualizado',expedir:'Expedição registrada'};
+            const fieldLabels = {total:'Valor total',frete_valor:'Frete',observacoes:'Observações',status:'Status',itens:'Produtos',forma_pagto:'Pagamento',desconto:'Desconto'};
+            const historyMarkup = historico.length ? historico.map(entry => {
+                const fields = Object.keys(entry.mudancas || {}).map(key => fieldLabels[key] || key.replaceAll('_',' '));
+                const complement = fields.length ? `Alterado: ${fields.join(', ')}.` : '';
+                const reason = String(entry.motivo || '').trim();
+                return `<div class="portal-order-history__item"><span class="portal-order-history__dot"></span><div><strong>${dashboardEscape(actionLabels[entry.acao] || 'Atualização do pedido')}</strong><small>${dashboardEscape(formatDateTime(entry.created_at))}</small>${complement ? `<p class="portal-order-history__reason">${dashboardEscape(complement)}</p>` : ''}${reason ? `<p class="portal-order-history__reason"><b>Motivo:</b> ${dashboardEscape(reason)}</p>` : ''}</div></div>`;
+            }).join('') : '<div class="portal-order-detail__empty">Nenhum ajuste registrado.</div>';
+            const itemsMarkup = itens.map(item => { const qty=Number(item.quantidade||0), price=Number(item.preco_unit??item.preco??0); return `<tr><td>${dashboardEscape(item.sku || item.produto_id || '-')}</td><td>${dashboardEscape(item.nome || item.produto_nome || 'Produto')}</td><td>${qty.toLocaleString('pt-BR',{maximumFractionDigits:2})}</td><td>${formatCurrency(price * qty)}</td></tr>`; }).join('');
+            const manifestMarkup = romaneio ? `<dl><div><dt>Número</dt><dd>${dashboardEscape(romaneio.romaneio || `#${romaneio.id}`)}</dd></div><div><dt>Expedição</dt><dd>${dashboardEscape(formatDateTime(romaneio.data_expedicao))}</dd></div><div><dt>Volumes</dt><dd>${Number(romaneio.volumes||0)}</dd></div><div><dt>Peso total</dt><dd>${Number(romaneio.peso_total||0).toLocaleString('pt-BR',{maximumFractionDigits:3})} kg</dd></div><div><dt>Transportadora</dt><dd>${dashboardEscape(romaneio.transportadora || 'Não informada')}</dd></div><div><dt>Motorista</dt><dd>${dashboardEscape(romaneio.motorista_nome || 'Não informado')}</dd></div></dl>` : '<div class="portal-order-detail__empty">O romaneio ainda não foi gerado.</div>';
+            orderDetail.innerHTML = `<div class="portal-order-detail__head"><div><h3>Pedido ${dashboardEscape(pedido.codigo || `#${pedidoId}`)}</h3><p>Detalhes, documentos e histórico completo.</p></div><div class="portal-order-detail__actions"><button type="button" class="portal-btn portal-btn--ghost" data-order-detail-back><svg viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg>Voltar</button><button type="button" class="portal-btn portal-btn--primary" data-order-detail-pdf><svg viewBox="0 0 24 24"><path d="M6 9V2h9l3 3v4M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2M6 14h12v8H6z"/></svg>PDF</button></div></div><div class="portal-order-detail__summary"><div><span>Status</span><strong>${dashboardEscape(pedido.status_label || orderStatusLabels[statusKey] || pedido.status || '-')}</strong></div><div><span>Criado em</span><strong>${dashboardEscape(formatDateTime(pedido.created_at))}</strong></div><div><span>Frete</span><strong>${Number(pedido.frete_valor||0)>0?formatCurrency(pedido.frete_valor):'Sem frete'}</strong></div><div><span>Total</span><strong>${formatCurrency(pedido.total||0)}</strong></div></div><div class="portal-order-detail__grid"><section class="portal-order-detail__card"><h4>Produtos do pedido</h4><table class="portal-order-detail__table"><thead><tr><th>Código</th><th>Produto</th><th>Qtd.</th><th>Subtotal</th></tr></thead><tbody>${itemsMarkup}</tbody></table></section><section class="portal-order-detail__card portal-order-detail__manifest"><h4>Romaneio</h4>${manifestMarkup}</section></div><section class="portal-order-detail__card portal-order-history"><h4>Histórico de ajustes e motivos</h4>${historyMarkup}</section>`;
+            orderDetail.querySelector('[data-order-detail-back]')?.addEventListener('click', () => setActiveTab('pedidos'));
+            orderDetail.querySelector('[data-order-detail-pdf]')?.addEventListener('click', () => window.print());
             setFeedback(ordersFeedback, 'Detalhes carregados com sucesso.', 'success');
         } catch (error) {
+            setActiveTab('pedidos');
             setFeedback(ordersFeedback, error.message || 'Não foi possível abrir o pedido.', 'error');
         }
     };
 
-    const carregarPedidos = async (force = false) => {
+    const abrirEditorPedido = async (pedidoId) => {
+        if (!orderEditor || !pedidoId) return;
+        localStorage.setItem('portal-edit-order-id', String(pedidoId));
+        setActiveTab('editar-pedido');
+        orderEditor.innerHTML = '<div class="portal-order-editor__loading">Carregando pedido...</div>';
+        try {
+            const response = await fetch(`${basePath}/api/pedidos/${pedidoId}`, { cache: 'no-store', headers: { 'Authorization': `Bearer ${state.token}`, 'Accept': 'application/json' } });
+            const json = await response.json();
+            if (!response.ok) throw new Error(json.message || 'Não foi possível abrir o pedido.');
+            const pedido = json.pedido || {};
+            const itens = Array.isArray(json.itens) ? json.itens : [];
+            const editorStatusKey = String(pedido.status || 'aprovacao').toLowerCase().replace(/[^a-z0-9_-]/g, '');
+            const createdAt = pedido.created_at ? new Date(String(pedido.created_at).replace(' ', 'T')).toLocaleString('pt-BR') : 'Data não informada';
+            const itemMarkup = (item) => {
+                const productId = Number(item.produto_id || item.id) || 0;
+                const catalogProduct = catalogo.find(product => Number(product.id) === productId) || {};
+                const price = Number(item.preco_unit ?? item.preco ?? catalogProduct.preco) || 0;
+                const quantity = Number(item.quantidade) || 1;
+                const name = item.nome || item.produto_nome || catalogProduct.nome || `Produto ${productId}`;
+                const sku = item.sku || catalogProduct.sku || '-';
+                const weight = Number(item.peso_liquido ?? catalogProduct.peso_liquido) || 0;
+                return `<div class="portal-order-editor__item" data-edit-item data-price="${price}"><span>${dashboardEscape(sku)}</span><span class="portal-order-editor__item-name" title="${dashboardEscape(name)}">${dashboardEscape(name)}</span><input type="number" min="0.01" step="0.01" value="${quantity}" data-edit-quantity data-product-id="${productId}" aria-label="Quantidade de ${dashboardEscape(name)}"><span>${dashboardEscape(formatWeight(weight) || '-')}</span><span>${formatCurrency(price)}</span><span class="portal-order-editor__item-subtotal" data-edit-subtotal>${formatCurrency(price * quantity)}</span><button type="button" class="portal-order-editor__remove" data-edit-remove aria-label="Remover item" title="Remover"><svg viewBox="0 0 24 24"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6M10 11v5M14 11v5"/></svg></button></div>`;
+            };
+            orderEditor.innerHTML = `<div class="portal-order-editor__head"><div class="portal-order-editor__title"><span class="portal-order-editor__title-icon"><svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L8 18l-4 1 1-4Z"/></svg></span><div><h3>Editar pedido ${dashboardEscape(pedido.codigo || `#${pedidoId}`)}</h3><p>Revise os produtos e quantidades antes de salvar.</p></div></div><button type="button" class="portal-btn portal-btn--ghost portal-order-editor__back" data-order-editor-back><svg viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg>Voltar</button></div><div class="portal-order-editor__meta"><span>${dashboardEscape(pedido.status_label || pedido.status || 'Em análise')}</span><span>${dashboardEscape(createdAt)}</span></div><form data-order-editor-form><div class="portal-order-builder"><div class="portal-order-builder__title"><strong>Itens do pedido</strong><p>Use os produtos disponíveis no seu catálogo e informe a quantidade.</p></div><div class="portal-order-builder__entry"><label class="portal-order-builder__field">Código<span class="portal-order-builder__readonly portal-order-builder__code" data-builder-code>-</span></label><label class="portal-order-builder__field">Produtos<input type="text" autocomplete="off" placeholder="Produto..." data-order-product-search><ul class="portal-order-builder__suggestions" data-order-product-results></ul></label><label class="portal-order-builder__field">Quantidade<input type="number" min="0.01" step="0.01" value="1" data-builder-quantity></label><label class="portal-order-builder__field">Peso<span class="portal-order-builder__readonly" data-builder-weight>-</span></label><label class="portal-order-builder__field">Valor<span class="portal-order-builder__readonly" data-builder-price>R$ 0,00</span></label><label class="portal-order-builder__field">Subtotal<span class="portal-order-builder__readonly" data-builder-subtotal>R$ 0,00</span></label><button type="button" class="portal-btn portal-order-builder__add" data-builder-add disabled>Adicionar item</button></div><div class="portal-order-builder__list"><h4>Lista de Produtos</h4><div class="portal-order-builder__table"><div class="portal-order-builder__head"><span>Código</span><span>Produtos</span><span>Quantidade</span><span>Peso</span><span>Valor</span><span>Subtotal</span><span></span></div><div class="portal-order-editor__items" data-order-editor-items>${itens.map(itemMarkup).join('')}</div><div class="portal-order-editor__empty-list" data-order-editor-empty hidden>Nenhum produto adicionado.</div></div></div></div><div class="portal-order-editor__notes"><label for="portal-order-notes">Observações do pedido</label><textarea id="portal-order-notes" maxlength="1000" placeholder="Inclua orientações importantes para este pedido" data-order-editor-notes>${dashboardEscape(pedido.observacoes || '')}</textarea></div><div class="portal-feedback" data-order-editor-feedback></div><div class="portal-order-editor__footer"><div class="portal-order-editor__summary"><span>Produtos<strong data-order-editor-products>0</strong></span><span>Quantidade total<strong data-order-editor-quantity>0</strong></span><span>Total atualizado<strong data-order-editor-total>R$ 0,00</strong></span></div><div class="portal-order-editor__actions"><button type="button" class="portal-btn portal-btn--ghost" data-order-editor-cancel>Cancelar</button><button type="submit" class="portal-btn portal-btn--primary"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2Z"/><path d="M17 21v-8H7v8M7 3v5h8"/></svg>Salvar alterações</button></div></div></form>`;
+            const editorStatusBadge = orderEditor.querySelector('.portal-order-editor__meta span:first-child');
+            editorStatusBadge?.classList.add('portal-orders-status', `portal-orders-status--${editorStatusKey}`);
+            const form = orderEditor.querySelector('[data-order-editor-form]');
+            const feedback = orderEditor.querySelector('[data-order-editor-feedback]');
+            const itemsContainer = orderEditor.querySelector('[data-order-editor-items]');
+            const results = orderEditor.querySelector('[data-order-product-results]');
+            const search = orderEditor.querySelector('[data-order-product-search]');
+            const builderQuantity = orderEditor.querySelector('[data-builder-quantity]');
+            const builderAdd = orderEditor.querySelector('[data-builder-add]');
+            let selectedProduct = null;
+            const updateBuilder = () => {
+                const quantity = Math.max(0, Number(builderQuantity?.value) || 0);
+                const set = (selector, value) => { const target = orderEditor.querySelector(selector); if (target) target.textContent = value; };
+                set('[data-builder-code]', selectedProduct?.sku || '-');
+                set('[data-builder-weight]', selectedProduct ? (formatWeight(selectedProduct.peso_liquido) || '-') : '-');
+                set('[data-builder-price]', formatCurrency(selectedProduct?.preco || 0));
+                set('[data-builder-subtotal]', formatCurrency((selectedProduct?.preco || 0) * quantity));
+                if (builderAdd) builderAdd.disabled = !selectedProduct || quantity <= 0;
+            };
+            const updateSummary = () => {
+                const rows = Array.from(orderEditor.querySelectorAll('[data-edit-item]'));
+                const quantity = rows.reduce((sum, row) => sum + (Number(row.querySelector('[data-edit-quantity]')?.value) || 0), 0);
+                const total = rows.reduce((sum, row) => sum + (Number(row.dataset.price) || 0) * (Number(row.querySelector('[data-edit-quantity]')?.value) || 0), 0);
+                rows.forEach(row => { const subtotal = row.querySelector('[data-edit-subtotal]'); if (subtotal) subtotal.textContent = formatCurrency((Number(row.dataset.price) || 0) * (Number(row.querySelector('[data-edit-quantity]')?.value) || 0)); });
+                const set = (selector, value) => { const target = orderEditor.querySelector(selector); if (target) target.textContent = value; };
+                set('[data-order-editor-products]', String(rows.length));
+                set('[data-order-editor-quantity]', quantity.toLocaleString('pt-BR', { maximumFractionDigits: 2 }));
+                set('[data-order-editor-total]', formatCurrency(total));
+                const empty = orderEditor.querySelector('[data-order-editor-empty]');
+                if (empty) empty.hidden = rows.length > 0;
+            };
+            const renderAvailable = () => {
+                const term = String(search?.value || '').trim().toLocaleLowerCase('pt-BR');
+                const selected = new Set(Array.from(orderEditor.querySelectorAll('[data-edit-quantity]')).map(input => Number(input.dataset.productId)));
+                const available = term ? catalogo.filter(product => !selected.has(Number(product.id)) && `${product.nome} ${product.sku} ${product.categoria}`.toLocaleLowerCase('pt-BR').includes(term)).slice(0, 12) : [];
+                results.innerHTML = available.map(product => `<li><button type="button" data-order-product-select="${Number(product.id)}">${dashboardEscape(product.nome)}<small>${dashboardEscape(product.sku || '')} · ${formatCurrency(product.preco || 0)}</small></button></li>`).join('');
+            };
+            const goBack = () => setActiveTab('pedidos');
+            orderEditor.querySelector('[data-order-editor-back]')?.addEventListener('click', goBack);
+            orderEditor.querySelector('[data-order-editor-cancel]')?.addEventListener('click', goBack);
+            orderEditor.oninput = (event) => {
+                if (event.target.matches('[data-edit-quantity]')) updateSummary();
+                if (event.target.matches('[data-order-product-search]')) { selectedProduct = null; updateBuilder(); renderAvailable(); }
+                if (event.target.matches('[data-builder-quantity]')) updateBuilder();
+            };
+            orderEditor.onclick = (event) => {
+                const remove = event.target.closest('[data-edit-remove]');
+                if (remove) { remove.closest('[data-edit-item]')?.remove(); updateSummary(); renderAvailable(); return; }
+                const select = event.target.closest('[data-order-product-select]');
+                if (select) { selectedProduct = catalogo.find(item => Number(item.id) === Number(select.dataset.orderProductSelect)) || null; if (search && selectedProduct) search.value = selectedProduct.nome; results.innerHTML = ''; updateBuilder(); return; }
+                if (event.target.closest('[data-builder-add]') && selectedProduct) {
+                    const quantity = Math.max(0, Number(builderQuantity?.value) || 0);
+                    if (quantity > 0) { itemsContainer.insertAdjacentHTML('beforeend', itemMarkup({ ...selectedProduct, produto_id: selectedProduct.id, preco_unit: selectedProduct.preco, quantidade })); selectedProduct = null; if (search) search.value = ''; if (builderQuantity) builderQuantity.value = '1'; results.innerHTML = ''; updateBuilder(); updateSummary(); }
+                }
+            };
+            form?.addEventListener('submit', async (event) => {
+                event.preventDefault();
+                const itensPayload = Array.from(orderEditor.querySelectorAll('[data-edit-quantity]')).map(input => ({ produto_id: Number(input.dataset.productId), quantidade: Number(input.value) })).filter(item => item.produto_id > 0 && item.quantidade > 0);
+                if (!itensPayload.length) { setFeedback(feedback, 'Mantenha pelo menos um produto no pedido.', 'error'); return; }
+                const submit = form.querySelector('[type="submit"]');
+                submit?.setAttribute('disabled', 'disabled');
+                setFeedback(feedback, 'Salvando alterações...');
+                try {
+                    const save = await fetch(`${basePath}/api/pedidos/${pedidoId}`, { method: 'PATCH', headers: { 'Authorization': `Bearer ${state.token}`, 'Content-Type': 'application/json', 'Accept': 'application/json' }, body: JSON.stringify({ itens: itensPayload, observacoes: orderEditor.querySelector('[data-order-editor-notes]')?.value || '' }) });
+                    const result = await save.json();
+                    if (!save.ok) throw new Error(result.message || 'Não foi possível atualizar o pedido.');
+                    pedidosCarregados = false; pedidosSignature = ''; dashboardCarregado = false;
+                    await carregarPedidos(true, true); setActiveTab('pedidos'); setFeedback(ordersFeedback, 'Pedido atualizado com sucesso.', 'success');
+                } catch (error) { setFeedback(feedback, error.message || 'Não foi possível atualizar o pedido.', 'error'); submit?.removeAttribute('disabled'); }
+            });
+            updateSummary();
+            updateBuilder();
+            renderAvailable();
+        } catch(error) { orderEditor.innerHTML=`<div class="portal-order-editor__loading">${dashboardEscape(error.message||'Não foi possível abrir o pedido.')}<br><button type="button" class="portal-btn portal-btn--ghost" data-order-editor-back>Voltar</button></div>`;orderEditor.querySelector('[data-order-editor-back]')?.addEventListener('click',()=>setActiveTab('pedidos')); }
+    };
+
+    const dashboardEscape = (value) => String(value ?? '').replace(/[&<>"']/g, (char) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[char]));
+    const dashboardDate = (value) => {
+        if (!value) return null;
+        const parsed = new Date(String(value).replace(' ', 'T'));
+        return Number.isNaN(parsed.getTime()) ? null : parsed;
+    };
+    const dashboardStartDay = (date) => new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    const dashboardStartWeek = (date) => { const day=dashboardStartDay(date);const offset=(day.getDay()+6)%7;day.setDate(day.getDate()-offset);return day; };
+    const dashboardStartMonth = (date) => new Date(date.getFullYear(), date.getMonth(), 1);
+    const dashboardStartYear = (date) => new Date(date.getFullYear(), 0, 1);
+    const dashboardAdd = (date, unit, amount) => { const copy=new Date(date);if(unit==='day')copy.setDate(copy.getDate()+amount);if(unit==='week')copy.setDate(copy.getDate()+(7*amount));if(unit==='month')copy.setMonth(copy.getMonth()+amount);if(unit==='year')copy.setFullYear(copy.getFullYear()+amount);return copy; };
+    const dashboardDelta = (current, previous) => previous > 0 ? ((current-previous)/previous)*100 : (current > 0 ? 100 : 0);
+    const dashboardDeltaHtml = (value) => { const number=Number.isFinite(value)?value:0;const state=number>0?'up':(number<0?'down':'neutral');const arrow=number>0?'↑':(number<0?'↓':'—');return `<span class="portal-dashboard__delta ${state}">${arrow} ${Math.abs(number).toLocaleString('pt-BR',{maximumFractionDigits:1})}%</span>`; };
+    const dashboardOrdersIn = (orders, start, end) => orders.filter((order) => { const date=dashboardDate(order.created_at||order.createdAt);return date&&date>=start&&date<end&&String(order.status||'').toLowerCase()!=='cancelado'; });
+    const dashboardTotal = (orders) => orders.reduce((sum, order) => sum + (Number(order.total)||0), 0);
+    const dashboardPeriod = (orders, start, end, previousStart) => { const current=dashboardOrdersIn(orders,start,end);const previous=dashboardOrdersIn(orders,previousStart,start);const total=dashboardTotal(current);const previousTotal=dashboardTotal(previous);return {orders:current.length,total,delta:dashboardDelta(total,previousTotal),orderDelta:dashboardDelta(current.length,previous.length)}; };
+
+    const renderDashboard = (allOrders) => {
+        if (!dashboardContainer) return;
+        const orders=Array.isArray(allOrders)?allOrders:[];
+        const now=new Date();
+        const dayStart=dashboardStartDay(now),weekStart=dashboardStartWeek(now),monthStart=dashboardStartMonth(now),yearStart=dashboardStartYear(now);
+        const periods=[
+            ['Hoje',dayStart,dashboardAdd(dayStart,'day',1),dashboardAdd(dayStart,'day',-1)],
+            ['Semana',weekStart,dashboardAdd(weekStart,'week',1),dashboardAdd(weekStart,'week',-1)],
+            ['Mês',monthStart,dashboardAdd(monthStart,'month',1),dashboardAdd(monthStart,'month',-1)],
+            ['Ano',yearStart,dashboardAdd(yearStart,'year',1),dashboardAdd(yearStart,'year',-1)],
+        ].map(([label,start,end,previous])=>({label,...dashboardPeriod(orders,start,end,previous)}));
+        const month=periods[2],year=periods[3];
+        const allValid=orders.filter((order)=>String(order.status||'').toLowerCase()!=='cancelado');
+        const lifetimeTotal=dashboardTotal(allValid);
+        const lifetimeQuantity=allValid.reduce((sum,order)=>sum+(Array.isArray(order.itens)?order.itens:[]).reduce((itemSum,item)=>itemSum+(Number(item.quantidade)||0),0),0);
+        const monthlyShare=year.total>0?Math.min(100,(month.total/year.total)*100):0;
+        const evolutionModes=['30 dias','4 semanas','12 meses','6 anos'];
+        let lastDays=[];
+        const evolutionItemCount=(source)=>source.reduce((sum,order)=>sum+(Array.isArray(order.itens)?order.itens:[]).reduce((itemSum,item)=>itemSum+(Number(item.quantidade)||0),0),0);
+        if(dashboardEvolutionMode===1){const currentWeek=dashboardStartWeek(now);lastDays=Array.from({length:4},(_,index)=>{const start=dashboardAdd(currentWeek,'week',index-3);const end=dashboardAdd(start,'week',1);const previousStart=dashboardAdd(start,'week',-1);const periodOrders=dashboardOrdersIn(orders,start,end);const previousOrders=dashboardOrdersIn(orders,previousStart,start);const total=dashboardTotal(periodOrders);const previousTotal=dashboardTotal(previousOrders);return {label:`${String(start.getDate()).padStart(2,'0')}/${String(start.getMonth()+1).padStart(2,'0')}`,period:`Semana de ${start.toLocaleDateString('pt-BR')}`,total,previousTotal,orderCount:periodOrders.length,previousOrderCount:previousOrders.length,itemCount:evolutionItemCount(periodOrders),previousItemCount:evolutionItemCount(previousOrders),delta:dashboardDelta(total,previousTotal)};});}
+        else if(dashboardEvolutionMode===2){lastDays=Array.from({length:12},(_,index)=>{const start=new Date(now.getFullYear(),index,1);const end=dashboardAdd(start,'month',1);const previousStart=dashboardAdd(start,'month',-1);const periodOrders=dashboardOrdersIn(orders,start,end);const previousOrders=dashboardOrdersIn(orders,previousStart,start);const total=dashboardTotal(periodOrders);const previousTotal=dashboardTotal(previousOrders);return {label:start.toLocaleDateString('pt-BR',{month:'short'}).replace('.',''),period:start.toLocaleDateString('pt-BR',{month:'long',year:'numeric'}),total,previousTotal,orderCount:periodOrders.length,previousOrderCount:previousOrders.length,itemCount:evolutionItemCount(periodOrders),previousItemCount:evolutionItemCount(previousOrders),delta:dashboardDelta(total,previousTotal)};});}
+        else if(dashboardEvolutionMode===3){lastDays=Array.from({length:6},(_,index)=>{const start=new Date(now.getFullYear()-5+index,0,1);const end=dashboardAdd(start,'year',1);const previousStart=dashboardAdd(start,'year',-1);const periodOrders=dashboardOrdersIn(orders,start,end);const previousOrders=dashboardOrdersIn(orders,previousStart,start);const total=dashboardTotal(periodOrders);const previousTotal=dashboardTotal(previousOrders);return {label:String(start.getFullYear()),period:`Ano ${start.getFullYear()}`,total,previousTotal,orderCount:periodOrders.length,previousOrderCount:previousOrders.length,itemCount:evolutionItemCount(periodOrders),previousItemCount:evolutionItemCount(previousOrders),delta:dashboardDelta(total,previousTotal)};});}
+        else{lastDays=Array.from({length:30},(_,index)=>{const start=dashboardAdd(dayStart,'day',-index);const periodOrders=dashboardOrdersIn(orders,start,dashboardAdd(start,'day',1));const total=dashboardTotal(periodOrders);const previousOrder=orders.map((order)=>({order,date:dashboardDate(order.created_at||order.createdAt)})).filter((entry)=>entry.date&&entry.date<start&&String(entry.order.status||'').toLowerCase()!=='cancelado').sort((a,b)=>b.date-a.date)[0];const previousStart=previousOrder?dashboardStartDay(previousOrder.date):null;const previousOrders=previousStart?dashboardOrdersIn(orders,previousStart,dashboardAdd(previousStart,'day',1)):[];const previousTotal=dashboardTotal(previousOrders);return {label:`${String(start.getDate()).padStart(2,'0')}/${String(start.getMonth()+1).padStart(2,'0')}`,period:start.toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'2-digit',year:'numeric'}),total,previousTotal,orderCount:periodOrders.length,previousOrderCount:previousOrders.length,itemCount:evolutionItemCount(periodOrders),previousItemCount:evolutionItemCount(previousOrders),delta:total>0?dashboardDelta(total,previousTotal):0};});}
+        const maxDay=Math.max(1,...lastDays.map(item=>item.total));
+        const productSelectedDate=dashboardAdd(monthStart,'month',dashboardProductMonthOffset);
+        const productPeriodStart=dashboardProductPeriodMode==='year'?new Date(productSelectedDate.getFullYear(),0,1):productSelectedDate;
+        const productPeriodEnd=dashboardAdd(productPeriodStart,dashboardProductPeriodMode==='year'?'year':'month',1);
+        const previousPeriodStart=dashboardAdd(productPeriodStart,dashboardProductPeriodMode==='year'?'year':'month',-1);
+        const currentMonthOrders=dashboardOrdersIn(orders,productPeriodStart,productPeriodEnd);
+        const previousMonthOrders=dashboardOrdersIn(orders,previousPeriodStart,productPeriodStart);
+        const productMonthLabel=productSelectedDate.toLocaleDateString('pt-BR',{month:'long'});
+        const productYearLabel=String(productSelectedDate.getFullYear());
+        const aggregateProducts=(source)=>{const map=new Map();source.forEach(order=>(Array.isArray(order.itens)?order.itens:[]).forEach(item=>{const id=String(item.produto_id||item.id||item.nome||'produto');const current=map.get(id)||{id,name:item.nome||item.produto_nome||`Produto ${id}`,sku:item.sku||'',quantity:0,total:0};current.quantity+=Number(item.quantidade)||0;current.total+=(Number(item.quantidade)||0)*(Number(item.preco_unit??item.preco)||0);map.set(id,current);}));return map;};
+        const products=aggregateProducts(currentMonthOrders),previousProducts=aggregateProducts(previousMonthOrders);const totalProductQty=Array.from(products.values()).reduce((sum,item)=>sum+item.quantity,0);
+        const allRanking=Array.from(products.values()).sort((a,b)=>b.quantity-a.quantity);
+        const rankingTotalPages=Math.max(1,Math.ceil(allRanking.length/dashboardProductPerPage));
+        dashboardProductPage=Math.min(Math.max(1,dashboardProductPage),rankingTotalPages);
+        const rankingOffset=(dashboardProductPage-1)*dashboardProductPerPage;
+        const ranking=allRanking.slice(rankingOffset,rankingOffset+dashboardProductPerPage);
+        const rankingStart=allRanking.length?rankingOffset+1:0;
+        const rankingEnd=Math.min(allRanking.length,rankingOffset+dashboardProductPerPage);
+        const rankingPageStart=Math.max(1,Math.min(dashboardProductPage-3,rankingTotalPages-6));
+        const rankingPages=Array.from({length:Math.min(7,rankingTotalPages)},(_,index)=>rankingPageStart+index);
+        const rankingPageButtons=rankingPages.map((page)=>`<button type="button" class="portal-dashboard__page-btn${page===dashboardProductPage?' active':''}" data-dashboard-product-page="${page}"${page===dashboardProductPage?' aria-current="page"':''}>${page}</button>`).join('');
+        const rankingSizeOptions=[9,15,25,50].map((size)=>`<option value="${size}"${size===dashboardProductPerPage?' selected':''}>${size}</option>`).join('');
+        const rankingPagination=allRanking.length?`<div class="portal-dashboard__pagination" data-dashboard-product-pagination><span>${rankingStart}-${rankingEnd} de ${allRanking.length}</span><div class="portal-dashboard__pagination-pages">${rankingPageButtons}<label>Ir para <input class="portal-dashboard__page-input" type="number" min="1" max="${rankingTotalPages}" value="${dashboardProductPage}" data-dashboard-product-page-input></label></div><label class="portal-dashboard__pagination-size"><span>Mostrar</span><select class="portal-dashboard__page-size" data-dashboard-product-page-size>${rankingSizeOptions}</select><input class="portal-dashboard__page-input" type="number" min="1" max="500" value="${dashboardProductPerPage}" data-dashboard-product-page-size-manual><span>por página</span></label></div>`:'';
+        const metricHtml=periods.map((period)=>`<article class="portal-dashboard__metric"><div class="portal-dashboard__metric-label"><span>${period.label}</span>${dashboardDeltaHtml(period.delta)}</div><strong>${formatCurrency(period.total)}</strong><small>${period.orders} pedido${period.orders===1?'':'s'} · ${period.orderDelta>=0?'+':''}${period.orderDelta.toLocaleString('pt-BR',{maximumFractionDigits:1})}% em quantidade</small></article>`).join('');
+        const rankingHtml=ranking.length?ranking.map((product,index)=>{const previous=previousProducts.get(product.id)?.quantity||0;const delta=dashboardDelta(product.quantity,previous);const share=totalProductQty>0?(product.quantity/totalProductQty)*100:0;return `<article class="portal-dashboard__product"><span class="portal-dashboard__rank">${index+1}</span><div class="portal-dashboard__product-name"><strong>${dashboardEscape(product.name)}</strong><small>${dashboardEscape(product.sku||'Sem SKU')} · ${share.toLocaleString('pt-BR',{maximumFractionDigits:1})}% do volume</small></div><div class="portal-dashboard__product-total"><strong>${product.quantity.toLocaleString('pt-BR',{maximumFractionDigits:2})}</strong><small>${delta>=0?'+':''}${delta.toLocaleString('pt-BR',{maximumFractionDigits:1})}%</small></div></article>`;}).join(''):'<div class="portal-dashboard__empty">Nenhum produto pedido neste mês.</div>';
+        dashboardContainer.innerHTML=`<header class="portal-dashboard__hero"><div><span class="portal-dashboard__eyebrow">◉ Visão executiva</span><h3>Desempenho dos seus pedidos</h3><p>Valores reais, comparados automaticamente com o período anterior.</p></div><button type="button" class="portal-btn portal-btn--ghost portal-dashboard__refresh" data-dashboard-refresh><svg viewBox="0 0 24 24"><path d="M20 6v5h-5M4 18v-5h5"/><path d="M6.1 9a7 7 0 0 1 11.7-2.6L20 9M4 15l2.2 2.6A7 7 0 0 0 17.9 15"/></svg><span>Atualizar</span></button></header><section class="portal-dashboard__periods">${metricHtml}</section><div class="portal-dashboard__grid"><section class="portal-dashboard__section"><div class="portal-dashboard__section-head"><div><h4>Evolução dos últimos 7 dias</h4><p>Volume financeiro diário dos pedidos válidos.</p></div>${dashboardDeltaHtml(month.delta)}</div><div class="portal-dashboard__summary"><div><span>Total histórico</span><strong>${formatCurrency(lifetimeTotal)}</strong></div><div><span>Pedidos realizados</span><strong>${allValid.length.toLocaleString('pt-BR')}</strong></div><div><span>Itens solicitados</span><strong>${lifetimeQuantity.toLocaleString('pt-BR',{maximumFractionDigits:2})}</strong></div></div><div class="portal-dashboard__bars">${lastDays.map(item=>`<div class="portal-dashboard__bar-item"><span class="portal-dashboard__bar-value">${formatCurrency(item.total)}</span><span class="portal-dashboard__bar" style="height:${Math.max(3,(item.total/maxDay)*100)}%"></span><span class="portal-dashboard__bar-label">${item.label}</span></div>`).join('')}</div></section><section class="portal-dashboard__section"><div class="portal-dashboard__section-head"><div><h4>Participação mensal</h4><p>Quanto o mês representa no ano atual.</p></div></div><div class="portal-dashboard__donut-wrap"><div class="portal-dashboard__donut" style="--value:${monthlyShare}"><div class="portal-dashboard__donut-content"><strong>${monthlyShare.toLocaleString('pt-BR',{maximumFractionDigits:1})}%</strong><span>do gasto anual</span></div></div>${dashboardDeltaHtml(month.delta)}<small>${formatCurrency(month.total)} no mês</small></div></section></div><section class="portal-dashboard__section"><div class="portal-dashboard__section-head"><div><h4>Produtos mais pedidos no mês</h4><p>Ranking por quantidade, participação e comparação com o mês anterior.</p></div><strong>${totalProductQty.toLocaleString('pt-BR',{maximumFractionDigits:2})} itens</strong></div><div class="portal-dashboard__ranking">${rankingHtml}</div></section>`;
+        const summaryIcons=['<path d="M3 7h18v12H3z"/><path d="M16 11h5v4h-5a2 2 0 0 1 0-4Z"/><path d="M5 7V5h13v2"/>','<rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/>','<path d="m12 3 8 4-8 4-8-4 8-4Z"/><path d="m4 7 8 4 8-4v10l-8 4-8-4V7Z"/><path d="M12 11v10"/>'];
+        dashboardContainer.querySelectorAll('.portal-dashboard__summary>div').forEach((card,index)=>card.insertAdjacentHTML('afterbegin',`<span class="portal-dashboard__summary-icon" aria-hidden="true"><svg viewBox="0 0 24 24">${summaryIcons[index]||summaryIcons[0]}</svg></span>`));
+        const dashboardRefreshButton=dashboardContainer.querySelector('[data-dashboard-refresh]');
+        if(dashboardRefreshButton){const heroActions=document.createElement('div');heroActions.className='portal-dashboard__hero-actions';dashboardRefreshButton.before(heroActions);heroActions.insertAdjacentHTML('afterbegin','<button type="button" class="portal-btn portal-btn--primary portal-dashboard__order-btn" data-dashboard-new-order><svg viewBox="0 0 24 24"><circle cx="9" cy="20" r="1"/><circle cx="18" cy="20" r="1"/><path d="M3 4h2l2.4 11.2a2 2 0 0 0 2 1.6h7.8a2 2 0 0 0 2-1.6L21 8H7"/><path d="M14 4v6M11 7h6"/></svg><span>Fazer pedido</span></button>');heroActions.appendChild(dashboardRefreshButton);heroActions.querySelector('[data-dashboard-new-order]')?.addEventListener('click',()=>setActiveTab('novo-pedido'));}
+        dashboardContainer.querySelector('[data-dashboard-refresh]')?.addEventListener('click',()=>carregarDashboard(true));
+        const evolutionBars=dashboardContainer.querySelector('.portal-dashboard__bars');
+        if(dashboardEvolutionMode===0&&evolutionBars){evolutionBars.classList.add('is-daily');evolutionBars.scrollLeft=0;evolutionBars.addEventListener('wheel',(event)=>{if(Math.abs(event.deltaY)>Math.abs(event.deltaX)){event.preventDefault();evolutionBars.scrollLeft+=event.deltaY;}},{passive:false});}
+        const evolutionComparisonTitle=dashboardEvolutionMode===0?'Comparação com o último dia que teve pedido':(dashboardEvolutionMode===1?'Comparação com a semana anterior':(dashboardEvolutionMode===2?'Comparação com o mês anterior':'Comparação com o ano anterior'));
+        dashboardContainer.querySelectorAll('.portal-dashboard__bar-item').forEach((bar,index)=>{const delta=Number(lastDays[index]?.delta)||0;const state=delta>0?'up':(delta<0?'down':'neutral');const sign=delta>0?'+':(delta<0?'−':'');bar.querySelector('.portal-dashboard__bar-value')?.insertAdjacentHTML('afterend',`<span class="portal-dashboard__bar-delta ${state}" title="${evolutionComparisonTitle}">${sign}${Math.abs(delta).toLocaleString('pt-BR',{maximumFractionDigits:1})}%</span>`);});
+        document.querySelector('[data-dashboard-chart-tooltip]')?.remove();
+        const chartTooltip=document.createElement('div');chartTooltip.className='portal-dashboard__chart-tooltip';chartTooltip.dataset.dashboardChartTooltip='';chartTooltip.setAttribute('role','tooltip');document.body.appendChild(chartTooltip);
+        const positionChartTooltip=(x,y)=>{const width=chartTooltip.offsetWidth||330;const height=chartTooltip.offsetHeight||190;chartTooltip.style.left=`${Math.max(12,Math.min(window.innerWidth-width-12,x+14))}px`;chartTooltip.style.top=`${Math.max(12,Math.min(window.innerHeight-height-12,y+14))}px`;};
+        const showChartTooltip=(bar,item,event)=>{const delta=Number(item?.delta)||0;const difference=(Number(item?.total)||0)-(Number(item?.previousTotal)||0);const state=delta>0?'up':(delta<0?'down':'neutral');const status=(Number(item?.total)||0)===0?'Sem movimento':(delta>0?'Aumento':(delta<0?'Redução':'Estável'));const sign=delta>0?'+':(delta<0?'−':'');chartTooltip.innerHTML=`<div class="portal-dashboard__tooltip-head"><strong>${dashboardEscape(item?.period||item?.label||'Período')}</strong><span class="portal-dashboard__tooltip-status ${state}">${delta>0?'↑':(delta<0?'↓':'—')} ${status}</span></div><div class="portal-dashboard__tooltip-grid"><div class="portal-dashboard__tooltip-item"><span>Compras no período</span><strong>${formatCurrency(item?.total||0)}</strong></div><div class="portal-dashboard__tooltip-item"><span>Base de comparação</span><strong>${formatCurrency(item?.previousTotal||0)}</strong></div><div class="portal-dashboard__tooltip-item ${difference>0?'positive':(difference<0?'negative':'')}"><span>Diferença em valor</span><strong>${difference>0?'+':''}${formatCurrency(difference)}</strong></div><div class="portal-dashboard__tooltip-item ${state==='up'?'positive':(state==='down'?'negative':'')}"><span>Variação percentual</span><strong>${sign}${Math.abs(delta).toLocaleString('pt-BR',{maximumFractionDigits:1})}%</strong></div></div>`;chartTooltip.classList.add('is-visible');const rect=bar.getBoundingClientRect();positionChartTooltip(event?.clientX??(rect.left+rect.width/2),event?.clientY??rect.top);};
+        const showChartTooltipWithCounts=(bar,item,event)=>{showChartTooltip(bar,item,event);const orderDelta=dashboardDelta(Number(item?.orderCount)||0,Number(item?.previousOrderCount)||0);const itemDelta=dashboardDelta(Number(item?.itemCount)||0,Number(item?.previousItemCount)||0);const indicator=(value)=>{const state=value>0?'up':(value<0?'down':'neutral');const sign=value>0?'+':(value<0?'−':'');return `<span class="portal-dashboard__tooltip-metric-delta ${state}">${sign}${Math.abs(value).toLocaleString('pt-BR',{maximumFractionDigits:1})}%</span>`;};chartTooltip.querySelector('.portal-dashboard__tooltip-grid')?.insertAdjacentHTML('beforeend',`<div class="portal-dashboard__tooltip-item"><span>Número de pedidos</span><strong class="portal-dashboard__tooltip-metric"><b>${Number(item?.orderCount||0).toLocaleString('pt-BR')}</b>${indicator(orderDelta)}</strong></div><div class="portal-dashboard__tooltip-item"><span>Quantidade de itens</span><strong class="portal-dashboard__tooltip-metric"><b>${Number(item?.itemCount||0).toLocaleString('pt-BR',{maximumFractionDigits:2})}</b>${indicator(itemDelta)}</strong></div>`);};
+        dashboardContainer.querySelectorAll('.portal-dashboard__bar-item').forEach((bar,index)=>{bar.setAttribute('aria-label',`${lastDays[index]?.period||lastDays[index]?.label}: ${formatCurrency(lastDays[index]?.total||0)}`);bar.addEventListener('mouseenter',(event)=>showChartTooltipWithCounts(bar,lastDays[index],event));bar.addEventListener('mousemove',(event)=>positionChartTooltip(event.clientX,event.clientY));bar.addEventListener('mouseleave',()=>chartTooltip.classList.remove('is-visible'));});
+        dashboardContainer.querySelectorAll('.portal-dashboard__rank').forEach((rank,index)=>{rank.textContent=String(rankingOffset+index+1);});
+        dashboardContainer.querySelectorAll('.portal-dashboard__product').forEach((card,index)=>{const product=ranking[index];if(!product)return;const previous=previousProducts.get(product.id)?.quantity||0;const delta=dashboardDelta(product.quantity,previous);const state=delta>0?'up':(delta<0?'down':'neutral');const indicator=card.querySelector('.portal-dashboard__product-total small');if(indicator){indicator.className=`portal-dashboard__product-delta ${state}`;indicator.textContent=`${delta>0?'↑ +':(delta<0?'↓ −':'— ')}${Math.abs(delta).toLocaleString('pt-BR',{maximumFractionDigits:1})}%`;}});
+        const evolutionTitle=dashboardContainer.querySelector('.portal-dashboard__grid .portal-dashboard__section h4');
+        if(evolutionTitle){evolutionTitle.textContent=dashboardEvolutionMode===0?'Evolução dos últimos 30 dias':(dashboardEvolutionMode===1?'Evolução das últimas 4 semanas':(dashboardEvolutionMode===2?'Evolução dos 12 meses':'Evolução dos últimos 6 anos'));evolutionTitle.classList.add('portal-dashboard__evolution-title');evolutionTitle.insertAdjacentHTML('afterbegin','<span class="portal-dashboard__evolution-title-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="m6 15 4-4 3 3 6-7"/><path d="M15 7h4v4"/></svg></span>');}
+        const evolutionHead=evolutionTitle?.closest('.portal-dashboard__section-head');
+        const evolutionWithMovement=lastDays.filter((item)=>(Number(item.total)||0)>0);
+        const evolutionAverage=evolutionWithMovement.length?evolutionWithMovement.reduce((sum,item)=>sum+(Number(item.delta)||0),0)/evolutionWithMovement.length:0;
+        const evolutionAverageLabel=['Média diária','Média semanal','Média mensal','Média anual'][dashboardEvolutionMode];
+        const evolutionAverageState=evolutionAverage>0?'up':(evolutionAverage<0?'down':'neutral');
+        const evolutionAverageSign=evolutionAverage>0?'+':(evolutionAverage<0?'−':'');
+        const evolutionAveragePill=evolutionHead?Array.from(evolutionHead.children).find((child)=>child.classList?.contains('portal-dashboard__delta')):null;
+        if(evolutionAveragePill){evolutionAveragePill.className=`portal-dashboard__delta portal-dashboard__evolution-average ${evolutionAverageState}`;evolutionAveragePill.textContent=`${evolutionAverage>0?'↑':(evolutionAverage<0?'↓':'—')} ${evolutionAverageLabel} ${evolutionAverageSign}${Math.abs(evolutionAverage).toLocaleString('pt-BR',{maximumFractionDigits:1})}%`;}
+        evolutionHead?.insertAdjacentHTML('beforeend',`<div class="portal-dashboard__evolution-nav" aria-label="Navegar pelo período do gráfico"><button type="button" data-dashboard-evolution="prev" aria-label="Período anterior"><svg viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg></button><strong>${evolutionModes[dashboardEvolutionMode]}</strong><button type="button" data-dashboard-evolution="next" aria-label="Próximo período"><svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></button></div>`);
+        evolutionHead?.querySelectorAll('[data-dashboard-evolution]').forEach((button)=>button.addEventListener('click',()=>{dashboardEvolutionMode=(dashboardEvolutionMode+(button.dataset.dashboardEvolution==='next'?1:-1)+evolutionModes.length)%evolutionModes.length;renderDashboard(dashboardOrdersCache);}));
+        const rankingSection=dashboardContainer.querySelector('.portal-dashboard__ranking')?.closest('.portal-dashboard__section');
+        const rankingEmpty=rankingSection?.querySelector('.portal-dashboard__ranking .portal-dashboard__empty');
+        if(rankingEmpty)rankingEmpty.textContent=dashboardProductPeriodMode==='year'?'Nenhum produto pedido neste ano.':'Nenhum produto pedido neste mês.';
+        const rankingTitle=rankingSection?.querySelector('h4');
+        if(rankingTitle){rankingTitle.textContent=dashboardProductPeriodMode==='year'?'Produtos mais pedidos no ano':'Produtos mais pedidos no mês';const rankingSubtitle=rankingTitle.parentElement?.querySelector('p');if(rankingSubtitle)rankingSubtitle.textContent=dashboardProductPeriodMode==='year'?'Ranking por quantidade, participação e comparação com o ano anterior.':'Ranking por quantidade, participação e comparação com o mês anterior.';rankingTitle.classList.add('portal-dashboard__ranking-title');rankingTitle.insertAdjacentHTML('afterbegin','<span class="portal-dashboard__ranking-title-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/><path d="m3 6 5-3 5 4 7-5"/></svg></span>');}
+        const rankingHead=rankingTitle?.closest('.portal-dashboard__section-head');
+        const productMonthNavigator=dashboardProductPeriodMode==='month'?`<div class="portal-dashboard__evolution-nav portal-dashboard__product-month-nav" aria-label="Navegar pelos meses do ranking"><button type="button" data-dashboard-product-period="prev-month" aria-label="Mês anterior"><svg viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg></button><strong>${dashboardEscape(productMonthLabel)}</strong><button type="button" data-dashboard-product-period="next-month" aria-label="Próximo mês"><svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></button></div>`:'';
+        rankingHead?.insertAdjacentHTML('beforeend',`<div class="portal-dashboard__product-nav-group"><div class="portal-dashboard__product-mode" aria-label="Tipo de comparação dos produtos"><button type="button" data-dashboard-product-mode="month" class="${dashboardProductPeriodMode==='month'?'is-active':''}">Mensal</button><button type="button" data-dashboard-product-mode="year" class="${dashboardProductPeriodMode==='year'?'is-active':''}">Anual</button></div><div class="portal-dashboard__evolution-nav portal-dashboard__product-year-nav" aria-label="Navegar pelos anos do ranking"><button type="button" data-dashboard-product-period="prev-year" aria-label="Ano anterior"><svg viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg></button><strong>${dashboardEscape(productYearLabel)}</strong><button type="button" data-dashboard-product-period="next-year" aria-label="Próximo ano"><svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></button></div>${productMonthNavigator}</div>`);
+        rankingHead?.querySelectorAll('[data-dashboard-product-mode]').forEach((button)=>button.addEventListener('click',()=>{dashboardProductPeriodMode=button.dataset.dashboardProductMode==='year'?'year':'month';dashboardProductPage=1;renderDashboard(dashboardOrdersCache);}));
+        rankingHead?.querySelectorAll('[data-dashboard-product-period]').forEach((button)=>button.addEventListener('click',()=>{const action=button.dataset.dashboardProductPeriod;dashboardProductMonthOffset+=action==='next-year'?12:(action==='prev-year'?-12:(action==='next-month'?1:-1));dashboardProductPage=1;renderDashboard(dashboardOrdersCache);}));
+        if(rankingSection&&rankingPagination)rankingSection.insertAdjacentHTML('beforeend',rankingPagination);
+        const pagination=dashboardContainer.querySelector('[data-dashboard-product-pagination]');
+        pagination?.addEventListener('click',(event)=>{const button=event.target.closest('[data-dashboard-product-page]');if(!button)return;dashboardProductPage=Number(button.dataset.dashboardProductPage)||1;renderDashboard(dashboardOrdersCache);});
+        const applyDashboardPagination=(target)=>{if(target.matches('[data-dashboard-product-page-input]'))dashboardProductPage=Number(target.value)||1;else if(target.matches('[data-dashboard-product-page-size]')){dashboardProductPerPage=Number(target.value)||9;dashboardProductPage=1;}else if(target.matches('[data-dashboard-product-page-size-manual]')){dashboardProductPerPage=Math.min(500,Math.max(1,Number(target.value)||9));dashboardProductPage=1;}else return;renderDashboard(dashboardOrdersCache);};
+        pagination?.addEventListener('change',(event)=>applyDashboardPagination(event.target));
+        pagination?.addEventListener('keydown',(event)=>{if(event.key==='Enter'&&event.target.matches('input')){event.preventDefault();applyDashboardPagination(event.target);}});
+    };
+
+    const carregarDashboard = async (force=false) => {
+        if (!dashboardContainer || !state.token || dashboardAtualizando) return;
+        if (dashboardCarregado && !force) return;
+        const cacheKey = `portal-dashboard-cache:${Number(state.cliente?.id || 0)}`;
+        if (!dashboardOrdersCache.length) {
+            try {
+                const cached = JSON.parse(sessionStorage.getItem(cacheKey) || '[]');
+                if (Array.isArray(cached)) dashboardOrdersCache = cached;
+            } catch (error) { dashboardOrdersCache = []; }
+        }
+        if (dashboardOrdersCache.length) renderDashboard(dashboardOrdersCache);
+        else dashboardContainer.innerHTML = '<div class="portal-dashboard__loading">Atualizando indicadores...</div>';
+        dashboardAtualizando = true;
+        const controller = new AbortController();
+        const timeout = window.setTimeout(() => controller.abort(), 10000);
+        try {
+            const response = await fetch(`${basePath}/api/pedidos`, {
+                cache: 'no-store',
+                signal: controller.signal,
+                headers: { 'Authorization': `Bearer ${state.token}`, 'Accept': 'application/json', 'Cache-Control': 'no-cache' }
+            });
+            if (response.status === 401) { leaveApp(); return; }
+            if (!response.ok) throw new Error('Não foi possível carregar o Dashboard.');
+            const json = await response.json();
+            dashboardOrdersCache = Array.isArray(json.pedidos) ? json.pedidos : [];
+            sessionStorage.setItem(cacheKey, JSON.stringify(dashboardOrdersCache));
+            dashboardCarregado = true;
+            renderDashboard(dashboardOrdersCache);
+        } catch(error) {
+            dashboardCarregado = dashboardOrdersCache.length > 0;
+            if (dashboardOrdersCache.length) {
+                renderDashboard(dashboardOrdersCache);
+            } else {
+                const message = error?.name === 'AbortError' ? 'A conexão demorou mais que o esperado.' : (error.message || 'Não foi possível carregar os indicadores.');
+                dashboardContainer.innerHTML = `<div class="portal-dashboard__empty"><strong>${dashboardEscape(message)}</strong><span>Verifique sua conexão e tente novamente.</span><button type="button" class="portal-btn portal-btn--primary" data-dashboard-retry>Tentar novamente</button></div>`;
+                dashboardContainer.querySelector('[data-dashboard-retry]')?.addEventListener('click', () => carregarDashboard(true));
+            }
+        } finally {
+            window.clearTimeout(timeout);
+            dashboardAtualizando = false;
+        }
+    };
+
+    const carregarPedidos = async (force = false, silent = false) => {
         if (!ordersTableBody) {
+            return;
+        }
+        if (pedidosAtualizando) {
             return;
         }
         if (!state.token) {
             pedidosCarregados = false;
+            pedidosSignature = '';
             renderPedidos([]);
             setFeedback(ordersFeedback, 'Faça login para visualizar seus pedidos.', '');
             return;
@@ -3606,12 +4293,17 @@ $catalogoPayload = json_encode(array_map(static function ($produto) use ($asset)
         if (pedidosCarregados && !force) {
             return;
         }
-        setFeedback(ordersFeedback, 'Carregando pedidos…');
+        pedidosAtualizando = true;
+        if (!silent) {
+            setFeedback(ordersFeedback, 'Carregando pedidos…');
+        }
         try {
             const response = await fetch(`${basePath}/api/pedidos`, {
+                cache: 'no-store',
                 headers: {
                     'Authorization': `Bearer ${state.token}`,
                     'Accept': 'application/json',
+                    'Cache-Control': 'no-cache',
                 },
             });
             if (response.status === 401) {
@@ -3624,12 +4316,23 @@ $catalogoPayload = json_encode(array_map(static function ($produto) use ($asset)
             }
             const json = await response.json();
             const lista = Array.isArray(json.pedidos) ? json.pedidos : [];
+            const nextSignature = JSON.stringify(lista);
+            const changed = nextSignature !== pedidosSignature;
             pedidosCarregados = true;
-            renderPedidos(lista);
-            setFeedback(ordersFeedback, lista.length ? 'Pedidos atualizados.' : 'Nenhum pedido enviado ainda.', lista.length ? 'success' : '');
+            pedidosSignature = nextSignature;
+            if (changed || !silent) {
+                renderPedidos(lista);
+            }
+            if (!silent) {
+                setFeedback(ordersFeedback, lista.length ? 'Pedidos atualizados.' : 'Nenhum pedido enviado ainda.', lista.length ? 'success' : '');
+            }
         } catch (error) {
             pedidosCarregados = false;
-            setFeedback(ordersFeedback, error.message || 'Não foi possível atualizar seus pedidos.', 'error');
+            if (!silent) {
+                setFeedback(ordersFeedback, error.message || 'Não foi possível atualizar seus pedidos.', 'error');
+            }
+        } finally {
+            pedidosAtualizando = false;
         }
     };
 
@@ -3637,8 +4340,8 @@ $catalogoPayload = json_encode(array_map(static function ($produto) use ($asset)
         if (!portalTabButtons.length || !portalTabPanels.length) {
             return;
         }
-        const validTabs = ['pedidos', 'novo-pedido', 'suporte'];
-        const nextTab = validTabs.includes(target) ? target : 'novo-pedido';
+        const validTabs = Array.from(portalTabPanels, panel => panel.dataset.portalTabPanel).filter(Boolean);
+        const nextTab = validTabs.includes(target) ? target : 'dashboard';
         activeTab = nextTab;
         portalTabButtons.forEach((button) => {
             const isActive = button.dataset.portalTabTrigger === nextTab;
@@ -3652,8 +4355,16 @@ $catalogoPayload = json_encode(array_map(static function ($produto) use ($asset)
                 panel.setAttribute('hidden', '');
             }
         });
-        if (nextTab === 'pedidos') {
+        if (document.body.getAttribute('data-portal-state') === 'app') {
+            localStorage.setItem('portal-active-tab', nextTab);
+            if (nextTab !== 'editar-pedido') localStorage.removeItem('portal-edit-order-id');
+        }
+        if (nextTab === 'dashboard') {
+            carregarDashboard();
+        } else if (nextTab === 'pedidos') {
             carregarPedidos();
+        } else if (nextTab === 'novo-pedido' && catalogNeedsRender) {
+            desenharCatalogo(true);
         }
     };
 
@@ -3759,10 +4470,16 @@ $catalogoPayload = json_encode(array_map(static function ($produto) use ($asset)
         imageLightboxIndex = 0;
     };
 
-    const desenharCatalogo = () => {
+    const desenharCatalogo = (force = false) => {
         if (!catalogContainer) return;
+        if (!force && activeTab !== 'novo-pedido') {
+            catalogNeedsRender = true;
+            return;
+        }
+        catalogNeedsRender = false;
         syncCatalogView();
         catalogContainer.innerHTML = '';
+        const fragment = document.createDocumentFragment();
         catalogo.forEach((produto) => {
             const card = document.createElement('article');
             card.className = `portal-product portal-product--${catalogView}`;
@@ -3778,7 +4495,7 @@ $catalogoPayload = json_encode(array_map(static function ($produto) use ($asset)
             ].filter((image) => image.url);
             const imageMarkup = productImages.length
                 ? `<div class="portal-product__media" data-product-gallery='${JSON.stringify(productImages).replace(/'/g, '&apos;')}' data-gallery-index="0">
-                    <img src="${productImages[0].url}" alt="${produto.nome || 'Produto'} - ${productImages[0].label}">
+                    <img src="${productImages[0].url}" alt="${produto.nome || 'Produto'} - ${productImages[0].label}" loading="lazy" decoding="async" fetchpriority="low">
                     <button type="button" class="portal-product__media-zoom" data-gallery-zoom aria-label="Expandir imagem do produto"><span class="portal-product__media-zoom-mark"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"></circle><path d="m16 16 4.5 4.5"></path><path d="M10.5 7.6v5.8"></path><path d="M7.6 10.5h5.8"></path></svg></span></button>
                     <span class="portal-product__media-caption">${productImages[0].label}</span>
                     ${productImages.length > 1 ? `<button type="button" class="portal-product__media-toggle" data-gallery-next aria-label="Ver outra foto do produto"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="2.35" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg></button>` : ''}
@@ -3806,8 +4523,9 @@ $catalogoPayload = json_encode(array_map(static function ($produto) use ($asset)
                     </div>
                 </div>
             `;
-            catalogContainer.appendChild(card);
+            fragment.appendChild(card);
         });
+        catalogContainer.appendChild(fragment);
         catalogContainer.querySelectorAll('button[data-add]').forEach((button) => {
             button.addEventListener('click', (event) => {
                 const id = Number(event.currentTarget.dataset.add);
@@ -3909,8 +4627,16 @@ $catalogoPayload = json_encode(array_map(static function ($produto) use ($asset)
     };
 
     const enterApp = (cliente, options = {}) => {
-        const { showWelcome = false, preferredTab = 'novo-pedido' } = options;
+        const { showWelcome = false, preferredTab = null } = options;
+        const restoredTab = preferredTab || localStorage.getItem('portal-active-tab') || 'dashboard';
         persistCliente(cliente);
+        const groupIds=Array.isArray(cliente?.grupos_produtos_ids)&&cliente.grupos_produtos_ids.length?cliente.grupos_produtos_ids.map(String):[String(cliente?.grupo_produtos_id||'')].filter(Boolean);
+        const matchedGroups=portalClientGroups.filter(item=>groupIds.includes(String(item?.id||'')));
+        const allowed=Array.isArray(cliente?.grupo_produtos_product_ids)
+            ? new Set(cliente.grupo_produtos_product_ids.map(Number).filter(id=>id>0))
+            : (matchedGroups.length?new Set(matchedGroups.flatMap(group=>(Array.isArray(group.product_ids)?group.product_ids:[]).map(Number))):null);
+        catalogo.splice(0,catalogo.length,...catalogoCompleto.filter(produto=>!allowed||allowed.has(Number(produto.id))));
+        desenharCatalogo();
         const displayName = cliente && (cliente.nome_fantasia || cliente.nome_loja || cliente.razao_social || cliente.nome)
             ? (cliente.nome_fantasia || cliente.nome_loja || cliente.razao_social || cliente.nome)
             : 'Cliente';
@@ -3921,7 +4647,9 @@ $catalogoPayload = json_encode(array_map(static function ($produto) use ($asset)
             clienteBadge.textContent = displayName;
         }
         pedidosCarregados = false;
-        setPortalState('app', preferredTab);
+        pedidosSignature = '';
+        dashboardCarregado = false;
+        setPortalState('app', restoredTab);
         renderListaProdutos();
         atualizarCarrinho();
         if (showWelcome) {
@@ -3929,8 +4657,42 @@ $catalogoPayload = json_encode(array_map(static function ($produto) use ($asset)
         }
     };
 
+    window.addEventListener('portal:cliente-atualizado', (event) => {
+        const cliente = event.detail?.cliente && typeof event.detail.cliente === 'object'
+            ? event.detail.cliente
+            : state.cliente;
+        if (!cliente) return;
+
+        persistCliente(cliente);
+        const explicitAllowed = Array.isArray(event.detail?.allowedProductIds)
+            ? event.detail.allowedProductIds
+            : cliente.grupo_produtos_product_ids;
+        let allowed = null;
+        if (Array.isArray(explicitAllowed)) {
+            allowed = new Set(explicitAllowed.map(Number).filter((id) => id > 0));
+        } else {
+            const groupIds = Array.isArray(cliente.grupos_produtos_ids) && cliente.grupos_produtos_ids.length
+                ? cliente.grupos_produtos_ids.map(String)
+                : [String(cliente.grupo_produtos_id || '')].filter(Boolean);
+            const matchedGroups = portalClientGroups.filter((item) => groupIds.includes(String(item?.id || '')));
+            allowed = matchedGroups.length
+                ? new Set(matchedGroups.flatMap((group) => (Array.isArray(group.product_ids) ? group.product_ids : []).map(Number)))
+                : null;
+        }
+
+        catalogo.splice(0, catalogo.length, ...catalogoCompleto.filter((produto) => !allowed || allowed.has(Number(produto.id))));
+        desenharCatalogo();
+        renderListaProdutos();
+        atualizarCarrinho();
+
+        const displayName = cliente.nome_fantasia || cliente.nome_loja || cliente.razao_social || cliente.nome || 'Cliente';
+        if (welcomeName && welcomeName.dataset.portalGreetingManaged !== '1') welcomeName.textContent = displayName;
+        if (clienteBadge) clienteBadge.textContent = displayName;
+    });
+
     const leaveApp = () => {
         state.token = '';
+        dashboardCarregado = false;
         persistCliente(null);
         localStorage.removeItem('portal-token');
         notifyPortalStorage('portal-token');
@@ -3968,9 +4730,13 @@ $catalogoPayload = json_encode(array_map(static function ($produto) use ($asset)
 
     const refreshClienteFromApi = async () => {
         if (!state.token) return null;
+        const controller = new AbortController();
+        const timeout = window.setTimeout(() => controller.abort(), 8000);
         try {
             const response = await fetch(`${basePath}/api/auth/cliente`, {
-                headers: { 'Authorization': `Bearer ${state.token}` },
+                cache: 'no-store',
+                signal: controller.signal,
+                headers: { 'Authorization': `Bearer ${state.token}`, 'Accept': 'application/json', 'Cache-Control': 'no-cache' },
             });
             const json = await response.json().catch(() => ({}));
             if (!response.ok) throw new Error(json.message || 'NÃ£o foi possÃ­vel sincronizar o cliente.');
@@ -3980,8 +4746,18 @@ $catalogoPayload = json_encode(array_map(static function ($produto) use ($asset)
             }
         } catch (error) {
             // Mantem os dados locais quando estiver offline ou com token expirado.
+        } finally {
+            window.clearTimeout(timeout);
         }
         return null;
+    };
+
+    const sincronizarGrupoDoCliente = async () => {
+        if (!state.token || document.visibilityState !== 'visible') return;
+        const cliente = await refreshClienteFromApi();
+        if (cliente) {
+            window.dispatchEvent(new CustomEvent('portal:cliente-atualizado', { detail: { cliente } }));
+        }
     };
 
     const aplicarCep = async (cep) => {
@@ -4053,11 +4829,37 @@ $catalogoPayload = json_encode(array_map(static function ($produto) use ($asset)
         ordersRefreshButton.addEventListener('click', () => carregarPedidos(true));
     }
 
+    window.setInterval(() => {
+        if (activeTab === 'pedidos' && state.token && document.visibilityState === 'visible') {
+            carregarPedidos(true, true);
+        }
+    }, 4000);
+
+    document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible' && activeTab === 'pedidos' && state.token) {
+            carregarPedidos(true, true);
+        }
+    });
+
+    window.addEventListener('focus', () => {
+        sincronizarGrupoDoCliente();
+        if (activeTab === 'pedidos' && state.token) {
+            carregarPedidos(true, true);
+        }
+    });
+
+    window.setInterval(() => sincronizarGrupoDoCliente(), 12000);
+
     const atualizarTokenState = async () => {
         if (state.token) {
             loadStoredCliente();
             const syncedCliente = await refreshClienteFromApi();
             enterApp(syncedCliente || state.cliente || {}, { showWelcome: false });
+            const restoredTab = localStorage.getItem('portal-active-tab');
+            const restoredOrderId = Number(localStorage.getItem('portal-edit-order-id') || 0);
+            if (restoredTab === 'editar-pedido' && restoredOrderId > 0) {
+                abrirEditorPedido(restoredOrderId);
+            }
         } else {
             leaveApp();
         }
@@ -4127,6 +4929,9 @@ $catalogoPayload = json_encode(array_map(static function ($produto) use ($asset)
                     throw new Error(json.message || 'Não foi possível concluir o cadastro');
                 }
                 setFeedback(registerFeedback, json.message || 'Cadastro realizado com sucesso! Faça login para continuar.', 'success');
+                localStorage.removeItem('portal-primary-hex');
+                localStorage.removeItem('portal-primary-name');
+                localStorage.removeItem('portal-cart-hex');
                 registerForm.reset();
                 setDocumentType('cnpj');
                 setAuthMode('login');
@@ -4209,6 +5014,7 @@ $catalogoPayload = json_encode(array_map(static function ($produto) use ($asset)
                 statusLabel: json.status_label ?? pedidoResposta.status_label ?? orderStatusLabels[statusKey] ?? '',
             };
             cart.splice(0, cart.length);
+            dashboardCarregado = false;
             atualizarCarrinho();
             setFeedback(orderFeedback, 'Pedido enviado com sucesso! Confira o resumo abaixo.', 'success');
             showOrderSuccessModal(summary);
@@ -4232,4 +5038,13 @@ $catalogoPayload = json_encode(array_map(static function ($produto) use ($asset)
         setPortalState('auth', 'novo-pedido');
         setAuthMode('login');
     }
+</script>
+<script>
+(function () {
+    const whatsappOutline = '<path d="M20.5 11.5a8.5 8.5 0 0 1-12.55 7.48L3.5 20.5l1.52-4.45A8.5 8.5 0 1 1 20.5 11.5Z"></path><g class="portal-whatsapp-handset" transform="translate(7 7) scale(.42)"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.69 2.8a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.33 1.85.56 2.81.69A2 2 0 0 1 22 16.92Z"></path></g>';
+    document.querySelectorAll('.portal-whatsapp-icon').forEach((icon) => {
+        icon.setAttribute('viewBox', '0 0 24 24');
+        icon.innerHTML = whatsappOutline;
+    });
+})();
 </script>
