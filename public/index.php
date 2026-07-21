@@ -109,6 +109,7 @@ $router->add('POST', '/expedicao/picking/{pedidoId}/item/{itemId}', [ExpedicaoCo
 $router->add('POST', '/expedicao/picking/{pedidoId}/revisar', [ExpedicaoController::class, 'revisar']);
 $router->add('POST', '/expedicao/picking/{pedidoId}/pendencia', [ExpedicaoController::class, 'registrarPendencia']);
 $router->add('POST', '/expedicao/romaneio', [ExpedicaoController::class, 'romaneio']);
+$router->add('POST', '/expedicao/recebimento/{expedicaoId}', [ExpedicaoController::class, 'recebimento']);
 
 $router->add('GET', '/financeiro/titulos', [FinanceiroController::class, 'index']);
 $router->add('POST', '/financeiro/lancamentos', [FinanceiroController::class, 'storeLancamento']);

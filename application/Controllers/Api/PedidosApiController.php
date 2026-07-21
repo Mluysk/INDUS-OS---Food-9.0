@@ -96,7 +96,7 @@ class PedidosApiController extends Controller
         $romaneioStmt->execute(['pedido_id' => (int)$id]);
         $detalhe['romaneio'] = $romaneioStmt->fetch() ?: null;
 
-        $historicoStmt = $db->prepare("SELECT acao, detalhes, created_at FROM audit_logs WHERE entidade = 'pedidos' AND entidade_id = :pedido_id AND acao IN ('create', 'update', 'status', 'expedir') ORDER BY id DESC");
+        $historicoStmt = $db->prepare("SELECT acao, detalhes, created_at FROM audit_logs WHERE entidade = 'pedidos' AND entidade_id = :pedido_id AND acao IN ('create', 'update', 'status', 'expedir', 'receber') ORDER BY id DESC");
         $historicoStmt->execute(['pedido_id' => (int)$id]);
         $detalhe['historico'] = array_map(static function (array $registro): array {
             $dados = json_decode((string)($registro['detalhes'] ?? ''), true);

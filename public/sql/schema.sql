@@ -173,7 +173,7 @@ CREATE TABLE IF NOT EXISTS pedidos (
   id BIGINT AUTO_INCREMENT PRIMARY KEY,
   cliente_id INT NOT NULL,
   codigo VARCHAR(30) UNIQUE,
-  status ENUM('novo','aprovacao','producao','separacao','expedicao','faturado','cancelado') NOT NULL DEFAULT 'novo',
+  status ENUM('novo','aprovacao','producao','separando','separacao','revisao','expedicao','faturado','entregue','cancelado') NOT NULL DEFAULT 'novo',
   total DECIMAL(14,2) DEFAULT 0,
   frete_valor DECIMAL(14,2) DEFAULT 0,
   observacoes TEXT,
@@ -189,6 +189,11 @@ CREATE TABLE IF NOT EXISTS pedido_itens (
   quantidade DECIMAL(14,4) NOT NULL,
   preco_unit DECIMAL(14,2) NOT NULL,
   desconto DECIMAL(14,2) DEFAULT 0,
+  picking_conferido TINYINT(1) NOT NULL DEFAULT 0,
+  picking_status VARCHAR(12) NOT NULL DEFAULT 'pendente',
+  picking_observacao VARCHAR(500),
+  picking_motivo VARCHAR(30),
+  picking_novo_valor DECIMAL(14,4),
   FOREIGN KEY (pedido_id) REFERENCES pedidos(id),
   FOREIGN KEY (produto_id) REFERENCES produtos(id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -223,6 +228,14 @@ CREATE TABLE IF NOT EXISTS expedicoes (
   peso_total DECIMAL(14,3) DEFAULT 0,
   transportadora VARCHAR(120),
   romaneio VARCHAR(40) UNIQUE,
+  motorista_nome VARCHAR(120),
+  assinatura_motorista LONGTEXT,
+  responsavel_expedicao_nome VARCHAR(120),
+  assinatura_responsavel LONGTEXT,
+  recebedor_nome VARCHAR(120),
+  assinatura_recebedor LONGTEXT,
+  data_recebimento DATETIME,
+  observacao_recebimento VARCHAR(500),
   FOREIGN KEY (pedido_id) REFERENCES pedidos(id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 

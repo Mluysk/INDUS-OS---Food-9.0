@@ -2305,6 +2305,7 @@ if ($supportWhatsapp !== '') {
         color: #15803d !important;
     }
     .portal-orders-status--faturado::before{width:16px!important;height:16px!important;border-radius:0!important;background-color:transparent!important;background-repeat:no-repeat!important;background-position:center!important;background-size:16px 16px!important;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2315803d' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 13h4l2 3h4l2-3h4'/%3E%3Cpath d='m5 5-2 15h18L19 5'/%3E%3Cpath d='M12 3v9M9 9l3 3 3-3'/%3E%3C/svg%3E")!important}
+    .portal-orders-status--entregue{background:#dcfce7!important;color:#15803d!important}.portal-orders-status--entregue::before{width:16px!important;height:16px!important;border-radius:0!important;background:transparent center/16px 16px no-repeat!important;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2315803d' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 13h4l2 3h4l2-3h4'/%3E%3Cpath d='m5 5-2 15h18L19 5'/%3E%3Cpath d='m8 10 2.5 2.5L16 7'/%3E%3C/svg%3E")!important}
 
     .portal-orders-status--cancelado {
         background: rgba(220, 38, 38, 0.16) !important;
@@ -3684,6 +3685,7 @@ $catalogoPayload = json_encode(array_map(static function ($produto) use ($asset)
         { value: 'separacao', label: 'Separado' },
         { value: 'expedicao', label: 'Em transporte' },
         { value: 'faturado', label: 'Pedido recebido' },
+        { value: 'entregue', label: 'Entregue' },
         { value: 'cancelado', label: 'Cancelado' },
     ];
 
@@ -3695,6 +3697,7 @@ $catalogoPayload = json_encode(array_map(static function ($produto) use ($asset)
         separacao: 'Separado',
         expedicao: 'Em transporte',
         faturado: 'Pedido recebido',
+        entregue: 'Entregue',
         cancelado: 'Cancelado',
     };
 
@@ -3716,6 +3719,7 @@ $catalogoPayload = json_encode(array_map(static function ($produto) use ($asset)
         separacao: 'Seu pedido foi separado e conferido. Agora ele está pronto para seguir para a expedição.',
         expedicao: 'Seu pedido está em transporte. Assim que houver rastreamento disponível, enviaremos por e-mail.',
         faturado: 'Pedido concluído! Obrigado pela parceria.',
+        entregue: 'Entrega confirmada pelo responsável. Obrigado pela parceria.',
         cancelado: 'Este pedido foi cancelado. Em caso de dúvidas, fale com nossa equipe de suporte.',
     };
 
@@ -4000,7 +4004,7 @@ $catalogoPayload = json_encode(array_map(static function ($produto) use ($asset)
             const statusKey = String(pedido.status || '').toLowerCase();
             const romaneio = json.romaneio || null;
             const historico = Array.isArray(json.historico) ? json.historico : [];
-            const actionLabels = {create:'Pedido criado',update:'Pedido ajustado',status:'Status atualizado',expedir:'Expedição registrada'};
+            const actionLabels = {create:'Pedido criado',update:'Pedido ajustado',status:'Status atualizado',expedir:'Expedição registrada',receber:'Recebimento confirmado'};
             const fieldLabels = {total:'Valor total',frete_valor:'Frete',observacoes:'Observações',status:'Status',itens:'Produtos',forma_pagto:'Pagamento',desconto:'Desconto'};
             const historyMarkup = historico.length ? historico.map(entry => {
                 const fields = Object.keys(entry.mudancas || {}).map(key => fieldLabels[key] || key.replaceAll('_',' '));
@@ -4009,7 +4013,7 @@ $catalogoPayload = json_encode(array_map(static function ($produto) use ($asset)
                 return `<div class="portal-order-history__item"><span class="portal-order-history__dot"></span><div><strong>${dashboardEscape(actionLabels[entry.acao] || 'Atualização do pedido')}</strong><small>${dashboardEscape(formatDateTime(entry.created_at))}</small>${complement ? `<p class="portal-order-history__reason">${dashboardEscape(complement)}</p>` : ''}${reason ? `<p class="portal-order-history__reason"><b>Motivo:</b> ${dashboardEscape(reason)}</p>` : ''}</div></div>`;
             }).join('') : '<div class="portal-order-detail__empty">Nenhum ajuste registrado.</div>';
             const itemsMarkup = itens.map(item => { const qty=Number(item.quantidade||0), price=Number(item.preco_unit??item.preco??0); return `<tr><td>${dashboardEscape(item.sku || item.produto_id || '-')}</td><td>${dashboardEscape(item.nome || item.produto_nome || 'Produto')}</td><td>${qty.toLocaleString('pt-BR',{maximumFractionDigits:2})}</td><td>${formatCurrency(price * qty)}</td></tr>`; }).join('');
-            const manifestMarkup = romaneio ? `<dl><div><dt>Número do romaneio</dt><dd>${dashboardEscape(romaneio.romaneio || `#${romaneio.id}`)}</dd></div><div><dt>Status</dt><dd>Expedido</dd></div><div><dt>Data da separação</dt><dd>${dashboardEscape(formatDateTime(romaneio.data_separacao))}</dd></div><div><dt>Data da expedição</dt><dd>${dashboardEscape(formatDateTime(romaneio.data_expedicao))}</dd></div><div><dt>Volumes</dt><dd>${Number(romaneio.volumes||0)}</dd></div><div><dt>Peso total</dt><dd>${Number(romaneio.peso_total||0).toLocaleString('pt-BR',{minimumFractionDigits:3,maximumFractionDigits:3})} kg</dd></div><div><dt>Transportadora</dt><dd>${dashboardEscape(romaneio.transportadora || 'Não informada')}</dd></div><div><dt>Motorista</dt><dd>${dashboardEscape(romaneio.motorista_nome || 'Não informado')}</dd></div><div><dt>Responsável pela expedição</dt><dd>${dashboardEscape(romaneio.responsavel_expedicao_nome || 'Não informado')}</dd></div></dl>` : '<div class="portal-order-detail__empty">O romaneio ainda não foi gerado.</div>';
+            const manifestMarkup = romaneio ? `<dl><div><dt>Número do romaneio</dt><dd>${dashboardEscape(romaneio.romaneio || `#${romaneio.id}`)}</dd></div><div><dt>Status</dt><dd>${romaneio.data_recebimento?'Entregue':'Expedido'}</dd></div><div><dt>Data da separação</dt><dd>${dashboardEscape(formatDateTime(romaneio.data_separacao))}</dd></div><div><dt>Data da expedição</dt><dd>${dashboardEscape(formatDateTime(romaneio.data_expedicao))}</dd></div><div><dt>Volumes</dt><dd>${Number(romaneio.volumes||0)}</dd></div><div><dt>Peso total</dt><dd>${Number(romaneio.peso_total||0).toLocaleString('pt-BR',{minimumFractionDigits:3,maximumFractionDigits:3})} kg</dd></div><div><dt>Transportadora</dt><dd>${dashboardEscape(romaneio.transportadora || 'Não informada')}</dd></div><div><dt>Motorista</dt><dd>${dashboardEscape(romaneio.motorista_nome || 'Não informado')}</dd></div><div><dt>Responsável pela expedição</dt><dd>${dashboardEscape(romaneio.responsavel_expedicao_nome || 'Não informado')}</dd></div>${romaneio.data_recebimento?`<div><dt>Recebido por</dt><dd>${dashboardEscape(romaneio.recebedor_nome||'Não informado')}</dd></div><div><dt>Recebido em</dt><dd>${dashboardEscape(formatDateTime(romaneio.data_recebimento))}</dd></div>`:''}</dl>` : '<div class="portal-order-detail__empty">O romaneio ainda não foi gerado.</div>';
             orderDetail.innerHTML = `<div class="portal-order-detail__head"><div><h3>Pedido ${dashboardEscape(pedido.codigo || `#${pedidoId}`)}</h3><p>Detalhes, documentos e histórico completo.</p></div><div class="portal-order-detail__actions"><button type="button" class="portal-btn portal-btn--ghost" data-order-detail-back><svg viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg>Voltar</button><button type="button" class="portal-btn portal-btn--primary" data-order-detail-pdf><svg viewBox="0 0 24 24"><path d="M6 9V2h9l3 3v4M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2M6 14h12v8H6z"/></svg>PDF</button></div></div><div class="portal-order-detail__summary"><div><span>Status</span><strong>${dashboardEscape(pedido.status_label || orderStatusLabels[statusKey] || pedido.status || '-')}</strong></div><div><span>Criado em</span><strong>${dashboardEscape(formatDateTime(pedido.created_at))}</strong></div><div><span>Frete</span><strong>${Number(pedido.frete_valor||0)>0?formatCurrency(pedido.frete_valor):'Sem frete'}</strong></div><div><span>Total</span><strong>${formatCurrency(pedido.total||0)}</strong></div></div><div class="portal-order-detail__grid"><section class="portal-order-detail__card"><h4>Produtos do pedido</h4><table class="portal-order-detail__table"><thead><tr><th>Código</th><th>Produto</th><th>Qtd.</th><th>Subtotal</th></tr></thead><tbody>${itemsMarkup}</tbody></table></section><section class="portal-order-detail__card portal-order-detail__manifest"><h4>Romaneio</h4>${manifestMarkup}</section></div><section class="portal-order-detail__card portal-order-history"><h4>Histórico de ajustes e motivos</h4>${historyMarkup}</section>`;
             const pedidoPdfButton = orderDetail.querySelector('[data-order-detail-pdf]');
             if (pedidoPdfButton) {

@@ -10,7 +10,7 @@ use InvalidArgumentException;
 
 class PedidosService
 {
-    private const STATUS_VALIDOS = ['novo', 'aprovacao', 'producao', 'separacao', 'expedicao', 'faturado', 'cancelado'];
+    private const STATUS_VALIDOS = ['novo', 'aprovacao', 'producao', 'separacao', 'expedicao', 'faturado', 'entregue', 'cancelado'];
     private const STATUS_LABELS = [
         'novo' => 'Recebido',
         'aprovacao' => 'Em aprovação',
@@ -18,6 +18,7 @@ class PedidosService
         'separacao' => 'Em separação',
         'expedicao' => 'Em transporte',
         'faturado' => 'Pedido recebido',
+        'entregue' => 'Entregue',
         'cancelado' => 'Cancelado',
     ];
 

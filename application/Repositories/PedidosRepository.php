@@ -8,6 +8,7 @@ class PedidosRepository extends BaseRepository
     private bool $freteValorChecked = false;
     private bool $descontoChecked = false;
     private bool $cobrancaDiferencaChecked = false;
+    private bool $statusSeparandoChecked = false;
 
     public function find(int|string $id): ?array
     {
@@ -156,10 +157,26 @@ class PedidosRepository extends BaseRepository
 
     private function ensurePedidoExtraColumns(): void
     {
+        $this->ensureStatusSeparando();
         $this->ensureFormaPagamentoColumn();
         $this->ensureFreteValorColumn();
         $this->ensureDescontoColumn();
         $this->ensureCobrancaDiferencaColumns();
+    }
+
+    private function ensureStatusSeparando(): void
+    {
+        if ($this->statusSeparandoChecked) {
+            return;
+        }
+
+        $column = $this->db->query("SHOW COLUMNS FROM {$this->table} LIKE 'status'")->fetch();
+        $type = strtolower((string)($column['Type'] ?? $column['type'] ?? ''));
+        if ($type !== '' && (!str_contains($type, "'separando'") || !str_contains($type, "'revisao'") || !str_contains($type, "'entregue'"))) {
+            $this->db->exec("ALTER TABLE {$this->table} MODIFY COLUMN status ENUM('novo','aprovacao','producao','separando','separacao','revisao','expedicao','faturado','entregue','cancelado') NOT NULL DEFAULT 'novo'");
+        }
+
+        $this->statusSeparandoChecked = true;
     }
 
     private function ensureFormaPagamentoColumn(): void
