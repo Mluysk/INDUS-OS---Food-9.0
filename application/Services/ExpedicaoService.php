@@ -177,6 +177,8 @@ class ExpedicaoService
                 $this->estoque->reservarFefo($item['produto_id'], (float)$item['quantidade'], 'pedido', $pedidoId, $usuarioId, true);
             }
         }
+        $tipoEntrega = strtolower(trim((string)($dados['tipo_entrega'] ?? 'propria')));
+        if (!in_array($tipoEntrega, ['propria', 'terceiros'], true)) throw new \InvalidArgumentException('Selecione um tipo de entrega válido.');
         $payload = [
             'pedido_id' => $pedidoId,
             'data_separacao' => $dados['data_separacao'] ?? date('Y-m-d H:i:s'),
@@ -184,6 +186,7 @@ class ExpedicaoService
             'volumes' => max(1, (int)($dados['volumes'] ?? 1)),
             'peso_total' => max(0, (float)($dados['peso_total'] ?? 0)),
             'transportadora' => mb_substr(trim((string)($dados['transportadora'] ?? '')), 0, 120),
+            'tipo_entrega' => $tipoEntrega,
             'romaneio' => $this->proximoRomaneio(),
             'motorista_nome' => mb_substr(trim((string)($dados['motorista_nome'] ?? '')), 0, 120),
             'assinatura_motorista' => $this->validarAssinatura((string)($dados['assinatura_motorista'] ?? '')),
@@ -217,6 +220,7 @@ class ExpedicaoService
         $aguardando = [];
         foreach ($this->expedicoes->all() as $expedicao) {
             if (!empty($expedicao['data_recebimento'])) continue;
+            if (strtolower((string)($expedicao['tipo_entrega'] ?? 'propria')) === 'terceiros') continue;
             $pedido = $this->pedidos->findWithCliente((int)($expedicao['pedido_id'] ?? 0));
             if (!$pedido || !in_array(strtolower((string)($pedido['status'] ?? '')), ['expedicao', 'faturado'], true)) continue;
             $expedicao['pedido'] = $pedido;

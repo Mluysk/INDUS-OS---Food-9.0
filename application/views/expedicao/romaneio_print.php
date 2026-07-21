@@ -12,7 +12,7 @@ $cliente = trim((string)($pedido['cliente_nome_fantasia'] ?? '')) ?: trim((strin
         <div class="rom-print__field"><small>Pedido</small><strong><?= $esc($pedido['codigo'] ?? '#'.($pedido['id'] ?? 0)); ?></strong></div>
         <div class="rom-print__field"><small>Cliente</small><strong><?= $esc($cliente ?: 'Não identificado'); ?></strong></div>
         <div class="rom-print__field"><small>Separação</small><strong><?= $esc($dateBr($expedicao['data_separacao'] ?? '')); ?></strong></div>
-        <div class="rom-print__field"><small>Expedição</small><strong><?= $esc($dateBr($expedicao['data_expedicao'] ?? '')); ?></strong></div>
+        <div class="rom-print__field"><small>Expedição</small><strong><?= $esc($dateBr($expedicao['data_expedicao'] ?? '')); ?></strong></div><div class="rom-print__field"><small>Tipo de entrega</small><strong><?= strtolower((string)($expedicao['tipo_entrega']??'propria'))==='terceiros'?'Transportadora terceirizada':'Entrega própria'; ?></strong></div>
         <div class="rom-print__field"><small>Volumes</small><strong><?= (int)($expedicao['volumes'] ?? 0); ?></strong></div>
         <div class="rom-print__field"><small>Peso total</small><strong><?= number_format((float)($expedicao['peso_total'] ?? 0), 3, ',', '.'); ?> kg</strong></div>
         <div class="rom-print__field"><small>Transportadora</small><strong><?= $esc($expedicao['transportadora'] ?: 'Não informada'); ?></strong></div>

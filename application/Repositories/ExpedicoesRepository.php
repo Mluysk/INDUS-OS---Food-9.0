@@ -45,6 +45,7 @@ class ExpedicoesRepository extends BaseRepository
         if (!in_array('assinatura_recebedor', $names, true)) $adds[] = 'ADD COLUMN assinatura_recebedor LONGTEXT NULL';
         if (!in_array('data_recebimento', $names, true)) $adds[] = 'ADD COLUMN data_recebimento DATETIME NULL';
         if (!in_array('observacao_recebimento', $names, true)) $adds[] = 'ADD COLUMN observacao_recebimento VARCHAR(500) NULL';
+        if (!in_array('tipo_entrega', $names, true)) $adds[] = "ADD COLUMN tipo_entrega VARCHAR(20) NOT NULL DEFAULT 'propria'";
         if ($adds) $this->db->exec("ALTER TABLE {$this->table} " . implode(', ', $adds));
         $this->assinaturasChecked = true;
     }

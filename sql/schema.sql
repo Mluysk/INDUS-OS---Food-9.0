@@ -230,6 +230,7 @@ CREATE TABLE IF NOT EXISTS expedicoes (
   volumes INT DEFAULT 1,
   peso_total DECIMAL(14,3) DEFAULT 0,
   transportadora VARCHAR(120),
+  tipo_entrega VARCHAR(20) NOT NULL DEFAULT 'propria',
   romaneio VARCHAR(40) UNIQUE,
   motorista_nome VARCHAR(120),
   assinatura_motorista LONGTEXT,
