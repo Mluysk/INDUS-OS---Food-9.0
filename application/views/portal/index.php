@@ -4004,7 +4004,7 @@ $catalogoPayload = json_encode(array_map(static function ($produto) use ($asset)
             const statusKey = String(pedido.status || '').toLowerCase();
             const romaneio = json.romaneio || null;
             const historico = Array.isArray(json.historico) ? json.historico : [];
-            const actionLabels = {create:'Pedido criado',update:'Pedido ajustado',status:'Status atualizado',expedir:'Expedição registrada',receber:'Recebimento confirmado'};
+            const actionLabels = {create:'Pedido criado',update:'Pedido ajustado',status:'Status atualizado',expedir:'Expedição registrada',receber:'Entrega confirmada'};
             const fieldLabels = {total:'Valor total',frete_valor:'Frete',observacoes:'Observações',status:'Status',itens:'Produtos',forma_pagto:'Pagamento',desconto:'Desconto'};
             const historyMarkup = historico.length ? historico.map(entry => {
                 const fields = Object.keys(entry.mudancas || {}).map(key => fieldLabels[key] || key.replaceAll('_',' '));

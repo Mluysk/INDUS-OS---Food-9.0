@@ -148,8 +148,8 @@ class ExpedicaoController extends Controller
             $this->redirect('/expedicao?tab=recebimento');
             return;
         }
-        if ($this->wantsJson()) {$this->json(['message'=>'Recebimento confirmado.','status'=>'entregue']);return;}
-        $this->setFlash('success', 'Recebimento confirmado. O pedido agora está como Entregue.');
+        if ($this->wantsJson()) {$this->json(['message'=>'Entrega confirmada.','status'=>'entregue']);return;}
+        $this->setFlash('success', 'Entrega confirmada. O pedido agora está como Entregue.');
         $this->redirect('/expedicao?tab=recebimento');
     }
 
