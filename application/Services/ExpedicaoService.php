@@ -209,10 +209,15 @@ class ExpedicaoService
     {
         $assinatura = trim($assinatura);
         if ($assinatura === '') return '';
-        if (!preg_match('#^data:image/png;base64,[A-Za-z0-9+/=]+$#', $assinatura) || strlen($assinatura) > 700000) {
+        if (strlen($assinatura) > 700000) {
             throw new \InvalidArgumentException('Assinatura digital inválida. Tente assinar novamente.');
         }
-        return $assinatura;
+        if (preg_match('#^data:image/png;base64,[A-Za-z0-9+/=]+$#', $assinatura)) return $assinatura;
+        if (preg_match('#^data:image/svg\+xml;base64,([A-Za-z0-9+/=]+)$#', $assinatura, $matches)) {
+            $svg = base64_decode($matches[1], true);
+            if ($svg !== false && str_starts_with(trim($svg), '<svg') && str_ends_with(trim($svg), '</svg>') && !preg_match('#<(script|foreignObject|iframe|image)|\son[a-z]+\s*=|(?:href|src)\s*=|url\s*\(#i', $svg)) return $assinatura;
+        }
+        throw new \InvalidArgumentException('Assinatura digital inválida. Tente assinar novamente.');
     }
 
     public function listarAguardandoRecebimento(): array
