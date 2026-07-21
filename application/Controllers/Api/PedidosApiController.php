@@ -112,6 +112,42 @@ class PedidosApiController extends Controller
         $this->json($detalhe);
     }
 
+    public function nota($id): void
+    {
+        $decoded = $this->ensureJwt();
+        $pedidoId = (int)$id;
+        $clienteId = (int)($decoded['cliente_id'] ?? $decoded['sub'] ?? 0);
+        $detalhe = $this->pedidos->detalharCompleto($pedidoId);
+        $pedido = $detalhe['pedido'] ?? null;
+
+        if ($pedidoId <= 0 || !$pedido || $clienteId <= 0 || (int)($pedido['cliente_id'] ?? 0) !== $clienteId) {
+            $this->json(['message' => 'Pedido não encontrado.'], 404);
+            return;
+        }
+
+        $pixDefaultType = strtolower((string)$this->config->get('NOTE_PIX_KEY_TYPE', 'cnpj'));
+        $notaPixEnabled = $this->config->get('NOTE_PIX_ENABLED', '0') === '1';
+        $notaPixKey = trim((string)$this->config->get('NOTE_PIX_KEY', ''));
+        $notaPixType = in_array($pixDefaultType, ['cnpj', 'cpf', 'email', 'telefone'], true) ? $pixDefaultType : 'cnpj';
+
+        $this->audit->log((int)($decoded['sub'] ?? $clienteId), 'documento', 'pedidos', $pedidoId, [
+            'documento' => 'nota_pedido_portal',
+            'codigo' => $pedido['codigo'] ?? null,
+            'origem' => 'portal',
+        ]);
+
+        $this->render('pedidos/nota', [
+            'pedido' => $pedido,
+            'itens' => $detalhe['itens'] ?? [],
+            'notaPixEnabled' => $notaPixEnabled,
+            'notaPixKey' => $notaPixKey,
+            'notaPixType' => $notaPixType,
+        ], [
+            'title' => 'Nota de pedido',
+            'layout' => 'layouts/print',
+        ]);
+    }
+
     public function update($id): void
     {
         $decoded = $this->ensureJwt();

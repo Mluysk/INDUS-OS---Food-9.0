@@ -1,6 +1,8 @@
 <?php
 declare(strict_types=1);
 
+date_default_timezone_set('America/Sao_Paulo');
+
 $bootstrap = require __DIR__.'/../application/bootstrap.php';
 $router = $bootstrap['router'];
 
@@ -49,7 +51,9 @@ $router->add('GET', '/pedidos', [PedidosController::class, 'index']);
 $router->add('POST', '/pedidos', [PedidosController::class, 'store']);
 $router->add('GET', '/pedidos/{id}/editar', [PedidosController::class, 'edit']);
 $router->add('POST', '/pedidos/{id}/update', [PedidosController::class, 'update']);
+$router->add('POST', '/pedidos/{id}/revisado', [PedidosController::class, 'revisado']);
 $router->add('POST', '/pedidos/{id}/aprovar', [PedidosController::class, 'approve']);
+$router->add('POST', '/pedidos/{id}/delete', [PedidosController::class, 'delete']);
 $router->add('GET', '/pedidos/{id}/nota', [PedidosController::class, 'nota']);
 
 $router->add('GET', '/mapa', [MapaController::class, 'index']);
@@ -59,6 +63,11 @@ $router->add('POST', '/mapa/sem-producao', [MapaController::class, 'registrarSem
 $router->add('GET', '/desempenho', [DesempenhoController::class, 'index']);
 $router->add('GET', '/meta', [DesempenhoController::class, 'index']);
 $router->add('GET', '/metas', [MetaController::class, 'index']);
+$router->add('POST', '/metas', [MetaController::class, 'store']);
+$router->add('POST', '/metas/configuracao-percentuais', [MetaController::class, 'savePercentageConfig']);
+$router->add('POST', '/metas/{id}/update', [MetaController::class, 'update']);
+$router->add('POST', '/metas/{id}/toggle', [MetaController::class, 'toggle']);
+$router->add('POST', '/metas/{id}/delete', [MetaController::class, 'delete']);
 
 $router->add('GET', '/produtos', [ProdutosController::class, 'index']);
 $router->add('POST', '/produtos', [ProdutosController::class, 'store']);
@@ -95,6 +104,10 @@ $router->add('POST', '/estoque/movimento', [EstoqueController::class, 'movimenta
 
 $router->add('GET', '/expedicao', [ExpedicaoController::class, 'index']);
 $router->add('GET', '/expedicao/picking/{pedidoId}', [ExpedicaoController::class, 'picking']);
+$router->add('GET', '/expedicao/concluidos/{expedicaoId}', [ExpedicaoController::class, 'detalhe']);
+$router->add('POST', '/expedicao/picking/{pedidoId}/item/{itemId}', [ExpedicaoController::class, 'conferirItem']);
+$router->add('POST', '/expedicao/picking/{pedidoId}/revisar', [ExpedicaoController::class, 'revisar']);
+$router->add('POST', '/expedicao/picking/{pedidoId}/pendencia', [ExpedicaoController::class, 'registrarPendencia']);
 $router->add('POST', '/expedicao/romaneio', [ExpedicaoController::class, 'romaneio']);
 
 $router->add('GET', '/financeiro/titulos', [FinanceiroController::class, 'index']);
@@ -117,6 +130,9 @@ $router->add('POST', '/config/users/update', [ConfigController::class, 'updateUs
 $router->add('POST', '/config/users/delete', [ConfigController::class, 'deleteUser']);
 $router->add('POST', '/config/hierarchy/save', [ConfigController::class, 'saveHierarchy']);
 $router->add('GET', '/config/export/clientes', [ConfigDataController::class, 'exportClientes']);
+$router->add('GET', '/config/clientes/{id}/editar', [ClientesController::class, 'editPortalClient']);
+$router->add('POST', '/config/clientes/{id}/editar', [ClientesController::class, 'updatePortalClient']);
+$router->add('POST', '/config/clientes/{id}/excluir', [ClientesController::class, 'deletePortalClient']);
 $router->add('GET', '/config/export/produtos', [ConfigDataController::class, 'exportProdutos']);
 $router->add('POST', '/config/import/clientes', [ConfigDataController::class, 'importClientes']);
 $router->add('POST', '/config/import/produtos', [ConfigDataController::class, 'importProdutos']);
@@ -129,6 +145,8 @@ $router->add('GET', '/api/produtos', [ProdutosApiController::class, 'index']);
 $router->add('GET', '/api/pedidos', [PedidosApiController::class, 'index']);
 $router->add('POST', '/api/pedidos', [PedidosApiController::class, 'store']);
 $router->add('GET', '/api/pedidos/{id}', [PedidosApiController::class, 'show']);
+$router->add('GET', '/api/pedidos/{id}/nota', [PedidosApiController::class, 'nota']);
+$router->add('PATCH', '/api/pedidos/{id}', [PedidosApiController::class, 'update']);
 $router->add('PATCH', '/api/pedidos/{id}/status', [PedidosApiController::class, 'updateStatus']);
 
 // CLI
