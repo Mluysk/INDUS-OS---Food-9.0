@@ -30,6 +30,7 @@ $dataBr = static function ($value): string {
 @media(max-width:980px){.romaneio-layout{grid-template-columns:1fr}.romaneio-form-card{position:static}}@media(max-width:700px){.expedicao-tabs{display:grid;width:100%}.expedicao-tab{justify-content:flex-start}.expedicao-heading{flex-direction:column}.romaneio-form{grid-template-columns:1fr}.romaneio-form label{grid-column:1!important}}
 /* Ajuste tipografico exclusivo da aba de pedidos concluidos. */
 .expedicao-panel[data-tab-panel="fila"]{font-size:calc(1rem - 1px)}.expedicao-panel[data-tab-panel="fila"] .expedicao-heading h2{font-size:calc(1.5rem - 1px)}.expedicao-panel[data-tab-panel="fila"] .expedicao-heading p,.expedicao-panel[data-tab-panel="fila"] .data-table{font-size:calc(.9rem - 1px)}
+.expedicao-panel[data-tab-panel="fila"] .expedicao-table thead th{font-size:10.6px!important}
 .expedicao-panel[data-tab-panel="concluidos"]{font-size:calc(1rem - 1px)}
 .expedicao-panel[data-tab-panel="concluidos"] .expedicao-heading h2{font-size:calc(1.5rem - 1px)}
 .expedicao-panel[data-tab-panel="concluidos"] .expedicao-heading p,.expedicao-panel[data-tab-panel="concluidos"] .data-table{font-size:calc(.9rem - 1px)}
