@@ -57,6 +57,10 @@
         cancelado: { icon: 'circle-x', label: 'cancelado' },
     };
 
+    statusMeta.separando = { icon: 'package-open', label: 'separando' };
+    statusMeta.separacao = { icon: 'package-check', label: 'separado' };
+    statusMeta.revisao = { icon: 'alert-triangle', label: 'revisão' };
+
     const renderStatusBadge = (badge, status) => {
         if (!badge) {
             return;
@@ -66,8 +70,9 @@
         const meta = statusMeta[key] || { icon: 'circle-dot', label: key || 'novo' };
         badge.dataset.status = key;
         badge.classList.add('pedido-status-badge');
+        const iconMarkup = key === 'revisao' ? '<span class="pedido-status-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.6 2.2 18a2 2 0 0 0 1.8 3h16a2 2 0 0 0 1.8-3L13.7 3.6a2 2 0 0 0-3.4 0Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg></span>' : `<span class="pedido-status-icon" data-lucide="${meta.icon}" aria-hidden="true"></span>`;
         badge.innerHTML = `
-            <span class="pedido-status-icon" data-lucide="${meta.icon}" aria-hidden="true"></span>
+            ${iconMarkup}
             <span class="pedido-status-text">${meta.label}</span>
         `;
         if (window.lucide) {
