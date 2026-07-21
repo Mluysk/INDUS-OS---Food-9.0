@@ -31,6 +31,7 @@ $dataBr = static function ($value): string {
 /* Ajuste tipografico exclusivo da aba de pedidos concluidos. */
 .expedicao-panel[data-tab-panel="fila"]{font-size:calc(1rem - 1px)}.expedicao-panel[data-tab-panel="fila"] .expedicao-heading h2{font-size:calc(1.5rem - 1px)}.expedicao-panel[data-tab-panel="fila"] .expedicao-heading p,.expedicao-panel[data-tab-panel="fila"] .data-table{font-size:calc(.9rem - 1px)}
 .expedicao-panel[data-tab-panel="fila"] .expedicao-table thead th{font-size:10.6px!important;text-align:center!important}
+.expedicao-panel[data-tab-panel="fila"] .expedicao-table tbody td{text-align:center!important;vertical-align:middle}.expedicao-panel[data-tab-panel="fila"] .expedicao-store{align-items:center;text-align:center}.expedicao-panel[data-tab-panel="fila"] .expedicao-action{justify-content:center}
 .expedicao-panel[data-tab-panel="concluidos"]{font-size:calc(1rem - 1px)}
 .expedicao-panel[data-tab-panel="concluidos"] .expedicao-heading h2{font-size:calc(1.5rem - 1px)}
 .expedicao-panel[data-tab-panel="concluidos"] .expedicao-heading p,.expedicao-panel[data-tab-panel="concluidos"] .data-table{font-size:calc(.9rem - 1px)}
