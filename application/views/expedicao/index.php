@@ -1,65 +1,111 @@
-<section class="panel">
-    <h2>Gerar romaneio</h2>
-    <p class="panel-description">Informe o pedido para gerar o romaneio e atualizar o status.</p>
-    <form method="post" action="<?= htmlspecialchars($url('expedicao/romaneio'), ENT_QUOTES, 'UTF-8'); ?>" class="form-grid">
-        <label>
-            Pedido ID
-            <input type="number" name="pedido_id" required>
-        </label>
-        <label>
-            Volumes
-            <input type="number" name="volumes" value="1" min="1">
-        </label>
-        <label>
-            Peso total (kg)
-            <input type="number" step="0.001" name="peso_total">
-        </label>
-        <label>
-            Transportadora
-            <input type="text" name="transportadora">
-        </label>
-        <label>
-            Romaneio
-            <input type="text" name="romaneio" required>
-        </label>
-        <div class="form-actions" style="grid-column: 1 / -1;">
-            <button class="button button-primary" type="submit">Registrar expedição</button>
-        </div>
-    </form>
+<?php
+$esc = static fn($value): string => htmlspecialchars((string)$value, ENT_QUOTES, 'UTF-8');
+$loja = static fn(array $pedido): string => trim((string)($pedido['cliente_nome_fantasia'] ?? '')) ?: (trim((string)($pedido['cliente_razao_social'] ?? '')) ?: 'Loja não identificada');
+$dataBr = static function ($value): string {
+    $timestamp = $value ? strtotime((string)$value) : false;
+    return $timestamp ? date('d/m/Y H:i', $timestamp) : '—';
+};
+?>
+<style>
+.expedicao-tabs{display:inline-flex;gap:7px;margin-bottom:18px;padding:6px;border:1px solid var(--border);border-radius:18px;background:var(--surface)}
+.expedicao-tab{display:inline-flex;align-items:center;gap:8px;min-height:43px;padding:9px 15px;border:0;border-radius:13px;background:transparent;color:var(--text-muted);font-weight:850;cursor:pointer}.expedicao-tab svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}.expedicao-tab.is-active{background:var(--primary);color:#fff;box-shadow:0 12px 24px -18px var(--primary)}
+.expedicao-count{display:grid;place-items:center;min-width:23px;height:23px;padding:0 6px;border-radius:999px;background:rgba(255,255,255,.2);font-size:.72rem}.expedicao-tab:not(.is-active) .expedicao-count{background:var(--surface-muted);color:var(--text)}
+.expedicao-panel[hidden]{display:none!important}.expedicao-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:18px}.expedicao-heading h2{margin:0 0 5px}.expedicao-heading p{margin:0;color:var(--text-muted)}
+.expedicao-table-wrap{overflow-x:auto}.expedicao-table td,.expedicao-table th{vertical-align:middle}.expedicao-store{display:grid;gap:3px}.expedicao-store strong{color:var(--text)}.expedicao-store small{color:var(--text-muted)}
+.expedicao-status{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;font-size:.76rem;font-weight:850}.expedicao-status::before{content:'';width:7px;height:7px;border-radius:50%;background:currentColor}.expedicao-status.aprovado{color:#15803d;background:#dcfce7}.expedicao-status.separando{color:#7e22ce;background:#f3e8ff}.expedicao-status.separacao{color:#7e22ce;background:#f3e8ff}.expedicao-status.expedido{color:#0369a1;background:#e0f2fe}.expedicao-status.faturado{color:#047857;background:#d1fae5}
+.expedicao-status.separacao{color:#047857;background:#d1fae5}.expedicao-status.separacao::before{content:'✓';display:grid;place-items:center;width:17px;height:17px;background:#10b981;color:#fff;font-size:.7rem}
+.expedicao-status.aprovado::before,.expedicao-status.separando::before,.expedicao-status.separacao::before,.expedicao-status.expedido::before,.expedicao-status.faturado::before{content:''!important;display:block!important;width:16px!important;height:16px!important;flex:0 0 16px!important;border-radius:0!important;background-color:transparent!important;background-repeat:no-repeat!important;background-position:center!important;background-size:16px 16px!important}
+.expedicao-status.aprovado::before{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2315803d' stroke-width='2.3' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Cpath d='m8 12 2.7 2.7L16.5 9'/%3E%3C/svg%3E")!important}
+.expedicao-status.separando::before{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%237e22ce' stroke-width='2.1' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m16.5 9.4-9-5.2'/%3E%3Cpath d='M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z'/%3E%3Cpath d='M3.3 7 12 12l8.7-5'/%3E%3Cpath d='M12 22V12'/%3E%3C/svg%3E")!important}
+.expedicao-status.separacao::before{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2.2 21 7v10l-9 4.8L3 17V7l9-4.8Z' fill='%23047857'/%3E%3Cpath d='M3.7 7.2 12 11.6l8.3-4.4M12 11.6v9.1M8.2 4.3l8.5 4.6' fill='none' stroke='%23a7f3d0' stroke-width='1.35' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='m7.4 15.1 2.7 2.7 6.3-6.2' fill='none' stroke='%23fff' stroke-width='2.33' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")!important}
+.expedicao-status.expedido::before{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230369a1' stroke-width='2.1' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M10 17h4V5H2v12h3'/%3E%3Cpath d='M14 9h4l4 4v4h-3'/%3E%3Ccircle cx='7.5' cy='17.5' r='2.5'/%3E%3Ccircle cx='16.5' cy='17.5' r='2.5'/%3E%3C/svg%3E")!important}
+.expedicao-status.faturado::before{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23047857' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 13h4l2 3h4l2-3h4'/%3E%3Cpath d='m5 5-2 15h18L19 5'/%3E%3Cpath d='M12 3v9M9 9l3 3 3-3'/%3E%3C/svg%3E")!important}
+.expedicao-status.separacao::before{width:19px!important;height:19px!important;flex-basis:19px!important;background-size:19px 19px!important}
+.expedicao-status.inconforme::before{display:none!important}
+.expedicao-frete{display:inline-flex;align-items:center;gap:6px;padding:6px 9px;border-radius:999px;font-size:.72rem;font-weight:850;white-space:nowrap}.expedicao-frete.com-frete{color:#0369a1;background:#e0f2fe}.expedicao-frete.sem-frete{color:var(--text-muted);background:var(--surface-muted);border:1px solid var(--border)}
+.expedicao-action{display:inline-flex;align-items:center;gap:7px}.expedicao-action svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2.2}
+.expedicao-check-progress{display:inline-flex;align-items:center;gap:7px;font-weight:850;white-space:nowrap}.expedicao-check-progress svg{width:19px;height:19px;padding:3px;border-radius:50%;fill:none;stroke:currentColor;stroke-width:2.6}.expedicao-check-progress.complete{color:#047857}.expedicao-check-progress.complete svg{background:#d1fae5}.expedicao-check-progress.pending{color:var(--text-muted)}.expedicao-check-progress.pending svg{background:var(--surface-muted)}
+.expedicao-empty{padding:30px!important;text-align:center;color:var(--text-muted)}
+.romaneio-layout{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(340px,.75fr);gap:18px;align-items:start}.romaneio-form-card{position:sticky;top:18px;padding:20px;border:1px solid var(--border);border-radius:20px;background:var(--surface-muted)}.romaneio-form-card h3{margin:0 0 5px}.romaneio-form-card>p{margin:0 0 17px;color:var(--text-muted)}.romaneio-form{display:grid;grid-template-columns:1fr 1fr;gap:13px}.romaneio-form label{display:grid;gap:6px;color:var(--text-muted);font-weight:750}.romaneio-form label:first-child,.romaneio-form label:nth-child(4),.romaneio-form label:nth-child(5),.romaneio-form .form-actions{grid-column:1/-1}.romaneio-form input,.romaneio-form select{width:100%;min-height:45px}.romaneio-form .form-actions{margin:3px 0 0}.romaneio-form .button{width:100%;justify-content:center}
+@media(max-width:980px){.romaneio-layout{grid-template-columns:1fr}.romaneio-form-card{position:static}}@media(max-width:700px){.expedicao-tabs{display:grid;width:100%}.expedicao-tab{justify-content:flex-start}.expedicao-heading{flex-direction:column}.romaneio-form{grid-template-columns:1fr}.romaneio-form label{grid-column:1!important}}
+/* Ajuste tipografico exclusivo da aba de pedidos concluidos. */
+.expedicao-panel[data-tab-panel="concluidos"]{font-size:calc(1rem - 1px)}
+.expedicao-panel[data-tab-panel="concluidos"] .expedicao-heading h2{font-size:calc(1.5rem - 1px)}
+.expedicao-panel[data-tab-panel="concluidos"] .expedicao-heading p,.expedicao-panel[data-tab-panel="concluidos"] .data-table{font-size:calc(.9rem - 1px)}
+</style>
+
+<nav class="expedicao-tabs" role="tablist" aria-label="Etapas da expedição">
+    <button type="button" class="expedicao-tab is-active" data-tab-target="fila" aria-selected="true"><svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>Pedidos em fila <span class="expedicao-count"><?= count($fila ?? []); ?></span></button>
+    <button type="button" class="expedicao-tab" data-tab-target="romaneio" aria-selected="false"><svg viewBox="0 0 24 24"><path d="M16 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8Z"/><path d="M16 3v5h5M8 13h8M8 17h5"/></svg>Gerar romaneio <span class="expedicao-count"><?= count($disponiveisRomaneio ?? []); ?></span></button>
+    <button type="button" class="expedicao-tab" data-tab-target="concluidos" aria-selected="false"><svg viewBox="0 0 24 24"><path d="M10 17h4V5H2v12h3"/><path d="M14 9h4l4 4v4h-3"/><circle cx="7.5" cy="17.5" r="2.5"/><circle cx="16.5" cy="17.5" r="2.5"/></svg>Pedidos concluídos <span class="expedicao-count"><?= count($concluidos ?? []); ?></span></button>
+</nav>
+
+<section class="panel expedicao-panel" data-tab-panel="fila">
+    <div class="expedicao-heading"><div><h2>Pedidos em fila</h2><p>Pedidos aprovados ou em separação permanecem aqui até o envio do romaneio.</p></div></div>
+    <div class="expedicao-table-wrap"><table class="data-table expedicao-table"><thead><tr><th>ID</th><th>Código</th><th>Loja</th><th>Status</th><th>Total</th><th>Frete</th><th>Itens</th><th>Ações</th></tr></thead><tbody>
+    <?php if (!empty($fila)): foreach ($fila as $pedido): $emSeparacao=strtolower((string)($pedido['status'] ?? ''))==='separacao'; $totalItens=count($pedido['itens'] ?? []); $itensOk=count(array_filter($pedido['itens'] ?? [],static fn(array $item):bool=>(int)($item['picking_conferido'] ?? 0)===1)); ?>
+        <?php $fretePedido=(float)($pedido['frete_valor']??0); ?><tr><td><?= (int)$pedido['id']; ?></td><td><strong><?= $esc($pedido['codigo'] ?? '-'); ?></strong></td><td><span class="expedicao-store"><strong><?= $esc($loja($pedido)); ?></strong><small>Cliente #<?= (int)($pedido['cliente_id'] ?? 0); ?></small></span></td><td><span class="expedicao-status <?= $emSeparacao?'separacao':'aprovado'; ?>"><?= $emSeparacao?'Em separação':'Aprovado'; ?></span></td><td>R$ <?= number_format((float)($pedido['total'] ?? 0),2,',','.'); ?></td><td><span class="expedicao-frete <?= $fretePedido>0?'com-frete':'sem-frete'; ?>"><?= $fretePedido>0?'Com frete · R$ '.number_format($fretePedido,2,',','.'):'Sem frete'; ?></span></td><td><?= count($pedido['itens'] ?? []); ?></td><td><a class="button button-outline expedicao-action" href="<?= $esc($url('expedicao/picking/'.(int)$pedido['id'])); ?>"><svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg><?= $emSeparacao?'Ver Picking':'Picking'; ?></a></td></tr>
+    <?php endforeach; else: ?><tr><td colspan="8" class="expedicao-empty">Nenhum pedido aguardando Picking ou romaneio.</td></tr><?php endif; ?>
+    </tbody></table></div>
 </section>
 
-<section class="panel">
-    <h2>Pedidos em fila</h2>
-    <div style="overflow-x: auto;">
-        <table class="data-table">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Código</th>
-                    <th>Status</th>
-                    <th>Total</th>
-                    <th>Itens</th>
-                    <th>Ações</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php if ($fila): ?>
-                    <?php foreach ($fila as $pedido): ?>
-                        <tr>
-                            <td><?= (int)$pedido['id']; ?></td>
-                            <td><?= htmlspecialchars($pedido['codigo'] ?? '-', ENT_QUOTES, 'UTF-8'); ?></td>
-                            <td><span class="badge badge-warning"><?= htmlspecialchars($pedido['status'], ENT_QUOTES, 'UTF-8'); ?></span></td>
-                            <td>R$ <?= number_format((float)($pedido['total'] ?? 0), 2, ',', '.'); ?></td>
-                            <td><?= count($pedido['itens'] ?? []); ?></td>
-                            <td><a class="button button-outline" href="<?= htmlspecialchars($url('expedicao/picking/'.(int)($pedido['id'] ?? 0)), ENT_QUOTES, 'UTF-8'); ?>">Picking</a></td>
-                        </tr>
-                    <?php endforeach; ?>
-                <?php else: ?>
-                    <tr>
-                        <td colspan="6">Nenhum pedido aguardando expedição.</td>
-                    </tr>
-                <?php endif; ?>
-            </tbody>
-        </table>
-    </div>
+<section class="panel expedicao-panel" data-tab-panel="romaneio" hidden>
+    <div class="expedicao-heading"><div><h2>Gerar romaneio</h2><p>Selecione um pedido em separação e registre sua expedição.</p></div></div>
+    <div class="romaneio-layout"><div class="expedicao-table-wrap"><table class="data-table expedicao-table"><thead><tr><th>Pedido</th><th>Loja</th><th>Itens</th><th>Total</th><th></th></tr></thead><tbody>
+    <?php if (!empty($disponiveisRomaneio)): foreach ($disponiveisRomaneio as $pedido): ?>
+        <tr><td><strong><?= $esc($pedido['codigo'] ?? '#'.$pedido['id']); ?></strong><small style="display:block;color:var(--text-muted)">#<?= (int)$pedido['id']; ?></small></td><td><?= $esc($loja($pedido)); ?></td><td><?= count($pedido['itens'] ?? []); ?></td><td>R$ <?= number_format((float)($pedido['total'] ?? 0),2,',','.'); ?></td><td><button type="button" class="button button-outline" data-select-expedition="<?= (int)$pedido['id']; ?>">Selecionar</button></td></tr>
+    <?php endforeach; else: ?><tr><td colspan="5" class="expedicao-empty">Nenhum pedido em separação disponível.</td></tr><?php endif; ?>
+    </tbody></table></div>
+    <aside class="romaneio-form-card"><h3>Dados do romaneio</h3><p>Confirme volumes, peso e transportadora.</p><form method="post" action="<?= $esc($url('expedicao/romaneio')); ?>" class="romaneio-form">
+        <label>Pedido<select name="pedido_id" required><option value="">Selecione o pedido</option><?php foreach (($disponiveisRomaneio ?? []) as $pedido): ?><option value="<?= (int)$pedido['id']; ?>"><?= $esc(($pedido['codigo'] ?? '#'.$pedido['id']).' · '.$loja($pedido)); ?></option><?php endforeach; ?></select></label>
+        <label>Volumes<input type="number" name="volumes" value="1" min="1" required></label><label>Peso total (kg)<input type="number" step="0.001" min="0" name="peso_total" value="0"></label><label>Transportadora<input type="text" name="transportadora" maxlength="120" placeholder="Nome da transportadora"></label><label>Número do romaneio<input type="text" name="romaneio" maxlength="40" value="<?= $esc($proximoRomaneio ?? 'ROM-0001'); ?>" readonly aria-readonly="true"></label>
+        <div class="form-actions"><button class="button button-primary expedicao-action" type="submit"><svg viewBox="0 0 24 24"><path d="M10 17h4V5H2v12h3"/><path d="M14 9h4l4 4v4h-3"/><circle cx="7.5" cy="17.5" r="2.5"/><circle cx="16.5" cy="17.5" r="2.5"/></svg>Registrar expedição</button></div>
+    </form></aside></div>
 </section>
+
+<section class="panel expedicao-panel" data-tab-panel="concluidos" hidden>
+    <div class="expedicao-heading"><div><h2>Pedidos concluídos</h2><p>Histórico de pedidos expedidos e faturados.</p></div></div>
+    <div class="expedicao-table-wrap"><table class="data-table expedicao-table"><thead><tr><th>Pedido</th><th>Loja</th><th>Romaneio</th><th>Volumes</th><th>Peso</th><th>Transportadora</th><th>Expedido em</th><th>Status</th></tr></thead><tbody>
+    <?php if (!empty($concluidos)): foreach ($concluidos as $expedicao): $pedido=$expedicao['pedido'] ?? []; $status=strtolower((string)($pedido['status'] ?? 'expedicao')); ?>
+        <tr><td><strong><?= $esc($pedido['codigo'] ?? '#'.($pedido['id'] ?? 0)); ?></strong></td><td><?= $esc($loja($pedido)); ?></td><td><?= $esc($expedicao['romaneio'] ?? '—'); ?></td><td><?= (int)($expedicao['volumes'] ?? 1); ?></td><td><?= number_format((float)($expedicao['peso_total'] ?? 0),3,',','.'); ?> kg</td><td><?= $esc($expedicao['transportadora'] ?: 'Não informada'); ?></td><td><?= $esc($dataBr($expedicao['data_expedicao'] ?? null)); ?></td><td><span class="expedicao-status <?= $status==='faturado'?'faturado':'expedido'; ?>"><?= $status==='faturado'?'Faturado':'Expedido'; ?></span></td></tr>
+    <?php endforeach; else: ?><tr><td colspan="8" class="expedicao-empty">Nenhum pedido concluído.</td></tr><?php endif; ?>
+    </tbody></table></div>
+</section>
+
+<?php
+$totaisRomaneio = [];
+$statusFila = [];
+$inconformesFila = [];
+foreach (($fila ?? []) as $pedidoFila) {
+    $statusFila[(int)$pedidoFila['id']] = strtolower((string)($pedidoFila['status'] ?? ''));
+    $inconformesFila[(int)$pedidoFila['id']] = count(array_filter($pedidoFila['itens'] ?? [], static fn(array $item): bool => ($item['picking_status'] ?? '') === 'x'));
+}
+foreach (($disponiveisRomaneio ?? []) as $pedidoRomaneio) {
+    $quantidade = 0.0;
+    $peso = 0.0;
+    foreach (($pedidoRomaneio['itens'] ?? []) as $itemRomaneio) {
+        $quantidadeItem = (float)($itemRomaneio['quantidade'] ?? 0);
+        $quantidade += $quantidadeItem;
+        $peso += $quantidadeItem * (float)($itemRomaneio['peso_liquido'] ?? 0);
+    }
+    $totaisRomaneio[(int)$pedidoRomaneio['id']] = ['volumes' => max(1, (int)ceil($quantidade)), 'peso' => round($peso, 3)];
+}
+?>
+<script>
+(() => {
+    const totaisRomaneio=<?= json_encode($totaisRomaneio, JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES); ?>;
+    const statusFila=<?= json_encode($statusFila, JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES); ?>;
+    const inconformesFila=<?= json_encode($inconformesFila, JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES); ?>;
+    document.querySelectorAll('.expedicao-status.separacao').forEach(status=>status.textContent='Separado');
+    document.querySelectorAll('[data-tab-panel="fila"] tbody tr').forEach(row=>{const id=Number(row.cells?.[0]?.textContent?.trim()),status=row.querySelector('.expedicao-status');if(!status)return;if(statusFila[id]==='separando'){status.textContent='Separando';status.classList.remove('aprovado');status.classList.add('separando')}else if(statusFila[id]==='producao'){status.textContent='Aprovado';status.classList.remove('separando');status.classList.add('aprovado')}});
+    document.querySelectorAll('[data-tab-panel="fila"] tbody tr').forEach(row=>{const id=Number(row.cells?.[0]?.textContent?.trim()),status=row.querySelector('.expedicao-status');if(status&&inconformesFila[id]>0){status.classList.add('inconforme');status.textContent=`⚠ Inconforme (${inconformesFila[id]})`;status.style.cssText='color:#b91c1c;background:#fee2e2;border:1px solid #fecaca'}});
+    const tabs=[...document.querySelectorAll('.expedicao-tab')],panels=[...document.querySelectorAll('.expedicao-panel')];
+    const activate=(target)=>{tabs.forEach(tab=>{const active=tab.dataset.tabTarget===target;tab.classList.toggle('is-active',active);tab.setAttribute('aria-selected',active?'true':'false')});panels.forEach(panel=>panel.hidden=panel.dataset.tabPanel!==target)};
+    tabs.forEach(tab=>tab.addEventListener('click',()=>activate(tab.dataset.tabTarget)));
+    const requested=new URLSearchParams(window.location.search).get('tab');if(['fila','romaneio','concluidos'].includes(requested))activate(requested);
+    const pedidoSelect=document.querySelector('.romaneio-form select[name="pedido_id"]'),volumeInput=document.querySelector('.romaneio-form input[name="volumes"]'),pesoInput=document.querySelector('.romaneio-form input[name="peso_total"]');
+    const preencherTotais=()=>{const dados=totaisRomaneio[pedidoSelect?.value];if(!dados)return;if(volumeInput)volumeInput.value=dados.volumes;if(pesoInput)pesoInput.value=Number(dados.peso).toFixed(3)};pedidoSelect?.addEventListener('change',preencherTotais);
+    document.querySelectorAll('[data-select-expedition]').forEach(button=>button.addEventListener('click',()=>{activate('romaneio');if(pedidoSelect){pedidoSelect.value=button.dataset.selectExpedition;preencherTotais();pedidoSelect.focus()}document.querySelector('.romaneio-form-card')?.scrollIntoView({behavior:'smooth',block:'center'})}));
+})();
+</script>
+<?php include __DIR__.'/romaneio_signature_patch.php'; ?>
