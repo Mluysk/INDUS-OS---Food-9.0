@@ -291,7 +291,7 @@ class ExpedicaoService
         $concluidos = [];
         foreach ($this->expedicoes->all() as $expedicao) {
             $pedido = $this->pedidos->findWithCliente((int)($expedicao['pedido_id'] ?? 0));
-            if (!$pedido || !in_array(strtolower((string)($pedido['status'] ?? '')), ['expedicao', 'faturado', 'entregue'], true)) continue;
+            if (!$pedido || strtolower((string)($pedido['status'] ?? '')) !== 'entregue' || empty($expedicao['data_recebimento'])) continue;
             $expedicao['pedido'] = $pedido;
             $expedicao['itens'] = $this->itens->listarPorPedido((int)$pedido['id']);
             $concluidos[] = $expedicao;
