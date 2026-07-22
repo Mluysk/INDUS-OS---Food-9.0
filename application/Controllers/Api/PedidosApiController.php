@@ -4,11 +4,13 @@ namespace App\Controllers\Api;
 use App\Core\Controller;
 use App\Services\PedidosService;
 use App\Services\ConfigService;
+use App\Services\ExpedicaoService;
 
 class PedidosApiController extends Controller
 {
     private PedidosService $pedidos;
     private ConfigService $config;
+    private ExpedicaoService $expedicao;
 
     private const STATUS_ATUALIZAVEIS = ['novo', 'aprovacao', 'producao', 'separacao', 'expedicao', 'faturado', 'cancelado'];
 
@@ -17,11 +19,13 @@ class PedidosApiController extends Controller
         \App\Services\AuthService $auth,
         \App\Services\AuditService $audit,
         PedidosService $pedidos,
-        ConfigService $config
+        ConfigService $config,
+        ExpedicaoService $expedicao
     ) {
         parent::__construct($container, $auth, $audit);
         $this->pedidos = $pedidos;
         $this->config = $config;
+        $this->expedicao = $expedicao;
     }
 
     public function index(): void
@@ -291,6 +295,31 @@ class PedidosApiController extends Controller
             'status' => $status,
             'status_label' => $this->formatStatusLabel($status),
         ]);
+    }
+
+    public function confirmReceipt($id): void
+    {
+        $decoded = $this->ensureJwt();
+        $pedidoId = (int)$id;
+        $clienteId = (int)($decoded['cliente_id'] ?? $decoded['sub'] ?? 0);
+        if ($pedidoId <= 0 || $clienteId <= 0) {
+            $this->json(['message' => 'Pedido inválido.'], 422);
+            return;
+        }
+        $detalhe = $this->pedidos->detalhar($pedidoId);
+        $pedido = $detalhe['pedido'] ?? null;
+        if (!$pedido || (int)($pedido['cliente_id'] ?? 0) !== $clienteId) {
+            $this->json(['message' => 'Pedido não encontrado.'], 404);
+            return;
+        }
+        try {
+            $resultado = $this->expedicao->confirmarRecebimentoPortal($pedidoId, (int)($decoded['sub'] ?? $clienteId));
+            $this->json($resultado + ['message' => 'Recebimento confirmado com sucesso.']);
+        } catch (\InvalidArgumentException $exception) {
+            $this->json(['message' => $exception->getMessage()], 422);
+        } catch (\Throwable $exception) {
+            $this->json(['message' => 'Não foi possível confirmar o recebimento.'], 500);
+        }
     }
 
     private function ensureJwt(): array

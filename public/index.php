@@ -150,6 +150,7 @@ $router->add('GET', '/api/pedidos/{id}/nota', [PedidosApiController::class, 'not
 $router->add('GET', '/api/pedidos/{id}/romaneio', [PedidosApiController::class, 'romaneio']);
 $router->add('PATCH', '/api/pedidos/{id}', [PedidosApiController::class, 'update']);
 $router->add('PATCH', '/api/pedidos/{id}/status', [PedidosApiController::class, 'updateStatus']);
+$router->add('POST', '/api/pedidos/{id}/recebimento', [PedidosApiController::class, 'confirmReceipt']);
 
 // CLI
 if (php_sapi_name() === 'cli') {

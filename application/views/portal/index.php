@@ -3708,7 +3708,7 @@ $catalogoPayload = json_encode(array_map(static function ($produto) use ($asset)
 
     const orderStatusUpdatable = new Set(orderStatusOptions.map((option) => option.value));
 
-    const receiptEligibleStatuses = new Set(['producao', 'separacao', 'expedicao']);
+    const receiptEligibleStatuses = new Set(['expedicao']);
 
     const defaultOrderLead = 'Nossa equipe está revisando as reservas de estoque. Você receberá a confirmação em breve no e-mail cadastrado.';
     const orderStatusLead = {
@@ -3838,15 +3838,25 @@ $catalogoPayload = json_encode(array_map(static function ($produto) use ($asset)
             if (button.hasAttribute('hidden')) {
                 return;
             }
-            button.addEventListener('click', (event) => {
+            button.addEventListener('click', async (event) => {
                 const trigger = event.currentTarget;
                 const pedidoId = Number(trigger.dataset.orderReceived);
-                if (!pedidoId) {
-                    return;
-                }
-                const previous = trigger.dataset.status || '';
+                if (!pedidoId || !state.token) return;
                 trigger.setAttribute('disabled', 'disabled');
-                atualizarStatusPedido(pedidoId, 'faturado', null, previous, trigger);
+                setFeedback(ordersFeedback, 'Confirmando recebimento…');
+                try {
+                    const response=await fetch(`${basePath}/api/pedidos/${pedidoId}/recebimento`,{method:'POST',headers:{'Authorization':`Bearer ${state.token}`,'Accept':'application/json'}});
+                    const json=await response.json().catch(()=>({}));
+                    if(response.status===401){leaveApp();throw new Error('Sua sessão expirou. Entre novamente.')}
+                    if(!response.ok)throw new Error(json.message||'Não foi possível confirmar o recebimento.');
+                    const row=trigger.closest('tr'),badge=row?.querySelector('[data-order-status-label]');
+                    if(badge){badge.textContent='Entregue';badge.className='portal-orders-status portal-orders-status--entregue'}
+                    trigger.hidden=true;
+                    setFeedback(ordersFeedback,`Recebimento confirmado em ${formatDateTime(json.recebido_em)}.`,'success');
+                } catch(error) {
+                    trigger.removeAttribute('disabled');
+                    setFeedback(ordersFeedback,error.message||'Não foi possível confirmar o recebimento.','error');
+                }
             });
         });
         ordersTableBody.querySelectorAll('[data-order-report]').forEach((button) => {

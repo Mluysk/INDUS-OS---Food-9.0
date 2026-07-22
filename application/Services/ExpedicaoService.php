@@ -270,6 +270,35 @@ class ExpedicaoService
         ];
     }
 
+    public function confirmarRecebimentoPortal(int $pedidoId, int $usuarioId): array
+    {
+        $pedido = $this->pedidos->find($pedidoId);
+        if (!$pedido) throw new \InvalidArgumentException('Pedido não encontrado.');
+        if (strtolower((string)($pedido['status'] ?? '')) !== 'expedicao') {
+            throw new \InvalidArgumentException('Somente pedidos em transporte podem ser confirmados como recebidos.');
+        }
+        $expedicoes = $this->expedicoes->all(['pedido_id' => $pedidoId]);
+        if (!$expedicoes) throw new \InvalidArgumentException('O romaneio deste pedido não foi encontrado.');
+        usort($expedicoes, static fn(array $a, array $b): int => (int)($b['id'] ?? 0) <=> (int)($a['id'] ?? 0));
+        $expedicao = $expedicoes[0];
+        $recebidoEm = date('Y-m-d H:i:s');
+        $payload = [
+            'recebedor_nome' => 'Confirmado pelo cliente no portal',
+            'assinatura_recebedor' => null,
+            'data_recebimento' => $recebidoEm,
+            'observacao_recebimento' => 'Recebimento confirmado pelo cliente no portal.',
+        ];
+        $this->expedicoes->update((int)$expedicao['id'], $payload);
+        $this->pedidos->update($pedidoId, ['status' => 'entregue']);
+        $this->audit->log($usuarioId, 'recebimento_portal', 'pedidos', $pedidoId, $payload + ['expedicao_id' => (int)$expedicao['id'], 'status' => 'entregue']);
+        $salva = $this->expedicoes->find((int)$expedicao['id']);
+        $pedidoSalvo = $this->pedidos->find($pedidoId);
+        if (empty($salva['data_recebimento']) || strtolower((string)($pedidoSalvo['status'] ?? '')) !== 'entregue') {
+            throw new \RuntimeException('A confirmação não foi gravada no banco.');
+        }
+        return ['confirmado' => true, 'status' => 'entregue', 'status_label' => 'Entregue', 'recebido_em' => (string)$salva['data_recebimento']];
+    }
+
     public function detalheConcluido(int $expedicaoId): array
     {
         $expedicao = $this->expedicoes->find($expedicaoId);
