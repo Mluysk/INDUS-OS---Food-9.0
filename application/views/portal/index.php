@@ -3815,7 +3815,7 @@ $catalogoPayload = json_encode(array_map(static function ($produto) use ($asset)
                         </button>
                         <button type="button" class="portal-orders-action portal-orders-action--confirm" data-order-received="${pedido.id}" data-status="${statusKey}" ${receiptAttributes}>
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.285 6.708a1 1 0 0 0-1.414-1.415L9 15.164l-3.87-3.87a1 1 0 1 0-1.415 1.414l4.577 4.577a1 1 0 0 0 1.414 0l10.579-10.577Z"/></svg>
-                            <span>Marcar como recebido</span>
+                            <span>Recebido</span>
                         </button>
                         <button type="button" class="portal-orders-action portal-orders-action--problem" data-order-report="${pedido.id}">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 1 0 10 10A10.011 10.011 0 0 0 12 2Zm0 4a1.25 1.25 0 1 1-1.25 1.25A1.25 1.25 0 0 1 12 6Zm1 11h-2v-7h2Z"/></svg>
