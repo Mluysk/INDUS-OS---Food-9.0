@@ -1,0 +1,4 @@
+<style>
+.entrega-status{align-items:center!important;gap:6px!important}
+.entrega-status::before{content:"";width:16px;height:16px;flex:0 0 16px;background:currentColor;-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cg fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 6h11v11H3zM14 10h4l3 3v4h-7z'/%3E%3Ccircle cx='7' cy='18' r='2'/%3E%3Ccircle cx='18' cy='18' r='2'/%3E%3C/g%3E%3C/svg%3E") center/contain no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cg fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 6h11v11H3zM14 10h4l3 3v4h-7z'/%3E%3Ccircle cx='7' cy='18' r='2'/%3E%3Ccircle cx='18' cy='18' r='2'/%3E%3C/g%3E%3C/svg%3E") center/contain no-repeat}
+</style>
