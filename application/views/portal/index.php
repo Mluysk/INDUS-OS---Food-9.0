@@ -3845,13 +3845,16 @@ $catalogoPayload = json_encode(array_map(static function ($produto) use ($asset)
                 const trigger = event.currentTarget;
                 const pedidoId = Number(trigger.dataset.orderReceived);
                 if (!pedidoId || !state.token) return;
+                const assinatura=await window.collectPortalReceiptSignature?.();
+                if(!assinatura)return;
                 trigger.setAttribute('disabled', 'disabled');
                 setFeedback(ordersFeedback, 'Confirmando recebimento…');
                 try {
-                    const response=await fetch(`${basePath}/api/pedidos/${pedidoId}/recebimento`,{method:'POST',headers:{'Authorization':`Bearer ${state.token}`,'Accept':'application/json'}});
+                    const receiptData=new FormData();receiptData.set('assinatura_recebedor',assinatura);
+                    const response=await fetch(`${basePath}/api/pedidos/${pedidoId}/recebimento`,{method:'POST',headers:{'Authorization':`Bearer ${state.token}`,'Accept':'application/json'},body:receiptData});
                     const json=await response.json().catch(()=>({}));
                     if(response.status===401){leaveApp();throw new Error('Sua sessão expirou. Entre novamente.')}
-                    if(!response.ok)throw new Error(json.message||'Não foi possível confirmar o recebimento.');
+                    if(!response.ok)throw new Error(json.message||'Não foi possível confirmar o recebimento.');if(json.assinatura_salva!==true)throw new Error('O servidor não confirmou a assinatura.');
                     const row=trigger.closest('tr'),badge=row?.querySelector('[data-order-status-label]');
                     if(badge){badge.textContent='Recebido';badge.className='portal-orders-status portal-orders-status--faturado'}
                     trigger.setAttribute('disabled','disabled');trigger.setAttribute('aria-disabled','true');trigger.dataset.receivedConfirmed='1';
@@ -5101,6 +5104,7 @@ $catalogoPayload = json_encode(array_map(static function ($produto) use ($asset)
         setAuthMode('login');
     }
 </script>
+<?php include __DIR__.'/receipt_signature_patch.php'; ?>
 <script>
 (function () {
     const whatsappOutline = '<path d="M20.5 11.5a8.5 8.5 0 0 1-12.55 7.48L3.5 20.5l1.52-4.45A8.5 8.5 0 1 1 20.5 11.5Z"></path><g class="portal-whatsapp-handset" transform="translate(7 7) scale(.42)"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.69 2.8a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.33 1.85.56 2.81.69A2 2 0 0 1 22 16.92Z"></path></g>';

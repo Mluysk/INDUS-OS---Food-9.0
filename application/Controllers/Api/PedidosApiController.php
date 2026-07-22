@@ -316,7 +316,8 @@ class PedidosApiController extends Controller
             return;
         }
         try {
-            $resultado = $this->expedicao->confirmarRecebimentoPortal($pedidoId, (int)($decoded['sub'] ?? $clienteId));
+            $assinatura = (string)($_POST['assinatura_recebedor'] ?? '');
+            $resultado = $this->expedicao->confirmarRecebimentoPortal($pedidoId, (int)($decoded['sub'] ?? $clienteId), $assinatura);
             $this->json($resultado + ['message' => 'Recebimento confirmado com sucesso.']);
         } catch (\InvalidArgumentException $exception) {
             $this->json(['message' => $exception->getMessage()], 422);
