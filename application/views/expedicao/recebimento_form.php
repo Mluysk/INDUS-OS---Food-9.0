@@ -15,7 +15,7 @@ $codigo = (string)($pedido['codigo'] ?? '#'.($pedido['id'] ?? 0));
 <div class="delivery-page">
     <section class="delivery-card">
         <header class="delivery-head"><div><h2>Confirmar entrega</h2><p>Preencha o nome e faça a assinatura para concluir.</p></div><a class="button button-outline" href="<?= $esc($url('expedicao?tab=recebimento')); ?>">Voltar</a></header>
-        <form method="post" action="<?= $esc($url('expedicao/recebimento/'.(int)$expedicao['id'])); ?>" class="delivery-form" data-delivery-page-form>
+        <form method="post" action="<?= $esc($url('expedicao/recebimento/'.(int)$expedicao['id'])); ?>" class="delivery-form" data-delivery-page-form data-live-submit="off">
             <div class="delivery-field"><span class="delivery-field__title">Nome do recebedor</span><input type="text" name="recebedor_nome" maxlength="120" autocomplete="name" placeholder="Digite o nome de quem recebeu" required autofocus></div>
             <div class="delivery-field"><span class="delivery-field__title">Assinatura do recebedor</span><div class="delivery-signature"><canvas data-delivery-page-canvas></canvas><i></i><button type="button" class="button button-outline" data-delivery-page-clear>Limpar</button></div><input type="hidden" name="assinatura_recebedor"></div>
             <div class="delivery-actions"><a class="button button-outline" href="<?= $esc($url('expedicao?tab=recebimento')); ?>">Cancelar</a><button type="submit" class="button button-primary" disabled>Confirmar entrega</button></div>
