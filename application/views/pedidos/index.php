@@ -9,6 +9,7 @@
     #panel-lista-pedidos .pedido-review-items small { color: #64748b; line-height: 1.4; }
     #panel-lista-pedidos .pedido-review-hovercard:hover .pedido-review-items,
     #panel-lista-pedidos .pedido-review-hovercard:focus-within .pedido-review-items { visibility: visible; opacity: 1; transform: translate(-50%, 0); }
+    tr[data-pedido-row]:has(.pedido-status-badge[data-status="entregue"]) form[action*="/aprovar"] { display: none !important; }
 </style>
 <section class="panel pedidos-tabs-card">
     <div class="pedidos-tabs-header">
@@ -147,7 +148,7 @@
                                 <td>R$ <?= number_format($pedidoTotal, 2, ',', '.'); ?></td>
                                 <td><?= htmlspecialchars($pedidoCreated, ENT_QUOTES, 'UTF-8'); ?></td>
                                 <td class="action-cell">
-                                    <?php $podeAprovar = !in_array($status, ['producao','separando','separacao','revisao','expedicao','faturado','cancelado'], true); ?>
+                                    <?php $podeAprovar = !in_array($status, ['producao','separando','separacao','revisao','expedicao','faturado','entregue','cancelado'], true); ?>
                                     <div class="action-group pedido-actions">
                                         <div class="pedido-action-buttons">
                                             <?php if ($podeAprovar): ?>
