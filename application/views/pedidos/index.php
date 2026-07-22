@@ -10,6 +10,7 @@
     #panel-lista-pedidos .pedido-review-hovercard:hover .pedido-review-items,
     #panel-lista-pedidos .pedido-review-hovercard:focus-within .pedido-review-items { visibility: visible; opacity: 1; transform: translate(-50%, 0); }
     tr[data-pedido-row]:has(.pedido-status-badge[data-status="entregue"]) form[action*="/aprovar"] { display: none !important; }
+    .pedido-status-badge[data-status="entregue"] .pedido-status-icon{display:inline-block!important;width:27px!important;height:20px!important;flex:0 0 27px!important;background:transparent center/27px 20px no-repeat!important;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 22' fill='none' stroke-linecap='round' stroke-linejoin='round'%3E%3Cg stroke='%2315803d' stroke-width='1.8'%3E%3Cpath d='M12 4h10v11.5H12z'/%3E%3Cpath d='M22 8h4l4 4v3.5h-2M22 15.5h2'/%3E%3Ccircle cx='15' cy='17' r='1.7'/%3E%3Ccircle cx='26' cy='17' r='1.7'/%3E%3Cpath d='M12 6v7.5'/%3E%3C/g%3E%3Cg fill='%2315803d'%3E%3Crect x='-.05' y='11.85' width='8.45' height='8.45' rx='.9'/%3E%3Crect x='6.92' y='9.52' width='6.76' height='6.76' rx='.75'/%3E%3C/g%3E%3Cg stroke='%23dcfce7' stroke-width='1.1'%3E%3Cpath d='M.7 14.45h6.95M4.18 12.5v7.05'/%3E%3Cpath d='M7.55 11.6h5.5M10.3 10.05v5.45'/%3E%3C/g%3E%3C/svg%3E")!important;transform:scaleX(-1)}.pedido-status-badge[data-status="entregue"] .pedido-status-icon>*{display:none!important}
 </style>
 <section class="panel pedidos-tabs-card">
     <div class="pedidos-tabs-header">
@@ -100,13 +101,14 @@
                         <?php foreach ($pedidos as $pedido): ?>
                             <?php
                             $status = $pedido['status'] ?? 'novo';
-                            $statusClass = $status === 'faturado' ? 'badge-success' : ($status === 'cancelado' ? 'badge-danger' : 'badge-warning');
+                            $statusClass = in_array($status, ['faturado','entregue'], true) ? 'badge-success' : ($status === 'cancelado' ? 'badge-danger' : 'badge-warning');
                             $statusMeta = [
                                 'aprovacao' => ['icon' => 'circle-check', 'label' => 'aprovação'],
                                 'producao' => ['icon' => 'factory', 'label' => 'produção'],
                                 'separacao' => ['icon' => 'package-check', 'label' => 'separação'],
                                 'expedicao' => ['icon' => 'truck', 'label' => 'expedição'],
                                 'faturado' => ['icon' => 'badge-check', 'label' => 'faturado'],
+                                'entregue' => ['icon' => 'truck', 'label' => 'entregue'],
                                 'cancelado' => ['icon' => 'circle-x', 'label' => 'cancelado'],
                             ];
                             $statusInfo = $statusMeta[$status] ?? ['icon' => 'circle-dot', 'label' => $status];
@@ -137,7 +139,7 @@
                                     <?php $itensRevisao = $status === 'revisao' ? ($revisoesPicking[(int)$pedido['id']] ?? []) : []; ?>
                                     <div class="pedido-review-hovercard">
                                     <span class="badge pedido-status-badge <?= $statusClass; ?>" data-status="<?= htmlspecialchars($status, ENT_QUOTES, 'UTF-8'); ?>"<?= $itensRevisao ? ' tabindex="0" aria-describedby="pedido-review-popup-'.((int)$pedido['id']).'"' : ''; ?>>
-                                        <?php if ($status === 'revisao'): ?><span class="pedido-status-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.6 2.2 18a2 2 0 0 0 1.8 3h16a2 2 0 0 0 1.8-3L13.7 3.6a2 2 0 0 0-3.4 0Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg></span><?php else: ?><span class="pedido-status-icon" data-lucide="<?= htmlspecialchars($statusInfo['icon'], ENT_QUOTES, 'UTF-8'); ?>" aria-hidden="true"></span><?php endif; ?>
+                                        <?php if ($status === 'revisao'): ?><span class="pedido-status-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.6 2.2 18a2 2 0 0 0 1.8 3h16a2 2 0 0 0 1.8-3L13.7 3.6a2 2 0 0 0-3.4 0Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg></span><?php else: ?><span class="pedido-status-icon" aria-hidden="true"><i data-lucide="<?= htmlspecialchars($statusInfo['icon'], ENT_QUOTES, 'UTF-8'); ?>"></i></span><?php endif; ?>
                                         <span class="pedido-status-text"><?= htmlspecialchars($statusInfo['label'], ENT_QUOTES, 'UTF-8'); ?></span>
                                     </span>
                                     <?php if ($itensRevisao): ?>
