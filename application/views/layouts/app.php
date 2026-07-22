@@ -1912,7 +1912,7 @@ $brandTitleCalibratedY = $brandTitleOffsetY;
                 overflow: hidden;
             }
         }
-        @media (orientation: landscape) and (max-height: 600px) and (pointer: coarse) {
+        @media (orientation: landscape) and (max-height: 600px) {
             .layout,.layout.sidebar-collapsed{padding-left:0!important;display:block!important}.content{width:100%!important;min-width:0!important;padding:16px 18px!important}.collapse-toggle{display:none!important}.mobile-menu-toggle{display:inline-flex!important;left:-9px;right:auto;top:12px;padding:10px 13px;border-radius:12px}.sidebar,.sidebar.collapsed{position:fixed!important;z-index:999!important;inset:0 auto 0 0!important;transform:translateX(-100%)!important;width:min(360px,76vw)!important;max-width:76vw!important;height:100dvh!important;max-height:100dvh!important;padding:12px 16px!important;border-radius:0 18px 18px 0!important;overflow-y:auto!important;display:flex!important;flex-direction:column!important}.sidebar.mobile-open{transform:translateX(0)!important}.sidebar .brand{padding:0!important;margin-bottom:8px!important}.sidebar .brand-logos{max-height:54px!important}.sidebar .sidebar-body{width:100%!important;min-height:0!important}.sidebar .nav-scroll{overflow-y:auto!important}.sidebar .nav-list{gap:4px!important}.sidebar .nav-item{min-height:38px!important;padding:7px 11px!important}.sidebar .sidebar-footer{display:none!important}.sidebar-backdrop{display:block!important}body.mobile-menu-open{overflow:hidden!important}body.mobile-menu-open .mobile-menu-toggle{left:auto!important;right:12px!important}body.mobile-menu-open .mobile-menu-toggle .icon-menu{display:none!important}body.mobile-menu-open .mobile-menu-toggle .icon-close{display:inline-block!important}
         }
     </style>
@@ -2359,7 +2359,7 @@ $brandTitleCalibratedY = $brandTitleOffsetY;
     const mobileToggle = document.getElementById('mobileMenuToggle');
     const mobileBackdrop = document.getElementById('sidebarBackdrop');
     let sidebarWasCollapsed = sidebar.classList.contains('collapsed');
-    const isMobileLayout = () => window.innerWidth <= 900 || window.matchMedia('(orientation: landscape) and (max-height: 600px) and (pointer: coarse)').matches;
+    const isMobileLayout = () => window.innerWidth <= 900 || window.matchMedia('(orientation: landscape) and (max-height: 600px)').matches;
 
     const ensureMobileExpanded = () => {
         if (isMobileLayout()) {
