@@ -243,11 +243,10 @@ class ExpedicaoService
         $pedido = $this->pedidos->find((int)($expedicao['pedido_id'] ?? 0));
         if (!$pedido) throw new \InvalidArgumentException('Pedido relacionado não encontrado.');
         $recebedor = mb_substr(trim((string)($dados['recebedor_nome'] ?? '')), 0, 120);
-        $assinatura = $this->validarAssinatura((string)($dados['assinatura_recebedor'] ?? ''));
-        if ($recebedor === '' || $assinatura === '') throw new \InvalidArgumentException('Informe o responsável e faça a assinatura do recebimento.');
+        if ($recebedor === '') throw new \InvalidArgumentException('Informe o nome do recebedor.');
         $payload = [
             'recebedor_nome' => $recebedor,
-            'assinatura_recebedor' => $assinatura,
+            'assinatura_recebedor' => null,
             'data_recebimento' => date('Y-m-d H:i:s'),
             'observacao_recebimento' => mb_substr(trim((string)($dados['observacao_recebimento'] ?? '')), 0, 500),
         ];
@@ -258,7 +257,6 @@ class ExpedicaoService
         $pedidoSalvo = $this->pedidos->find((int)$pedido['id']);
         $confirmado = $expedicaoSalva
             && trim((string)($expedicaoSalva['recebedor_nome'] ?? '')) === $recebedor
-            && trim((string)($expedicaoSalva['assinatura_recebedor'] ?? '')) !== ''
             && !empty($expedicaoSalva['data_recebimento'])
             && strtolower((string)($pedidoSalvo['status'] ?? '')) === 'entregue';
         if (!$confirmado) throw new \RuntimeException('A entrega não foi confirmada no banco. Tente novamente.');
@@ -268,7 +266,6 @@ class ExpedicaoService
             'pedido_id' => (int)$pedido['id'],
             'status' => 'entregue',
             'recebedor_nome' => $recebedor,
-            'assinatura_salva' => true,
             'data_recebimento' => (string)$expedicaoSalva['data_recebimento'],
         ];
     }
