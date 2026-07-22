@@ -2068,6 +2068,7 @@ if ($supportWhatsapp !== '') {
         border-color: rgba(22, 163, 74, 0.42);
         color: #15803d;
     }
+    .portal-orders-action--confirm[data-received-confirmed]{background:#e5e7eb!important;border-color:#cbd5e1!important;color:#64748b!important;cursor:not-allowed!important;opacity:1!important;box-shadow:none!important}
 
     .portal-orders-action--problem {
         background: rgba(251, 191, 36, 0.18);
@@ -2095,6 +2096,7 @@ if ($supportWhatsapp !== '') {
         border-color: rgba(74, 222, 128, 0.4);
         color: rgba(187, 247, 208, 0.92);
     }
+    [data-theme="dark"] .portal-orders-action--confirm[data-received-confirmed]{background:#334155!important;border-color:#475569!important;color:#94a3b8!important}
 
     [data-theme="dark"] .portal-orders-action--problem {
         background: rgba(234, 179, 8, 0.26);
@@ -3797,8 +3799,8 @@ $catalogoPayload = json_encode(array_map(static function ($produto) use ($asset)
             const statusMarkup = pedido.data_confirmacao_cliente ? 'Recebido' : dashboardEscape(statusLabel);
             const total = Number(pedido.total ?? 0);
             const dataCriacao = formatDateTime(pedido.created_at ?? pedido.createdAt ?? pedido.created_at);
-            const showReceipt = receiptEligibleStatuses.has(statusKey) && !pedido.data_confirmacao_cliente;
-            const receiptAttributes = showReceipt ? '' : 'hidden';
+            const showReceipt = receiptEligibleStatuses.has(statusKey);
+            const receiptAttributes = showReceipt ? (pedido.data_confirmacao_cliente ? 'disabled aria-disabled="true" data-received-confirmed="1"' : '') : 'hidden';
             const editButton = ['novo','aprovacao'].includes(statusKey) ? `<button type="button" class="portal-orders-action portal-orders-action--icon" data-order-edit="${pedido.id}" data-tooltip="Editar" aria-label="Editar pedido" title="Editar"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"></path><path d="m15 5 4 4"></path></svg></button>` : '';
             row.innerHTML = `
                 <td><strong>${codigo}</strong></td>
@@ -3852,7 +3854,7 @@ $catalogoPayload = json_encode(array_map(static function ($produto) use ($asset)
                     if(!response.ok)throw new Error(json.message||'Não foi possível confirmar o recebimento.');
                     const row=trigger.closest('tr'),badge=row?.querySelector('[data-order-status-label]');
                     if(badge){badge.textContent='Recebido';badge.className='portal-orders-status portal-orders-status--faturado'}
-                    trigger.hidden=true;
+                    trigger.setAttribute('disabled','disabled');trigger.setAttribute('aria-disabled','true');trigger.dataset.receivedConfirmed='1';
                     setFeedback(ordersFeedback,`Recebimento confirmado em ${formatDateTime(json.recebido_em)}.`,'success');
                 } catch(error) {
                     trigger.removeAttribute('disabled');
