@@ -2268,7 +2268,6 @@ if ($supportWhatsapp !== '') {
         border-radius: 50%;
         background: currentColor;
     }
-    .portal-orders-status__copy{display:inline-grid;gap:1px;line-height:1.05;text-align:left}.portal-orders-status__copy b{font-size:.76rem}.portal-orders-status__copy small{font-size:.64rem;font-weight:700;white-space:nowrap;opacity:.82}
 
     .portal-orders-status--novo {
         background: rgba(37, 99, 235, 0.14) !important;
@@ -3795,7 +3794,7 @@ $catalogoPayload = json_encode(array_map(static function ($produto) use ($asset)
             const statusKey = String(pedido.status || 'novo').toLowerCase();
             const statusClass = `portal-orders-status portal-orders-status--${pedido.data_confirmacao_cliente ? 'faturado' : statusKey}`;
             const statusLabel = orderStatusLabels[statusKey] || (pedido.status ? String(pedido.status) : '—');
-            const statusMarkup = pedido.data_confirmacao_cliente ? `<span class="portal-orders-status__copy"><b>Recebido</b><small>${dashboardEscape(formatDateTime(pedido.data_confirmacao_cliente))}</small></span>` : dashboardEscape(statusLabel);
+            const statusMarkup = pedido.data_confirmacao_cliente ? 'Recebido' : dashboardEscape(statusLabel);
             const total = Number(pedido.total ?? 0);
             const dataCriacao = formatDateTime(pedido.created_at ?? pedido.createdAt ?? pedido.created_at);
             const showReceipt = receiptEligibleStatuses.has(statusKey) && !pedido.data_confirmacao_cliente;
@@ -3852,7 +3851,7 @@ $catalogoPayload = json_encode(array_map(static function ($produto) use ($asset)
                     if(response.status===401){leaveApp();throw new Error('Sua sessão expirou. Entre novamente.')}
                     if(!response.ok)throw new Error(json.message||'Não foi possível confirmar o recebimento.');
                     const row=trigger.closest('tr'),badge=row?.querySelector('[data-order-status-label]');
-                    if(badge){badge.innerHTML=`<span class="portal-orders-status__copy"><b>Recebido</b><small>${dashboardEscape(formatDateTime(json.recebido_em))}</small></span>`;badge.className='portal-orders-status portal-orders-status--faturado'}
+                    if(badge){badge.textContent='Recebido';badge.className='portal-orders-status portal-orders-status--faturado'}
                     trigger.hidden=true;
                     setFeedback(ordersFeedback,`Recebimento confirmado em ${formatDateTime(json.recebido_em)}.`,'success');
                 } catch(error) {
