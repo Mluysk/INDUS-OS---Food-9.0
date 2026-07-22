@@ -37,6 +37,9 @@ class PedidosApiController extends Controller
             return;
         }
         $pedidos = $this->pedidos->listarPorCliente($clienteId);
+        $confirmacoes = $this->expedicao->confirmacoesCliente($pedidos);
+        foreach ($pedidos as &$pedido) $pedido['data_confirmacao_cliente'] = $confirmacoes[(int)($pedido['id'] ?? 0)] ?? null;
+        unset($pedido);
         $this->json(['pedidos' => $pedidos]);
     }
 
