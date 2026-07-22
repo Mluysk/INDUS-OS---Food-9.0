@@ -3792,7 +3792,7 @@ $catalogoPayload = json_encode(array_map(static function ($produto) use ($asset)
             const row = document.createElement('tr');
             const codigo = pedido.codigo || `#${String(pedido.id ?? '').padStart(4, '0')}`;
             const statusKey = String(pedido.status || 'novo').toLowerCase();
-            const statusClass = `portal-orders-status portal-orders-status--${statusKey}`;
+            const statusClass = `portal-orders-status portal-orders-status--${pedido.data_confirmacao_cliente ? 'faturado' : statusKey}`;
             const statusLabel = pedido.data_confirmacao_cliente ? `Recebido ${formatDateTime(pedido.data_confirmacao_cliente)}` : (orderStatusLabels[statusKey] || (pedido.status ? String(pedido.status) : '—'));
             const total = Number(pedido.total ?? 0);
             const dataCriacao = formatDateTime(pedido.created_at ?? pedido.createdAt ?? pedido.created_at);
@@ -3850,7 +3850,7 @@ $catalogoPayload = json_encode(array_map(static function ($produto) use ($asset)
                     if(response.status===401){leaveApp();throw new Error('Sua sessão expirou. Entre novamente.')}
                     if(!response.ok)throw new Error(json.message||'Não foi possível confirmar o recebimento.');
                     const row=trigger.closest('tr'),badge=row?.querySelector('[data-order-status-label]');
-                    if(badge){badge.textContent=`Recebido ${formatDateTime(json.recebido_em)}`;badge.className='portal-orders-status portal-orders-status--entregue'}
+                    if(badge){badge.textContent=`Recebido ${formatDateTime(json.recebido_em)}`;badge.className='portal-orders-status portal-orders-status--faturado'}
                     trigger.hidden=true;
                     setFeedback(ordersFeedback,`Recebimento confirmado em ${formatDateTime(json.recebido_em)}.`,'success');
                 } catch(error) {
