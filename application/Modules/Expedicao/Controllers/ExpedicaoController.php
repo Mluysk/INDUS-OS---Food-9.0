@@ -153,6 +153,24 @@ class ExpedicaoController extends Controller
         $this->redirect('/expedicao?tab=recebimento');
     }
 
+    public function recebimentoForm($expedicaoId): void
+    {
+        $this->auth->ensureRole(['admin','gestor','expedicao']);
+        try {
+            $detalhe = $this->expedicao->detalheConcluido((int)$expedicaoId);
+            if (!empty($detalhe['expedicao']['data_recebimento'])) throw new \InvalidArgumentException('Esta entrega já foi confirmada.');
+        } catch (\Throwable $exception) {
+            $this->setFlash('error', $exception->getMessage());
+            $this->redirect('/expedicao?tab=recebimento');
+            return;
+        }
+        $this->render('expedicao/recebimento_form', $detalhe, [
+            'title' => 'Confirmar entrega',
+            'activeMenu' => 'expedicao',
+            'breadcrumbs' => ['Expedição', 'Confirmar entrega'],
+        ]);
+    }
+
     public function index(): void
     {
         $this->auth->ensureRole(['admin','gestor','expedicao']);
