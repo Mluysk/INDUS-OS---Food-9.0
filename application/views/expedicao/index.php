@@ -102,6 +102,7 @@ $dataBr = static function ($value): string {
 </section>
 
 <?php include __DIR__.'/recebimento_patch.php'; ?>
+<?php include __DIR__.'/recebimento_verify_patch.php'; ?>
 
 <section class="panel expedicao-panel" data-tab-panel="concluidos" hidden>
     <div class="expedicao-heading"><div><h2>Pedidos concluídos</h2><p>Histórico de pedidos expedidos e faturados.</p></div></div>

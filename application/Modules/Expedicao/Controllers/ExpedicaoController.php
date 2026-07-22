@@ -141,14 +141,14 @@ class ExpedicaoController extends Controller
         $this->auth->ensureRole(['admin','gestor','expedicao']);
         $dados = json_decode(file_get_contents('php://input'), true) ?: $_POST;
         try {
-            $this->expedicao->confirmarRecebimento((int)$expedicaoId, $dados, (int)($this->auth->user()['id'] ?? 0));
-        } catch (\InvalidArgumentException $exception) {
+            $resultado = $this->expedicao->confirmarRecebimento((int)$expedicaoId, $dados, (int)($this->auth->user()['id'] ?? 0));
+        } catch (\Throwable $exception) {
             if ($this->wantsJson()) {$this->json(['message'=>$exception->getMessage()],422);return;}
             $this->setFlash('error', $exception->getMessage());
             $this->redirect('/expedicao?tab=recebimento');
             return;
         }
-        if ($this->wantsJson()) {$this->json(['message'=>'Entrega confirmada.','status'=>'entregue']);return;}
+        if ($this->wantsJson()) {$this->json(['message'=>'Entrega confirmada.'] + $resultado);return;}
         $this->setFlash('success', 'Entrega confirmada. O pedido agora está como Entregue.');
         $this->redirect('/expedicao?tab=recebimento');
     }

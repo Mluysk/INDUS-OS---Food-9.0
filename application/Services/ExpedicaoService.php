@@ -235,7 +235,7 @@ class ExpedicaoService
         return $aguardando;
     }
 
-    public function confirmarRecebimento(int $expedicaoId, array $dados, int $usuarioId): void
+    public function confirmarRecebimento(int $expedicaoId, array $dados, int $usuarioId): array
     {
         $expedicao = $this->expedicoes->find($expedicaoId);
         if (!$expedicao) throw new \InvalidArgumentException('Expedição não encontrada.');
@@ -254,6 +254,23 @@ class ExpedicaoService
         $this->expedicoes->update($expedicaoId, $payload);
         $this->pedidos->update((int)$pedido['id'], ['status' => 'entregue']);
         $this->audit->log($usuarioId, 'receber', 'pedidos', (int)$pedido['id'], $payload + ['expedicao_id' => $expedicaoId, 'status' => 'entregue']);
+        $expedicaoSalva = $this->expedicoes->find($expedicaoId);
+        $pedidoSalvo = $this->pedidos->find((int)$pedido['id']);
+        $confirmado = $expedicaoSalva
+            && trim((string)($expedicaoSalva['recebedor_nome'] ?? '')) === $recebedor
+            && trim((string)($expedicaoSalva['assinatura_recebedor'] ?? '')) !== ''
+            && !empty($expedicaoSalva['data_recebimento'])
+            && strtolower((string)($pedidoSalvo['status'] ?? '')) === 'entregue';
+        if (!$confirmado) throw new \RuntimeException('A entrega não foi confirmada no banco. Tente novamente.');
+        return [
+            'confirmado' => true,
+            'expedicao_id' => $expedicaoId,
+            'pedido_id' => (int)$pedido['id'],
+            'status' => 'entregue',
+            'recebedor_nome' => $recebedor,
+            'assinatura_salva' => true,
+            'data_recebimento' => (string)$expedicaoSalva['data_recebimento'],
+        ];
     }
 
     public function detalheConcluido(int $expedicaoId): array
