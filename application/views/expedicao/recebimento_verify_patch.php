@@ -9,7 +9,8 @@
     const name=form?.elements.recebedor_nome;
     const submit=form?.querySelector('[data-entrega-submit]');
     const originalPad=form?.querySelector('.entrega-pad');
-    if(!form||!original||!hidden||!name||!submit||!originalPad)return;
+    const modal=form?.closest('[data-entrega-modal]');
+    if(!form||!original||!hidden||!name||!submit||!originalPad||!modal)return;
 
     const pad=originalPad.cloneNode(true);
     originalPad.replaceWith(pad);
@@ -47,6 +48,12 @@
         }
     };
     const point=event=>{const rect=canvas.getBoundingClientRect();return{x:event.clientX-rect.left,y:event.clientY-rect.top}};
+    const ensureSize=()=>{
+        const rect=canvas.getBoundingClientRect(),ratio=window.devicePixelRatio||1;
+        if(rect.width<2||rect.height<2)return false;
+        if(canvas.width!==Math.round(rect.width*ratio)||canvas.height!==Math.round(rect.height*ratio))configure();
+        return canvas.width>1&&canvas.height>1;
+    };
     const persist=()=>{
         if(!ink)return false;
         hidden.value=canvas.toDataURL('image/png');
@@ -60,7 +67,9 @@
     const update=()=>{submit.disabled=!(name.value.trim()&&hidden.value.startsWith('data:image/png;base64,'))};
 
     canvas.addEventListener('pointerdown',event=>{
-        event.preventDefault();drawing=true;ink=true;pad.classList.add('has-ink');
+        event.preventDefault();
+        if(!ensureSize())return;
+        drawing=true;ink=true;pad.classList.add('has-ink');
         const p=point(event);ctx.beginPath();ctx.moveTo(p.x,p.y);ctx.lineTo(p.x+.1,p.y+.1);ctx.stroke();
         try{canvas.setPointerCapture(event.pointerId)}catch(error){}
     });
@@ -69,9 +78,15 @@
     canvas.addEventListener('pointerup',finish);
     canvas.addEventListener('pointercancel',finish);
     canvas.addEventListener('pointerleave',event=>{if(drawing&&event.buttons===0)finish(event)});
+    window.addEventListener('pointerup',finish,true);
+    window.addEventListener('pointercancel',finish,true);
     name.addEventListener('input',update);
     form.querySelector('[data-entrega-clear]')?.addEventListener('click',clear);
     document.querySelectorAll('[data-entrega-id]').forEach(button=>button.addEventListener('click',()=>{clear();requestAnimationFrame(()=>requestAnimationFrame(configure))}));
+    new MutationObserver(()=>{
+        if(modal.hidden)return;
+        requestAnimationFrame(()=>requestAnimationFrame(()=>{configure();update()}));
+    }).observe(modal,{attributes:true,attributeFilter:['hidden']});
     window.addEventListener('resize',()=>{if(!drawing)configure()});
     configure();update();
 
