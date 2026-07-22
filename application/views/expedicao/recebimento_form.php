@@ -1,4 +1,9 @@
-<?php $codigo=(string)($pedido['codigo']??'#'.($pedido['id']??0)); ?>
+<?php
+$esc = static fn($value): string => htmlspecialchars((string)$value, ENT_QUOTES, 'UTF-8');
+$basePath = rtrim((string)($_SERVER['APP_BASE_PATH'] ?? ''), '/');
+$url = static fn(string $path): string => ($basePath === '' ? '' : $basePath).'/'.ltrim($path, '/');
+$codigo = (string)($pedido['codigo'] ?? '#'.($pedido['id'] ?? 0));
+?>
 <style>
 .delivery-page{display:block!important;width:100%!important;max-width:820px!important;margin:0 auto!important}.delivery-card{display:block!important;padding:26px!important;border:1px solid var(--border,#e2e8f0)!important;border-radius:24px!important;background:var(--surface,#fff)!important;box-shadow:0 20px 55px rgba(15,23,42,.09)}
 .delivery-head{display:flex!important;align-items:flex-start;justify-content:space-between;gap:18px;padding-bottom:18px;margin-bottom:20px;border-bottom:1px solid var(--border,#e2e8f0)}.delivery-head h2{margin:0 0 5px}.delivery-head p{margin:0;color:var(--text-muted,#64748b)}
