@@ -286,15 +286,11 @@ class ExpedicaoService
         $expedicao = $expedicoes[0];
         if (!empty($expedicao['data_confirmacao_cliente'])) throw new \InvalidArgumentException('Este recebimento já foi confirmado pelo cliente.');
         $recebidoEm = date('Y-m-d H:i:s');
-        $payload = [
-            'recebedor_nome' => 'Confirmado pelo cliente no portal',
-            'assinatura_recebedor' => null,
-            'data_recebimento' => !empty($expedicao['data_recebimento']) ? $expedicao['data_recebimento'] : $recebidoEm,
-            'data_confirmacao_cliente' => $recebidoEm,
-            'observacao_recebimento' => 'Recebimento confirmado pelo cliente no portal.',
-        ];
+        // A confirmacao do cliente e um evento separado da entrega assinada.
+        // Nunca substitui o nome, a data ou a assinatura coletados do recebedor.
+        $payload = ['data_confirmacao_cliente' => $recebidoEm];
         $this->expedicoes->update((int)$expedicao['id'], $payload);
-        $this->audit->log($usuarioId, 'recebimento_portal', 'pedidos', $pedidoId, $payload + ['expedicao_id' => (int)$expedicao['id'], 'status' => 'entregue']);
+        $this->audit->log($usuarioId, 'recebimento_portal', 'pedidos', $pedidoId, $payload + ['expedicao_id' => (int)$expedicao['id'], 'status' => 'entregue', 'origem' => 'portal']);
         $salva = $this->expedicoes->find((int)$expedicao['id']);
         $pedidoSalvo = $this->pedidos->find($pedidoId);
         if (empty($salva['data_confirmacao_cliente']) || strtolower((string)($pedidoSalvo['status'] ?? '')) !== 'entregue') {
