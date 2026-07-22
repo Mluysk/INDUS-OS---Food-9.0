@@ -243,10 +243,11 @@ class ExpedicaoService
         $pedido = $this->pedidos->find((int)($expedicao['pedido_id'] ?? 0));
         if (!$pedido) throw new \InvalidArgumentException('Pedido relacionado não encontrado.');
         $recebedor = mb_substr(trim((string)($dados['recebedor_nome'] ?? '')), 0, 120);
-        if ($recebedor === '') throw new \InvalidArgumentException('Informe o nome do recebedor.');
+        $assinatura = $this->validarAssinatura((string)($dados['assinatura_recebedor'] ?? ''));
+        if ($recebedor === '' || $assinatura === '') throw new \InvalidArgumentException('Informe o nome e faça a assinatura do recebedor.');
         $payload = [
             'recebedor_nome' => $recebedor,
-            'assinatura_recebedor' => null,
+            'assinatura_recebedor' => $assinatura,
             'data_recebimento' => date('Y-m-d H:i:s'),
             'observacao_recebimento' => mb_substr(trim((string)($dados['observacao_recebimento'] ?? '')), 0, 500),
         ];
@@ -257,6 +258,7 @@ class ExpedicaoService
         $pedidoSalvo = $this->pedidos->find((int)$pedido['id']);
         $confirmado = $expedicaoSalva
             && trim((string)($expedicaoSalva['recebedor_nome'] ?? '')) === $recebedor
+            && trim((string)($expedicaoSalva['assinatura_recebedor'] ?? '')) !== ''
             && !empty($expedicaoSalva['data_recebimento'])
             && strtolower((string)($pedidoSalvo['status'] ?? '')) === 'entregue';
         if (!$confirmado) throw new \RuntimeException('A entrega não foi confirmada no banco. Tente novamente.');
@@ -266,11 +268,12 @@ class ExpedicaoService
             'pedido_id' => (int)$pedido['id'],
             'status' => 'entregue',
             'recebedor_nome' => $recebedor,
+            'assinatura_salva' => true,
             'data_recebimento' => (string)$expedicaoSalva['data_recebimento'],
         ];
     }
 
-    public function confirmarRecebimentoPortal(int $pedidoId, int $usuarioId, string $assinaturaRecebedor): array
+    public function confirmarRecebimentoPortal(int $pedidoId, int $usuarioId): array
     {
         $pedido = $this->pedidos->find($pedidoId);
         if (!$pedido) throw new \InvalidArgumentException('Pedido não encontrado.');
@@ -282,12 +285,10 @@ class ExpedicaoService
         usort($expedicoes, static fn(array $a, array $b): int => (int)($b['id'] ?? 0) <=> (int)($a['id'] ?? 0));
         $expedicao = $expedicoes[0];
         if (!empty($expedicao['data_confirmacao_cliente'])) throw new \InvalidArgumentException('Este recebimento já foi confirmado pelo cliente.');
-        $assinatura = $this->validarAssinatura($assinaturaRecebedor);
-        if ($assinatura === '') throw new \InvalidArgumentException('Faça a assinatura para confirmar o recebimento.');
         $recebidoEm = date('Y-m-d H:i:s');
         $payload = [
             'recebedor_nome' => 'Confirmado pelo cliente no portal',
-            'assinatura_recebedor' => $assinatura,
+            'assinatura_recebedor' => null,
             'data_recebimento' => !empty($expedicao['data_recebimento']) ? $expedicao['data_recebimento'] : $recebidoEm,
             'data_confirmacao_cliente' => $recebidoEm,
             'observacao_recebimento' => 'Recebimento confirmado pelo cliente no portal.',
@@ -296,10 +297,10 @@ class ExpedicaoService
         $this->audit->log($usuarioId, 'recebimento_portal', 'pedidos', $pedidoId, $payload + ['expedicao_id' => (int)$expedicao['id'], 'status' => 'entregue']);
         $salva = $this->expedicoes->find((int)$expedicao['id']);
         $pedidoSalvo = $this->pedidos->find($pedidoId);
-        if (empty($salva['data_confirmacao_cliente']) || empty($salva['assinatura_recebedor']) || strtolower((string)($pedidoSalvo['status'] ?? '')) !== 'entregue') {
+        if (empty($salva['data_confirmacao_cliente']) || strtolower((string)($pedidoSalvo['status'] ?? '')) !== 'entregue') {
             throw new \RuntimeException('A confirmação não foi gravada no banco.');
         }
-        return ['confirmado' => true, 'assinatura_salva' => true, 'status' => 'entregue', 'status_label' => 'Recebido', 'recebido_em' => (string)$salva['data_confirmacao_cliente']];
+        return ['confirmado' => true, 'status' => 'entregue', 'status_label' => 'Recebido', 'recebido_em' => (string)$salva['data_confirmacao_cliente']];
     }
 
     public function confirmacoesCliente(array $pedidos): array
