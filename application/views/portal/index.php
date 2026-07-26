@@ -1279,28 +1279,28 @@ if ($supportWhatsapp !== '') {
     .portal-catalog-title {
         display: inline-flex;
         align-items: center;
-        gap: 13.6px;
+        gap: 10px;
         margin: 0;
-        font-size: 1.36em;
+        font-size: calc(1.17em + 3px);
     }
 
     .portal-catalog-title__icon {
-        width: 51.68px;
-        height: 51.68px;
+        width: 38px;
+        height: 38px;
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        flex: 0 0 51.68px;
-        border-radius: 16.32px;
+        flex: 0 0 38px;
+        border-radius: 12px;
         background: var(--primary);
         color: #fff;
-        padding: 8.16px;
+        padding: 6px;
         box-sizing: border-box;
     }
 
     .portal-catalog-title__icon svg {
-        width: 24.48px;
-        height: 24.48px;
+        width: 18px;
+        height: 18px;
     }
 
     .portal-catalog-card__controls {
