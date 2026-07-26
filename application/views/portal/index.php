@@ -245,6 +245,16 @@ if ($supportWhatsapp !== '') {
                             </div>
                         </div>
                     </div>
+                    <div class="portal-catalog-toolbar">
+                        <label class="portal-catalog-search">
+                            <span class="portal-catalog-search__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-4-4"></path></svg></span>
+                            <input type="search" data-catalog-search placeholder="Buscar por produto, SKU ou categoria" autocomplete="off">
+                        </label>
+                        <select class="portal-catalog-category" data-catalog-category aria-label="Filtrar produtos por categoria">
+                            <option value="">Todas as categorias</option>
+                        </select>
+                        <span class="portal-catalog-count" data-catalog-count aria-live="polite">0 produtos</span>
+                    </div>
                     <div id="portal-catalog" class="portal-catalog" data-view="grid"></div>
                 </div>
                 <div class="portal-cart-stack">
@@ -1306,6 +1316,83 @@ if ($supportWhatsapp !== '') {
         align-items: center;
         gap: 0.75rem;
         flex-wrap: wrap;
+    }
+
+    .portal-catalog-toolbar {
+        display: grid;
+        grid-template-columns: minmax(240px, 1fr) minmax(180px, 260px) auto;
+        align-items: center;
+        gap: 10px;
+        margin: 0 0 16px;
+    }
+
+    .portal-catalog-search {
+        position: relative;
+        display: flex;
+        align-items: center;
+        min-width: 0;
+    }
+
+    .portal-catalog-search__icon {
+        position: absolute;
+        left: 13px;
+        display: inline-flex;
+        color: var(--portal-muted);
+        pointer-events: none;
+    }
+
+    .portal-catalog-search__icon svg {
+        width: 18px;
+        height: 18px;
+    }
+
+    .portal-catalog-search input,
+    .portal-catalog-category {
+        width: 100%;
+        min-height: 44px;
+        border: 1px solid var(--portal-card-border);
+        border-radius: 12px;
+        background: var(--portal-card-bg);
+        color: var(--portal-text);
+        font: inherit;
+        outline: none;
+    }
+
+    .portal-catalog-search input {
+        padding: 9px 13px 9px 41px;
+    }
+
+    .portal-catalog-category {
+        padding: 9px 12px;
+    }
+
+    .portal-catalog-search input:focus,
+    .portal-catalog-category:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 14%, transparent);
+    }
+
+    .portal-catalog-count {
+        justify-self: end;
+        min-width: 104px;
+        padding: 8px 11px;
+        border-radius: 999px;
+        background: color-mix(in srgb, var(--primary) 10%, transparent);
+        color: var(--primary);
+        font-size: 0.82rem;
+        font-weight: 900;
+        text-align: center;
+        white-space: nowrap;
+    }
+
+    @media (max-width: 760px) {
+        .portal-catalog-toolbar {
+            grid-template-columns: 1fr;
+        }
+
+        .portal-catalog-count {
+            justify-self: start;
+        }
     }
 
     .portal-view-toggle {
@@ -3239,6 +3326,9 @@ $catalogoPayload = json_encode(array_map(static function ($produto) use ($asset)
     const loginFeedback = document.getElementById('portal-login-feedback');
     const registerFeedback = document.getElementById('portal-register-feedback');
     const catalogContainer = document.getElementById('portal-catalog');
+    const catalogSearch = document.querySelector('[data-catalog-search]');
+    const catalogCategory = document.querySelector('[data-catalog-category]');
+    const catalogCount = document.querySelector('[data-catalog-count]');
     const cartLines = document.getElementById('portal-cart-lines');
     const cartTotal = document.getElementById('portal-cart-total');
     const orderFeedback = document.getElementById('portal-order-feedback');
@@ -4532,6 +4622,35 @@ $catalogoPayload = json_encode(array_map(static function ($produto) use ($asset)
         imageLightboxIndex = 0;
     };
 
+    const normalizeCatalogText = (value) => String(value || '')
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .toLocaleLowerCase('pt-BR')
+        .trim();
+
+    const syncCatalogCategories = () => {
+        if (!catalogCategory) return;
+        const selected = catalogCategory.value;
+        const categories = Array.from(new Set(catalogo
+            .map((produto) => String(produto.categoria || '').trim())
+            .filter(Boolean)))
+            .sort((a, b) => a.localeCompare(b, 'pt-BR'));
+        catalogCategory.innerHTML = '<option value="">Todas as categorias</option>'
+            + categories.map((category) => `<option value="${dashboardEscape(category)}">${dashboardEscape(category)}</option>`).join('');
+        catalogCategory.value = categories.includes(selected) ? selected : '';
+    };
+
+    const visibleCatalogProducts = () => {
+        const term = normalizeCatalogText(catalogSearch?.value || '');
+        const category = normalizeCatalogText(catalogCategory?.value || '');
+        return catalogo.filter((produto) => {
+            const productCategory = normalizeCatalogText(produto.categoria || '');
+            const searchable = normalizeCatalogText(`${produto.nome || ''} ${produto.sku || ''} ${produto.categoria || ''}`);
+            return (term === '' || searchable.includes(term))
+                && (category === '' || productCategory === category);
+        });
+    };
+
     const desenharCatalogo = (force = false) => {
         if (!catalogContainer) return;
         if (!force && activeTab !== 'novo-pedido') {
@@ -4540,9 +4659,14 @@ $catalogoPayload = json_encode(array_map(static function ($produto) use ($asset)
         }
         catalogNeedsRender = false;
         syncCatalogView();
+        syncCatalogCategories();
         catalogContainer.innerHTML = '';
         const fragment = document.createDocumentFragment();
-        catalogo.forEach((produto) => {
+        const visibleProducts = visibleCatalogProducts();
+        if (catalogCount) {
+            catalogCount.textContent = visibleProducts.length === 1 ? '1 produto' : `${visibleProducts.length} produtos`;
+        }
+        visibleProducts.forEach((produto) => {
             const card = document.createElement('article');
             card.className = `portal-product portal-product--${catalogView}`;
             card.dataset.category = produto.categoria || '';
@@ -4587,6 +4711,12 @@ $catalogoPayload = json_encode(array_map(static function ($produto) use ($asset)
             `;
             fragment.appendChild(card);
         });
+        if (!visibleProducts.length) {
+            const empty = document.createElement('div');
+            empty.className = 'portal-products-list__item';
+            empty.textContent = 'Nenhum produto encontrado para os filtros selecionados.';
+            fragment.appendChild(empty);
+        }
         catalogContainer.appendChild(fragment);
         catalogContainer.querySelectorAll('button[data-add]').forEach((button) => {
             button.addEventListener('click', (event) => {
@@ -4887,6 +5017,9 @@ $catalogoPayload = json_encode(array_map(static function ($produto) use ($asset)
             }
         });
     });
+
+    catalogSearch?.addEventListener('input', () => desenharCatalogo(true));
+    catalogCategory?.addEventListener('change', () => desenharCatalogo(true));
 
     portalTabButtons.forEach((button) => {
         button.addEventListener('click', () => setActiveTab(button.dataset.portalTabTrigger));
