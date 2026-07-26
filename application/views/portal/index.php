@@ -4694,10 +4694,10 @@ $catalogoPayload = json_encode(array_map(static function ($produto) use ($asset)
         persistCliente(cliente);
         const groupIds=Array.isArray(cliente?.grupos_produtos_ids)&&cliente.grupos_produtos_ids.length?cliente.grupos_produtos_ids.map(String):[String(cliente?.grupo_produtos_id||'')].filter(Boolean);
         const matchedGroups=portalClientGroups.filter(item=>groupIds.includes(String(item?.id||'')));
-        const allowed=matchedGroups.length
-            ? new Set(matchedGroups.flatMap(group=>(Array.isArray(group.product_ids)?group.product_ids:[]).map(Number).filter(id=>id>0)))
-            : (Array.isArray(cliente?.grupo_produtos_product_ids)
-                ? new Set(cliente.grupo_produtos_product_ids.map(Number).filter(id=>id>0))
+        const allowed=Array.isArray(cliente?.grupo_produtos_product_ids)
+            ? new Set(cliente.grupo_produtos_product_ids.map(Number).filter(id=>id>0))
+            : (matchedGroups.length
+                ? new Set(matchedGroups.flatMap(group=>(Array.isArray(group.product_ids)?group.product_ids:[]).map(Number).filter(id=>id>0)))
                 : null);
         catalogo.splice(0,catalogo.length,...catalogoCompleto.filter(produto=>!allowed||allowed.has(Number(produto.id))));
         desenharCatalogo();
@@ -4735,10 +4735,10 @@ $catalogoPayload = json_encode(array_map(static function ($produto) use ($asset)
             ? cliente.grupos_produtos_ids.map(String)
             : [String(cliente.grupo_produtos_id || '')].filter(Boolean);
         const matchedGroups = portalClientGroups.filter((item) => groupIds.includes(String(item?.id || '')));
-        let allowed = matchedGroups.length
-            ? new Set(matchedGroups.flatMap((group) => (Array.isArray(group.product_ids) ? group.product_ids : []).map(Number).filter((id) => id > 0)))
-            : (Array.isArray(explicitAllowed)
-                ? new Set(explicitAllowed.map(Number).filter((id) => id > 0))
+        let allowed = Array.isArray(explicitAllowed)
+            ? new Set(explicitAllowed.map(Number).filter((id) => id > 0))
+            : (matchedGroups.length
+                ? new Set(matchedGroups.flatMap((group) => (Array.isArray(group.product_ids) ? group.product_ids : []).map(Number).filter((id) => id > 0)))
                 : null);
 
         catalogo.splice(0, catalogo.length, ...catalogoCompleto.filter((produto) => !allowed || allowed.has(Number(produto.id))));
@@ -4813,11 +4813,17 @@ $catalogoPayload = json_encode(array_map(static function ($produto) use ($asset)
         return null;
     };
 
+    let groupSyncInFlight = false;
     const sincronizarGrupoDoCliente = async () => {
-        if (!state.token || document.visibilityState !== 'visible') return;
-        const cliente = await refreshClienteFromApi();
-        if (cliente) {
-            window.dispatchEvent(new CustomEvent('portal:cliente-atualizado', { detail: { cliente } }));
+        if (!state.token || document.visibilityState !== 'visible' || groupSyncInFlight) return;
+        groupSyncInFlight = true;
+        try {
+            const cliente = await refreshClienteFromApi();
+            if (cliente) {
+                window.dispatchEvent(new CustomEvent('portal:cliente-atualizado', { detail: { cliente } }));
+            }
+        } finally {
+            groupSyncInFlight = false;
         }
     };
 
@@ -4909,7 +4915,7 @@ $catalogoPayload = json_encode(array_map(static function ($produto) use ($asset)
         }
     });
 
-    window.setInterval(() => sincronizarGrupoDoCliente(), 12000);
+    window.setInterval(() => sincronizarGrupoDoCliente(), 4000);
 
     const atualizarTokenState = async () => {
         if (state.token) {
