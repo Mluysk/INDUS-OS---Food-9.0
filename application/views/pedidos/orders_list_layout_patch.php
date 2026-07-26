@@ -230,8 +230,9 @@ foreach (($pedidos ?? []) as $pedido) {
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        width: 24px;
-        height: 24px;
+        width: 22px;
+        height: 22px;
+        flex: 0 0 22px;
         border-radius: 999px;
         color: var(--primary, #dc2626);
         background: color-mix(in srgb, var(--primary, #dc2626) 12%, #fff);
@@ -241,8 +242,8 @@ foreach (($pedidos ?? []) as $pedido) {
     #panel-lista-pedidos .pedido-status-icon svg,
     #panel-lista-pedidos .pedido-status-icon[data-lucide] {
         display: block;
-        width: 15px;
-        height: 15px;
+        width: 16px;
+        height: 16px;
         margin: 0;
         stroke-width: 2.4;
     }
@@ -254,7 +255,8 @@ foreach (($pedidos ?? []) as $pedido) {
         background: #dbeafe;
     }
 
-    #panel-lista-pedidos .pedido-status-badge[data-status="faturado"] .pedido-status-icon {
+    #panel-lista-pedidos .pedido-status-badge[data-status="faturado"] .pedido-status-icon,
+    #panel-lista-pedidos .pedido-status-badge[data-status="entregue"] .pedido-status-icon {
         color: #059669;
         background: #d1fae5;
     }
@@ -444,19 +446,19 @@ foreach (($pedidos ?? []) as $pedido) {
     }
 
     .pedido-info-dialog {
-        width: min(520px, 100%);
+        width: min(560px, 100%);
         border: 1px solid var(--border, #e5e7eb);
-        border-radius: 24px;
+        border-radius: 28px;
         background: var(--surface, #fff);
-        box-shadow: 0 24px 60px rgba(15, 23, 42, 0.22);
+        box-shadow: 0 26px 70px rgba(15, 23, 42, 0.24);
         overflow: hidden;
     }
 
     .pedido-info-header {
         display: flex;
-        align-items: center;
+        align-items: flex-start;
         gap: 12px;
-        padding: 22px 24px 16px;
+        padding: 24px 24px 16px;
     }
 
     .pedido-info-icon {
@@ -498,6 +500,16 @@ foreach (($pedidos ?? []) as $pedido) {
         display: grid;
         gap: 12px;
         padding: 0 24px 22px;
+    }
+
+    @media (min-width: 520px) {
+        .pedido-info-body {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .pedido-info-item:first-child {
+            grid-column: 1 / -1;
+        }
     }
 
     .pedido-info-item {

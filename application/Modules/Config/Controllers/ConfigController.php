@@ -221,6 +221,7 @@ class ConfigController extends Controller
             $skuDigits = 8;
         }
         $reuseDeletedSku = $this->config->get('PRODUCT_REUSE_DELETED_SKU', '0') === '1' ? '1' : '0';
+        $romaneioDigits = max(2, min(10, (int)($this->config->get('ROMANEIO_DIGITS', '4') ?: 4)));
 
         $estoqueBaixoMin = (int)($this->config->get('ESTOQUE_BAIXO_MIN', '4') ?: '4');
         $estoqueBaixoMax = (int)($this->config->get('ESTOQUE_BAIXO_MAX', '8') ?: '8');
@@ -260,12 +261,33 @@ class ConfigController extends Controller
         $backupDest = trim((string)($this->config->get('BACKUP_DEST_PATH', 'storage/backups/uploads') ?: 'storage/backups/uploads'));
 
         $usersList = $this->usuarios->all();
+        $clientsList = $this->config->getConnection()
+            ->query("SELECT c.id, c.nome_fantasia, c.razao_social, c.email, c.telefone, c.cpf, c.cnpj, c.usuario_id, u.papel AS usuario_papel, u.is_ativo AS usuario_ativo
+                FROM clientes c
+                INNER JOIN usuarios u ON u.id = c.usuario_id AND u.papel = 'cliente'
+                ORDER BY COALESCE(NULLIF(c.nome_fantasia, ''), c.razao_social, c.email) ASC, c.id ASC")
+            ->fetchAll();
+        $portalGroupProducts = $this->config->getConnection()
+            ->query("SELECT id, nome, sku, categoria FROM produtos WHERE COALESCE(is_ativo, 1) = 1 ORDER BY nome ASC, id ASC")
+            ->fetchAll();
+        $portalClientGroups = json_decode((string)$this->config->get('PORTAL_CLIENT_GROUPS', '[]'), true);
+        if (!is_array($portalClientGroups)) $portalClientGroups = [];
 
         $weekendLegacy = $this->config->get('PERFORMANCE_INCLUDE_WEEKENDS', '1') === '1' ? '1' : '0';
         $performanceIncludeSaturday = $this->config->get('PERFORMANCE_INCLUDE_SATURDAY');
         $performanceIncludeSunday = $this->config->get('PERFORMANCE_INCLUDE_SUNDAY');
         $performanceIncludeSaturday = ($performanceIncludeSaturday ?? $weekendLegacy) === '1' ? '1' : '0';
         $performanceIncludeSunday = ($performanceIncludeSunday ?? $weekendLegacy) === '1' ? '1' : '0';
+        $timezoneOptions = [
+            'America/Sao_Paulo' => 'Brasília, São Paulo e regiões (UTC−03:00)',
+            'America/Manaus' => 'Manaus e região (UTC−04:00)',
+            'America/Cuiaba' => 'Cuiabá e região (UTC−04:00)',
+            'America/Rio_Branco' => 'Rio Branco e Acre (UTC−05:00)',
+            'America/Noronha' => 'Fernando de Noronha (UTC−02:00)',
+            'UTC' => 'UTC — horário universal (+00:00)',
+        ];
+        $systemTimezone = (string)$this->config->get('SYSTEM_TIMEZONE', $this->container->getConfig()['timezone'] ?? 'America/Sao_Paulo');
+        if (!isset($timezoneOptions[$systemTimezone])) $systemTimezone = 'America/Sao_Paulo';
 
         $this->render('config/index', [
             'configs' => $configs,
@@ -277,6 +299,7 @@ class ConfigController extends Controller
             'metricUnitsRaw' => $metricUnitsRaw,
             'noteDefaults' => $notaDefaults,
             'skuDigits' => $skuDigits,
+            'romaneioDigits' => $romaneioDigits,
             'reuseDeletedSku' => $reuseDeletedSku,
             'estoqueBaixoMin' => $estoqueBaixoMin,
             'estoqueBaixoMax' => $estoqueBaixoMax,
@@ -288,6 +311,8 @@ class ConfigController extends Controller
             'backupDest' => $backupDest,
             'performanceIncludeSaturday' => $performanceIncludeSaturday,
             'performanceIncludeSunday' => $performanceIncludeSunday,
+            'timezoneOptions' => $timezoneOptions,
+            'systemTimezone' => $systemTimezone,
             'allowNegativeStock' => $allowNegativeStock,
             'mapaConsumeRecipeMp' => $mapaConsumeRecipeMp,
             'financeiroAlertaVencimentoDias' => $financeiroAlertaVencimentoDias,
@@ -298,6 +323,9 @@ class ConfigController extends Controller
             'hierarchyModules' => $moduleOptions,
             'roleHierarchy' => $hierarchy,
             'usersList' => $usersList,
+            'clientsList' => $clientsList,
+            'portalGroupProducts' => $portalGroupProducts,
+            'portalClientGroups' => $portalClientGroups,
             'defaultTab' => $defaultTab,
             'quickActionOptions' => $quickActionOptions,
             'quickActionDefaults' => $quickActionDefaults,
@@ -327,6 +355,15 @@ class ConfigController extends Controller
         $this->extractConfigEditPasswordChange($data, $errors);
         if (!$this->validateConfigEditPassword($activeTab, $errors)) {
             return;
+        }
+        if (array_key_exists('SYSTEM_TIMEZONE', $data)) {
+            $timezone = trim((string)$data['SYSTEM_TIMEZONE']);
+            if (!in_array($timezone, \DateTimeZone::listIdentifiers(), true)) {
+                $errors[] = 'Selecione um fuso horário válido.';
+                unset($data['SYSTEM_TIMEZONE']);
+            } else {
+                $data['SYSTEM_TIMEZONE'] = $timezone;
+            }
         }
 
         $runBackup = isset($_POST['run_backup']) && !$this->wantsJson();
@@ -578,6 +615,9 @@ class ConfigController extends Controller
             }
             $data['SKU_DIGITS'] = (string)$digits;
         }
+        if (isset($data['ROMANEIO_DIGITS'])) {
+            $data['ROMANEIO_DIGITS'] = (string)max(2, min(10, (int)$data['ROMANEIO_DIGITS']));
+        }
         if ($activeTab === 'rules' || array_key_exists('PRODUCT_REUSE_DELETED_SKU', $data)) {
             $data['PRODUCT_REUSE_DELETED_SKU'] = isset($data['PRODUCT_REUSE_DELETED_SKU'])
                 && (string)$data['PRODUCT_REUSE_DELETED_SKU'] === '1' ? '1' : '0';
@@ -674,6 +714,36 @@ class ConfigController extends Controller
 
         foreach ($data as $chave => $valor) {
             $this->config->set($chave, (string)$valor);
+        }
+
+        if (isset($data['PORTAL_CLIENT_GROUPS'])) {
+            $decodedGroups = json_decode((string)$data['PORTAL_CLIENT_GROUPS'], true);
+            $cleanGroups = [];
+            if (is_array($decodedGroups)) {
+                foreach ($decodedGroups as $index => $group) {
+                    if (!is_array($group)) continue;
+                    $name = trim(strip_tags((string)($group['name'] ?? '')));
+                    if ($name === '') continue;
+                    $cleanGroups[] = [
+                        'id' => preg_replace('/[^a-zA-Z0-9_-]/', '', (string)($group['id'] ?? ('grupo_' . $index))),
+                        'name' => mb_substr($name, 0, 80),
+                        'client_ids' => array_values(array_unique(array_filter(array_map('intval', is_array($group['client_ids'] ?? null) ? $group['client_ids'] : []), static fn(int $id): bool => $id > 0))),
+                        'product_ids' => array_values(array_unique(array_filter(array_map('intval', is_array($group['product_ids'] ?? null) ? $group['product_ids'] : []), static fn(int $id): bool => $id > 0))),
+                        'created_by_client' => max(0, (int)($group['created_by_client'] ?? 0)),
+                    ];
+                }
+            }
+            $data['PORTAL_CLIENT_GROUPS'] = json_encode($cleanGroups, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+            $this->config->set('PORTAL_CLIENT_GROUPS', $data['PORTAL_CLIENT_GROUPS']);
+        }
+        if (!empty($data['SYSTEM_TIMEZONE'])) {
+            $timezone = new \DateTimeZone((string)$data['SYSTEM_TIMEZONE']);
+            date_default_timezone_set($timezone->getName());
+            $offsetSeconds = $timezone->getOffset(new \DateTimeImmutable('now', $timezone));
+            $offsetSign = $offsetSeconds < 0 ? '-' : '+';
+            $offsetSeconds = abs($offsetSeconds);
+            $mysqlOffset = sprintf('%s%02d:%02d', $offsetSign, intdiv($offsetSeconds, 3600), intdiv($offsetSeconds % 3600, 60));
+            $this->config->getConnection()->exec("SET time_zone = " . $this->config->getConnection()->quote($mysqlOffset));
         }
 
         $backupMessage = '';
@@ -877,7 +947,7 @@ class ConfigController extends Controller
         }
 
         $this->setFlash('success', 'Usuário cadastrado com sucesso.');
-        $this->redirect('/config?tab=users');
+        $this->redirect('/config?tab=users&user_created=1');
     }
 
     public function updateUser(): void

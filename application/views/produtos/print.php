@@ -15,6 +15,7 @@ $formatWeight = static function ($value): string {
 $simplified = !empty($simplified);
 $visual = !empty($visual);
 $sharedVisual = !empty($sharedVisual);
+$noPrice = !empty($noPrice);
 $shareUrl = '';
 if ($visual) {
     $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
@@ -140,6 +141,11 @@ if (!empty($filters['tipo'])) {
         margin-bottom: var(--square-form-logo-margin, 24px);
         transform: scale(1.85);
         transform-origin: left center;
+    }
+    @media (min-width: 681px) {
+        .product-brand-identity img.is-square-form-logo {
+            margin-right: calc(var(--form-logo-size, 53px) * 0.85);
+        }
     }
     @media (max-width: 680px) {
         .product-brand-identity {
@@ -661,10 +667,12 @@ if (!empty($filters['tipo'])) {
                             <span>Peso <?= htmlspecialchars($formatWeight($produto['peso_liquido'] ?? 0), ENT_QUOTES, 'UTF-8'); ?></span>
                             <span><?= (int)($produto['shelf_life_dias'] ?? 0); ?> dias</span>
                         </div>
-                        <div class="visual-product__price">
-                            <span>Preco</span>
-                            <strong><?= $formatPrice((float)($produto['preco'] ?? 0)); ?></strong>
-                        </div>
+                        <?php if (!$noPrice): ?>
+                            <div class="visual-product__price">
+                                <span>Preco</span>
+                                <strong><?= $formatPrice((float)($produto['preco'] ?? 0)); ?></strong>
+                            </div>
+                        <?php endif; ?>
                     </div>
                 </article>
             <?php endforeach; ?>

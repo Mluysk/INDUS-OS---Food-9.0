@@ -311,10 +311,14 @@ class ProdutosController extends Controller
     public function printList(): void
     {
         $printMode = strtolower(trim((string)($_GET['modo'] ?? '')));
+        $requestUri = (string)($_SERVER['REQUEST_URI'] ?? '');
+        $requestPath = parse_url($requestUri, PHP_URL_PATH) ?: '';
+        $noPrice = str_ends_with(rtrim($requestPath, '/'), '/noprice')
+            || str_ends_with(rtrim($requestUri, '/'), '/noprice');
         $sharedFlag = in_array(strtolower(trim((string)($_GET['compartilhar'] ?? $_GET['share'] ?? ''))), ['1', 'sim', 'true'], true);
         $simplified = $printMode === 'simplificado';
-        $visual = $printMode === 'visual' || $sharedFlag;
-        $sharedVisual = $visual && $sharedFlag;
+        $visual = $noPrice || $printMode === 'visual' || $sharedFlag;
+        $sharedVisual = $visual && ($sharedFlag || $noPrice);
 
         if (!$sharedVisual) {
             $this->auth->ensureRole(['admin','gestor','producao']);
@@ -338,6 +342,7 @@ class ProdutosController extends Controller
                 'filtros' => $filters,
                 'modo' => $visual ? 'visual' : ($simplified ? 'simplificado' : 'completo'),
                 'compartilhado' => $sharedVisual,
+                'sem_preco' => $noPrice,
             ]);
         }
 
@@ -348,6 +353,7 @@ class ProdutosController extends Controller
             'simplified' => $simplified,
             'visual' => $visual,
             'sharedVisual' => $sharedVisual,
+            'noPrice' => $noPrice,
         ], [
             'title' => 'Catálogo de produtos',
             'layout' => 'layouts/print',

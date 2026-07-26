@@ -77,6 +77,7 @@ $router->add('POST', '/produtos/{id}/desativar', [ProdutosController::class, 'de
 $router->add('POST', '/produtos/{id}/excluir', [ProdutosController::class, 'delete']);
 $router->add('GET', '/produtos/{id}/ficha', [ProdutosController::class, 'ficha']);
 $router->add('GET', '/produtos/print', [ProdutosController::class, 'printList']);
+$router->add('GET', '/produtos/print/noprice', [ProdutosController::class, 'printList']);
 
 $router->add('GET', '/receitas', [ReceitasController::class, 'index']);
 $router->add('GET', '/receitas/nova', [ReceitasController::class, 'create']);

@@ -10,7 +10,20 @@
     #panel-lista-pedidos .pedido-review-hovercard:hover .pedido-review-items,
     #panel-lista-pedidos .pedido-review-hovercard:focus-within .pedido-review-items { visibility: visible; opacity: 1; transform: translate(-50%, 0); }
     tr[data-pedido-row]:has(.pedido-status-badge[data-status="entregue"]) form[action*="/aprovar"] { display: none !important; }
-    .pedido-status-badge[data-status="entregue"] .pedido-status-icon{display:inline-block!important;width:27px!important;height:20px!important;flex:0 0 27px!important;background:transparent center/27px 20px no-repeat!important;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 22' fill='none' stroke-linecap='round' stroke-linejoin='round'%3E%3Cg stroke='%2315803d' stroke-width='1.8'%3E%3Cpath d='M12 4h10v11.5H12z'/%3E%3Cpath d='M22 8h4l4 4v3.5h-2M22 15.5h2'/%3E%3Ccircle cx='15' cy='17' r='1.7'/%3E%3Ccircle cx='26' cy='17' r='1.7'/%3E%3Cpath d='M12 6v7.5'/%3E%3C/g%3E%3Cg fill='%2315803d'%3E%3Crect x='-.05' y='11.85' width='8.45' height='8.45' rx='.9'/%3E%3Crect x='6.92' y='9.52' width='6.76' height='6.76' rx='.75'/%3E%3C/g%3E%3Cg stroke='%23dcfce7' stroke-width='1.1'%3E%3Cpath d='M.7 14.45h6.95M4.18 12.5v7.05'/%3E%3Cpath d='M7.55 11.6h5.5M10.3 10.05v5.45'/%3E%3C/g%3E%3C/svg%3E")!important;transform:scaleX(-1)}.pedido-status-badge[data-status="entregue"] .pedido-status-icon>*{display:none!important}
+    .pedido-status-badge[data-status="entregue"] .pedido-status-icon {
+        display: inline-block !important;
+        width: 22px !important;
+        height: 22px !important;
+        flex: 0 0 22px !important;
+        border-radius: 999px !important;
+        background-color: #d1fae5 !important;
+        background-position: center !important;
+        background-size: 22px auto !important;
+        background-repeat: no-repeat !important;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 22' fill='none' stroke-linecap='round' stroke-linejoin='round'%3E%3Cg stroke='%2315803d' stroke-width='1.8'%3E%3Cpath d='M12 4h10v11.5H12z'/%3E%3Cpath d='M22 8h4l4 4v3.5h-2M22 15.5h2'/%3E%3Ccircle cx='15' cy='17' r='1.7'/%3E%3Ccircle cx='26' cy='17' r='1.7'/%3E%3Cpath d='M12 6v7.5'/%3E%3C/g%3E%3Cg fill='%2315803d'%3E%3Crect x='-.05' y='11.85' width='8.45' height='8.45' rx='.9'/%3E%3Crect x='6.92' y='9.52' width='6.76' height='6.76' rx='.75'/%3E%3C/g%3E%3Cg stroke='%23dcfce7' stroke-width='1.1'%3E%3Cpath d='M.7 14.45h6.95M4.18 12.5v7.05'/%3E%3Cpath d='M7.55 11.6h5.5M10.3 10.05v5.45'/%3E%3C/g%3E%3C/svg%3E") !important;
+        transform: scaleX(-1);
+    }
+    .pedido-status-badge[data-status="entregue"] .pedido-status-icon > * { display: none !important; }
 </style>
 <section class="panel pedidos-tabs-card">
     <div class="pedidos-tabs-header">
@@ -82,6 +95,14 @@
                     <input type="search" data-pedido-list-search placeholder="Buscar por loja, codigo, data ou valor">
                 </span>
             </label>
+            <div class="system-list-export" data-system-list-export data-export-table="#panel-lista-pedidos .pedido-list-table" data-export-name="pedidos">
+                <button type="button" class="system-list-export__trigger" data-system-export-trigger aria-haspopup="true" aria-expanded="false"><span class="icon" data-lucide="download"></span><span>Exportar</span></button>
+                <div class="system-list-export__menu" data-system-export-menu hidden>
+                    <button type="button" class="system-list-export__option" data-system-export-format="csv"><span class="icon" data-lucide="file-text"></span><span>CSV</span></button>
+                    <button type="button" class="system-list-export__option" data-system-export-format="txt"><span class="icon" data-lucide="file-text"></span><span>TXT</span></button>
+                    <button type="button" class="system-list-export__option" data-system-export-format="xls"><span class="icon" data-lucide="file-spreadsheet"></span><span>XLS</span></button>
+                </div>
+            </div>
         </div>
         <div style="overflow-x: auto;">
             <table class="data-table pedido-list-table">
@@ -879,8 +900,23 @@
 
     .pedido-list-toolbar {
         display: flex;
-        justify-content: flex-start;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 12px;
         margin: -0.2rem 0 0.85rem;
+    }
+    .pedido-list-toolbar .system-list-export {
+        flex: 0 0 auto;
+        margin-left: auto;
+    }
+    @media (max-width: 680px) {
+        .pedido-list-toolbar {
+            align-items: stretch;
+            flex-direction: column;
+        }
+        .pedido-list-toolbar .system-list-export {
+            align-self: flex-end;
+        }
     }
 
     .pedido-list-search {
@@ -1443,3 +1479,24 @@
         }
     }
 </style>
+<script>
+(() => {
+    const params = new URLSearchParams(window.location.search);
+    const auditPedidoId = Number(params.get('pedido_id') || 0);
+    if (auditPedidoId <= 0 || params.get('audit_focus') !== 'pedido') return;
+    const revealPedido = () => {
+        const button = document.querySelector(`.pedido-edit-btn[data-pedido="${auditPedidoId}"]`);
+        const row = button?.closest('[data-pedido-row]');
+        if (!row) return false;
+        row.hidden = false;
+        row.style.display = '';
+        row.setAttribute('data-audit-pedido-target', '');
+        return true;
+    };
+    if (!revealPedido()) {
+        const observer = new MutationObserver(() => { if (revealPedido()) observer.disconnect(); });
+        observer.observe(document.body, {childList:true,subtree:true});
+        window.setTimeout(() => observer.disconnect(), 8000);
+    }
+})();
+</script>
