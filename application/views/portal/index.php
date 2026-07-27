@@ -3216,6 +3216,10 @@ if ($supportWhatsapp !== '') {
         html body .portal-dashboard__tooltip-head{align-items:flex-start;flex-direction:column}
     }
 .portal-order-detail{background:#fff;border:1px solid #e5e7eb;border-radius:24px;padding:28px;box-shadow:0 18px 45px rgba(15,23,42,.08);color:#172033}.portal-order-detail__head{display:flex;justify-content:space-between;gap:20px;align-items:flex-start;margin-bottom:24px}.portal-order-detail__head h3{margin:0 0 6px;font-size:25px}.portal-order-detail__head p{margin:0;color:#64748b}.portal-order-detail__actions{display:flex;gap:10px;flex-wrap:wrap}.portal-order-detail__actions svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2}.portal-order-detail__summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:22px}.portal-order-detail__summary div,.portal-order-detail__card{border:1px solid #e5e7eb;border-radius:16px;background:#f8fafc;padding:16px}.portal-order-detail__summary span{display:block;color:#64748b;font-size:12px;font-weight:700;text-transform:uppercase;margin-bottom:7px}.portal-order-detail__summary strong{font-size:16px}.portal-order-detail__grid{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(280px,.8fr);gap:18px}.portal-order-detail__card{background:#fff}.portal-order-detail__card h4{margin:0 0 14px;font-size:17px}.portal-order-detail__table{width:100%;border-collapse:collapse}.portal-order-detail__table th,.portal-order-detail__table td{text-align:left;padding:11px 8px;border-bottom:1px solid #edf0f4}.portal-order-detail__table th{font-size:12px;color:#64748b;text-transform:uppercase}.portal-order-detail__table td:last-child,.portal-order-detail__table th:last-child{text-align:right}.portal-order-detail__manifest dl{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:0}.portal-order-detail__manifest dt{color:#64748b;font-size:12px}.portal-order-detail__manifest dd{margin:3px 0 0;font-weight:700}.portal-order-history{margin-top:18px}.portal-order-history__item{display:grid;grid-template-columns:12px 1fr;gap:12px;padding:10px 0}.portal-order-history__dot{width:10px;height:10px;border-radius:50%;background:var(--portal-primary,#2563eb);margin-top:6px}.portal-order-history__item strong{display:block}.portal-order-history__item small{color:#64748b}.portal-order-history__reason{margin:5px 0 0;color:#334155}.portal-order-detail__empty{color:#64748b;padding:8px 0}.portal-orders-action--icon svg{fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}@media(max-width:800px){.portal-order-detail{padding:18px;border-radius:18px}.portal-order-detail__head{display:block}.portal-order-detail__actions{margin-top:16px}.portal-order-detail__summary{grid-template-columns:1fr 1fr}.portal-order-detail__grid{grid-template-columns:1fr}.portal-order-detail__table{font-size:13px}}@media print{body *{visibility:hidden!important}.portal-order-detail,.portal-order-detail *{visibility:visible!important}.portal-order-detail{position:absolute;inset:0;width:100%;box-shadow:none;border:0;padding:0}.portal-order-detail__actions{display:none!important}.portal-order-detail__grid{grid-template-columns:1fr}.portal-order-detail__card{break-inside:avoid}}
+    .portal-order-editor__remove{width:38px;height:38px;padding:0;border:1px solid color-mix(in srgb,#dc2626 22%,transparent);border-radius:50%;background:color-mix(in srgb,#dc2626 7%,var(--portal-card-bg));color:#dc2626;transition:transform .18s ease,background .18s ease,border-color .18s ease,box-shadow .18s ease}
+    .portal-order-editor__remove:hover{transform:translateY(-1px);border-color:color-mix(in srgb,#dc2626 42%,transparent);background:color-mix(in srgb,#dc2626 13%,var(--portal-card-bg));box-shadow:0 8px 18px -12px rgba(220,38,38,.8)}
+    .portal-order-editor__remove:focus-visible{outline:3px solid color-mix(in srgb,#dc2626 22%,transparent);outline-offset:2px}
+    .portal-order-editor__remove svg{width:18px;height:18px;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
 </style>
 <?php
 $catalogoPayload = json_encode(array_map(static function ($produto) use ($asset) {
@@ -4118,7 +4122,7 @@ $catalogoPayload = json_encode(array_map(static function ($produto) use ($asset)
                 const name = item.nome || item.produto_nome || catalogProduct.nome || `Produto ${productId}`;
                 const sku = item.sku || catalogProduct.sku || '-';
                 const weight = Number(item.peso_liquido ?? catalogProduct.peso_liquido) || 0;
-                return `<div class="portal-order-editor__item" data-edit-item data-price="${price}"><span>${dashboardEscape(sku)}</span><span class="portal-order-editor__item-name" title="${dashboardEscape(name)}">${dashboardEscape(name)}</span><input type="number" min="0.01" step="0.01" value="${quantity}" data-edit-quantity data-product-id="${productId}" aria-label="Quantidade de ${dashboardEscape(name)}"><span>${dashboardEscape(formatWeight(weight) || '-')}</span><span>${formatCurrency(price)}</span><span class="portal-order-editor__item-subtotal" data-edit-subtotal>${formatCurrency(price * quantity)}</span><button type="button" class="portal-order-editor__remove" data-edit-remove aria-label="Remover item" title="Remover"><svg viewBox="0 0 24 24"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6M10 11v5M14 11v5"/></svg></button></div>`;
+                return `<div class="portal-order-editor__item" data-edit-item data-price="${price}"><span>${dashboardEscape(sku)}</span><span class="portal-order-editor__item-name" title="${dashboardEscape(name)}">${dashboardEscape(name)}</span><input type="number" min="0.01" step="0.01" value="${quantity}" data-edit-quantity data-product-id="${productId}" aria-label="Quantidade de ${dashboardEscape(name)}"><span>${dashboardEscape(formatWeight(weight) || '-')}</span><span>${formatCurrency(price)}</span><span class="portal-order-editor__item-subtotal" data-edit-subtotal>${formatCurrency(price * quantity)}</span><button type="button" class="portal-order-editor__remove" data-edit-remove aria-label="Remover ${dashboardEscape(name)}" title="Remover produto"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16"/><path d="M9 7V4h6v3"/><path d="m6.5 7 1 13h9l1-13"/><path d="M10 11v5M14 11v5"/></svg></button></div>`;
             };
             orderEditor.innerHTML = `<div class="portal-order-editor__head"><div class="portal-order-editor__title"><span class="portal-order-editor__title-icon"><svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L8 18l-4 1 1-4Z"/></svg></span><div><h3>Editar pedido ${dashboardEscape(pedido.codigo || `#${pedidoId}`)}</h3><p>Revise os produtos e quantidades antes de salvar.</p></div></div><button type="button" class="portal-btn portal-btn--ghost portal-order-editor__back" data-order-editor-back><svg viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg>Voltar</button></div><div class="portal-order-editor__meta"><span>${dashboardEscape(pedido.status_label || pedido.status || 'Em análise')}</span><span>${dashboardEscape(createdAt)}</span></div><form data-order-editor-form><div class="portal-order-builder"><div class="portal-order-builder__title"><strong>Itens do pedido</strong><p>Use os produtos disponíveis no seu catálogo e informe a quantidade.</p></div><div class="portal-order-builder__entry"><label class="portal-order-builder__field">Código<span class="portal-order-builder__readonly portal-order-builder__code" data-builder-code>-</span></label><label class="portal-order-builder__field">Produtos<input type="text" autocomplete="off" placeholder="Produto..." data-order-product-search><ul class="portal-order-builder__suggestions" data-order-product-results></ul></label><label class="portal-order-builder__field">Quantidade<input type="number" min="0.01" step="0.01" value="1" data-builder-quantity></label><label class="portal-order-builder__field">Peso<span class="portal-order-builder__readonly" data-builder-weight>-</span></label><label class="portal-order-builder__field">Valor<span class="portal-order-builder__readonly" data-builder-price>R$ 0,00</span></label><label class="portal-order-builder__field">Subtotal<span class="portal-order-builder__readonly" data-builder-subtotal>R$ 0,00</span></label><button type="button" class="portal-btn portal-order-builder__add" data-builder-add disabled>Adicionar item</button></div><div class="portal-order-builder__list"><h4>Lista de Produtos</h4><div class="portal-order-builder__table"><div class="portal-order-builder__head"><span>Código</span><span>Produtos</span><span>Quantidade</span><span>Peso</span><span>Valor</span><span>Subtotal</span><span></span></div><div class="portal-order-editor__items" data-order-editor-items>${itens.map(itemMarkup).join('')}</div><div class="portal-order-editor__empty-list" data-order-editor-empty hidden>Nenhum produto adicionado.</div></div></div></div><div class="portal-order-editor__notes"><label for="portal-order-notes">Observações do pedido</label><textarea id="portal-order-notes" maxlength="1000" placeholder="Inclua orientações importantes para este pedido" data-order-editor-notes>${dashboardEscape(pedido.observacoes || '')}</textarea></div><div class="portal-feedback" data-order-editor-feedback></div><div class="portal-order-editor__footer"><div class="portal-order-editor__summary"><span>Produtos<strong data-order-editor-products>0</strong></span><span>Quantidade total<strong data-order-editor-quantity>0</strong></span><span>Total atualizado<strong data-order-editor-total>R$ 0,00</strong></span></div><div class="portal-order-editor__actions"><button type="button" class="portal-btn portal-btn--ghost" data-order-editor-cancel>Cancelar</button><button type="submit" class="portal-btn portal-btn--primary"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2Z"/><path d="M17 21v-8H7v8M7 3v5h8"/></svg>Salvar alterações</button></div></div></form>`;
             const editorStatusBadge = orderEditor.querySelector('.portal-order-editor__meta span:first-child');
@@ -4157,24 +4161,57 @@ $catalogoPayload = json_encode(array_map(static function ($produto) use ($asset)
                 const selected = new Set(Array.from(orderEditor.querySelectorAll('[data-edit-quantity]')).map(input => Number(input.dataset.productId)));
                 const available = term ? catalogo.filter(product => !selected.has(Number(product.id)) && `${product.nome} ${product.sku} ${product.categoria}`.toLocaleLowerCase('pt-BR').includes(term)).slice(0, 12) : [];
                 results.innerHTML = available.map(product => `<li><button type="button" data-order-product-select="${Number(product.id)}">${dashboardEscape(product.nome)}<small>${dashboardEscape(product.sku || '')} · ${formatCurrency(product.preco || 0)}</small></button></li>`).join('');
+                return available;
+            };
+            const selectProduct = (product) => {
+                selectedProduct = product || null;
+                if (search && selectedProduct) search.value = selectedProduct.nome;
+                results.innerHTML = '';
+                updateBuilder();
+            };
+            const addSelectedProduct = () => {
+                if (!selectedProduct) return false;
+                const quantity = Math.max(0, Number(builderQuantity?.value) || 0);
+                if (quantity <= 0) return false;
+                itemsContainer.insertAdjacentHTML('beforeend', itemMarkup({ ...selectedProduct, produto_id: selectedProduct.id, preco_unit: selectedProduct.preco, quantidade }));
+                selectedProduct = null;
+                if (search) search.value = '';
+                if (builderQuantity) builderQuantity.value = '1';
+                results.innerHTML = '';
+                updateBuilder();
+                updateSummary();
+                search?.focus();
+                return true;
             };
             const goBack = () => setActiveTab('pedidos');
             orderEditor.querySelector('[data-order-editor-back]')?.addEventListener('click', goBack);
             orderEditor.querySelector('[data-order-editor-cancel]')?.addEventListener('click', goBack);
             orderEditor.oninput = (event) => {
                 if (event.target.matches('[data-edit-quantity]')) updateSummary();
-                if (event.target.matches('[data-order-product-search]')) { selectedProduct = null; updateBuilder(); renderAvailable(); }
+                if (event.target.matches('[data-order-product-search]')) {
+                    selectedProduct = null;
+                    const available = renderAvailable();
+                    const term = String(search?.value || '').trim().toLocaleLowerCase('pt-BR');
+                    const exact = available.find(product => [product.nome, product.sku].some(value => String(value || '').trim().toLocaleLowerCase('pt-BR') === term));
+                    if (exact) selectProduct(exact); else updateBuilder();
+                }
                 if (event.target.matches('[data-builder-quantity]')) updateBuilder();
             };
+            search?.addEventListener('keydown', (event) => {
+                if (event.key !== 'Enter') return;
+                event.preventDefault();
+                if (!selectedProduct) {
+                    const firstResult = results.querySelector('[data-order-product-select]');
+                    if (firstResult) selectProduct(catalogo.find(item => Number(item.id) === Number(firstResult.dataset.orderProductSelect)) || null);
+                }
+                addSelectedProduct();
+            });
             orderEditor.onclick = (event) => {
                 const remove = event.target.closest('[data-edit-remove]');
                 if (remove) { remove.closest('[data-edit-item]')?.remove(); updateSummary(); renderAvailable(); return; }
                 const select = event.target.closest('[data-order-product-select]');
-                if (select) { selectedProduct = catalogo.find(item => Number(item.id) === Number(select.dataset.orderProductSelect)) || null; if (search && selectedProduct) search.value = selectedProduct.nome; results.innerHTML = ''; updateBuilder(); return; }
-                if (event.target.closest('[data-builder-add]') && selectedProduct) {
-                    const quantity = Math.max(0, Number(builderQuantity?.value) || 0);
-                    if (quantity > 0) { itemsContainer.insertAdjacentHTML('beforeend', itemMarkup({ ...selectedProduct, produto_id: selectedProduct.id, preco_unit: selectedProduct.preco, quantidade })); selectedProduct = null; if (search) search.value = ''; if (builderQuantity) builderQuantity.value = '1'; results.innerHTML = ''; updateBuilder(); updateSummary(); }
-                }
+                if (select) { selectProduct(catalogo.find(item => Number(item.id) === Number(select.dataset.orderProductSelect)) || null); return; }
+                if (event.target.closest('[data-builder-add]')) addSelectedProduct();
             };
             form?.addEventListener('submit', async (event) => {
                 event.preventDefault();
