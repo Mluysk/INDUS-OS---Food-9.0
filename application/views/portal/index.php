@@ -4170,14 +4170,25 @@ $catalogoPayload = json_encode(array_map(static function ($produto) use ($asset)
                 updateBuilder();
             };
             const addSelectedProduct = () => {
-                if (!selectedProduct) return false;
+                if (!selectedProduct) {
+                    const term = String(search?.value || '').trim().toLocaleLowerCase('pt-BR');
+                    selectedProduct = catalogo.find(product => [product.nome, product.sku].some(value => String(value || '').trim().toLocaleLowerCase('pt-BR') === term)) || null;
+                }
+                if (!selectedProduct) {
+                    setFeedback(feedback, 'Selecione um produto da lista antes de adicionar.', 'error');
+                    return false;
+                }
                 const quantity = Math.max(0, Number(builderQuantity?.value) || 0);
-                if (quantity <= 0) return false;
+                if (quantity <= 0) {
+                    setFeedback(feedback, 'Informe uma quantidade maior que zero.', 'error');
+                    return false;
+                }
                 itemsContainer.insertAdjacentHTML('beforeend', itemMarkup({ ...selectedProduct, produto_id: selectedProduct.id, preco_unit: selectedProduct.preco, quantidade }));
                 selectedProduct = null;
                 if (search) search.value = '';
                 if (builderQuantity) builderQuantity.value = '1';
                 results.innerHTML = '';
+                setFeedback(feedback, '');
                 updateBuilder();
                 updateSummary();
                 search?.focus();
@@ -4206,12 +4217,16 @@ $catalogoPayload = json_encode(array_map(static function ($produto) use ($asset)
                 }
                 addSelectedProduct();
             });
+            builderAdd?.addEventListener('click', (event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                addSelectedProduct();
+            });
             orderEditor.onclick = (event) => {
                 const remove = event.target.closest('[data-edit-remove]');
                 if (remove) { remove.closest('[data-edit-item]')?.remove(); updateSummary(); renderAvailable(); return; }
                 const select = event.target.closest('[data-order-product-select]');
                 if (select) { selectProduct(catalogo.find(item => Number(item.id) === Number(select.dataset.orderProductSelect)) || null); return; }
-                if (event.target.closest('[data-builder-add]')) addSelectedProduct();
             };
             form?.addEventListener('submit', async (event) => {
                 event.preventDefault();
