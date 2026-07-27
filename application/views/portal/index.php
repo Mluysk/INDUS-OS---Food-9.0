@@ -4143,7 +4143,10 @@ $catalogoPayload = json_encode(array_map(static function ($produto) use ($asset)
                 set('[data-builder-weight]', selectedProduct ? (formatWeight(selectedProduct.peso_liquido) || '-') : '-');
                 set('[data-builder-price]', formatCurrency(selectedProduct?.preco || 0));
                 set('[data-builder-subtotal]', formatCurrency((selectedProduct?.preco || 0) * quantity));
-                if (builderAdd) builderAdd.setAttribute('aria-disabled', (!selectedProduct || quantity <= 0) ? 'true' : 'false');
+                if (builderAdd) {
+                    builderAdd.removeAttribute('aria-disabled');
+                    builderAdd.dataset.productId = selectedProduct ? String(selectedProduct.id) : '';
+                }
             };
             const updateSummary = () => {
                 const rows = Array.from(orderEditor.querySelectorAll('[data-edit-item]'));
@@ -4171,6 +4174,8 @@ $catalogoPayload = json_encode(array_map(static function ($produto) use ($asset)
                 updateBuilder();
             };
             const addSelectedProduct = () => {
+                const selectedId = Number(builderAdd?.dataset.productId || 0);
+                if (selectedId > 0) selectedProduct = catalogo.find(product => Number(product.id) === selectedId) || selectedProduct;
                 if (!selectedProduct) {
                     const term = String(search?.value || '').trim().toLocaleLowerCase('pt-BR');
                     selectedProduct = catalogo.find(product => [product.nome, product.sku].some(value => String(value || '').trim().toLocaleLowerCase('pt-BR') === term))
@@ -4186,16 +4191,22 @@ $catalogoPayload = json_encode(array_map(static function ($produto) use ($asset)
                     setFeedback(feedback, 'Informe uma quantidade maior que zero.', 'error');
                     return false;
                 }
-                itemsContainer.insertAdjacentHTML('beforeend', itemMarkup({ ...selectedProduct, produto_id: selectedProduct.id, preco_unit: selectedProduct.preco, quantidade }));
-                selectedProduct = null;
-                if (search) search.value = '';
-                if (builderQuantity) builderQuantity.value = '1';
-                results.innerHTML = '';
-                setFeedback(feedback, '');
-                updateBuilder();
-                updateSummary();
-                search?.focus();
-                return true;
+                try {
+                    itemsContainer.insertAdjacentHTML('beforeend', itemMarkup({ ...selectedProduct, produto_id: selectedProduct.id, preco_unit: selectedProduct.preco, quantidade }));
+                    selectedProduct = null;
+                    if (search) search.value = '';
+                    if (builderQuantity) builderQuantity.value = '1';
+                    if (builderAdd) builderAdd.dataset.productId = '';
+                    results.innerHTML = '';
+                    setFeedback(feedback, 'Produto adicionado ao pedido.', 'success');
+                    updateBuilder();
+                    updateSummary();
+                    search?.focus();
+                    return true;
+                } catch (error) {
+                    setFeedback(feedback, `Não foi possível adicionar o produto: ${error.message || 'erro inesperado'}.`, 'error');
+                    return false;
+                }
             };
             const goBack = () => setActiveTab('pedidos');
             orderEditor.querySelector('[data-order-editor-back]')?.addEventListener('click', goBack);
@@ -4220,11 +4231,11 @@ $catalogoPayload = json_encode(array_map(static function ($produto) use ($asset)
                 }
                 addSelectedProduct();
             });
-            builderAdd?.addEventListener('click', (event) => {
+            if (builderAdd) builderAdd.onclick = (event) => {
                 event.preventDefault();
                 event.stopPropagation();
                 addSelectedProduct();
-            });
+            };
             orderEditor.onclick = (event) => {
                 const remove = event.target.closest('[data-edit-remove]');
                 if (remove) { remove.closest('[data-edit-item]')?.remove(); updateSummary(); renderAvailable(); return; }
