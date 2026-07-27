@@ -4134,6 +4134,7 @@ $catalogoPayload = json_encode(array_map(static function ($produto) use ($asset)
             const search = orderEditor.querySelector('[data-order-product-search]');
             const builderQuantity = orderEditor.querySelector('[data-builder-quantity]');
             const builderAdd = orderEditor.querySelector('[data-builder-add]');
+            builderAdd?.removeAttribute('disabled');
             let selectedProduct = null;
             const updateBuilder = () => {
                 const quantity = Math.max(0, Number(builderQuantity?.value) || 0);
@@ -4142,7 +4143,7 @@ $catalogoPayload = json_encode(array_map(static function ($produto) use ($asset)
                 set('[data-builder-weight]', selectedProduct ? (formatWeight(selectedProduct.peso_liquido) || '-') : '-');
                 set('[data-builder-price]', formatCurrency(selectedProduct?.preco || 0));
                 set('[data-builder-subtotal]', formatCurrency((selectedProduct?.preco || 0) * quantity));
-                if (builderAdd) builderAdd.disabled = !selectedProduct || quantity <= 0;
+                if (builderAdd) builderAdd.setAttribute('aria-disabled', (!selectedProduct || quantity <= 0) ? 'true' : 'false');
             };
             const updateSummary = () => {
                 const rows = Array.from(orderEditor.querySelectorAll('[data-edit-item]'));
@@ -4172,7 +4173,9 @@ $catalogoPayload = json_encode(array_map(static function ($produto) use ($asset)
             const addSelectedProduct = () => {
                 if (!selectedProduct) {
                     const term = String(search?.value || '').trim().toLocaleLowerCase('pt-BR');
-                    selectedProduct = catalogo.find(product => [product.nome, product.sku].some(value => String(value || '').trim().toLocaleLowerCase('pt-BR') === term)) || null;
+                    selectedProduct = catalogo.find(product => [product.nome, product.sku].some(value => String(value || '').trim().toLocaleLowerCase('pt-BR') === term))
+                        || catalogo.find(product => `${product.nome || ''} ${product.sku || ''}`.trim().toLocaleLowerCase('pt-BR').includes(term))
+                        || null;
                 }
                 if (!selectedProduct) {
                     setFeedback(feedback, 'Selecione um produto da lista antes de adicionar.', 'error');
