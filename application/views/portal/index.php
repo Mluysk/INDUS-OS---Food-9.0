@@ -4192,7 +4192,7 @@ $catalogoPayload = json_encode(array_map(static function ($produto) use ($asset)
                     return false;
                 }
                 try {
-                    itemsContainer.insertAdjacentHTML('beforeend', itemMarkup({ ...selectedProduct, produto_id: selectedProduct.id, preco_unit: selectedProduct.preco, quantidade }));
+                    itemsContainer.insertAdjacentHTML('beforeend', itemMarkup({ ...selectedProduct, produto_id: selectedProduct.id, preco_unit: selectedProduct.preco, quantidade: quantity }));
                     selectedProduct = null;
                     if (search) search.value = '';
                     if (builderQuantity) builderQuantity.value = '1';
