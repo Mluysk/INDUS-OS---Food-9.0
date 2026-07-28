@@ -109,6 +109,7 @@ class ConfigController extends Controller
             'PORTAL_LOGIN_LOGO_DARK_OFFSET_X' => $this->config->get('PORTAL_LOGIN_LOGO_DARK_OFFSET_X', '0') ?: '0',
             'PORTAL_LOGIN_LOGO_DARK_OFFSET_Y' => $this->config->get('PORTAL_LOGIN_LOGO_DARK_OFFSET_Y', '0') ?: '0',
             'PORTAL_LOGIN_LOGO_FILTER' => $this->config->get('PORTAL_LOGIN_LOGO_FILTER', '1') === '1' ? '1' : '0',
+            'PORTAL_CATALOG_PAGE_SIZE' => $this->config->get('PORTAL_CATALOG_PAGE_SIZE', '15') ?: '15',
             'NOTIFICATION_POPUP_SECONDS' => $this->config->get('NOTIFICATION_POPUP_SECONDS', '3') ?: '3',
         ];
 
@@ -461,6 +462,10 @@ class ConfigController extends Controller
         $data['THEME_LOGO_FILTER'] = isset($data['THEME_LOGO_FILTER']) && $data['THEME_LOGO_FILTER'] === '1' ? '1' : '0';
         $data['THEME_VISUAL_SYNC'] = isset($data['THEME_VISUAL_SYNC']) && $data['THEME_VISUAL_SYNC'] === '1' ? '1' : '0';
         $data['PORTAL_LOGIN_LOGO_FILTER'] = isset($data['PORTAL_LOGIN_LOGO_FILTER']) && $data['PORTAL_LOGIN_LOGO_FILTER'] === '1' ? '1' : '0';
+
+        if (isset($data['PORTAL_CATALOG_PAGE_SIZE'])) {
+            $data['PORTAL_CATALOG_PAGE_SIZE'] = (string)max(1, min(9999, (int)$data['PORTAL_CATALOG_PAGE_SIZE']));
+        }
 
         if (isset($data['THEME_TITLE_SIZE'])) {
             $size = (int)$data['THEME_TITLE_SIZE'];

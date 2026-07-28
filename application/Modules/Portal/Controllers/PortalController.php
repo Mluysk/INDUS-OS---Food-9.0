@@ -28,21 +28,15 @@ class PortalController extends Controller
 
     public function index(): void
     {
-        $allowedIds = $this->portalProductIds();
         $produtos = array_values(array_filter(
             $this->produtos->all(['mostrar_portal' => 1]),
-            static function (array $produto) use ($allowedIds): bool {
-                if (($produto['tipo'] ?? 'PA') !== 'PA') {
-                    return false;
-                }
-                if (!$allowedIds) {
-                    return true;
-                }
-                return in_array((int)($produto['id'] ?? 0), $allowedIds, true);
-            }
+            static fn(array $produto): bool => ($produto['tipo'] ?? 'PA') === 'PA'
         ));
         $this->render('portal/index_mobile_patch', [
             'catalogo' => $produtos,
+            'portalGroupOptions' => $this->portalGroupOptions(),
+            'portalClientGroups' => json_decode((string)($this->config->get('PORTAL_CLIENT_GROUPS', '[]') ?? '[]'), true) ?: [],
+            'portalCatalogPageSize' => max(1, min(9999, (int)$this->config->get('PORTAL_CATALOG_PAGE_SIZE', '15'))),
         ], [
             'layout' => 'layouts/portal',
             'title' => 'Portal do Cliente',
@@ -51,7 +45,7 @@ class PortalController extends Controller
 
     public function registro(): void
     {
-        $this->render('portal/register_email_patch', [], [
+        $this->render('portal/register_email_patch', ['portalGroupOptions' => $this->portalGroupOptions()], [
             'layout' => 'layouts/portal',
             'title' => 'Criar conta',
         ]);
@@ -99,13 +93,39 @@ class PortalController extends Controller
     private function portalProductIds(): array
     {
         $raw = trim((string)($this->config->get('PORTAL_PRODUCT_IDS', '') ?? ''));
-        if ($raw === '') {
-            return [];
-        }
-
-        return array_values(array_unique(array_filter(array_map(
+        $globalIds = $raw === '' ? [] : array_values(array_unique(array_filter(array_map(
             static fn(string $value): int => (int)trim($value),
             explode(',', $raw)
         ), static fn(int $id): bool => $id > 0)));
+
+        $clienteId = (int)($this->auth->user()['cliente_id'] ?? ($_SESSION['cliente_id'] ?? 0));
+        if ($clienteId <= 0) return $globalIds;
+        $groups = json_decode((string)($this->config->get('PORTAL_CLIENT_GROUPS', '[]') ?? '[]'), true);
+        if (!is_array($groups)) return $globalIds;
+        $groupIds = [];
+        $matched = false;
+        foreach ($groups as $group) {
+            if (!is_array($group)) continue;
+            $clients = array_map('intval', is_array($group['client_ids'] ?? null) ? $group['client_ids'] : []);
+            if (!in_array($clienteId, $clients, true)) continue;
+            $matched = true;
+            $groupIds = array_merge($groupIds, array_map('intval', is_array($group['product_ids'] ?? null) ? $group['product_ids'] : []));
+        }
+        if (!$matched) return $globalIds;
+        $groupIds = array_values(array_unique(array_filter($groupIds, static fn(int $id): bool => $id > 0)));
+        return $groupIds ?: [0];
+    }
+
+    private function portalGroupOptions(): array
+    {
+        $groups = json_decode((string)($this->config->get('PORTAL_CLIENT_GROUPS', '[]') ?? '[]'), true);
+        $options = [];
+        foreach (is_array($groups) ? $groups : [] as $group) {
+            if (!is_array($group)) continue;
+            $id = trim((string)($group['id'] ?? ''));
+            $name = trim((string)($group['name'] ?? ''));
+            if ($id !== '' && $name !== '') $options[] = ['id' => $id, 'name' => $name, 'product_ids' => array_values(array_map('intval', is_array($group['product_ids'] ?? null) ? $group['product_ids'] : [])), 'created_by_client' => (int)($group['created_by_client'] ?? 0)];
+        }
+        return $options;
     }
 }

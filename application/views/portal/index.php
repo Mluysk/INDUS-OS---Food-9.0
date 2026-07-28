@@ -246,7 +246,8 @@ if ($supportWhatsapp !== '') {
                             </div>
                         </div>
                     </div>
-                    <div id="portal-catalog" class="portal-catalog" data-view="grid"></div>
+                    <div id="portal-catalog" class="portal-catalog" data-view="grid" data-page-size="<?= (int)($portalCatalogPageSize ?? 15); ?>"></div>
+                    <nav class="portal-catalog-pagination" data-catalog-pagination aria-label="Paginação do catálogo"></nav>
                 </div>
                 <div class="portal-cart-stack">
                     <aside class="portal-cart-card">
@@ -3221,6 +3222,20 @@ if ($supportWhatsapp !== '') {
     .portal-order-editor__remove:focus-visible{outline:3px solid color-mix(in srgb,#dc2626 22%,transparent);outline-offset:2px}
     .portal-order-editor__remove svg{width:18px;height:18px;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
 </style>
+<style>
+    .portal-catalog-pagination{display:grid;grid-template-columns:minmax(120px,1fr) auto minmax(270px,1fr);align-items:center;gap:12px;margin-top:18px;padding-top:16px;border-top:1px solid var(--portal-card-border);color:var(--portal-muted);font-size:.84rem;font-weight:800}
+    .portal-catalog-pagination__pages,.portal-catalog-pagination__size{display:flex;align-items:center;gap:8px;white-space:nowrap}
+    .portal-catalog-pagination__pages{justify-content:center}.portal-catalog-pagination__size{justify-content:flex-end}
+    .portal-catalog-pagination__button,.portal-catalog-pagination__input,.portal-catalog-pagination__select{box-sizing:border-box;height:40px;min-height:40px;border:1px solid var(--portal-card-border);border-radius:999px;background:var(--portal-card-bg);color:var(--portal-text);font:inherit}
+    .portal-catalog-pagination__button{display:grid;place-items:center;min-width:40px;padding:7px 13px;cursor:pointer}
+    .portal-catalog-pagination__button:hover{border-color:var(--primary);color:var(--primary)}
+    .portal-catalog-pagination__button.active{border-color:var(--primary);background:var(--primary);color:#fff}
+    .portal-catalog-pagination__input{width:76px;padding:7px 11px;text-align:center}
+    .portal-catalog-pagination__input--size{width:calc(4ch + 34px);min-width:calc(4ch + 34px)}
+    .portal-catalog-pagination__select{min-width:120px;padding:7px 34px 7px 14px}
+    .portal-catalog-pagination__ellipsis{min-width:22px;text-align:center}
+    @media(max-width:900px){.portal-catalog-pagination{grid-template-columns:1fr}.portal-catalog-pagination__pages,.portal-catalog-pagination__size{justify-content:flex-start;flex-wrap:wrap}}
+</style>
 <?php
 $catalogoPayload = json_encode(array_map(static function ($produto) use ($asset) {
     return [
@@ -3257,6 +3272,7 @@ $catalogoPayload = json_encode(array_map(static function ($produto) use ($asset)
     const loginFeedback = document.getElementById('portal-login-feedback');
     const registerFeedback = document.getElementById('portal-register-feedback');
     const catalogContainer = document.getElementById('portal-catalog');
+    const catalogPagination = document.querySelector('[data-catalog-pagination]');
     const catalogCount = document.querySelector('[data-catalog-count]');
     const cartLines = document.getElementById('portal-cart-lines');
     const cartTotal = document.getElementById('portal-cart-total');
@@ -3292,6 +3308,8 @@ $catalogoPayload = json_encode(array_map(static function ($produto) use ($asset)
     let imageLightboxIndex = 0;
     const cart = [];
     let catalogView = localStorage.getItem('portal-catalog-view') === 'list' ? 'list' : 'grid';
+    let catalogPage = 1;
+    let catalogPerPage = Math.min(9999, Math.max(1, Number(catalogContainer?.dataset.pageSize) || 15));
     const welcomeModal = document.getElementById('portal-welcome-modal');
     const welcomeModalName = welcomeModal?.querySelector('[data-welcome-name]');
     const welcomeDismissTriggers = welcomeModal ? welcomeModal.querySelectorAll('[data-welcome-dismiss]') : [];
@@ -4615,10 +4633,40 @@ $catalogoPayload = json_encode(array_map(static function ($produto) use ($asset)
 
     const updateCatalogCount = () => {
         if (!catalogContainer || !catalogCount) return;
-        const visibleCount = Array.from(catalogContainer.querySelectorAll('.portal-product'))
-            .filter((card) => !card.hidden && window.getComputedStyle(card).display !== 'none')
-            .length;
-        catalogCount.textContent = visibleCount === 1 ? '1 produto' : `${visibleCount} produtos`;
+        catalogCount.textContent = catalogo.length === 1 ? '1 produto' : `${catalogo.length} produtos`;
+    };
+
+    const catalogPageItems = (totalPages) => {
+        if (totalPages <= 7) return Array.from({length: totalPages}, (_, index) => index + 1);
+        const pages = new Set([1, 2, totalPages - 1, totalPages, catalogPage - 1, catalogPage, catalogPage + 1]);
+        const sorted = Array.from(pages).filter((page) => page >= 1 && page <= totalPages).sort((a, b) => a - b);
+        const items = [];
+        sorted.forEach((page, index) => {
+            if (index && page - sorted[index - 1] > 1) items.push('...');
+            items.push(page);
+        });
+        return items;
+    };
+
+    const renderCatalogPagination = () => {
+        if (!catalogPagination) return;
+        const total = catalogo.length;
+        const totalPages = Math.max(1, Math.ceil(total / catalogPerPage));
+        catalogPage = Math.min(Math.max(1, catalogPage), totalPages);
+        if (!total) {
+            catalogPagination.hidden = true;
+            catalogPagination.innerHTML = '';
+            return;
+        }
+        catalogPagination.hidden = false;
+        const start = (catalogPage - 1) * catalogPerPage + 1;
+        const end = Math.min(total, catalogPage * catalogPerPage);
+        const pageButtons = catalogPageItems(totalPages).map((page) => page === '...'
+            ? '<span class="portal-catalog-pagination__ellipsis">…</span>'
+            : `<button type="button" class="portal-catalog-pagination__button${page === catalogPage ? ' active' : ''}" data-catalog-page="${page}" aria-label="Página ${page}"${page === catalogPage ? ' aria-current="page"' : ''}>${page}</button>`
+        ).join('');
+        const sizeOptions = [15, 30, 50, 100].map((size) => `<option value="${size}"${size === catalogPerPage ? ' selected' : ''}>${size}</option>`).join('');
+        catalogPagination.innerHTML = `<span>${start}-${end} de ${total}</span><div class="portal-catalog-pagination__pages">${pageButtons}<label>Ir para <input class="portal-catalog-pagination__input" type="number" min="1" max="${totalPages}" value="${catalogPage}" data-catalog-page-input></label></div><label class="portal-catalog-pagination__size"><span>Mostrar</span><select class="portal-catalog-pagination__select" data-catalog-page-size aria-label="Quantidade por página">${sizeOptions}</select><input class="portal-catalog-pagination__input portal-catalog-pagination__input--size" type="number" min="1" max="9999" value="${catalogPerPage}" data-catalog-page-size-manual aria-label="Quantidade manual por página"><span>por página</span></label>`;
     };
 
     const desenharCatalogo = (force = false) => {
@@ -4631,7 +4679,10 @@ $catalogoPayload = json_encode(array_map(static function ($produto) use ($asset)
         syncCatalogView();
         catalogContainer.innerHTML = '';
         const fragment = document.createDocumentFragment();
-        catalogo.forEach((produto) => {
+        const totalPages = Math.max(1, Math.ceil(catalogo.length / catalogPerPage));
+        catalogPage = Math.min(Math.max(1, catalogPage), totalPages);
+        const pageStart = (catalogPage - 1) * catalogPerPage;
+        catalogo.slice(pageStart, pageStart + catalogPerPage).forEach((produto) => {
             const card = document.createElement('article');
             card.className = `portal-product portal-product--${catalogView}`;
             card.dataset.category = produto.categoria || '';
@@ -4678,6 +4729,7 @@ $catalogoPayload = json_encode(array_map(static function ($produto) use ($asset)
         });
         catalogContainer.appendChild(fragment);
         updateCatalogCount();
+        renderCatalogPagination();
         catalogContainer.querySelectorAll('button[data-add]').forEach((button) => {
             button.addEventListener('click', (event) => {
                 const id = Number(event.currentTarget.dataset.add);
@@ -4976,6 +5028,32 @@ $catalogoPayload = json_encode(array_map(static function ($produto) use ($asset)
                 desenharCatalogo();
             }
         });
+    });
+
+    const applyCatalogPaginationControl = (control) => {
+        if (control.matches('[data-catalog-page-input]')) {
+            catalogPage = Math.min(Number(control.max) || 1, Math.max(1, Number(control.value) || 1));
+        } else if (control.matches('[data-catalog-page-size],[data-catalog-page-size-manual]')) {
+            catalogPerPage = Math.min(9999, Math.max(1, Number(control.value) || 15));
+            catalogPage = 1;
+        } else {
+            return;
+        }
+        desenharCatalogo(true);
+    };
+
+    catalogPagination?.addEventListener('click', (event) => {
+        const button = event.target.closest('[data-catalog-page]');
+        if (!button) return;
+        catalogPage = Number(button.dataset.catalogPage) || 1;
+        desenharCatalogo(true);
+    });
+    catalogPagination?.addEventListener('change', (event) => applyCatalogPaginationControl(event.target));
+    catalogPagination?.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter' && event.target.matches('input')) {
+            event.preventDefault();
+            applyCatalogPaginationControl(event.target);
+        }
     });
 
     if (catalogContainer) {
