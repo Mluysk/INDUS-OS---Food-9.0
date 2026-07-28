@@ -1113,6 +1113,13 @@ include __DIR__.'/index_whatsapp_beside_contact_type_patch.php';
             border-radius: 50% !important;
             place-items: center !important;
         }
+
+        html body .portal-app__header-links .portal-app__link[data-portal-settings] .portal-app__link-icon,
+        html body .portal-app__header-links .portal-app__link[data-portal-settings] .portal-app__link-icon svg {
+            width: 25.2px !important;
+            height: 25.2px !important;
+            flex-basis: 25.2px !important;
+        }
     }
 </style>
 <style>
