@@ -142,7 +142,12 @@ $currentYear = date('Y');
         .portal-catalog-tools__control { position: relative; display: block; }
         .portal-catalog-tools__control-icon { position: absolute; left: 0.86rem; top: 50%; width: 18px; height: 18px; transform: translateY(-50%); color: var(--primary); pointer-events: none; }
         .portal-catalog-tools__control-icon svg { width: 18px; height: 18px; stroke: currentColor; }
-        .portal-catalog-tools input, .portal-catalog-tools select { min-height: 48px; padding: 0.72rem 0.9rem 0.72rem 2.75rem; font-size: 0.94rem; font-weight: 750; border-radius: 16px; border: 1px solid color-mix(in srgb, var(--primary, #2563eb) 32%, var(--border, rgba(15,23,42,0.08))); background: linear-gradient(135deg, color-mix(in srgb, var(--primary, #2563eb) 8%, #fff), rgba(255,255,255,0.96)); box-shadow: 0 18px 34px -30px color-mix(in srgb, var(--primary, #2563eb) 55%, transparent); }
+        .portal-catalog-tools input, .portal-catalog-tools select { min-height: 48px; padding: 0.72rem 0.9rem 0.72rem 2.75rem; font-size: 0.94rem; font-weight: 750; border-radius: 16px; border: 1px solid color-mix(in srgb, var(--primary, #2563eb) 32%, var(--border, rgba(15,23,42,0.08))); background: linear-gradient(135deg, color-mix(in srgb, var(--primary, #2563eb) 8%, #fff), rgba(255,255,255,0.96)); color: #1e293b !important; -webkit-text-fill-color: #1e293b; caret-color: var(--primary, #2563eb); box-shadow: 0 18px 34px -30px color-mix(in srgb, var(--primary, #2563eb) 55%, transparent); }
+        .portal-catalog-tools input::placeholder { color: #94a3b8 !important; -webkit-text-fill-color: #94a3b8; opacity: 1; }
+        .portal-catalog-tools select option { background: #ffffff; color: #1e293b; }
+        html[data-theme="dark"] body .portal-catalog-tools input,
+        html[data-theme="dark"] body .portal-catalog-tools select { background: #fffaf7; border-color: color-mix(in srgb, var(--primary, #2563eb) 38%, #cbd5e1); color: #172033 !important; -webkit-text-fill-color: #172033; }
+        html[data-theme="dark"] body .portal-catalog-tools input::placeholder { color: #7c8799 !important; -webkit-text-fill-color: #7c8799; }
         input[type="search"]::-webkit-search-decoration, input[type="search"]::-webkit-search-cancel-button, input[type="search"]::-webkit-search-results-button, input[type="search"]::-webkit-search-results-decoration { -webkit-appearance: none; appearance: none; display: none; }
         .portal-catalog-tools .search-clear-host input,
         .search-clear-host input[type="search"],
@@ -377,12 +382,10 @@ $currentYear = date('Y');
         })();
 
         (() => {
-            const resetQtyFields = () => { document.querySelectorAll('input[data-qtd]').forEach((input) => { input.min = '0'; input.placeholder = '0'; if (input.dataset.portalQtyTouched !== '1') input.value = '0'; }); };
-            document.addEventListener('input', (event) => { const input = event.target; if (input instanceof HTMLInputElement && input.matches('input[data-qtd]')) input.dataset.portalQtyTouched = '1'; });
-            document.addEventListener('click', (event) => { const button = event.target instanceof Element ? event.target.closest('button[data-add]') : null; if (!button) return; const productId = button.getAttribute('data-add'); const card = button.closest('.portal-product'); const input = card ? card.querySelector(`input[data-qtd="${productId}"]`) : null; if (!(input instanceof HTMLInputElement)) return; const quantity = parseFloat(String(input.value || '0').replace(',', '.')); if (!Number.isFinite(quantity) || quantity <= 0) { event.preventDefault(); event.stopImmediatePropagation(); input.value = '0'; input.dataset.portalQtyTouched = '0'; input.focus(); return; } window.setTimeout(() => { input.value = '0'; input.dataset.portalQtyTouched = '0'; }, 0); }, true);
-            document.addEventListener('click', (event) => { const button = event.target instanceof Element ? event.target.closest('#btn-finalizar') : null; if (button) window.setTimeout(resetQtyFields, 1200); });
-            const observer = new MutationObserver(resetQtyFields);
-            const start = () => { resetQtyFields(); observer.observe(document.body, { childList: true, subtree: true }); };
+            const prepareQtyFields = () => { document.querySelectorAll('input[data-qtd]').forEach((input) => { input.min = '1'; input.placeholder = '1'; if (input.value === '') input.value = '1'; }); };
+            document.addEventListener('click', (event) => { const button = event.target instanceof Element ? event.target.closest('button[data-add]') : null; if (!button) return; const productId = button.getAttribute('data-add'); const card = button.closest('.portal-product'); const input = card ? card.querySelector(`input[data-qtd="${productId}"]`) : null; if (!(input instanceof HTMLInputElement)) return; const quantity = parseFloat(String(input.value || '').replace(',', '.')); if (!Number.isFinite(quantity) || quantity < 1) { event.preventDefault(); event.stopImmediatePropagation(); input.value = '1'; input.dispatchEvent(new Event('input', { bubbles: true })); input.focus(); } }, true);
+            const observer = new MutationObserver(prepareQtyFields);
+            const start = () => { prepareQtyFields(); observer.observe(document.body, { childList: true, subtree: true }); };
             if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start); else start();
         })();
 
