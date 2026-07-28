@@ -102,6 +102,7 @@
                 modal.setAttribute('aria-hidden', 'true');
                 localStorage.setItem('clienteTab', 'lista');
                 sessionStorage.setItem(savedMessageKey, 'Cliente atualizado com sucesso.');
+                sessionStorage.setItem('clientes-restore-list-state', '1');
                 document.querySelector('[data-cliente-tab="lista"]')?.click();
                 window.location.reload();
             })

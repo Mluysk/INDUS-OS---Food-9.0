@@ -15,12 +15,26 @@
         tbody.dataset.clientesFilterPatch = '1';
 
         const pageSizeOptions = <?= json_encode($listPageSizeOptions ?? [15, 20, 30, 40, 50, 100], JSON_UNESCAPED_UNICODE); ?>;
+        const listStateKey = 'clientes-list-state';
+        const restoreStateKey = 'clientes-restore-list-state';
+        let savedState = {};
+        if (sessionStorage.getItem(restoreStateKey) === '1') {
+            try {
+                savedState = JSON.parse(sessionStorage.getItem(listStateKey) || '{}') || {};
+            } catch (_) {
+                savedState = {};
+            }
+            sessionStorage.removeItem(restoreStateKey);
+        }
         const state = {
-            page: 1,
-            perPage: Number(<?= json_encode((int) ($listPageSizeDefault ?? 15)); ?>) || 15,
-            sortField: '',
-            sortDirection: ''
+            page: Math.max(1, Number(savedState.page) || 1),
+            perPage: Math.max(1, Number(savedState.perPage) || Number(<?= json_encode((int) ($listPageSizeDefault ?? 15)); ?>) || 15),
+            sortField: String(savedState.sortField || ''),
+            sortDirection: ['asc', 'desc'].includes(savedState.sortDirection) ? savedState.sortDirection : ''
         };
+        if (searchInput && savedState.search !== undefined) searchInput.value = String(savedState.search || '');
+        if (citySelect && savedState.city !== undefined) citySelect.value = String(savedState.city || '');
+        if (ufSelect && savedState.uf !== undefined) ufSelect.value = String(savedState.uf || '');
 
         const columnIndex = {
             id: 0,
@@ -191,6 +205,15 @@
                 <label class="list-pagination-size"><span>Mostrar</span><select class="list-page-size-select" data-client-page-size>${options}</select><input class="list-page-input" type="number" min="1" max="500" value="${state.perPage}" data-client-page-size-manual aria-label="Quantidade manual por página"><span>por página</span></label>`;
 
             updateSortButtons();
+            sessionStorage.setItem(listStateKey, JSON.stringify({
+                page: state.page,
+                perPage: state.perPage,
+                sortField: state.sortField,
+                sortDirection: state.sortDirection,
+                search: searchInput?.value || '',
+                city: citySelect?.value || '',
+                uf: ufSelect?.value || ''
+            }));
         };
 
         const queueRender = () => {
