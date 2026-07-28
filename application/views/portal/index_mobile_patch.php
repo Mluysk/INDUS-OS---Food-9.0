@@ -25,9 +25,9 @@ include __DIR__.'/index_whatsapp_beside_contact_type_patch.php';
         }
     }
 
-    @media (max-width: 980px) {
+    @media (max-width: 620px) {
         html body #portal-catalog.portal-catalog[data-view="grid"] {
-            grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+            grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
         }
     }
 
@@ -1038,10 +1038,157 @@ include __DIR__.'/index_whatsapp_beside_contact_type_patch.php';
     setTimeout(moveSettingsButton, 300);
 })();
 </script>
+<style>
+    @media (min-width: 821px) {
+        html body .portal-app__header {
+            padding-top: 7rem !important;
+        }
+
+        html body .portal-app__header-links {
+            position: absolute !important;
+            top: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            width: 100% !important;
+            max-width: none !important;
+            box-sizing: border-box !important;
+            display: grid !important;
+            grid-auto-flow: column !important;
+            grid-auto-columns: minmax(0, 1fr) !important;
+            align-items: center !important;
+            margin: 0 !important;
+        }
+
+        html body .portal-app__header-links .portal-app__link {
+            width: 100% !important;
+            min-width: 0 !important;
+            justify-content: center !important;
+        }
+    }
+</style>
+<style>
+    html body [data-portal-tab-panel][hidden] {
+        display: none !important;
+    }
+
+    html body #portal-tab-configuracao [data-settings-section][hidden],
+    html body #portal-settings-modal [data-settings-section][hidden] {
+        display: none !important;
+        visibility: hidden !important;
+    }
+
+    html body .portal-app__tag {
+        box-sizing: border-box !important;
+        min-height: 2.57rem !important;
+        padding: 0.64rem 0.8rem !important;
+    }
+
+    html body .portal-brand-card__tag {
+        min-height: 2.45rem !important;
+        padding: 0.476rem 1.156rem !important;
+        font-size: 1.341rem !important;
+        font-weight: 800 !important;
+        line-height: 1.2 !important;
+    }
+
+    @media (min-width: 981px) {
+        html body .portal-app__tag {
+            width: 30% !important;
+            max-width: 30% !important;
+        }
+    }
+
+    @media (max-width: 980px) {
+        html body .portal-app__tag {
+            width: 100% !important;
+            max-width: 100% !important;
+        }
+    }
+
+    html body [data-portal-settings].is-active,
+    html body [data-portal-settings][aria-current="page"] {
+        background: var(--primary, #2563eb) !important;
+        border-color: var(--primary, #2563eb) !important;
+        color: #ffffff !important;
+        box-shadow: 0 16px 30px -20px color-mix(in srgb, var(--primary, #2563eb) 72%, transparent) !important;
+    }
+
+    html body [data-portal-settings].is-active .portal-app__link-icon,
+    html body [data-portal-settings].is-active .portal-app__link-icon svg,
+    html body [data-portal-settings][aria-current="page"] .portal-app__link-icon,
+    html body [data-portal-settings][aria-current="page"] .portal-app__link-icon svg {
+        color: #ffffff !important;
+    }
+</style>
+<script>
+(function () {
+    let currentPortalSection = document.querySelector('[data-portal-tab-trigger].is-active')?.dataset.portalTabTrigger || 'novo-pedido';
+
+    const syncPortalSection = (target) => {
+        const available = Array.from(document.querySelectorAll('[data-portal-tab-panel]'));
+        const requested = String(target || 'novo-pedido');
+        const next = available.some((panel) => panel.dataset.portalTabPanel === requested)
+            ? requested
+            : 'novo-pedido';
+
+        currentPortalSection = next;
+        available.forEach((panel) => {
+            const active = panel.dataset.portalTabPanel === next;
+            panel.hidden = !active;
+            panel.setAttribute('aria-hidden', active ? 'false' : 'true');
+        });
+
+        document.querySelectorAll('[data-portal-tab-trigger]').forEach((button) => {
+            const active = button.dataset.portalTabTrigger === next;
+            button.classList.toggle('is-active', active);
+            button.setAttribute('aria-selected', active ? 'true' : 'false');
+        });
+
+        document.querySelectorAll('.portal-app__header-links [data-portal-jump]').forEach((button) => {
+            const active = button.dataset.portalJump === next;
+            button.classList.toggle('is-active', active);
+            if (active) button.setAttribute('aria-current', 'page');
+            else button.removeAttribute('aria-current');
+        });
+
+        document.querySelectorAll('[data-portal-settings]').forEach((button) => {
+            const active = next === 'configuracao';
+            button.classList.toggle('is-active', active);
+            button.setAttribute('aria-pressed', active ? 'true' : 'false');
+            if (active) button.setAttribute('aria-current', 'page');
+            else button.removeAttribute('aria-current');
+        });
+    };
+
+    document.addEventListener('click', (event) => {
+        const control = event.target.closest('[data-portal-settings], [data-portal-tab-trigger], [data-portal-jump]');
+        if (!control) return;
+
+        const target = control.hasAttribute('data-portal-settings')
+            ? 'configuracao'
+            : (control.dataset.portalTabTrigger || control.dataset.portalJump);
+        if (!target) return;
+
+        window.setTimeout(() => syncPortalSection(target), 0);
+    });
+
+    const panelsRoot = document.querySelector('.portal-app__panels');
+    if (panelsRoot) {
+        new MutationObserver(() => syncPortalSection(currentPortalSection))
+            .observe(panelsRoot, { childList: true });
+    }
+
+    window.setTimeout(() => syncPortalSection(currentPortalSection), 420);
+})();
+</script>
 <script>
 (function () {
     const syncHeaderMenuState = () => {
-        const activeTab = document.querySelector('[data-portal-tab-trigger].is-active')?.dataset.portalTabTrigger || 'novo-pedido';
+        const configurationPanel = document.querySelector('[data-portal-tab-panel="configuracao"]');
+        const configurationOpen = Boolean(configurationPanel && !configurationPanel.hidden);
+        const activeTab = configurationOpen
+            ? 'configuracao'
+            : (document.querySelector('[data-portal-tab-trigger].is-active')?.dataset.portalTabTrigger || 'novo-pedido');
         document.querySelectorAll('.portal-app__header-links [data-portal-jump]').forEach((button) => {
             const isActive = button.dataset.portalJump === activeTab;
             button.classList.toggle('is-active', isActive);
@@ -1053,7 +1200,7 @@ include __DIR__.'/index_whatsapp_beside_contact_type_patch.php';
         });
         const settingsButton = document.querySelector('[data-portal-settings]');
         const settingsModal = document.getElementById('portal-settings-modal');
-        const settingsOpen = Boolean(settingsModal && !settingsModal.hidden && settingsModal.getAttribute('aria-hidden') !== 'true');
+        const settingsOpen = configurationOpen || Boolean(settingsModal && !settingsModal.hidden && settingsModal.getAttribute('aria-hidden') !== 'true');
         if (settingsButton) {
             settingsButton.classList.toggle('is-active', settingsOpen);
             settingsButton.setAttribute('aria-pressed', settingsOpen ? 'true' : 'false');
