@@ -9,6 +9,13 @@
     const baseUrl = (modal.dataset.baseUrl || '/clientes').replace(/\/$/, '');
     const submitButton = form.querySelector('button[type="submit"]');
     const editCancel = form.querySelector('[data-edit-cancel]');
+    const savedMessageKey = 'clientes-update-success';
+
+    const savedMessage = sessionStorage.getItem(savedMessageKey);
+    if (savedMessage) {
+        sessionStorage.removeItem(savedMessageKey);
+        window.setTimeout(() => window.showAppToast?.(savedMessage, 'success'), 0);
+    }
 
     const requiredNames = [
         ['razao_social', 'Nome / Razão social'],
@@ -84,9 +91,19 @@
         })
             .then((response) => response.ok ? response.json() : response.json().then((data) => Promise.reject(data)).catch(() => Promise.reject({})))
             .then(() => {
-                window.appLiveSaved?.({ message: 'Cliente atualizado com sucesso.', source: 'clientes' });
+                if (window.resetClienteEditState) {
+                    window.resetClienteEditState();
+                } else {
+                    form.removeAttribute('data-edit-id');
+                    form.reset();
+                    if (editCancel) editCancel.hidden = true;
+                }
                 modal.classList.add('hidden');
                 modal.setAttribute('aria-hidden', 'true');
+                localStorage.setItem('clienteTab', 'lista');
+                sessionStorage.setItem(savedMessageKey, 'Cliente atualizado com sucesso.');
+                document.querySelector('[data-cliente-tab="lista"]')?.click();
+                window.location.reload();
             })
             .catch((error) => {
                 alert(error && error.message ? error.message : 'Não foi possível atualizar o cliente agora.');
