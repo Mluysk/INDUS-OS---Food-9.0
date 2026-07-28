@@ -1047,10 +1047,11 @@ include __DIR__.'/index_whatsapp_beside_contact_type_patch.php';
         }
 
         html body .portal-app__header-links {
-            position: static !important;
+            position: relative !important;
+            left: 50% !important;
             grid-column: 1 / -1 !important;
             grid-row: 1 !important;
-            width: 100% !important;
+            width: 100vw !important;
             max-width: none !important;
             box-sizing: border-box !important;
             display: flex !important;
@@ -1058,7 +1059,8 @@ include __DIR__.'/index_whatsapp_beside_contact_type_patch.php';
             justify-content: center !important;
             flex-wrap: wrap !important;
             margin: 0 !important;
-            transform: none !important;
+            border-radius: 0 !important;
+            transform: translateX(-50%) !important;
         }
 
         html body .portal-app__welcome,
