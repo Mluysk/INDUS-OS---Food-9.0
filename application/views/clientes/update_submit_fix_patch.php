@@ -10,8 +10,12 @@
     const submitButton = form.querySelector('button[type="submit"]');
     const editCancel = form.querySelector('[data-edit-cancel]');
     const savedMessageKey = 'clientes-update-success';
+    const createdMessageKey = 'clientes-create-success';
 
-    const savedMessage = sessionStorage.getItem(savedMessageKey);
+    const pendingMessageKey = sessionStorage.getItem(savedMessageKey)
+        ? savedMessageKey
+        : (sessionStorage.getItem(createdMessageKey) ? createdMessageKey : '');
+    const savedMessage = pendingMessageKey ? sessionStorage.getItem(pendingMessageKey) : '';
     if (savedMessage) {
         const showSavedMessage = () => {
             if (typeof window.showAppToast !== 'function') {
@@ -19,7 +23,7 @@
                 return;
             }
             window.showAppToast(savedMessage, 'success');
-            sessionStorage.removeItem(savedMessageKey);
+            sessionStorage.removeItem(pendingMessageKey);
         };
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', showSavedMessage, { once: true });
@@ -76,6 +80,46 @@
     form.addEventListener('submit', (event) => {
         const editId = form.dataset.editId;
         if (!editId) {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+
+            if (!validate()) {
+                return;
+            }
+
+            const payload = Object.fromEntries(new FormData(form).entries());
+            if (submitButton) {
+                submitButton.disabled = true;
+            }
+
+            fetch(baseUrl, {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest',
+                },
+                body: JSON.stringify(payload),
+            })
+                .then((response) => response.ok ? response.json() : response.json().then((data) => Promise.reject(data)).catch(() => Promise.reject({})))
+                .then(() => {
+                    if (window.resetClienteEditState) {
+                        window.resetClienteEditState();
+                    } else {
+                        form.reset();
+                    }
+                    localStorage.setItem('clienteTab', 'novo');
+                    sessionStorage.setItem(createdMessageKey, 'Cliente cadastrado com sucesso.');
+                    window.location.reload();
+                })
+                .catch((error) => {
+                    alert(error && error.message ? error.message : 'Não foi possível cadastrar o cliente agora.');
+                })
+                .finally(() => {
+                    if (submitButton) {
+                        submitButton.disabled = false;
+                    }
+                });
             return;
         }
 
