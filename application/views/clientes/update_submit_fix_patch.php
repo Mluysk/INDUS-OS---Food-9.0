@@ -16,6 +16,10 @@
         ? savedMessageKey
         : (sessionStorage.getItem(createdMessageKey) ? createdMessageKey : '');
     const savedMessage = pendingMessageKey ? sessionStorage.getItem(pendingMessageKey) : '';
+    const scrollNewClientToTop = pendingMessageKey === createdMessageKey;
+    if (scrollNewClientToTop && 'scrollRestoration' in history) {
+        history.scrollRestoration = 'manual';
+    }
     if (savedMessage) {
         const showSavedMessage = () => {
             if (typeof window.showAppToast !== 'function') {
@@ -24,6 +28,10 @@
             }
             window.showAppToast(savedMessage, 'success');
             sessionStorage.removeItem(pendingMessageKey);
+            if (scrollNewClientToTop) {
+                window.requestAnimationFrame(() => window.scrollTo({ top: 0, left: 0, behavior: 'auto' }));
+                window.setTimeout(() => window.scrollTo({ top: 0, left: 0, behavior: 'auto' }), 120);
+            }
         };
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', showSavedMessage, { once: true });
@@ -110,6 +118,8 @@
                     }
                     localStorage.setItem('clienteTab', 'novo');
                     sessionStorage.setItem(createdMessageKey, 'Cliente cadastrado com sucesso.');
+                    if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+                    window.scrollTo(0, 0);
                     window.location.reload();
                 })
                 .catch((error) => {
