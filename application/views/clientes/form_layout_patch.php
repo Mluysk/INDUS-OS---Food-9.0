@@ -327,6 +327,16 @@
         return String(value || '').trim();
     };
 
+    const selectContactTypeFromPhone = (value) => {
+        const digits = onlyDigits(value);
+        const type = digits.length === 11 ? 'celular' : (digits.length === 10 ? 'telefone' : '');
+        if (!type) return;
+        const option = form.querySelector(`input[name="contato_tipo"][value="${type}"]`);
+        if (!option || option.checked) return;
+        option.checked = true;
+        option.dispatchEvent(new Event('change', { bubbles: true }));
+    };
+
     const ieFromItem = (item) => {
         if (!item || typeof item !== 'object') {
             return '';
@@ -426,6 +436,7 @@
         const primaryPhone = firstValue(data.ddd_telefone_1, data.telefone, data.phone);
         const secondaryPhone = firstValue(data.whatsapp, data.celular, data.ddd_telefone_2, data.phone2);
         const phone = formatPhone(primaryPhone || secondaryPhone);
+        const contactWasEmpty = String(field('telefone')?.value || '').trim() === '';
         const email = findEmail(data);
         const fantasy = data.nome_fantasia || data.razao_social || '';
 
@@ -434,6 +445,9 @@
         fillIfEmpty('ie', findStateRegistration(data));
         fillIfEmpty('email', email);
         fillIfEmpty('telefone', phone);
+        if (contactWasEmpty) {
+            selectContactTypeFromPhone(phone);
+        }
         fillIfEmpty('cep', formatCep(data.cep));
         fillIfEmpty('endereco', data.logradouro || data.descricao_tipo_de_logradouro);
         fillIfEmpty('numero', data.numero);
