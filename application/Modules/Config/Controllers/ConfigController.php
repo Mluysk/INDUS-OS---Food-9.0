@@ -109,7 +109,7 @@ class ConfigController extends Controller
             'PORTAL_LOGIN_LOGO_DARK_OFFSET_X' => $this->config->get('PORTAL_LOGIN_LOGO_DARK_OFFSET_X', '0') ?: '0',
             'PORTAL_LOGIN_LOGO_DARK_OFFSET_Y' => $this->config->get('PORTAL_LOGIN_LOGO_DARK_OFFSET_Y', '0') ?: '0',
             'PORTAL_LOGIN_LOGO_FILTER' => $this->config->get('PORTAL_LOGIN_LOGO_FILTER', '1') === '1' ? '1' : '0',
-            'PORTAL_CATALOG_PAGE_SIZE' => $this->config->get('PORTAL_CATALOG_PAGE_SIZE', '15') ?: '15',
+            'PORTAL_CATALOG_PAGE_SIZE' => $this->config->get('PORTAL_CATALOG_PAGE_SIZE', '30') ?: '30',
             'NOTIFICATION_POPUP_SECONDS' => $this->config->get('NOTIFICATION_POPUP_SECONDS', '3') ?: '3',
         ];
 

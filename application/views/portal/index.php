@@ -246,7 +246,7 @@ if ($supportWhatsapp !== '') {
                             </div>
                         </div>
                     </div>
-                    <div id="portal-catalog" class="portal-catalog" data-view="grid" data-page-size="<?= (int)($portalCatalogPageSize ?? 15); ?>"></div>
+                    <div id="portal-catalog" class="portal-catalog" data-view="grid" data-page-size="<?= (int)($portalCatalogPageSize ?? 30); ?>"></div>
                     <nav class="portal-catalog-pagination" data-catalog-pagination aria-label="Paginação do catálogo"></nav>
                 </div>
                 <div class="portal-cart-stack">
@@ -3309,7 +3309,7 @@ $catalogoPayload = json_encode(array_map(static function ($produto) use ($asset)
     const cart = [];
     let catalogView = localStorage.getItem('portal-catalog-view') === 'list' ? 'list' : 'grid';
     let catalogPage = 1;
-    let catalogPerPage = Math.min(9999, Math.max(1, Number(catalogContainer?.dataset.pageSize) || 15));
+    let catalogPerPage = Math.min(9999, Math.max(1, Number(catalogContainer?.dataset.pageSize) || 30));
     const catalogQuantities = new Map();
     const welcomeModal = document.getElementById('portal-welcome-modal');
     const welcomeModalName = welcomeModal?.querySelector('[data-welcome-name]');
@@ -5042,7 +5042,7 @@ $catalogoPayload = json_encode(array_map(static function ($produto) use ($asset)
         if (control.matches('[data-catalog-page-input]')) {
             catalogPage = Math.min(Number(control.max) || 1, Math.max(1, Number(control.value) || 1));
         } else if (control.matches('[data-catalog-page-size],[data-catalog-page-size-manual]')) {
-            catalogPerPage = Math.min(9999, Math.max(1, Number(control.value) || 15));
+            catalogPerPage = Math.min(9999, Math.max(1, Number(control.value) || 30));
             catalogPage = 1;
         } else {
             return;
