@@ -3226,13 +3226,13 @@ if ($supportWhatsapp !== '') {
     .portal-catalog-pagination{display:grid;grid-template-columns:minmax(120px,1fr) auto minmax(270px,1fr);align-items:center;gap:12px;margin-top:18px;padding-top:16px;border-top:1px solid var(--portal-card-border);color:var(--portal-muted);font-size:.84rem;font-weight:800}
     .portal-catalog-pagination__pages,.portal-catalog-pagination__size{display:flex;align-items:center;gap:8px;white-space:nowrap}
     .portal-catalog-pagination__pages{justify-content:center}.portal-catalog-pagination__size{justify-content:flex-end}
-    .portal-catalog-pagination__button,.portal-catalog-pagination__input,.portal-catalog-pagination__select{box-sizing:border-box;height:40px;min-height:40px;border:1px solid var(--portal-card-border);border-radius:999px;background:var(--portal-card-bg);color:var(--portal-text);font:inherit}
-    .portal-catalog-pagination__button{display:grid;place-items:center;min-width:40px;padding:7px 13px;cursor:pointer}
+    .portal-catalog-pagination__button,.portal-catalog-pagination__input,.portal-catalog-pagination__select{box-sizing:border-box;height:38px;min-height:38px;border:1px solid var(--portal-card-border);border-radius:999px;background:var(--portal-card-bg);color:var(--portal-text);font:inherit}
+    .portal-catalog-pagination__button{display:grid;place-items:center;min-width:38px;padding:7px 12px;cursor:pointer}
     .portal-catalog-pagination__button:hover{border-color:var(--primary);color:var(--primary)}
     .portal-catalog-pagination__button.active{border-color:var(--primary);background:var(--primary);color:#fff}
-    .portal-catalog-pagination__input{width:76px;padding:7px 11px;text-align:center}
-    .portal-catalog-pagination__input--size{width:calc(4ch + 34px);min-width:calc(4ch + 34px)}
-    .portal-catalog-pagination__select{min-width:120px;padding:7px 34px 7px 14px}
+    .portal-catalog-pagination__input{width:58px;padding:7px 10px;text-align:center}
+    .portal-catalog-pagination__input--size{width:61px;min-width:61px;max-width:61px;padding-left:3px;padding-right:3px}
+    .portal-catalog-pagination__select{padding:7px 34px 7px 14px}
     .portal-catalog-pagination__ellipsis{min-width:22px;text-align:center}
     @media(max-width:900px){.portal-catalog-pagination{grid-template-columns:1fr}.portal-catalog-pagination__pages,.portal-catalog-pagination__size{justify-content:flex-start;flex-wrap:wrap}}
 </style>
