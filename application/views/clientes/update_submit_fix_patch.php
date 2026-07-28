@@ -156,6 +156,7 @@
         })
             .then((response) => response.ok ? response.json() : response.json().then((data) => Promise.reject(data)).catch(() => Promise.reject({})))
             .then(() => {
+                window.updateClienteListRow?.(editId, payload);
                 if (window.resetClienteEditState) {
                     window.resetClienteEditState();
                 } else {
@@ -163,13 +164,13 @@
                     form.reset();
                     if (editCancel) editCancel.hidden = true;
                 }
-                modal.classList.add('hidden');
+                modal.setAttribute('hidden', 'hidden');
                 modal.setAttribute('aria-hidden', 'true');
+                document.body.style.overflow = '';
                 localStorage.setItem('clienteTab', 'lista');
-                sessionStorage.setItem(savedMessageKey, 'Cliente atualizado com sucesso.');
-                sessionStorage.setItem('clientes-restore-list-state', '1');
                 document.querySelector('[data-cliente-tab="lista"]')?.click();
-                window.location.reload();
+                document.querySelector('[data-clientes-tbody]')?.closest('.cliente-tab-panel')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                window.appLiveSaved?.({ message: 'Cliente atualizado com sucesso.', source: 'clientes' });
             })
             .catch((error) => {
                 alert(error && error.message ? error.message : 'Não foi possível atualizar o cliente agora.');

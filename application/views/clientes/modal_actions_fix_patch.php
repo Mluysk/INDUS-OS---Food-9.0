@@ -158,9 +158,10 @@
         })
             .then((response) => response.ok ? response.json() : Promise.reject(response))
             .then(() => {
+                window.removeClienteListRow?.(id);
                 window.appLiveSaved?.({ message: 'Cliente excluido com sucesso.', source: 'clientes' });
-                modal.classList.add('hidden');
-                modal.setAttribute('aria-hidden', 'true');
+                modal.setAttribute('hidden', 'hidden');
+                document.body.style.overflow = '';
             })
             .catch(() => alert('Não foi possível excluir o cliente agora.'))
             .finally(() => {

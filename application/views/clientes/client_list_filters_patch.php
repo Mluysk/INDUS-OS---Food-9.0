@@ -299,6 +299,79 @@
             }, true);
         });
 
+        window.updateClienteListRow = (id, data = {}) => {
+            const row = getRows().find((item) => Number(item.dataset.sortId) === Number(id));
+            if (!row) return false;
+
+            const currentButton = row.querySelector('.js-cliente-detalhe');
+            let currentData = {};
+            try {
+                currentData = JSON.parse(currentButton?.dataset.cliente || '{}') || {};
+            } catch (_) {
+                currentData = {};
+            }
+            const cliente = { ...currentData, ...data, id: Number(id) };
+            const name = String(cliente.razao_social || cliente.nome_fantasia || '').trim();
+            const nameSearch = `${cliente.razao_social || ''} ${cliente.nome_fantasia || ''}`.trim();
+            const docs = `${cliente.cnpj || ''} ${cliente.cpf || ''}`.trim();
+            const contact = `${cliente.telefone || ''} ${cliente.whatsapp || ''} ${cliente.email || ''}`.trim();
+            const city = String(cliente.cidade || '').trim();
+            const uf = String(cliente.estado || '').trim().toUpperCase();
+            const citySearch = `${city} ${uf}`.trim();
+
+            row.dataset.clienteSearch = `${id} ${nameSearch} ${docs} ${contact} ${citySearch}`.trim();
+            row.dataset.clienteName = nameSearch;
+            row.dataset.clienteCity = normalize(city);
+            row.dataset.clienteUf = uf;
+            row.dataset.sortNome = nameSearch;
+            row.dataset.sortCnpj = String(cliente.cnpj || '');
+            row.dataset.sortCpf = String(cliente.cpf || '');
+            row.dataset.sortContato = contact;
+            row.dataset.sortCidade = citySearch;
+
+            const cells = row.children;
+            if (cells[1]) cells[1].textContent = name;
+            if (cells[2]) cells[2].textContent = cliente.cnpj || '-';
+            if (cells[3]) cells[3].textContent = cliente.cpf || '-';
+            if (cells[4]) cells[4].textContent = cliente.telefone || '-';
+            if (cells[5]) {
+                cells[5].replaceChildren();
+                if (city) {
+                    const citySpan = document.createElement('span');
+                    citySpan.className = 'cliente-city';
+                    citySpan.textContent = city;
+                    cells[5].appendChild(citySpan);
+                }
+                if (city && uf) cells[5].appendChild(document.createTextNode(' / '));
+                if (uf) {
+                    const ufSpan = document.createElement('span');
+                    ufSpan.className = 'cliente-uf';
+                    ufSpan.textContent = uf;
+                    cells[5].appendChild(ufSpan);
+                }
+                if (!city && !uf) cells[5].textContent = '-';
+            }
+            if (currentButton) currentButton.dataset.cliente = JSON.stringify(cliente);
+            renderPagination();
+            return true;
+        };
+
+        window.removeClienteListRow = (id) => {
+            const row = getRows().find((item) => Number(item.dataset.sortId) === Number(id));
+            if (!row) return false;
+            row.remove();
+            const totalCount = document.querySelector('[data-clientes-total-count]');
+            const total = getRows().length;
+            const totalStrong = totalCount?.querySelector('strong');
+            if (totalStrong) totalStrong.textContent = String(total);
+            const labelNode = totalCount
+                ? Array.from(totalCount.childNodes).reverse().find((node) => node.nodeType === Node.TEXT_NODE)
+                : null;
+            if (labelNode) labelNode.nodeValue = total === 1 ? ' cliente cadastrado' : ' clientes cadastrados';
+            renderPagination();
+            return true;
+        };
+
         renderPagination();
     };
 
