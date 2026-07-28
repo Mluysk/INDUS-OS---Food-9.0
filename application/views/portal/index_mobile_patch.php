@@ -1098,6 +1098,21 @@ include __DIR__.'/index_whatsapp_beside_contact_type_patch.php';
             flex: 0 0 auto !important;
             justify-content: center !important;
         }
+
+        html body .portal-app__header-links .portal-app__link[data-portal-settings] {
+            width: 48px !important;
+            min-width: 48px !important;
+            max-width: 48px !important;
+            height: 48px !important;
+            min-height: 48px !important;
+            max-height: 48px !important;
+            aspect-ratio: 1 / 1 !important;
+            flex: 0 0 48px !important;
+            box-sizing: border-box !important;
+            padding: 0 !important;
+            border-radius: 50% !important;
+            place-items: center !important;
+        }
     }
 </style>
 <style>
