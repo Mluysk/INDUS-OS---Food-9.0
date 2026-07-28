@@ -5038,6 +5038,18 @@ $catalogoPayload = json_encode(array_map(static function ($produto) use ($asset)
         if (productId > 0) catalogQuantities.set(productId, input.value);
     });
 
+    const scrollToCatalogCard = () => {
+        const card = catalogContainer?.closest('.portal-catalog-card');
+        if (!card) return;
+        window.requestAnimationFrame(() => {
+            const top = card.getBoundingClientRect().top + window.scrollY - 16;
+            window.scrollTo({
+                top: Math.max(0, top),
+                behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'
+            });
+        });
+    };
+
     const applyCatalogPaginationControl = (control) => {
         if (control.matches('[data-catalog-page-input]')) {
             catalogPage = Math.min(Number(control.max) || 1, Math.max(1, Number(control.value) || 1));
@@ -5048,6 +5060,7 @@ $catalogoPayload = json_encode(array_map(static function ($produto) use ($asset)
             return;
         }
         desenharCatalogo(true);
+        scrollToCatalogCard();
     };
 
     catalogPagination?.addEventListener('click', (event) => {
@@ -5055,6 +5068,7 @@ $catalogoPayload = json_encode(array_map(static function ($produto) use ($asset)
         if (!button) return;
         catalogPage = Number(button.dataset.catalogPage) || 1;
         desenharCatalogo(true);
+        scrollToCatalogCard();
     });
     catalogPagination?.addEventListener('change', (event) => applyCatalogPaginationControl(event.target));
     catalogPagination?.addEventListener('keydown', (event) => {
