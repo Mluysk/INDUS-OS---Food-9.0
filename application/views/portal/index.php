@@ -4720,7 +4720,7 @@ $catalogoPayload = json_encode(array_map(static function ($produto) use ($asset)
                     <div class="portal-product__controls">
                         <span class="portal-product__label">Quantidade</span>
                         <div class="portal-product__input-group">
-                            <input type="number" min="1" step="1" value="${catalogQuantities.has(produto.id) ? catalogQuantities.get(produto.id) : '1'}" data-qtd="${produto.id}">
+                            <input type="number" min="0" step="1" value="${catalogQuantities.has(produto.id) ? catalogQuantities.get(produto.id) : '0'}" data-qtd="${produto.id}">
                             <button type="button" data-add="${produto.id}">Adicionar ao carrinho</button>
                         </div>
                     </div>
