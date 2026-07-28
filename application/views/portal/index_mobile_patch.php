@@ -48,6 +48,7 @@ include __DIR__.'/index_whatsapp_beside_contact_type_patch.php';
         html body .topbar {
             gap: 0.75rem !important;
             padding: 0.85rem 0.95rem !important;
+            margin-bottom: 0 !important;
             flex-wrap: wrap !important;
         }
 
@@ -246,7 +247,7 @@ include __DIR__.'/index_whatsapp_beside_contact_type_patch.php';
             grid-template-columns: 1fr !important;
             gap: 0.85rem !important;
             align-items: stretch !important;
-            padding: 1.2rem 0 0.8rem !important;
+            padding: 0 0 0.8rem !important;
         }
 
         html body .portal-app__welcome h2[data-cliente-nome] {
@@ -293,13 +294,28 @@ include __DIR__.'/index_whatsapp_beside_contact_type_patch.php';
         }
 
         html body .portal-app__header-links {
-            display: grid !important;
-            grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-            border-radius: 18px !important;
+            position: relative !important;
+            left: 50% !important;
+            grid-row: 1 !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            flex-wrap: wrap !important;
+            width: 100vw !important;
+            max-width: none !important;
+            border-radius: 0 !important;
             padding: 0.35rem !important;
+            margin: 0 !important;
+            transform: translateX(-50%) !important;
+        }
+
+        html body .portal-app__welcome {
+            grid-row: 2 !important;
         }
 
         html body .portal-app__link {
+            width: auto !important;
+            flex: 0 0 auto !important;
             justify-content: center !important;
             padding: 0.58rem 0.5rem !important;
             min-width: 0 !important;
