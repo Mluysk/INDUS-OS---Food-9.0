@@ -13,8 +13,19 @@
 
     const savedMessage = sessionStorage.getItem(savedMessageKey);
     if (savedMessage) {
-        sessionStorage.removeItem(savedMessageKey);
-        window.setTimeout(() => window.showAppToast?.(savedMessage, 'success'), 0);
+        const showSavedMessage = () => {
+            if (typeof window.showAppToast !== 'function') {
+                window.setTimeout(showSavedMessage, 100);
+                return;
+            }
+            window.showAppToast(savedMessage, 'success');
+            sessionStorage.removeItem(savedMessageKey);
+        };
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', showSavedMessage, { once: true });
+        } else {
+            showSavedMessage();
+        }
     }
 
     const requiredNames = [
