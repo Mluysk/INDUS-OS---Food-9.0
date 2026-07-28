@@ -3310,6 +3310,7 @@ $catalogoPayload = json_encode(array_map(static function ($produto) use ($asset)
     let catalogView = localStorage.getItem('portal-catalog-view') === 'list' ? 'list' : 'grid';
     let catalogPage = 1;
     let catalogPerPage = Math.min(9999, Math.max(1, Number(catalogContainer?.dataset.pageSize) || 15));
+    const catalogQuantities = new Map();
     const welcomeModal = document.getElementById('portal-welcome-modal');
     const welcomeModalName = welcomeModal?.querySelector('[data-welcome-name]');
     const welcomeDismissTriggers = welcomeModal ? welcomeModal.querySelectorAll('[data-welcome-dismiss]') : [];
@@ -4719,7 +4720,7 @@ $catalogoPayload = json_encode(array_map(static function ($produto) use ($asset)
                     <div class="portal-product__controls">
                         <span class="portal-product__label">Quantidade</span>
                         <div class="portal-product__input-group">
-                            <input type="number" min="1" step="1" value="1" data-qtd="${produto.id}">
+                            <input type="number" min="1" step="1" value="${catalogQuantities.has(produto.id) ? catalogQuantities.get(produto.id) : '1'}" data-qtd="${produto.id}">
                             <button type="button" data-add="${produto.id}">Adicionar ao carrinho</button>
                         </div>
                     </div>
@@ -5028,6 +5029,13 @@ $catalogoPayload = json_encode(array_map(static function ($produto) use ($asset)
                 desenharCatalogo();
             }
         });
+    });
+
+    catalogContainer?.addEventListener('input', (event) => {
+        const input = event.target.closest('input[data-qtd]');
+        if (!input) return;
+        const productId = Number(input.dataset.qtd);
+        if (productId > 0) catalogQuantities.set(productId, input.value);
     });
 
     const applyCatalogPaginationControl = (control) => {
