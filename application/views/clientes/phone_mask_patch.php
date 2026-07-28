@@ -31,11 +31,20 @@
 
     const applyContactMask = () => {
         if (!contactInput) return;
-        const mobile = isMobileContact();
-        contactInput.value = formatPhone(contactInput.value, mobile);
-        contactInput.maxLength = mobile ? 15 : 14;
+        const digits = digitsOnly(contactInput.value, 11);
+        const detectedType = digits.length === 11 ? 'celular' : (digits.length === 10 ? 'telefone' : '');
+        const mobile = detectedType ? detectedType === 'celular' : isMobileContact();
+        contactInput.value = formatPhone(digits, mobile);
+        contactInput.maxLength = 15;
         contactInput.inputMode = 'numeric';
         contactInput.placeholder = mobile ? '(00) 00000-0000' : '(00) 0000-0000';
+        if (detectedType) {
+            const option = typeInputs.find((input) => input.value === detectedType);
+            if (option && !option.checked) {
+                option.checked = true;
+                option.dispatchEvent(new Event('change', { bubbles: true }));
+            }
+        }
     };
 
     const applyWhatsappMask = () => {
