@@ -997,27 +997,7 @@ include __DIR__.'/index_whatsapp_beside_contact_type_patch.php';
 <script>
 (function () {
     const media = window.matchMedia('(max-width: 820px)');
-    const placeHeaderMenu = () => {
-        const menu = document.querySelector('.portal-app__header-links');
-        const topbar = document.querySelector('.topbar');
-        const appHeader = document.querySelector('.portal-app__header');
-        const welcome = appHeader?.querySelector('.portal-app__welcome');
-        if (!menu || !topbar || !appHeader) return;
-
-        if (media.matches) {
-            if (welcome && menu.previousElementSibling !== welcome) {
-                welcome.insertAdjacentElement('afterend', menu);
-            }
-            return;
-        }
-
-        if (menu.previousElementSibling !== topbar) {
-            topbar.insertAdjacentElement('afterend', menu);
-        }
-    };
-
     const moveSettingsButton = () => {
-        placeHeaderMenu();
         const button = document.querySelector('[data-portal-settings]');
         const menu = document.querySelector('.portal-app__header-links');
         const profile = document.querySelector('.topbar .portal-app__profile');
@@ -1061,12 +1041,16 @@ include __DIR__.'/index_whatsapp_beside_contact_type_patch.php';
 <style>
     @media (min-width: 821px) {
         html body .portal-app__header {
-            grid-template-rows: auto !important;
-            padding-top: 1.5rem !important;
+            grid-template-rows: auto auto !important;
+            row-gap: 1.5rem !important;
+            padding-top: 0 !important;
         }
 
         html body .portal-app__header-links {
-            position: static !important;
+            position: relative !important;
+            left: 50% !important;
+            grid-column: 1 / -1 !important;
+            grid-row: 1 !important;
             width: 100vw !important;
             max-width: none !important;
             box-sizing: border-box !important;
@@ -1076,12 +1060,12 @@ include __DIR__.'/index_whatsapp_beside_contact_type_patch.php';
             flex-wrap: wrap !important;
             margin: 0 !important;
             border-radius: 0 !important;
-            transform: none !important;
+            transform: translate(-50%, -1.5rem) !important;
         }
 
         html body .portal-app__welcome,
         html body .portal-app__profile {
-            grid-row: 1 !important;
+            grid-row: 2 !important;
         }
 
         html body .portal-app__header-links .portal-app__link {
