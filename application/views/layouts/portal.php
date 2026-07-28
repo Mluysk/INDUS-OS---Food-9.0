@@ -15,6 +15,10 @@ $asset = static function (string $path) use ($basePath): string {
 };
 $footerLogoPath = $theme['logo_footer'] ?? 'uploads/branding/logo.png';
 $footerLogo = htmlspecialchars($asset($footerLogoPath), ENT_QUOTES, 'UTF-8');
+$headerLogoLight = htmlspecialchars($asset($theme['logo_light'] ?? 'img/logo.png'), ENT_QUOTES, 'UTF-8');
+$headerLogoDark = htmlspecialchars($asset($theme['logo_dark'] ?? 'img/logodark.png'), ENT_QUOTES, 'UTF-8');
+$headerLogoLightHeight = max(32, min(72, (int) ($theme['logo_light_size'] ?? 57)));
+$headerLogoDarkHeight = max(32, min(72, (int) ($theme['logo_dark_size'] ?? 57)));
 $portalPrimaryHex = htmlspecialchars($theme['primary_hex'] ?? '#2563EB', ENT_QUOTES, 'UTF-8');
 $currentYear = date('Y');
 ?>
@@ -58,6 +62,23 @@ $currentYear = date('Y');
         .alert-error { background: rgba(220, 38, 38, 0.18); color: #b91c1c; }
         .topbar { display: flex; justify-content: space-between; align-items: center; padding: 1rem 1.5rem; background: var(--primary); color: var(--primary-contrast); box-shadow: 0 14px 32px -28px color-mix(in srgb, var(--primary, #2563eb) 80%, transparent); }
         .topbar strong { color: var(--primary-contrast); }
+        .portal-header-brand { display: flex; align-items: center; min-width: 0; height: 64px; }
+        .portal-header-logo {
+            display: block;
+            width: auto;
+            max-width: min(280px, 42vw);
+            object-fit: contain;
+            object-position: left center;
+        }
+        .portal-header-logo--light { height: <?= $headerLogoLightHeight; ?>px; max-height: 100%; }
+        .portal-header-logo--dark { display: none; height: <?= $headerLogoDarkHeight; ?>px; max-height: 100%; }
+        [data-theme="dark"] .portal-header-logo--light { display: none; }
+        [data-theme="dark"] .portal-header-logo--dark { display: block; }
+        .portal-header-brand__fallback { color: var(--primary-contrast); font-weight: 800; }
+        @media (max-width: 720px) {
+            .portal-header-brand { height: 48px; max-width: calc(100vw - 110px); }
+            .portal-header-logo { max-width: 100%; max-height: 48px; }
+        }
         .theme-toggle { display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.95rem; color: var(--muted); }
         .theme-toggle input { width: auto; }
         .portal-theme-switch {
@@ -195,7 +216,7 @@ $currentYear = date('Y');
     </style>
 </head>
 <body>
-    <header class="topbar"><div><strong><?= htmlspecialchars($appName ?? 'IndusOS Food', ENT_QUOTES, 'UTF-8'); ?></strong></div><label class="theme-toggle portal-theme-switch" for="toggle-theme"><span>Alternar tema</span><input type="checkbox" id="toggle-theme" aria-label="Alternar entre tema claro e escuro"><span class="portal-theme-switch__track" aria-hidden="true"><span class="portal-theme-switch__icon">&#9788;</span><span class="portal-theme-switch__icon">&#9790;</span><span class="portal-theme-switch__thumb"></span></span></label></header>
+    <header class="topbar"><div class="portal-header-brand"><img class="portal-header-logo portal-header-logo--light" src="<?= $headerLogoLight; ?>" alt="<?= htmlspecialchars($appName ?? 'IndusOS Food', ENT_QUOTES, 'UTF-8'); ?>"><img class="portal-header-logo portal-header-logo--dark" src="<?= $headerLogoDark; ?>" alt="<?= htmlspecialchars($appName ?? 'IndusOS Food', ENT_QUOTES, 'UTF-8'); ?>"><strong class="portal-header-brand__fallback" hidden><?= htmlspecialchars($appName ?? 'IndusOS Food', ENT_QUOTES, 'UTF-8'); ?></strong></div><label class="theme-toggle portal-theme-switch" for="toggle-theme"><span>Alternar tema</span><input type="checkbox" id="toggle-theme" aria-label="Alternar entre tema claro e escuro"><span class="portal-theme-switch__track" aria-hidden="true"><span class="portal-theme-switch__icon">&#9788;</span><span class="portal-theme-switch__icon">&#9790;</span><span class="portal-theme-switch__thumb"></span></span></label></header>
     <?php if (!empty($flash['success'])): ?><div class="container"><div class="alert alert-success"><?= htmlspecialchars($flash['success'], ENT_QUOTES, 'UTF-8'); ?></div></div><?php endif; ?>
     <?php if (!empty($flash['error'])): ?><div class="container"><div class="alert alert-error"><?= htmlspecialchars($flash['error'], ENT_QUOTES, 'UTF-8'); ?></div></div><?php endif; ?>
     <?= $content ?? '' ?>
