@@ -1041,27 +1041,35 @@ include __DIR__.'/index_whatsapp_beside_contact_type_patch.php';
 <style>
     @media (min-width: 821px) {
         html body .portal-app__header {
-            padding-top: 7rem !important;
+            grid-template-rows: auto auto !important;
+            row-gap: 1.5rem !important;
+            padding-top: 0 !important;
         }
 
         html body .portal-app__header-links {
-            position: absolute !important;
-            top: 0 !important;
-            left: 0 !important;
-            right: 0 !important;
+            position: static !important;
+            grid-column: 1 / -1 !important;
+            grid-row: 1 !important;
             width: 100% !important;
             max-width: none !important;
             box-sizing: border-box !important;
-            display: grid !important;
-            grid-auto-flow: column !important;
-            grid-auto-columns: minmax(0, 1fr) !important;
+            display: flex !important;
             align-items: center !important;
+            justify-content: center !important;
+            flex-wrap: wrap !important;
             margin: 0 !important;
+            transform: none !important;
+        }
+
+        html body .portal-app__welcome,
+        html body .portal-app__profile {
+            grid-row: 2 !important;
         }
 
         html body .portal-app__header-links .portal-app__link {
-            width: 100% !important;
-            min-width: 0 !important;
+            width: auto !important;
+            min-width: auto !important;
+            flex: 0 0 auto !important;
             justify-content: center !important;
         }
     }
