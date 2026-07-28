@@ -464,7 +464,7 @@ class ConfigController extends Controller
         $data['PORTAL_LOGIN_LOGO_FILTER'] = isset($data['PORTAL_LOGIN_LOGO_FILTER']) && $data['PORTAL_LOGIN_LOGO_FILTER'] === '1' ? '1' : '0';
 
         if (isset($data['PORTAL_CATALOG_PAGE_SIZE'])) {
-            $data['PORTAL_CATALOG_PAGE_SIZE'] = (string)max(1, min(9999, (int)$data['PORTAL_CATALOG_PAGE_SIZE']));
+            $data['PORTAL_CATALOG_PAGE_SIZE'] = (string)max(1, min(99999, (int)$data['PORTAL_CATALOG_PAGE_SIZE']));
         }
 
         if (isset($data['THEME_TITLE_SIZE'])) {

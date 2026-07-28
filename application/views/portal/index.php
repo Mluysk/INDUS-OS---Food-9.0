@@ -3231,8 +3231,8 @@ if ($supportWhatsapp !== '') {
     .portal-catalog-pagination__button:hover{border-color:var(--primary);color:var(--primary)}
     .portal-catalog-pagination__button.active{border-color:var(--primary);background:var(--primary);color:#fff}
     .portal-catalog-pagination__input{width:58px;padding:7px 10px;text-align:center}
-    .portal-catalog-pagination__input--size{width:61px;min-width:61px;max-width:61px;padding-left:3px;padding-right:3px}
-    .portal-catalog-pagination__select{padding:7px 34px 7px 14px}
+    .portal-catalog-pagination__input--size{width:calc(5ch + 34px);min-width:calc(5ch + 34px);max-width:calc(5ch + 34px);padding-left:3px;padding-right:3px}
+    .portal-catalog-pagination__select{width:calc(7ch + 48px);min-width:calc(7ch + 48px);padding:7px 34px 7px 14px}
     .portal-catalog-pagination__ellipsis{min-width:22px;text-align:center}
     @media(max-width:900px){.portal-catalog-pagination{grid-template-columns:1fr}.portal-catalog-pagination__pages,.portal-catalog-pagination__size{justify-content:flex-start;flex-wrap:wrap}}
 </style>
@@ -3309,7 +3309,7 @@ $catalogoPayload = json_encode(array_map(static function ($produto) use ($asset)
     const cart = [];
     let catalogView = localStorage.getItem('portal-catalog-view') === 'list' ? 'list' : 'grid';
     let catalogPage = 1;
-    let catalogPerPage = Math.min(9999, Math.max(1, Number(catalogContainer?.dataset.pageSize) || 30));
+    let catalogPerPage = Math.min(99999, Math.max(1, Number(catalogContainer?.dataset.pageSize) || 30));
     const catalogQuantities = new Map();
     const welcomeModal = document.getElementById('portal-welcome-modal');
     const welcomeModalName = welcomeModal?.querySelector('[data-welcome-name]');
@@ -4667,7 +4667,7 @@ $catalogoPayload = json_encode(array_map(static function ($produto) use ($asset)
             : `<button type="button" class="portal-catalog-pagination__button${page === catalogPage ? ' active' : ''}" data-catalog-page="${page}" aria-label="Página ${page}"${page === catalogPage ? ' aria-current="page"' : ''}>${page}</button>`
         ).join('');
         const sizeOptions = [15, 30, 50, 100].map((size) => `<option value="${size}"${size === catalogPerPage ? ' selected' : ''}>${size}</option>`).join('');
-        catalogPagination.innerHTML = `<span>${start}-${end} de ${total}</span><div class="portal-catalog-pagination__pages">${pageButtons}<label>Ir para <input class="portal-catalog-pagination__input" type="number" min="1" max="${totalPages}" value="${catalogPage}" data-catalog-page-input></label></div><label class="portal-catalog-pagination__size"><span>Mostrar</span><select class="portal-catalog-pagination__select" data-catalog-page-size aria-label="Quantidade por página">${sizeOptions}</select><input class="portal-catalog-pagination__input portal-catalog-pagination__input--size" type="number" min="1" max="9999" value="${catalogPerPage}" data-catalog-page-size-manual aria-label="Quantidade manual por página"><span>por página</span></label>`;
+        catalogPagination.innerHTML = `<span>${start}-${end} de ${total}</span><div class="portal-catalog-pagination__pages">${pageButtons}<label>Ir para <input class="portal-catalog-pagination__input" type="number" min="1" max="${totalPages}" value="${catalogPage}" data-catalog-page-input></label></div><label class="portal-catalog-pagination__size"><span>Mostrar</span><select class="portal-catalog-pagination__select" data-catalog-page-size aria-label="Quantidade por página">${sizeOptions}</select><input class="portal-catalog-pagination__input portal-catalog-pagination__input--size" type="number" min="1" max="99999" value="${catalogPerPage}" data-catalog-page-size-manual aria-label="Quantidade manual por página"><span>por página</span></label>`;
     };
 
     const desenharCatalogo = (force = false) => {
@@ -5042,7 +5042,7 @@ $catalogoPayload = json_encode(array_map(static function ($produto) use ($asset)
         if (control.matches('[data-catalog-page-input]')) {
             catalogPage = Math.min(Number(control.max) || 1, Math.max(1, Number(control.value) || 1));
         } else if (control.matches('[data-catalog-page-size],[data-catalog-page-size-manual]')) {
-            catalogPerPage = Math.min(9999, Math.max(1, Number(control.value) || 30));
+            catalogPerPage = Math.min(99999, Math.max(1, Number(control.value) || 30));
             catalogPage = 1;
         } else {
             return;

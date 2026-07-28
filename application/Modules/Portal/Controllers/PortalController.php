@@ -36,7 +36,7 @@ class PortalController extends Controller
             'catalogo' => $produtos,
             'portalGroupOptions' => $this->portalGroupOptions(),
             'portalClientGroups' => json_decode((string)($this->config->get('PORTAL_CLIENT_GROUPS', '[]') ?? '[]'), true) ?: [],
-            'portalCatalogPageSize' => max(1, min(9999, (int)$this->config->get('PORTAL_CATALOG_PAGE_SIZE', '30'))),
+            'portalCatalogPageSize' => max(1, min(99999, (int)$this->config->get('PORTAL_CATALOG_PAGE_SIZE', '30'))),
         ], [
             'layout' => 'layouts/portal',
             'title' => 'Portal do Cliente',
