@@ -1038,6 +1038,30 @@ include __DIR__.'/index_whatsapp_beside_contact_type_patch.php';
     setTimeout(moveSettingsButton, 300);
 })();
 </script>
+<script>
+(function () {
+    const ensureDashboardLoads = () => {
+        if (document.body.getAttribute('data-portal-state') !== 'app') return;
+        const dashboard = document.querySelector('[data-portal-dashboard]');
+        if (!dashboard || !dashboard.querySelector('.portal-dashboard__loading')) return;
+        if (typeof carregarDashboard !== 'function') return;
+
+        dashboardCarregado = false;
+        carregarDashboard(true);
+    };
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', ensureDashboardLoads, { once: true });
+    } else {
+        ensureDashboardLoads();
+    }
+
+    window.setTimeout(ensureDashboardLoads, 250);
+    window.setTimeout(ensureDashboardLoads, 1500);
+    window.setTimeout(ensureDashboardLoads, 8500);
+    window.addEventListener('focus', ensureDashboardLoads);
+})();
+</script>
 <style>
     @media (min-width: 821px) {
         html body .portal-app__header {
