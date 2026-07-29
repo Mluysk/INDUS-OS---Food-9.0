@@ -422,15 +422,70 @@ $currentYear = date('Y');
                 const search = tools.querySelector('#portal-product-search');
                 const filter = tools.querySelector('#portal-product-filter');
                 const sort = tools.querySelector('#portal-product-sort');
-                const updateFilterOptions = () => { const selected = filter.value; const categories = new Map(); catalog.querySelectorAll('.portal-product').forEach((card) => { const label = String(card.dataset.category || '').trim(); if (label) categories.set(normalize(label), label); }); filter.innerHTML = '<option value="">Todos</option>'; Array.from(categories.entries()).sort((a, b) => a[1].localeCompare(b[1], 'pt-BR')).forEach(([value, label]) => { const option = document.createElement('option'); option.value = value; option.textContent = label; filter.appendChild(option); }); filter.value = Array.from(categories.keys()).includes(selected) ? selected : ''; };
-                const applySort = () => { const selected = sort.value || 'name-asc'; const [key, direction] = selected.split('-'); const multiplier = direction === 'desc' ? -1 : 1; const cards = Array.from(catalog.querySelectorAll('.portal-product')); cards.sort((a, b) => { if (key === 'price' || key === 'validity') { return ((Number(a.dataset[key] || 0) - Number(b.dataset[key] || 0)) * multiplier) || normalize(a.dataset.name).localeCompare(normalize(b.dataset.name), 'pt-BR'); } const left = normalize(a.dataset[key] || a.textContent); const right = normalize(b.dataset[key] || b.textContent); return left.localeCompare(right, 'pt-BR') * multiplier; }); const current = Array.from(catalog.querySelectorAll('.portal-product')); const changed = cards.some((card, index) => card !== current[index]); if (changed) cards.forEach((card) => catalog.appendChild(card)); };
-                const applyFilter = () => { const term = normalize(search.value); const category = filter.value; let visible = 0; catalog.querySelectorAll('.portal-product').forEach((card) => { const matchesText = !term || normalize(card.textContent).includes(term); const matchesCategory = !category || normalize(card.dataset.category || '') === category; const show = matchesText && matchesCategory; card.style.display = show ? '' : 'none'; if (show) visible += 1; }); empty.classList.toggle('is-visible', visible === 0); };
+                const availableProducts = () => {
+                    const cliente = state?.cliente || {};
+                    const groupIds = Array.isArray(cliente.grupos_produtos_ids) && cliente.grupos_produtos_ids.length
+                        ? cliente.grupos_produtos_ids.map(String)
+                        : [String(cliente.grupo_produtos_id || '')].filter(Boolean);
+                    const matchedGroups = portalClientGroups.filter((item) => groupIds.includes(String(item?.id || '')));
+                    const allowed = Array.isArray(cliente.grupo_produtos_product_ids)
+                        ? new Set(cliente.grupo_produtos_product_ids.map(Number).filter((id) => id > 0))
+                        : (matchedGroups.length
+                            ? new Set(matchedGroups.flatMap((group) => (Array.isArray(group.product_ids) ? group.product_ids : []).map(Number).filter((id) => id > 0)))
+                            : null);
+                    return catalogoCompleto.filter((product) => !allowed || allowed.has(Number(product.id)));
+                };
+                const updateFilterOptions = () => {
+                    const selected = filter.value;
+                    const categories = new Map();
+                    availableProducts().forEach((product) => {
+                        const label = String(product.categoria || '').trim();
+                        if (label) categories.set(normalize(label), label);
+                    });
+                    filter.innerHTML = '<option value="">Todos</option>';
+                    Array.from(categories.entries()).sort((a, b) => a[1].localeCompare(b[1], 'pt-BR')).forEach(([value, label]) => {
+                        const option = document.createElement('option');
+                        option.value = value;
+                        option.textContent = label;
+                        filter.appendChild(option);
+                    });
+                    filter.value = Array.from(categories.keys()).includes(selected) ? selected : '';
+                };
+                const applyFilter = () => {
+                    const term = normalize(search.value);
+                    const category = filter.value;
+                    const [key, direction] = (sort.value || 'name-asc').split('-');
+                    const multiplier = direction === 'desc' ? -1 : 1;
+                    const filtered = availableProducts().filter((product) => {
+                        const searchable = normalize(`${product.nome || ''} ${product.sku || ''} ${product.unidade || ''} ${product.categoria || ''}`);
+                        return (!term || searchable.includes(term))
+                            && (!category || normalize(product.categoria || '') === category);
+                    });
+                    filtered.sort((a, b) => {
+                        if (key === 'price' || key === 'validity') {
+                            const field = key === 'price' ? 'preco' : 'shelf_life_dias';
+                            return ((Number(a[field] || 0) - Number(b[field] || 0)) * multiplier)
+                                || normalize(a.nome).localeCompare(normalize(b.nome), 'pt-BR');
+                        }
+                        const field = key === 'sku' ? 'sku' : 'nome';
+                        return normalize(a[field]).localeCompare(normalize(b[field]), 'pt-BR') * multiplier;
+                    });
+                    catalogo.splice(0, catalogo.length, ...filtered);
+                    catalogPage = 1;
+                    desenharCatalogo(true);
+                    empty.classList.toggle('is-visible', filtered.length === 0);
+                };
                 search.addEventListener('input', applyFilter);
                 filter.addEventListener('change', applyFilter);
-                sort.addEventListener('change', () => { applySort(); applyFilter(); });
-                new MutationObserver(() => { updateFilterOptions(); applySort(); applyFilter(); }).observe(catalog, { childList: true, subtree: true });
+                sort.addEventListener('change', applyFilter);
+                window.addEventListener('portal:cliente-atualizado', () => { updateFilterOptions(); applyFilter(); });
+                new MutationObserver(() => {
+                    if (document.body.getAttribute('data-portal-state') === 'app') {
+                        updateFilterOptions();
+                        applyFilter();
+                    }
+                }).observe(document.body, { attributes: true, attributeFilter: ['data-portal-state'] });
                 updateFilterOptions();
-                applySort();
                 applyFilter();
             };
             if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', installCatalogTools); else installCatalogTools();
