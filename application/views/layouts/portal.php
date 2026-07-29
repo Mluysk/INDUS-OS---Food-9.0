@@ -451,7 +451,7 @@ $currentYear = date('Y');
                     });
                     filter.value = Array.from(categories.keys()).includes(selected) ? selected : '';
                 };
-                const applyFilter = () => {
+                const applyFilter = (resetPage = true) => {
                     const term = normalize(search.value);
                     const category = filter.value;
                     const [key, direction] = (sort.value || 'name-asc').split('-');
@@ -471,22 +471,22 @@ $currentYear = date('Y');
                         return normalize(a[field]).localeCompare(normalize(b[field]), 'pt-BR') * multiplier;
                     });
                     catalogo.splice(0, catalogo.length, ...filtered);
-                    catalogPage = 1;
+                    if (resetPage) catalogPage = 1;
                     desenharCatalogo(true);
                     empty.classList.toggle('is-visible', filtered.length === 0);
                 };
-                search.addEventListener('input', applyFilter);
-                filter.addEventListener('change', applyFilter);
-                sort.addEventListener('change', applyFilter);
-                window.addEventListener('portal:cliente-atualizado', () => { updateFilterOptions(); applyFilter(); });
+                search.addEventListener('input', () => applyFilter(true));
+                filter.addEventListener('change', () => applyFilter(true));
+                sort.addEventListener('change', () => applyFilter(true));
+                window.addEventListener('portal:cliente-atualizado', () => { updateFilterOptions(); applyFilter(false); });
                 new MutationObserver(() => {
                     if (document.body.getAttribute('data-portal-state') === 'app') {
                         updateFilterOptions();
-                        applyFilter();
+                        applyFilter(false);
                     }
                 }).observe(document.body, { attributes: true, attributeFilter: ['data-portal-state'] });
                 updateFilterOptions();
-                applyFilter();
+                applyFilter(false);
             };
             if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', installCatalogTools); else installCatalogTools();
         })();
