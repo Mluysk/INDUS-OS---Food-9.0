@@ -1075,7 +1075,7 @@ include __DIR__.'/index_whatsapp_beside_contact_type_patch.php';
             left: 50% !important;
             grid-column: 1 / -1 !important;
             grid-row: 1 !important;
-            width: 100vw !important;
+            width: var(--portal-desktop-viewport-width, 100vw) !important;
             max-width: none !important;
             box-sizing: border-box !important;
             display: flex !important;
