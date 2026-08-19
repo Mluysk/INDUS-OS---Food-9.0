@@ -48,18 +48,21 @@ class PedidosController extends Controller
 
         $notePixEnabled = $this->config->get('NOTE_PIX_ENABLED', '0') === '1';
         $notePixKey = trim((string)$this->config->get('NOTE_PIX_KEY', ''));
+        $saidaPeriodo = ($_GET['saida_periodo'] ?? 'dia') === 'mes' ? 'mes' : 'dia';
         $saidaData = isset($_GET['saida_data']) ? (string)$_GET['saida_data'] : date('Y-m-d');
+        $saidaMes = isset($_GET['saida_mes']) ? (string)$_GET['saida_mes'] : date('Y-m');
+        $saidaReferencia = $saidaPeriodo === 'mes' ? $saidaMes : $saidaData;
         $saidaLojas = $_GET['saida_lojas'] ?? [];
         if (!is_array($saidaLojas)) {
             $saidaLojas = [$saidaLojas];
         }
         $saidaLojas = array_values(array_filter(array_map('intval', $saidaLojas), static fn (int $id): bool => $id > 0));
-        $saidaLojasDisponiveis = $this->pedidos->lojasComSaidaDoDia($saidaData);
+        $saidaLojasDisponiveis = $this->pedidos->lojasComSaidaPorPeriodo($saidaPeriodo, $saidaReferencia);
         $lojasDisponiveisIds = array_map(static fn (array $loja): int => (int)($loja['id'] ?? 0), $saidaLojasDisponiveis);
         if ($saidaLojas && $lojasDisponiveisIds) {
             $saidaLojas = array_values(array_intersect($saidaLojas, $lojasDisponiveisIds));
         }
-        $saidaDia = $this->pedidos->gerarSaidaDoDia($saidaData, $saidaLojas);
+        $saidaDia = $this->pedidos->gerarSaidaPorPeriodo($saidaPeriodo, $saidaReferencia, $saidaLojas);
         $revisoesPicking = [];
         foreach ($lista as $pedidoLista) {
             if (strtolower((string)($pedidoLista['status'] ?? '')) !== 'revisao') continue;

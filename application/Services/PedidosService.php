@@ -216,13 +216,29 @@ class PedidosService
 
     public function gerarSaidaDoDia(?string $data = null, array $lojas = []): array
     {
-        $data = trim((string)($data ?: date('Y-m-d')));
-        if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $data)) {
-            $data = date('Y-m-d');
+        return $this->gerarSaidaPorPeriodo('dia', $data, $lojas);
+    }
+
+    public function gerarSaidaPorPeriodo(string $periodo = 'dia', ?string $referencia = null, array $lojas = []): array
+    {
+        $periodo = $periodo === 'mes' ? 'mes' : 'dia';
+        $referencia = trim((string)$referencia);
+        if ($periodo === 'mes') {
+            if (!preg_match('/^\d{4}-\d{2}$/', $referencia)) {
+                $referencia = date('Y-m');
+            }
+            $dataInicio = $referencia . '-01';
+            $dataFim = date('Y-m-t', strtotime($dataInicio));
+        } else {
+            if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $referencia)) {
+                $referencia = date('Y-m-d');
+            }
+            $dataInicio = $referencia;
+            $dataFim = $referencia;
         }
         $lojas = array_values(array_filter(array_map('intval', $lojas), static fn (int $id): bool => $id > 0));
 
-        $relatorio = $this->pedidos->relatorioSaidaPorDia($data, $lojas);
+        $relatorio = $this->pedidos->relatorioSaidaPorPeriodo($dataInicio, $dataFim, $lojas);
         $itens = array_map(static function (array $item): array {
             $quantidade = (float)($item['quantidade'] ?? 0);
             $valorTotal = (float)($item['valor_total'] ?? 0);
@@ -243,7 +259,11 @@ class PedidosService
 
         $resumo = $relatorio['resumo'] ?? [];
         return [
-            'data' => $data,
+            'periodo' => $periodo,
+            'data' => $periodo === 'dia' ? $referencia : $dataInicio,
+            'mes' => $periodo === 'mes' ? $referencia : substr($referencia, 0, 7),
+            'data_inicio' => $dataInicio,
+            'data_fim' => $dataFim,
             'lojas' => $lojas,
             'itens' => $itens,
             'resumo' => [
@@ -266,6 +286,21 @@ class PedidosService
         }
 
         return $this->pedidos->lojasComSaidaPorDia($data);
+    }
+
+    public function lojasComSaidaPorPeriodo(string $periodo, ?string $referencia = null): array
+    {
+        $periodo = $periodo === 'mes' ? 'mes' : 'dia';
+        $referencia = trim((string)$referencia);
+        if ($periodo === 'mes') {
+            if (!preg_match('/^\d{4}-\d{2}$/', $referencia)) $referencia = date('Y-m');
+            $inicio = $referencia . '-01';
+            $fim = date('Y-m-t', strtotime($inicio));
+        } else {
+            if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $referencia)) $referencia = date('Y-m-d');
+            $inicio = $fim = $referencia;
+        }
+        return $this->pedidos->lojasComSaidaPorPeriodo($inicio, $fim);
     }
 
     public function detalhar(int $id): array

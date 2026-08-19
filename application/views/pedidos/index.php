@@ -214,7 +214,11 @@
         $saidaResumo = $saidaDia['resumo'] ?? [];
         $saidaItens = $saidaDia['itens'] ?? [];
         $saidaData = $saidaDia['data'] ?? date('Y-m-d');
-        $saidaDataLabel = date('d/m/Y', strtotime($saidaData));
+        $saidaPeriodo = ($saidaDia['periodo'] ?? 'dia') === 'mes' ? 'mes' : 'dia';
+        $saidaMes = $saidaDia['mes'] ?? date('Y-m');
+        $saidaDataLabel = $saidaPeriodo === 'mes'
+            ? date('m/Y', strtotime($saidaMes.'-01'))
+            : date('d/m/Y', strtotime($saidaData));
         $saidaLojasSelecionadas = array_map('intval', $saidaDia['lojas'] ?? []);
         $saidaLojasDisponiveis = $saidaLojasDisponiveis ?? [];
         $saidaComFiltroLojas = count($saidaLojasSelecionadas) > 0;
@@ -223,14 +227,25 @@
     <div class="pedidos-tab-panel" id="panel-saida-dia" role="tabpanel" aria-labelledby="tab-saida-dia" data-tab-panel="saida-dia" hidden>
         <div class="daily-output-head">
             <div>
-                <h3>Gerar saida do dia</h3>
-                <p class="panel-description">Selecione uma data para consolidar todos os produtos vendidos em pedidos internos e pedidos do portal.</p>
+                <h3>Gerar saida de vendas</h3>
+                <p class="panel-description">Consolide por dia ou por mes todos os produtos vendidos em pedidos internos e pedidos do portal.</p>
             </div>
             <form class="daily-output-filter" method="get" action="<?= htmlspecialchars($url('pedidos'), ENT_QUOTES, 'UTF-8'); ?>">
                 <div class="daily-output-filter__top">
-                    <label class="daily-output-date" for="saida-data">
+                    <label class="daily-output-date" for="saida-periodo">
+                        Periodo
+                        <select id="saida-periodo" name="saida_periodo" data-output-period-select>
+                            <option value="dia" <?= $saidaPeriodo === 'dia' ? 'selected' : ''; ?>>Por dia</option>
+                            <option value="mes" <?= $saidaPeriodo === 'mes' ? 'selected' : ''; ?>>Por mes</option>
+                        </select>
+                    </label>
+                    <label class="daily-output-date" for="saida-data" data-output-day-field <?= $saidaPeriodo === 'mes' ? 'hidden' : ''; ?>>
                         Dia da saida
                         <input type="date" id="saida-data" name="saida_data" value="<?= htmlspecialchars($saidaData, ENT_QUOTES, 'UTF-8'); ?>">
+                    </label>
+                    <label class="daily-output-date" for="saida-mes" data-output-month-field <?= $saidaPeriodo === 'dia' ? 'hidden' : ''; ?>>
+                        Mes da saida
+                        <input type="month" id="saida-mes" name="saida_mes" value="<?= htmlspecialchars($saidaMes, ENT_QUOTES, 'UTF-8'); ?>">
                     </label>
                     <div class="daily-output-store-filter" data-output-store-filter>
                         <button type="button" class="button daily-output-store-trigger" data-output-store-trigger aria-expanded="false">
@@ -274,7 +289,7 @@
                                     <div class="daily-output-store-empty">Nenhuma loja com saida neste dia.</div>
                                 <?php endif; ?>
                             </div>
-                            <p>Sem lojas marcadas, o relatorio mostra todas as lojas com saida neste dia.</p>
+                            <p>Sem lojas marcadas, o relatorio mostra todas as lojas com saida no periodo.</p>
                         </div>
                     </div>
                     <button type="submit" class="button button-primary">Gerar relatorio</button>
@@ -285,7 +300,7 @@
 
         <div class="daily-output-report" data-daily-output-report>
             <div class="daily-output-report__title">
-                <span>Relatorio de saida - <?= htmlspecialchars($saidaLojasLabel, ENT_QUOTES, 'UTF-8'); ?></span>
+                <span>Relatorio de saida <?= $saidaPeriodo === 'mes' ? 'mensal' : 'diaria'; ?> - <?= htmlspecialchars($saidaLojasLabel, ENT_QUOTES, 'UTF-8'); ?></span>
                 <strong><?= htmlspecialchars($saidaDataLabel, ENT_QUOTES, 'UTF-8'); ?></strong>
             </div>
             <div class="daily-output-summary">
@@ -333,7 +348,7 @@
                             <?php endforeach; ?>
                         <?php else: ?>
                             <tr>
-                                <td colspan="7">Nenhuma saida encontrada para este dia.</td>
+                                <td colspan="7">Nenhuma saida encontrada para este periodo.</td>
                             </tr>
                         <?php endif; ?>
                     </tbody>
@@ -444,9 +459,20 @@
             });
         });
 
-        if (new URLSearchParams(window.location.search).has('saida_data')) {
+        if (new URLSearchParams(window.location.search).has('saida_data') || new URLSearchParams(window.location.search).has('saida_mes')) {
             document.querySelector('[data-tab-target="saida-dia"]')?.click();
         }
+
+        const periodSelect = document.querySelector('[data-output-period-select]');
+        const dayField = document.querySelector('[data-output-day-field]');
+        const monthField = document.querySelector('[data-output-month-field]');
+        const syncPeriodFields = () => {
+            const monthly = periodSelect?.value === 'mes';
+            if (dayField) dayField.hidden = monthly;
+            if (monthField) monthField.hidden = !monthly;
+        };
+        periodSelect?.addEventListener('change', syncPeriodFields);
+        syncPeriodFields();
 
         document.querySelector('[data-print-daily-output]')?.addEventListener('click', () => {
             const report = document.querySelector('[data-daily-output-report]');

@@ -74,9 +74,14 @@ class PedidosRepository extends BaseRepository
 
     public function relatorioSaidaPorDia(string $data, array $lojas = []): array
     {
+        return $this->relatorioSaidaPorPeriodo($data, $data, $lojas);
+    }
+
+    public function relatorioSaidaPorPeriodo(string $dataInicio, string $dataFim, array $lojas = []): array
+    {
         $this->ensurePedidoExtraColumns();
         $lojas = array_values(array_filter(array_map('intval', $lojas), static fn (int $id): bool => $id > 0));
-        $params = ['data' => $data];
+        $params = ['data_inicio' => $dataInicio, 'data_fim' => $dataFim];
         $lojaWhere = '';
         if ($lojas) {
             $placeholders = [];
@@ -102,7 +107,7 @@ class PedidosRepository extends BaseRepository
             FROM pedido_itens pi
             INNER JOIN pedidos ped ON ped.id = pi.pedido_id
             INNER JOIN produtos p ON p.id = pi.produto_id
-            WHERE DATE(ped.created_at) = :data
+            WHERE DATE(ped.created_at) BETWEEN :data_inicio AND :data_fim
               AND COALESCE(ped.status, '') <> 'cancelado'
               {$lojaWhere}
             GROUP BY pi.produto_id, p.sku, p.nome, p.unidade, p.peso_liquido
@@ -122,7 +127,7 @@ class PedidosRepository extends BaseRepository
             FROM pedidos ped
             INNER JOIN pedido_itens pi ON pi.pedido_id = ped.id
             INNER JOIN produtos p ON p.id = pi.produto_id
-            WHERE DATE(ped.created_at) = :data
+            WHERE DATE(ped.created_at) BETWEEN :data_inicio AND :data_fim
               AND COALESCE(ped.status, '') <> 'cancelado'
               {$lojaWhere}
         ");
@@ -136,6 +141,11 @@ class PedidosRepository extends BaseRepository
 
     public function lojasComSaidaPorDia(string $data): array
     {
+        return $this->lojasComSaidaPorPeriodo($data, $data);
+    }
+
+    public function lojasComSaidaPorPeriodo(string $dataInicio, string $dataFim): array
+    {
         $this->ensurePedidoExtraColumns();
         $stmt = $this->db->prepare("
             SELECT DISTINCT
@@ -147,11 +157,11 @@ class PedidosRepository extends BaseRepository
             FROM pedidos ped
             INNER JOIN pedido_itens pi ON pi.pedido_id = ped.id
             INNER JOIN clientes c ON c.id = ped.cliente_id
-            WHERE DATE(ped.created_at) = :data
+            WHERE DATE(ped.created_at) BETWEEN :data_inicio AND :data_fim
               AND COALESCE(ped.status, '') <> 'cancelado'
             ORDER BY COALESCE(NULLIF(c.nome_fantasia, ''), c.razao_social, c.id) ASC
         ");
-        $stmt->execute(['data' => $data]);
+        $stmt->execute(['data_inicio' => $dataInicio, 'data_fim' => $dataFim]);
         return $stmt->fetchAll();
     }
 
