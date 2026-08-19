@@ -294,6 +294,10 @@
                     </div>
                     <button type="submit" class="button button-primary">Gerar relatorio</button>
                     <button type="button" class="button" data-print-daily-output>Imprimir</button>
+                    <button type="button" class="button" data-export-daily-output>
+                        <span class="icon" data-lucide="file-spreadsheet"></span>
+                        Exportar Excel
+                    </button>
                 </div>
             </form>
         </div>
@@ -473,6 +477,52 @@
         };
         periodSelect?.addEventListener('change', syncPeriodFields);
         syncPeriodFields();
+
+        document.querySelector('[data-export-daily-output]')?.addEventListener('click', () => {
+            const table = document.querySelector('.daily-output-table');
+            if (!table) return;
+
+            const clean = (value) => String(value || '').replace(/\s+/g, ' ').trim();
+            const escape = (value) => String(value ?? '').replace(/[&<>]/g, (char) => ({
+                '&': '&amp;', '<': '&lt;', '>': '&gt;'
+            }[char]));
+            const headers = Array.from(table.querySelectorAll('thead th')).map((cell) =>
+                clean(cell.textContent).replace(/[â‡…⇅▲▼]+/g, '').trim()
+            );
+            const rows = Array.from(table.querySelectorAll('tbody tr'))
+                .filter((row) => !row.querySelector('td[colspan]'))
+                .map((row) => Array.from(row.children).map((cell) => clean(cell.textContent)));
+
+            const title = clean(document.querySelector('.daily-output-report__title span')?.textContent || 'Relatorio de saida');
+            const period = clean(document.querySelector('.daily-output-report__title strong')?.textContent || '');
+            const summary = Array.from(document.querySelectorAll('.daily-output-summary > div')).map((item) => [
+                clean(item.querySelector('span')?.textContent),
+                clean(item.querySelector('strong')?.textContent)
+            ]);
+            const cells = (values, tag = 'td') => values.map((value) => `<${tag}>${escape(value)}</${tag}>`).join('');
+            const summaryRows = summary.map((row) => `<tr>${cells(row)}</tr>`).join('');
+            const bodyRows = rows.map((row) => `<tr>${cells(row)}</tr>`).join('');
+            const html = `<!doctype html><html><head><meta charset="UTF-8"><style>
+                body{font-family:Arial,sans-serif}table{border-collapse:collapse;margin-bottom:18px}
+                th{background:#e8eef8;font-weight:700}th,td{border:1px solid #b8c2d1;padding:7px 10px}
+                h2{margin-bottom:4px}p{margin-top:0;color:#475569}
+            </style></head><body><h2>${escape(title)}</h2><p>${escape(period)}</p>
+            <table><tbody>${summaryRows}</tbody></table>
+            <table><thead><tr>${cells(headers, 'th')}</tr></thead><tbody>${bodyRows}</tbody></table></body></html>`;
+            const blob = new Blob(['\ufeff' + html], { type: 'application/vnd.ms-excel;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const reference = periodSelect?.value === 'mes'
+                ? document.getElementById('saida-mes')?.value
+                : document.getElementById('saida-data')?.value;
+            const link = Object.assign(document.createElement('a'), {
+                href: url,
+                download: `saida-vendas-${reference || new Date().toISOString().slice(0, 10)}.xls`
+            });
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            URL.revokeObjectURL(url);
+        });
 
         document.querySelector('[data-print-daily-output]')?.addEventListener('click', () => {
             const report = document.querySelector('[data-daily-output-report]');
