@@ -273,6 +273,7 @@ class PedidosService
                 'produtos' => count($itens),
                 'quantidade' => (float)($resumo['quantidade'] ?? 0),
                 'valor_total' => (float)($resumo['valor_total'] ?? 0),
+                'frete_total' => (float)($resumo['frete_total'] ?? 0),
                 'peso_total' => (float)($resumo['peso_total'] ?? 0),
             ],
         ];

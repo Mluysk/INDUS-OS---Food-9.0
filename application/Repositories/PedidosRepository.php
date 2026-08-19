@@ -132,10 +132,22 @@ class PedidosRepository extends BaseRepository
               {$lojaWhere}
         ");
         $resumo->execute($params);
+        $resumoDados = $resumo->fetch() ?: [];
+
+        // O frete pertence ao pedido e precisa ser somado sem a multiplicacao causada pelo join de itens.
+        $frete = $this->db->prepare("
+            SELECT COALESCE(SUM(COALESCE(ped.frete_valor, 0)), 0) AS frete_total
+            FROM pedidos ped
+            WHERE DATE(ped.created_at) BETWEEN :data_inicio AND :data_fim
+              AND COALESCE(ped.status, '') <> 'cancelado'
+              {$lojaWhere}
+        ");
+        $frete->execute($params);
+        $resumoDados['frete_total'] = (float)$frete->fetchColumn();
 
         return [
             'itens' => $itens,
-            'resumo' => $resumo->fetch() ?: [],
+            'resumo' => $resumoDados,
         ];
     }
 

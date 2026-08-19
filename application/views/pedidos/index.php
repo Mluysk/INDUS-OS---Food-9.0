@@ -314,6 +314,7 @@
                 <div><span>Produtos</span><strong><?= (int)($saidaResumo['produtos'] ?? 0); ?></strong></div>
                 <div><span>Qtd. total</span><strong><?= number_format((float)($saidaResumo['quantidade'] ?? 0), 2, ',', '.'); ?></strong></div>
                 <div><span>Valor total</span><strong>R$ <?= number_format((float)($saidaResumo['valor_total'] ?? 0), 2, ',', '.'); ?></strong></div>
+                <div><span>Frete total</span><strong>R$ <?= number_format((float)($saidaResumo['frete_total'] ?? 0), 2, ',', '.'); ?></strong></div>
             </div>
 
             <div class="daily-output-table-wrap">
